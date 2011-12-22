@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    This is an example grammar specification providing a
+    template for input to Copper's new XML skin. It is an
+    exact mirror of the objects used in the new API.
+
+    Differences with old XML skin:
+    * Most node names changed; Copper namespace introduced.
+    * Declarations and references now have different tag names.
+    * Specs are now organized into parsers and grammars. Grammar
+      elements contain only grammar elements and grammar layout;
+      parsers contain the rest of the metadata.
+    * Terminal classes must now be explicitly declared.
+    * Regex elements <loosechar>/<SingleCharacter> and
+      <range>/<CharacterRange> now use attributes instead of sub-elements
+      to hold character information.
+    
+    Terminal, nonterminal, production, disambiguation function, and
+    parser attribute declarations have only superficial changes.
+  -->
+
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+	<!-- 
+	     A parser element contains a set of grammars, a start symbol, and
+	     all the other ancillary data about the parser (class name, package
+	     name, preamble/auxiliary/initialization code, default semantic
+	     actions).
+	     A "unitary" parser contains only one grammar and will not prefix
+	     grammar symbols with the grammar name in the output parser.
+      -->
+	<Parser id="Grammar3p23Parser" isUnitary="false">
+		<PP>XMLSkinTemplate</PP>
+		<!-- The start symbol. -->
+		<Grammars>
+			<GrammarRef id="edu_umn_cs_melt_copper_example1"/>
+			<GrammarRef id="edu_umn_cs_melt_copper_example2"/>
+		</Grammars>
+		<StartSymbol>
+			<NonterminalRef grammar="edu_umn_cs_melt_copper_example1" id="E"/>
+		</StartSymbol>
+		<!-- All elements below are optional. -->
+		<!--
+		     Start layout. If not specified, defaults to the grammar layout
+		     of the start symbol's grammar.
+		  -->
+		<StartLayout>
+			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="ws"/>
+			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="comment"/>
+		</StartLayout>
+		<Package>parsers</Package>
+		<ClassName>Grammar3p23Parser</ClassName>
+		<ClassAuxiliaryCode>
+			<Code><![CDATA[ int PARSER; /* This goes in the parser class. */ ]]></Code>
+		</ClassAuxiliaryCode>
+		<DefaultProductionCode>
+			<Code><![CDATA[ int PRODUCTION; /* Default semantic action for a production. */ ]]></Code>
+		</DefaultProductionCode>
+		<DefaultTerminalCode>
+			<Code><![CDATA[ int TERMINAL; /* Default semantic action for a terminal. */ ]]></Code>
+		</DefaultTerminalCode>
+		<ParserInitCode>
+			<Code><![CDATA[ System.out.println("Parser is starting."); ]]></Code>
+		</ParserInitCode>
+		<PostParseCode>
+			<Code><![CDATA[ System.out.println(root + "\nParser has finished."); ]]></Code>
+		</PostParseCode>
+		<Preamble>
+			<Code><![CDATA[ import java.util.LinkedList; ]]></Code>
+		</Preamble>
+		<SemanticActionAuxiliaryCode>
+			<Code><![CDATA[ int AUXILIARY; /* This goes in the semantic action container. */ ]]></Code>
+		</SemanticActionAuxiliaryCode>
+	</Parser>
+	
+    <!-- Each specification may have several grammars. -->
+	<Grammar id="edu_umn_cs_melt_copper_example1">
+	
+		<!-- Display name; optional. -->
+		<PP>edu:umn:cs:melt:copper:example1</PP>
+	
+		<!-- 
+             Default layout for productions in this grammar. A grammar
+             must specify either this, or both start layout and production-specific
+             layout for every production. 
+		  -->
+		<Layout>
+			<!-- 
+                 This is a symbol reference. The "grammar" attribute is optional;
+                 if omitted, the reference will be taken to refer to a symbol
+                 within the current grammar.
+            -->
+			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="ws"/>
+			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="comment"/>
+		</Layout>
+			
+  		<Declarations>
+			<Nonterminal id="E">
+			    <!-- 
+                     Display name; optional. If not set, this symbol will be displayed
+                     as 'edu_umn_cs_melt_copper_example1$E'.
+			    -->
+				<PP>E</PP>
+				<!-- 
+                   Type of the RESULT object set in the semantic actions of productions
+                   with this nonterminal on the LHS. Defaults to java.lang.Object.
+				 -->  
+				<Type>String</Type>
+			</Nonterminal>
+			<Nonterminal id="T">
+				<Type>String</Type>
+			</Nonterminal>
+			
+			<!-- 
+                 Terminal classes must be explicitly declared.
+                 Their members may be specified here, in <InClass> elements
+                 in the terminals, or both.
+              -->
+			     
+			<TerminalClass id="main">
+				<Members>
+					<TerminalRef id="ws"/>
+					<TerminalRef id="plus"/>
+					<TerminalRef id="x"/>
+				</Members>
+			</TerminalClass>
+			
+			<Terminal id="ws">
+				<PP>ws</PP>
+				<Regex>
+					<Concatenation>
+						<CharacterSet><SingleCharacter char=" "/></CharacterSet>
+						<KleeneStar>
+							<CharacterSet><SingleCharacter char=" "/></CharacterSet>
+						</KleeneStar>
+					</Concatenation>
+				</Regex>
+				<Type>String</Type>
+				<Code><![CDATA[ RESULT = "[space]"; ]]></Code>
+				<InClasses>
+					<TerminalClassRef id="main"/>
+				</InClasses>
+				<Submits/>
+				<Dominates/>				
+			</Terminal>
+			
+			<Terminal id="comment">
+				<PP>comment</PP>
+				<Regex>
+					<Concatenation>
+						<CharacterSet><SingleCharacter char="#"/></CharacterSet>
+						<KleeneStar>
+							<CharacterSet invert="true">
+								<CharacterRange lower="0" upper="9"/>
+								<SingleCharacter char="#"/>
+							</CharacterSet>
+						</KleeneStar>
+						<Choice>
+							<Concatenation>
+								<CharacterSet><SingleCharacter char="0"/></CharacterSet>
+								<CharacterSet><SingleCharacter char="1"/></CharacterSet>
+							</Concatenation>
+							<EmptyString/>
+						</Choice>
+						<CharacterSet><SingleCharacter char="#"/></CharacterSet>
+					</Concatenation>
+				</Regex>
+				<Type>String</Type>
+				<Code><![CDATA[ RESULT = "[comment]"; ]]></Code>
+				<InClasses>
+					<TerminalClassRef id="main"/>
+				</InClasses>
+				<Submits/>
+				<Dominates/>				
+			</Terminal>
+			
+			<Terminal id="plus">
+				<PP>'+'</PP>
+				<Regex><CharacterSet><SingleCharacter char="+"/></CharacterSet></Regex>
+				<Operator>
+					<Class>main</Class>
+					<Precedence>1</Precedence>
+					<RightAssociative/> <!-- Also LeftAssociative, NonAssociative -->
+				</Operator>
+				<Type>String</Type>
+				<Code><![CDATA[ RESULT = "[+]"; ]]></Code>
+				<InClasses>
+					<TerminalClassRef id="main"/>
+				</InClasses>
+				<Submits/>
+				<Dominates/>				
+			</Terminal>
+			
+			<Terminal id="x">
+				<PP>x</PP>
+				<Regex><CharacterSet><SingleCharacter char="x"/></CharacterSet></Regex>
+				<Type>String</Type>
+				<Code><![CDATA[ RESULT = "[x]"; ]]></Code>
+				<InClasses>
+					<TerminalClassRef id="main"/>
+				</InClasses>
+				<Submits/>
+				<Dominates/>
+			</Terminal>
+
+			<Production id="EtoTplusX">
+				<!-- Production class and precedence (for resolving reduce-reduce conflicts). -->
+				<Class>main</Class>
+				<Precedence>1</Precedence>
+				<Code><![CDATA[ RESULT = left + "\n[+]\n" + right; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+				    <!-- The optional attribute "name" is used to specify a variable name for
+                         referring to an RHS symbol in the semantic action. --> 
+					<NonterminalRef id="T" name="left"/>
+					<TerminalRef id="plus"/>
+					<NonterminalRef id="E" name="right"/>
+				</RHS>
+				<Layout>
+					<TerminalRef id="ws"/>
+					<TerminalRef id="comment"/>
+				</Layout>
+				<!-- 
+                     Terminal to use in shift-reduce conflict resolution
+                     instead of the rightmost terminal on the RHS. Optional.
+				  -->
+				<Operator>
+					<TerminalRef id="plus"/>
+				</Operator>
+			</Production>
+			
+			<!--
+                 The following productions are stripped of all optional sub-elements
+			     except for 'code'.
+			 -->
+						
+			<Production id="EtoT">
+				<Code><![CDATA[ RESULT = term; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<NonterminalRef id="T" name="term"/>
+				</RHS>
+			</Production>
+			
+			<Production id="TtoX">
+				<Code><![CDATA[ RESULT = x; ]]></Code>
+				<LHS><NonterminalRef id="T"/></LHS>
+				<RHS>
+					<NonterminalRef id="x" name="x"/>
+				</RHS>
+			</Production>
+		</Declarations>
+	</Grammar>
+	
+	<Grammar id="edu_umn_cs_melt_copper_example2">
+		<!-- minus and x2; disambiguation function; transparent prefix. -->
+		<Layout>
+			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="ws"/>
+			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="comment"/>
+		</Layout>
+		<Declarations>
+			<Terminal id="minus">
+				<PP>'-'</PP>
+				<Regex><CharacterSet><SingleCharacter char="-"/></CharacterSet></Regex>
+				<Type>String</Type>
+				<Code><![CDATA[ RESULT = "[-]"; ]]></Code>
+				<InClasses>
+					<TerminalClassRef grammar="edu_umn_cs_melt_copper_example1" id="main"/>
+				</InClasses>
+				<Submits/>
+				<Dominates/>				
+			</Terminal>
+			
+			<Terminal id="x2">
+				<PP>x2</PP>
+				<Regex><CharacterSet><SingleCharacter char="x"/></CharacterSet></Regex>
+				<Type>String</Type>
+				<Code><![CDATA[ RESULT = "[x2]"; ]]></Code>
+				<InClasses>
+					<TerminalClassRef grammar="edu_umn_cs_melt_copper_example1" id="main"/>
+				</InClasses>
+				<Prefix>
+					<TerminalRef id="minus"/>
+				</Prefix>
+				<Submits/>
+				<Dominates/>
+			</Terminal>
+			
+			<Production id="TtoX2">
+				<Code><![CDATA[ RESULT = "[-]" + x; ]]></Code>
+				<LHS><NonterminalRef grammar="edu_umn_cs_melt_copper_example1" id="T"/></LHS>
+				<RHS>
+					<NonterminalRef id="x2" name="x"/>
+				</RHS>
+			</Production>
+
+			<DisambiguationFunction id="xs">
+				<Members>
+					<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="x"/>
+					<TerminalRef id="x2"/>
+				</Members>
+				<!-- Disambiguation function code now needs to use fully qualified names. -->
+				<Code><![CDATA[	return edu_umn_cs_melt_copper_example1$x; ]]></Code>
+			</DisambiguationFunction>
+			
+			<!-- References to parser attributes now need to use fully qualified names. -->
+			<ParserAttribute id="dud">
+				<Type><![CDATA[LinkedList<String>]]></Type>
+				<Code><![CDATA[ edu_umn_cs_melt_copper_example2$dud = new LinkedList<String>(); ]]></Code>
+			</ParserAttribute>
+		</Declarations>
+	</Grammar>
+</CopperSpec>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name='copper_tests' basedir='.'>
+	<property environment='env'/>
+	<property name='src_src' location='../src'/>
+	<property name='src' location='../bin'/>
+	<property name='specs' location='../doc/specs'/>
+	<property name='grammars' location='grammars'/>
+	<property name='build_package' value='parsers'/>
+	<property name='build' location='.'/>
+	<property name='etcbase' location='..'/>
+	<property name='dist' location='../jar'/>
+	<property name='debug' value='false'/>
+	
+	<path id='tests_and_src'>
+		<pathelement path='${src}'/>
+		<pathelement path='${etcbase}'/>
+		<pathelement path='.'/>
+	</path>
+		
+	<!-- Uncomment this line and comment the one below to run Copper from JARs rather than unpackaged class files. -->
+	<!--<taskdef name='copper' classpath='${dist}/CopperCompiler.jar' classname='edu.umn.cs.melt.copper.ant.CopperAntTask'/>-->
+	<taskdef name='copper' classpathref='tests_and_src' classname='edu.umn.cs.melt.copper.ant.CopperAntTask'/>
+	
+
+	<!-- Auxiliary targets; not to be run directly -->
+	<target name='TestNativeGrammar' depends=''>
+		<copper fullClassName='${build_package}.${grammarName}Parser' inputFile='${grammars}/${grammarName}.native' outputFile='${build_package}/${grammarName}Parser.java' compileVerbose='${compileVerbose}' runVerbose='${runVerbose}' engine='${engine}' skin='${skin}' dump='${dump}'/>
+		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
+	</target>
+	
+	<target name='TestCupGrammar' depends=''>
+		<property name='skin' value='CUP'/>
+		<copper inputFile='${grammars}/${grammarName}.x' outputFile='${build_package}/${grammarName}Parser.java' compileVerbose='${compileVerbose}' engine='${engine}' skin='${skin}' dump='${dump}'/>
+		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
+	</target>
+
+	<target name='TestXMLGrammar' depends=''>
+		<property name='skin' value='XML'/>
+		<copper fullClassName='${build_package}.${grammarName}Parser' inputFile='${grammars}/${grammarName}.xml' outputFile='${build_package}/${grammarName}Parser.java' compileVerbose='${compileVerbose}' engine='${engine}' skin='${skin}' dump='${dump}'/>
+		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
+	</target>
+
+	
+	<!-- Test grammar targets; to be run directly -->
+	
+	<target name='BlazonGrammar' depends=''>
+		<property name='grammarName' value='BlazonGrammar'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestCupGrammar'/>
+	</target>
+
+	<target name='CExprGrammar' depends=''>
+		<property name='grammarName' value='CExprGrammar'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestCupGrammar'/>
+	</target>
+	
+	<target name='Grammar3p23' depends=''>
+		<property name='grammarName' value='Grammar3p23'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestCupGrammar'/>
+	</target>
+
+	<target name='Grammar3p23XML' depends=''>
+		<property name='grammarName' value='Grammar3p23'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestXMLGrammar'/>
+	</target>
+
+	<target name='Grammar3p26' depends=''>
+		<property name='grammarName' value='Grammar3p26'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestCupGrammar'/>
+	</target>
+
+	<target name='MathGrammar' depends=''>
+		<property name='grammarName' value='MathGrammar'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestCupGrammar'/>
+	</target>
+
+	<target name='MiniJavaGrammar' depends=''>
+		<property name='grammarName' value='MiniJavaGrammar'/>
+		<property name='runVerbose' value='true'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestCupGrammar'/>
+	</target>
+
+	<target name='clean' depends=''>
+	    <delete verbose='true'>
+			<fileset dir='${build_package}' includes='*Parser*.java'/>
+			<fileset dir='${build_package}' includes='*Parser*.class'/>
+		</delete>
+	</target>
+</project>
+

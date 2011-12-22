@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<copperspec id="CompositionTestExt2" type="LALR1" version="1.1">
+	<nonterm id="ME"/>
+	
+    <term id="e1_marking">
+      <classes>
+         <termclass id="main"/>
+      </classes>
+      <dominates>
+      	<term id="id"/>
+      </dominates>       
+      <regex><string>mem:</string></regex>
+    </term>
+    
+    <prod id="EtoMem">
+     <class>main</class>
+     <precedence>1</precedence>
+     <lhs><nonterm id="E"/></lhs>
+     <rhs>
+	<term id="e1_marking"/>
+	<nonterm id="ME"/>
+     </rhs>
+     <layout>
+     	<term id="spaces"/>
+     	<term id="tabs"/>
+     	<term id="newlines"/>
+     </layout>
+    </prod>
+    
+    <prod id="MEtoEParen">
+     <class>main</class>
+     <precedence>1</precedence>
+     <lhs><nonterm id="ME"/></lhs>
+     <rhs>
+     <term id="("/>
+	<nonterm id="E"/>
+	<term id=")"/>
+     </rhs>
+     <layout>
+     	<term id="spaces"/>
+     	<term id="tabs"/>
+     	<term id="newlines"/>
+     </layout>
+    </prod>
+</copperspec>

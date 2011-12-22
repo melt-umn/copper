@@ -1,0 +1,201 @@
+grammar name CopperRegexGrammar spectype LALR1 1.2
+
+term plus :\+
+token plus class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term star :\*
+token star class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term question :\?
+token question class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term bar :\|
+token bar class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term dash :\-
+token dash class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term colon :\:
+token colon class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term not :\^
+token not class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term lbrack :\[
+token lbrack class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term rbrack :\]
+token rbrack class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term lparen :\(
+token lparen class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term rparen :\)
+token rparen class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term wildcard :\.
+token wildcard class {} precedence submits to {} dominates { character } prefix {} code @ RESULT = lexeme; @
+
+term character :.
+token character class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+#term escaped :\\.
+#token escaped class {} precedence submits to {} dominates {} prefix {} code @
+#    char escapedChar = edu.umn.cs.melt.copper.runtime.auxiliary.QuotedStringFormatter.getRepresentedCharacter(lexeme);
+#    if(escapedChar == edu.umn.cs.melt.copper.runtime.io.ScannerBuffer.EOFIndicator) error(_pos,"Illegal escaped character");
+#    RESULT = String.valueOf(escapedChar);
+#@
+
+term empty :
+token empty class {} precedence submits to {} dominates {} prefix {} code @@
+
+nonterm Regex_R Regex_DR Regex_UR Regex_RR Regex_G Regex_RG Regex_UG Regex_CHAR
+
+start Regex_R layout { empty }
+
+prod RtoDR              class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf Regex_R -> Regex_DR
+prod RtoDR_bar_R        class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Choice(
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0],
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_R -> Regex_DR bar Regex_R
+prod DRtoUR_RR           class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0],
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[1]);
+@ bnf  Regex_DR -> Regex_UR Regex_RR
+prod DRtoUR_star_RR      class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.KleeneStar(
+             (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]),
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_DR -> Regex_UR star Regex_RR
+prod DRtoUR_plus_RR      class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+             (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]),
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.KleeneStar(
+             ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]).clone()),
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_DR -> Regex_UR plus Regex_RR
+prod DRtoUR_question_RR  class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Choice(
+             new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString(),
+             (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]),
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_DR -> Regex_UR question Regex_RR
+prod RRtoDR              class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_RR -> Regex_DR
+prod RRtoeps            class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString();
+@ bnf  Regex_RR -> eps
+
+
+prod URtoCHAR           class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_UR -> Regex_CHAR
+prod URtowildcard       class regex precedence 1 operator {} layout {} code @
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet Newline =
+	       new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet(
+	        edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS,'\n');
+    RESULT = Newline.invertSet(edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarConcreteSyntax.UNIVERSAL_CHARACTER_SET.toCharArray());
+@ bnf  Regex_UR -> wildcard
+prod URtolb_G_rb        class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[1];
+@ bnf  Regex_UR -> lbrack Regex_G rbrack
+prod URtolb_not_G_rb    class regex precedence 1 operator {} layout {} code @
+    if(_children[2] instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet)
+	{
+		edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet CGNode =
+		   (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) _children[2];
+		RESULT = CGNode.invertSet(edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarConcreteSyntax.UNIVERSAL_CHARACTER_SET.toCharArray());
+	}
+	else
+	{
+		error(_pos,"Type error in regex");
+		RESULT = null;
+	}
+@ bnf  Regex_UR -> lbrack not Regex_G rbrack
+#prod URtomacro          class regex precedence 1 operator {} layout {} code @
+#    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.MacroHole(
+#            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal((String) _children[2]));
+#@ bnf  Regex_UR -> lbrack colon termname colon rbrack
+prod URtolp_R_rp        class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[1];
+@ bnf  Regex_UR -> lparen Regex_R rparen
+prod GtoUG_RG           class regex precedence 1 operator {} layout {} code @
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex UGNode =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0];
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex RGNode =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[1];
+	
+	if(UGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet &&
+	   (RGNode == null || RGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString))
+	{
+		RESULT = UGNode;
+	}
+	else if(UGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet &&
+	        RGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet)
+	{
+		RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.union(
+				 (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) UGNode,
+				 (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) RGNode);
+	}
+	else
+	{
+		error(_pos,"Type error in regex");
+		RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString();
+	}
+@ bnf  Regex_G -> Regex_UG Regex_RG
+prod UGtoCHAR           class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_UG -> Regex_CHAR
+prod UGtoCHAR_dash_CHAR class regex precedence 1 operator {} layout {} code @
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex characterNode1 =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0];
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex characterNode2 =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2];
+	
+	if(characterNode1 instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet &&
+	   characterNode2 instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet)
+	{
+		char lowerLimit = Character.MAX_VALUE,upperLimit = Character.MIN_VALUE;
+		for(char c : ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) characterNode1).getChars())
+		{
+			lowerLimit = c;
+		}
+		for(char c : ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) characterNode2).getChars())
+		{
+			upperLimit = c;
+		}
+		RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet(
+		        edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.RANGES,
+		        '+',lowerLimit,upperLimit);
+	}
+	else
+	{
+		error(_pos,"Type error in regex");
+		RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet(
+		        edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS);
+	}
+@ bnf  Regex_UG -> Regex_CHAR dash Regex_CHAR
+prod RGtoG              class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_RG -> Regex_G
+prod RGtoeps            class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString();
+@ bnf  Regex_RG -> eps
+prod CHARtochar         class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS,
+		     (((String) _children[0]).toCharArray()));
+@ bnf  Regex_CHAR -> character
+#prod CHARtoescaped      class regex precedence 1 operator {} layout {} code @
+#    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet(
+#            edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS,
+#		     (((String) _children[0]).toCharArray()));
+#@ bnf  Regex_CHAR -> escaped

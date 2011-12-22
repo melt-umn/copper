@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema attributeFormDefault="unqualified"
+		   elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://melt.cs.umn.edu/copper/xmlns"
+           xmlns:copper="http://melt.cs.umn.edu/copper/xmlns"
+           targetNamespace="http://melt.cs.umn.edu/copper/xmlns">
+           
+	<xs:annotation>
+		<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+  			This schema represents the form of input to Copper's XML skin
+  			as parsed by the class XMLSkinParser.
+		</xs:documentation>
+	</xs:annotation>
+
+    <!--======================= SIMPLE TYPES ==========================-->
+	
+	<!-- An element that has no child elements, not even text. -->           
+	<xs:simpleType name="Blank">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="0" fixed="true"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Char">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Characters in the two regex "character" elements: strings of length 1.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="1" fixed="true"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="PrecedenceClass">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				For operator precedence on terminals and production precedence on productions.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="CopperName"/>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Precedence">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+		<xs:simpleType name="PP">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Element display names.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="xs:string"/>
+	</xs:simpleType>
+	
+	<xs:simpleType name="CopperName">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A name to represent a parser, grammar, or grammar element in Copper.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:restriction base="xs:string">
+    		<xs:pattern value="[A-Za-z_][A-Za-z0-9_]*"/>
+    	</xs:restriction>
+    </xs:simpleType>
+
+	<xs:simpleType name="JavaName">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A variable or class name in Java.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:restriction base="xs:string">
+    		<xs:pattern value="[A-Za-z_][A-Za-z0-9_]*"/>
+    	</xs:restriction>
+    </xs:simpleType>
+
+	<xs:simpleType name="JavaFQN">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A fully-qualified name in Java. Used for package names.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:restriction base="xs:string">
+    		<xs:pattern value="[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*"/>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+	<xs:simpleType name="JavaTypename">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+		      The fully-qualified name of a type in Java, possibly with generic parameters.
+		      Due to the limitations of regular languages, not all strings matched by this regex
+		      are valid Java type names; inputting an invalid type name will cause a compilation
+		      error on the finished parser.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:restriction base="xs:string">
+    		<xs:pattern value="[A-Za-z_][A-Za-z0-9_&lt;&gt;,]*(.[A-Za-z_][A-Za-z0-9_&lt;&gt;,]*)*"/>
+    	</xs:restriction>
+	</xs:simpleType>    
+    
+
+
+
+
+
+
+
+
+    <!--======================= COPPER REFERENCES ==========================-->
+
+    <xs:complexType name="LocalReference">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+			   A "local" reference. This represents either a top-level reference to a
+			   grammar or a reference to a grammar element from within one grammar.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:attribute name="id" type="CopperName" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="FQReference">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A "fully-qualified" reference. This represents an unambiguous
+				reference to a grammar element in a given grammar, whether at the
+				top level (e.g., a start symbol), or from within some other
+				grammar.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="LocalReference">
+				<xs:attribute name="grammar" type="CopperName" use="required"/>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="Reference">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				This type of reference can be either local or fully-qualified.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="LocalReference">
+	    		<xs:attribute name="grammar" type="CopperName" use="optional"/>
+	    	</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="TerminalRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a terminal (local or fully-qualified).
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="Reference"/>
+    	</xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="NonterminalRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a nonterminal (local or fully-qualified).
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="Reference"/>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="TerminalClassRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a terminal class (local or fully-qualified).
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="Reference"/>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="GrammarRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a grammar (top-level, never fully-qualified).
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="LocalReference"/>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="RegexMacroRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a regex macro.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="Reference"/>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="NamedTerminalRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A named reference to a terminal. These are used on the right-hand
+				side of productions to define a Java variable name by which to refer
+				to the given child in the production's semantic action.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="TerminalRef">
+    			<xs:attribute name="name" type="JavaName" use="optional"/>
+    		</xs:extension>
+    	</xs:complexContent>
+	</xs:complexType>
+	
+    <xs:complexType name="NamedNonterminalRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A named reference to a nonterminal. These are used on the right-hand
+				side of productions to define a Java variable name by which to refer
+				to the given child in the production's semantic action.
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="NonterminalRef">
+    			<xs:attribute name="name" type="JavaName" use="optional"/>
+    		</xs:extension>
+    	</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="StartSymbolReference">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a parser's start symbol.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="FQReference"/>
+		</xs:complexContent>
+	</xs:complexType>    
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+    <!--======================= SETS OF COPPER REFERENCES ==========================-->
+
+	<xs:complexType name="TerminalRefSet">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A set of references to terminals. Used in terminal classes.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TerminalRef" type="TerminalRef" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="TerminalClassRefSet">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A set of references to terminal classes. Used in terminals to specify
+				terminal classes of which they are members.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TerminalClassRef" type="TerminalClassRef" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>    
+
+	<xs:complexType name="TerminalOrClassRefSet">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A set of references either to terminals or terminal classes.
+				Used for submit- and dominate-lists and for sets of layout.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="TerminalRef" type="TerminalRef"/>					
+				<xs:element name="TerminalClassRef" type="TerminalClassRef"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>	
+	
+	<xs:complexType name="SingleTerminalRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A "set" containing a single terminal reference. Used for specifying
+				transparent prefixes, production operators, and declarative targets
+				for disambiguation functions.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TerminalRef" type="TerminalRef" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+    <!--======================= ANCILLARY ELEMENTS ==========================-->
+
+	<xs:complexType name="Code">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents an element containing a nothing except a
+				code block element (i.e., the various code blocks in the parser).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Code" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Grammars">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents the set of grammars in a parser. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="GrammarRef" type="GrammarRef" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ProductionLHS">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents the left-hand side of a production.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="NonterminalRef" type="NonterminalRef" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="ProductionRHS">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents the right-hand side of a production.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="TerminalRef" type="NamedTerminalRef"/>
+				<xs:element name="NonterminalRef" type="NamedNonterminalRef"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="StartSymbol">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents the start symbol declaration in a parser.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="NonterminalRef" type="StartSymbolReference" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="TerminalOperator">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents terminal operator data: precedence class, operator precedence, and associativity.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Class" type="PrecedenceClass" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Precedence" type="Precedence" minOccurs="0" maxOccurs="1"/>
+			<xs:choice minOccurs="0" maxOccurs="1">
+				<xs:element name="LeftAssociative" type="Blank"/>
+				<xs:element name="RightAssociative" type="Blank"/>
+				<xs:element name="NonAssociative" type="Blank"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	
+	
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+    <!--======================= REGEX ELEMENTS ==========================-->
+    
+    <!-- These elements are direct mirrors of the subclasses of grammarbeans.RegexBean. -->
+
+	<xs:complexType name="Regex">
+		<xs:group ref="RegexComponent"/>
+	</xs:complexType>
+	
+	<xs:group name="RegexComponent">
+		<xs:choice>
+			<xs:element name="Choice" type="AggregationRegex"/>
+			<xs:element name="CharacterSet" type="CharacterSet"/>
+			<xs:element name="Concatenation" type="AggregationRegex"/>
+			<xs:element name="KleeneStar" type="KleeneStar"/>
+			<xs:element name="EmptyString" type="Blank"/>
+			<xs:element name="MacroRef" type="RegexMacroRef"/>
+		</xs:choice>
+	</xs:group>
+
+	<xs:complexType name="AggregationRegex">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents regexes that aggregate several children (e.g., grammarbeans.ChoiceRegexBean
+				and grammarbeans.ConcatenationRegexBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="RegexComponent" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="KleeneStar">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a Kleene star regex (grammarbeans.KleeneStarRegexBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="RegexComponent" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="CharacterSet">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a character set regex (grammarbeans.CharacterSetRegexBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="SingleCharacter" type="SingleCharacter"/>
+				<xs:element name="CharacterRange" type="CharacterRange"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="invert" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+
+	<xs:complexType name="SingleCharacter">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a single character (a call to CharacterSetRegexBean.addLooseChar()).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="char" type="Char" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="CharacterRange">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a character range (a call to CharacterSetRegexBean.addRange()).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="lower" type="Char" use="required"/>
+		<xs:attribute name="upper" type="Char" use="required"/>
+	</xs:complexType>
+	
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+    <!--======================= GRAMMAR ELEMENTS ==========================-->
+
+	<!-- These elements are direct mirrors of the classes in the "grammarbeans" package. -->
+	
+	<xs:complexType name="SpecConstruct">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents any element (subclass of grammarbeans.CopperASTBean). Each element requires
+				an identifier (the "id" attribute) and may also have a display name
+				for pretty-printing ("PP").
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PP" type="PP" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="CopperName" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="Parser">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a parser (grammarbeans.ParserBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Grammars" type="Grammars" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="StartSymbol" type="StartSymbol" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="StartLayout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Package" type="JavaFQN" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="ClassName" type="JavaName" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="ClassAuxiliaryCode" type="Code" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="DefaultProductionCode" type="Code" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="DefaultTerminalCode" type="Code" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="ParserInitCode" type="Code" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="PostParseCode" type="Code" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Preamble" type="Code" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="SemanticActionAuxiliaryCode" type="Code" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+				<xs:attribute name="isUnitary" type="xs:boolean" use="optional" default="false"/>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+	
+	<xs:complexType name="Grammar">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a grammar (grammarbeans.GrammarBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Layout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Declarations" type="GrammarElements" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+	
+	<xs:complexType name="GrammarElements">
+		<xs:sequence>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element name="Terminal" type="Terminal"/>
+				<xs:element name="Nonterminal" type="Nonterminal"/>
+				<xs:element name="TerminalClass" type="TerminalClass"/>
+				<xs:element name="Production" type="Production"/>
+				<xs:element name="DisambiguationFunction" type="DisambiguationFunction"/>
+				<xs:element name="ParserAttribute" type="ParserAttribute"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="Terminal">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a terminal (grammarbeans.TerminalBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Regex" type="Regex" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="Operator" type="TerminalOperator" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Type" type="JavaTypename" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Code" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="InClasses" type="TerminalClassRefSet" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Prefix" type="SingleTerminalRef" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Submits" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Dominates" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+		
+	<xs:complexType name="Nonterminal">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a nonterminal (grammarbeans.NonTerminalBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Type" type="JavaTypename" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+	
+	<xs:complexType name="TerminalClass">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a terminal class (grammarbeans.TerminalClassBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Members" type="TerminalRefSet" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+	
+	<xs:complexType name="Production">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a production (grammarbeans.ProductionBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Class" type="PrecedenceClass" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Precedence" type="Precedence" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Code" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="LHS" type="ProductionLHS" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="RHS" type="ProductionRHS" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="Layout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Operator" type="SingleTerminalRef" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>	
+
+	<xs:complexType name="DisambiguationFunction">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a disambiguation function (grammarbeans.DisambiguationFunctionBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Members" type="TerminalRefSet" minOccurs="1" maxOccurs="1"/>
+					<xs:choice>
+						<xs:element name="DisambiguateTo" type="SingleTerminalRef"/>
+						<xs:element name="Code" type="xs:string"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+	
+	<xs:complexType name="ParserAttribute">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a parser attribute (grammarbeans.ParserAttributeBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Type" type="JavaTypename" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="Code" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+
+	
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+    <!--======================= ROOT ELEMENT ==========================-->
+    
+	<xs:complexType name="CopperSpec">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				The root element of a Copper spec. XML specs
+				must have exactly one parser and one or more grammars.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Parser" type="Parser" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Grammar" type="Grammar" minOccurs="1" maxOccurs="unbounded">
+			    <xs:key name="element_ids">
+			    	<xs:annotation>
+						<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+						All grammar elements within a grammar must have distinct names.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:selector xpath="./copper:Declarations/*"/>
+					<xs:field xpath="@id"/>
+				</xs:key>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="CopperSpec" type="CopperSpec">
+	    <xs:key name="top_ids">
+	    	<xs:annotation>
+				<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				All parsers and grammars must have distinct names.
+				</xs:documentation>
+			</xs:annotation>
+			<xs:selector xpath="./*"/>
+			<xs:field xpath="@id"/>
+		</xs:key>	
+	</xs:element>
+</xs:schema>

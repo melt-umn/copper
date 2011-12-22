@@ -1,0 +1,2182 @@
+<?xml version="1.0"?>
+
+<copperspec id="CupSkinGrammar" type="LALR1" version="1.0">
+	<preamble>
+		<code><![CDATA[
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.OperatorAttributes;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Choice;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.KleeneStar;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.MacroHole;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex;
+import edu.umn.cs.melt.copper.runtime.io.InputPosition;
+import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
+import java.util.LinkedList;
+     ]]>
+     	</code>
+	</preamble>
+	
+	<term id="barrier_kwd" regex="%%">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+	<term id="goesto_kwd" regex="::=">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+	<term id="comma_kwd" regex=",">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+	<term id="semi_kwd" regex=";">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+	<term id="slash_kwd" regex="/">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+	<term id="lt_kwd" regex="&lt;">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+	<term id="gt_kwd" regex="&gt;">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+	<term id="colon_kwd" regex=":">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="attribute_decl_kwd" regex="%attr">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="layout_decl_kwd" regex="%layout">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="parser_decl_kwd" regex="%parser">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="prec_decl_kwd" regex="%prec">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="prefix_decl_kwd" regex="%prefix">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="aux_block_open_kwd" regex="%aux{">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="aux_block_close_kwd" regex="%aux}">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="init_block_open_kwd" regex="%init{">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="init_block_close_kwd" regex="%init}">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="lex_block_open_kwd" regex="%lex{">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="lex_block_close_kwd" regex="%lex}">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="cf_block_open_kwd" regex="%cf{">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="cf_block_close_kwd" regex="%cf}">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="code_block_open_kwd" regex="{:">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="code_block_close_kwd" regex=":}">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="non_kwd" regex="non">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="ignore_kwd" regex="ignore">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="terminal_kwd" regex="terminal">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="class_kwd" regex="class">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="precedence_kwd" regex="precedence">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="disambiguate_kwd" regex="disambiguate">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="start_kwd" regex="start">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="with_kwd" regex="with">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="in_kwd" regex="in">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="assoctypes_kwd" regex="(left)|(right)|(nonassoc)">
+		<code><![CDATA[
+   if(lexeme.equals("nonassoc")) RESULT = Pair.cons(_pos,OperatorAttributes.ASSOC_NONASSOC);
+   else if(lexeme.equals("left")) RESULT = Pair.cons(_pos,OperatorAttributes.ASSOC_LEFT);
+   else /* if(lexeme.equals("right")) */ RESULT = Pair.cons(_pos,OperatorAttributes.ASSOC_RIGHT);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="name_tok" regex="[A-Za-z_][A-Za-z0-9_]*">
+		<code><![CDATA[
+     /*if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.syntaxtranslator.MasterController.AST_DOT_WINDOW,".");*/
+     /*if(reporter.willHaveEffect(edu.umn.cs.melt.copper.runtime.auxiliary.ErrorDegree.DEGREE_NOTA_BENE) &&
+      (dotCounter = (dotCounter + 1) % edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.syntaxtranslator.MasterController.AST_DOT_WINDOW) == 0) reporter.reportRaw(edu.umn.cs.melt.copper.runtime.auxiliary.ErrorDegree.DEGREE_NOTA_BENE,"",".");*/
+     RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="prec_number" regex="0|([1-9][0-9]*)">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,Integer.parseInt(lexeme));
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="plus" regex="\+">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="star" regex="\*">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="question" regex="\?">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="bar" regex="\|">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="dash" regex="\-">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="colon" regex="\:">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="not" regex="\^">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="lbrack" regex="\[">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="rbrack" regex="\]">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="lparen" regex="\(">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="rparen" regex="\)">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="lbrace" regex="\{">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="rbrace" regex="\}">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="wildcard" regex="\.">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="character" regex=".">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="termname" regex="[^\:]+">
+		<code><![CDATA[
+    RESULT = lexeme;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="escaped" regex="\\.">
+		<code><![CDATA[
+    char escapedChar = edu.umn.cs.melt.copper.runtime.auxiliary.QuotedStringFormatter.getRepresentedCharacter(lexeme);
+    if(escapedChar == edu.umn.cs.melt.copper.runtime.io.QScannerBuffer.EOFIndicator) error(_pos,"Illegal escaped character");
+    RESULT = String.valueOf(escapedChar);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="code_t" regex="([^%:]*|[^%\n]%|:[^}])*">
+		<code><![CDATA[
+    RESULT = Pair.cons(_pos,lexeme);
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="ws" regex="([ \t\n]+)|(//.*)|(/\*([^*]|\*[^/])*\*/)">
+		<code><![CDATA[
+    RESULT = null;
+     ]]>
+     	</code>
+   	</term>
+
+
+	<term id="ws_no_line" regex="([ \t\n]+)|(/\*([^*]|\*[^/])*\*/)">
+		<code><![CDATA[
+    RESULT = null;
+     ]]>
+     	</code>
+   	</term>
+
+	<attribute id="nextProdPrecedence" type="Integer">
+		<code>
+			<![CDATA[ nextProdPrecedence = Integer.MAX_VALUE; ]]>
+		</code>
+	</attribute>
+
+	<attribute id="nextOpPrecedence" type="Integer">
+		<code>
+			<![CDATA[ nextOpPrecedence = 0; ]]>
+		</code>
+	</attribute>
+	
+	<attribute id="grammarLayout" type="LinkedList&lt;String&gt;">
+		<code>
+			<![CDATA[ grammarLayout = new LinkedList<String>(); ]]>
+		</code>
+	</attribute>
+
+	<attribute id="grammarNameGrabbed" type="String"/>
+	
+	<attribute id="prodNameCounter" type="Integer">
+		<code>
+			<![CDATA[ prodNameCounter = 0; ]]>
+		</code>
+	</attribute>
+	
+	<attribute id="dotCounter" type="Integer">
+		<code>
+			<![CDATA[ dotCounter = 0; ]]>
+		</code>
+	</attribute>
+
+	<disambig_func id="char1">
+		<term id="lparen"/>
+		<term id="character"/>
+		<code><![CDATA[ return lparen;   ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char2">
+		<term id="rparen"/>
+		<term id="character"/>
+		<code><![CDATA[ return rparen;   ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char3">
+		<term id="wildcard"/>
+		<term id="character"/>
+		<code><![CDATA[ return wildcard; ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char4">
+		<term id="lbrack"/>
+		<term id="character"/>
+		<code><![CDATA[ return lbrack;   ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char5">
+		<term id="rbrack"/>
+		<term id="character"/>
+		<code><![CDATA[ return rbrack;   ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char6">
+		<term id="bar"/>
+		<term id="character"/>
+		<code><![CDATA[ return bar;      ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char7">
+		<term id="question"/>
+		<term id="character"/>
+		<code><![CDATA[ return question; ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char8">
+		<term id="star"/>
+		<term id="character"/>
+		<code><![CDATA[ return star;     ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char9">
+		<term id="dash"/>
+		<term id="character"/>
+		<code><![CDATA[ return dash;     ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char10">
+		<term id="not"/>
+		<term id="character"/>
+		<code><![CDATA[ return not;      ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char11">
+		<term id="colon"/>
+		<term id="character"/>
+		<code><![CDATA[ return colon;    ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char12">
+		<term id="plus"/>
+		<term id="character"/>
+		<code><![CDATA[ return plus;     ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="char13">
+		<term id="slash_kwd"/>
+		<term id="character"/>
+		<code><![CDATA[ return slash_kwd; ]]></code>
+	</disambig_func>
+	
+	
+	<disambig_func id="name1">
+		<term id="non_kwd"/>
+		<term id="name_tok"/>
+		<code><![CDATA[ return non_kwd; ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="name2">
+		<term id="start_kwd"/>
+		<term id="name_tok"/>
+		<code><![CDATA[ return start_kwd; ]]></code>
+	</disambig_func>
+	
+	<disambig_func id="name3">
+		<term id="precedence_kwd"/>
+		<term id="name_tok"/>
+		<code><![CDATA[ return precedence_kwd; ]]></code>
+	</disambig_func>
+
+	<disambig_func id="ws1">
+		<term id="code_t"/>
+		<term id="ws"/>
+		<code><![CDATA[ return code_t; ]]></code>
+	</disambig_func>
+
+	<nonterm id="GrammarFile"/>
+	<nonterm id="ParserDecl"/>
+	<nonterm id="DeclBlocks"/>
+	<nonterm id="DeclBlock"/>
+	<nonterm id="LexDecls"/>
+	<nonterm id="CFDecls"/>
+	<nonterm id="LexDecl"/>
+	<nonterm id="CFDecl"/>
+	<nonterm id="IgnoreOpt"/>
+	<nonterm id="PrecListsOpt"/>
+	<nonterm id="PrecLists"/>
+	<nonterm id="PrecList"/>
+	<nonterm id="TerminalFlags"/>
+	<nonterm id="SuperRegexRoot"/>
+	<nonterm id="RegexRoot"/>
+	<nonterm id="CommaOrSymSeq"/>
+	<nonterm id="CommaSymSeq"/>
+	<nonterm id="CommaSymSeqOpt"/>
+	<nonterm id="TypeNameSeq"/>
+	<nonterm id="TypeName"/>
+	<nonterm id="QualifiedName"/>
+	<nonterm id="SymSeq"/>
+	<nonterm id="LabeledSymSeq"/>
+	<nonterm id="RHS"/>
+	<nonterm id="RHSSeq"/>
+	<nonterm id="RHSFlags"/>
+	<nonterm id="CodeBlockOpt"/>
+
+	<nonterm id="Regex_R"/>
+	<nonterm id="Regex_DR"/>
+	<nonterm id="Regex_UR"/>
+	<nonterm id="Regex_RR"/>
+	<nonterm id="Regex_G"/>
+	<nonterm id="Regex_RG"/>
+	<nonterm id="Regex_UG"/>
+	<nonterm id="Regex_CHAR"/>
+
+	<start>
+		<nonterm id="GrammarFile"/>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</start>
+	
+	<prod id="GrammarFileMain" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = IntermediateConsNode.cons(
+	              new IntermediateSymbolNode(
+	               IntermediateSymbolSort.GRAMMAR_NAME,
+	               Symbol.symbol((String) _children[2]),
+	               Pair.cons(
+	                "location",
+	                Pair.cons(_pos,null)),
+	               Pair.cons(
+	                "layout",
+	                Pair.cons(_pos,(Object) grammarLayout)),
+	               Pair.cons(
+	                "spectype",
+	                Pair.cons(_pos,(Object) "JavaCUP")),
+	               Pair.cons(
+	                "parserName",
+	                Pair.cons(_pos,_children[2]))),
+	              new IntermediateSymbolNode(
+	               IntermediateSymbolSort.DIRECTIVE,
+	               Symbol.symbol(" startCode "),
+	               Pair.cons(
+	                "location",
+	                Pair.cons(_pos,null)),
+	               Pair.cons(
+	                "code",
+	                (Pair<InputPosition,java.lang.Object>) _children[0])),
+	              _children[3]);
+	]]></code>
+		<lhs><nonterm id="GrammarFile"/></lhs>
+		<rhs>
+			<term id="code_t"/>
+			<term id="barrier_kwd"/>
+			<nonterm id="ParserDecl"/>
+			<nonterm id="DeclBlocks"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="ParserDeclMain" class="main" precedence="1">
+		<code><![CDATA[
+	    grammarNameGrabbed = (String) ((Pair<InputPosition,java.lang.Object>) _children[1]).second();
+	    RESULT = grammarNameGrabbed;
+	]]></code>
+		<lhs><nonterm id="ParserDecl"/></lhs>
+		<rhs>
+			<term id="parser_decl_kwd"/>
+			<term id="name_tok"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	
+	<prod id="DeclBlocksCons" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = IntermediateConsNode.cons(_children[0],_children[1]);
+	]]></code>
+		<lhs><nonterm id="DeclBlocks"/></lhs>
+		<rhs>
+			<nonterm id="DeclBlock"/>
+			<nonterm id="DeclBlocks"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="DeclBlocksOne" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="DeclBlocks"/></lhs>
+		<rhs>
+			<nonterm id="DeclBlock"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="AttrDeclBlock" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new IntermediateSymbolNode(
+	            IntermediateSymbolSort.PARSER_ATTRIBUTE,
+	            Symbol.symbol((String) ((Pair<InputPosition,java.lang.Object>) _children[2]).second()),
+	            Pair.cons(
+	             "location",
+	             Pair.cons(_pos,null)),
+	            Pair.cons(
+	             "type",
+	             Pair.cons(_pos,_children[1])),
+	            Pair.cons(
+	             "code",
+	             Pair.cons(_pos,(Object) "")));
+	]]></code>
+		<lhs><nonterm id="DeclBlock"/></lhs>
+		<rhs>
+			<term id="attribute_decl_kwd"/>
+			<nonterm id="TypeName"/>
+			<term id="name_tok"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="AuxDeclBlock" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new IntermediateSymbolNode(
+	              IntermediateSymbolSort.DIRECTIVE,
+	              Symbol.symbol(" auxCode "),
+	             Pair.cons(
+	              "location",
+	              Pair.cons(_pos,null)),
+	             Pair.cons(
+	              "code",
+	              (Pair<InputPosition,java.lang.Object>) _children[1]));
+	]]></code>
+		<lhs><nonterm id="DeclBlock"/></lhs>
+		<rhs>
+			<term id="aux_block_open_kwd"/>
+			<term id="code_t"/>
+			<term id="aux_block_close_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="InitDeclBlock" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new IntermediateSymbolNode(
+	              IntermediateSymbolSort.DIRECTIVE,
+	              Symbol.symbol(" initCode "),
+	             Pair.cons(
+	              "location",
+	              Pair.cons(_pos,null)),
+	             Pair.cons(
+	              "code",
+	              (Pair<InputPosition,java.lang.Object>) _children[1]));
+	]]></code>
+		<lhs><nonterm id="DeclBlock"/></lhs>
+		<rhs>
+			<term id="init_block_open_kwd"/>
+			<term id="code_t"/>
+			<term id="init_block_close_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="LexDeclBlock" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="DeclBlock"/></lhs>
+		<rhs>
+			<term id="lex_block_open_kwd"/>
+			<nonterm id="LexDecls"/>
+			<term id="lex_block_close_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CFDeclBlock" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="DeclBlock"/></lhs>
+		<rhs>
+			<term id="cf_block_open_kwd"/>
+			<nonterm id="CFDecls"/>
+			<term id="cf_block_close_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="LexDeclsCons" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = IntermediateConsNode.cons(_children[0],_children[1]);
+	]]></code>
+		<lhs><nonterm id="LexDecls"/></lhs>
+		<rhs>
+			<nonterm id="LexDecl"/>
+			<nonterm id="LexDecls"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="LexDeclsOne" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="LexDecls"/></lhs>
+		<rhs>
+			<nonterm id="LexDecl"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CFDeclsCons" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = IntermediateConsNode.cons(_children[0],_children[1]);
+	]]></code>
+		<lhs><nonterm id="CFDecls"/></lhs>
+		<rhs>
+			<nonterm id="CFDecl"/>
+			<nonterm id="CFDecls"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CFDeclsOne" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="CFDecls"/></lhs>
+		<rhs>
+			<nonterm id="CFDecl"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TermClassDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    IntermediateNode rv = null;
+	    LinkedList<String> classes = (LinkedList<String>) _children[1];
+	    for(String termClass : classes)
+	    {
+	        rv = IntermediateConsNode.cons(
+	                  new IntermediateSymbolNode(
+	                   IntermediateSymbolSort.TERMINAL_CLASS,
+	                   Symbol.symbol(termClass),
+	                   Pair.cons(
+	                    "location",
+	                    Pair.cons(_pos,null))),
+	                  rv);
+	    }
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="LexDecl"/></lhs>
+		<rhs>
+			<term id="class_kwd"/>
+			<nonterm id="CommaSymSeq"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TermDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    boolean isIgnore;
+	    isIgnore = (Boolean) ((Pair<InputPosition,java.lang.Object>) _children[0]).second();
+	    if(isIgnore) grammarLayout.add((String) ((Pair<InputPosition,java.lang.Object>) _children[2]).second());
+	    boolean noPrefix = true;
+	    if(((Pair<InputPosition,java.lang.Object>) _children[6]).second() != null) noPrefix = false;
+	    String type = "Object";
+	    java.util.ArrayList< LinkedList<String> > precLists = (java.util.ArrayList< LinkedList<String> >) _children[4];
+	    IntermediateNode node = null;
+	    RESULT = IntermediateConsNode.cons(
+	           node,
+	           new IntermediateSymbolNode(
+	            IntermediateSymbolSort.TERMINAL,
+	            Symbol.symbol((String) ((Pair<InputPosition,java.lang.Object>) _children[2]).second()),
+	            Pair.cons(
+	             "location",
+	             Pair.cons(_pos,null)),
+	            Pair.cons(
+	             "type",
+	             Pair.cons(_pos,(Object) type)),
+	            Pair.cons(
+	             "regex",
+	             Pair.cons(_pos,_children[3])),
+	            Pair.cons(
+	             "classes",
+	             Pair.cons(_pos,(Object) precLists.get(0))),
+	            Pair.cons(
+	             "submits",
+	             Pair.cons(_pos,(Object) precLists.get(1))),
+	            Pair.cons(
+	             "dominates",
+	             Pair.cons(_pos,(Object) precLists.get(2))),
+	            noPrefix ? null : Pair.cons(
+	             "prefix",
+	             (Pair<InputPosition,java.lang.Object>) _children[6]),
+	            Pair.cons(
+	             "code",
+	             Pair.cons(_pos,_children[5]))));
+	]]></code>
+		<lhs><nonterm id="LexDecl"/></lhs>
+		<rhs>
+			<nonterm id="IgnoreOpt"/>
+			<term id="terminal_kwd"/>
+			<term id="name_tok"/>
+			<nonterm id="SuperRegexRoot"/>
+			<nonterm id="PrecListsOpt"/>
+			<nonterm id="CodeBlockOpt"/>
+			<nonterm id="TerminalFlags"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="SuperRRoot" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="SuperRegexRoot"/></lhs>
+		<rhs>
+			<term id="goesto_kwd"/>
+			<nonterm id="RegexRoot"/>
+		</rhs>
+		<layout>
+			<term id="ws_no_line"/>
+		</layout>
+	</prod>
+	
+	<prod id="TypedTermDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    boolean isIgnore;
+	    isIgnore = (Boolean) ((Pair<InputPosition,java.lang.Object>) _children[0]).second();
+	    if(isIgnore) grammarLayout.add((String) ((Pair<InputPosition,java.lang.Object>) _children[3]).second());
+	    boolean noPrefix = true;
+	    if(((Pair<InputPosition,java.lang.Object>) _children[8]).second() != null) noPrefix = false;
+	    String type = (String) _children[2];
+	    java.util.ArrayList< LinkedList<String> > precLists = (java.util.ArrayList< LinkedList<String> >) _children[6];
+	    IntermediateNode node = null;
+	    RESULT = IntermediateConsNode.cons(
+	           node,
+	           new IntermediateSymbolNode(
+	            IntermediateSymbolSort.TERMINAL,
+	            Symbol.symbol((String) ((Pair<InputPosition,java.lang.Object>) _children[3]).second()),
+	            Pair.cons(
+	             "location",
+	             Pair.cons(_pos,null)),
+	            Pair.cons(
+	             "type",
+	             Pair.cons(_pos,(Object) type)),
+	            Pair.cons(
+	             "regex",
+	             Pair.cons(_pos,_children[5])),
+	            Pair.cons(
+	             "classes",
+	             Pair.cons(_pos,(Object) precLists.get(0))),
+	            Pair.cons(
+	             "submits",
+	             Pair.cons(_pos,(Object) precLists.get(1))),
+	            Pair.cons(
+	             "dominates",
+	             Pair.cons(_pos,(Object) precLists.get(2))),
+	            noPrefix ? null : Pair.cons(
+	             "prefix",
+	             (Pair<InputPosition,java.lang.Object>) _children[8]),
+	            Pair.cons(
+	             "code",
+	             Pair.cons(_pos,_children[7]))));
+	]]></code>
+		<lhs><nonterm id="LexDecl"/></lhs>
+		<rhs>
+			<nonterm id="IgnoreOpt"/>
+			<term id="terminal_kwd"/>
+			<nonterm id="TypeName"/>
+			<term id="name_tok"/>
+			<term id="goesto_kwd"/>
+			<nonterm id="RegexRoot"/>
+			<nonterm id="PrecListsOpt"/>
+			<nonterm id="CodeBlockOpt"/>
+			<nonterm id="TerminalFlags"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="PrecDeclsCons" class="main" precedence="1">
+		<code><![CDATA[
+	    java.util.ArrayList< LinkedList<String> > rv = (java.util.ArrayList< LinkedList<String> >) _children[2];
+	    java.util.ArrayList< LinkedList<String> > additions = (java.util.ArrayList< LinkedList<String> >) _children[0]; 
+	    rv.get(0).addAll(additions.get(0));
+	    rv.get(1).addAll(additions.get(1));
+	    rv.get(2).addAll(additions.get(2));
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="PrecLists"/></lhs>
+		<rhs>
+			<nonterm id="PrecList"/>
+			<term id="comma_kwd"/>
+			<nonterm id="PrecLists"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="PrecDeclsOne" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="PrecLists"/></lhs>
+		<rhs>
+			<nonterm id="PrecList"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="PrecDeclInList" class="main" precedence="1">
+		<code><![CDATA[
+	    java.util.ArrayList< LinkedList<String> > rv = new java.util.ArrayList< LinkedList<String> >();
+	    rv.add((LinkedList<String>) _children[2]);
+	    rv.add(new LinkedList<String>());
+	    rv.add(new LinkedList<String>());
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="PrecList"/></lhs>
+		<rhs>
+			<term id="in_kwd"/>
+			<term id="lparen"/>
+			<nonterm id="CommaSymSeqOpt"/>
+			<term id="rparen"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="PrecDeclSubmitList" class="main" precedence="1">
+		<code><![CDATA[
+	    java.util.ArrayList< LinkedList<String> > rv = new java.util.ArrayList< LinkedList<String> >();
+	    rv.add(new LinkedList<String>());
+	    rv.add((LinkedList<String>) _children[2]);
+	    rv.add(new LinkedList<String>());
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="PrecList"/></lhs>
+		<rhs>
+			<term id="lt_kwd"/>
+			<term id="lparen"/>
+			<nonterm id="CommaSymSeqOpt"/>
+			<term id="rparen"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="PrecDeclDominateList" class="main" precedence="1">
+		<code><![CDATA[
+	    java.util.ArrayList< LinkedList<String> > rv = new java.util.ArrayList< LinkedList<String> >();
+	    rv.add(new LinkedList<String>());
+	    rv.add(new LinkedList<String>());
+	    rv.add((LinkedList<String>) _children[2]);
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="PrecList"/></lhs>
+		<rhs>
+			<term id="gt_kwd"/>
+			<term id="lparen"/>
+			<nonterm id="CommaSymSeqOpt"/>
+			<term id="rparen"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="PrecDeclsMain" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="PrecListsOpt"/></lhs>
+		<rhs>
+			<nonterm id="PrecLists"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id= "PrecDeclsEps" class="main" precedence="1">
+		<code><![CDATA[
+	    java.util.ArrayList< LinkedList<String> > rv = new java.util.ArrayList< LinkedList<String> >();
+	    rv.add(new LinkedList<String>());
+	    rv.add(new LinkedList<String>());
+	    rv.add(new LinkedList<String>());
+	    RESULT = rv;
+	]]>
+		</code>
+		<lhs><nonterm id="PrecListsOpt"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TerminalFlagsCons" class="main" precedence="1">
+		<code><![CDATA[
+	    // FIXME Put in a check if the same flag is used twice.
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="TerminalFlags"/></lhs>
+		<rhs>
+			<term id="prefix_decl_kwd"/>
+			<term id="name_tok"/>
+			<nonterm id="TerminalFlags"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TerminalFlagsEps" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = Pair.cons(_pos,null);
+	]]></code>
+		<lhs><nonterm id="TerminalFlags"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="GroupDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new IntermediateSymbolNode(
+	            IntermediateSymbolSort.DISAMBIGUATION_GROUP,
+	            Symbol.symbol((String) ((Pair<InputPosition,java.lang.Object>) _children[1]).second()),
+	            Pair.cons(
+	             "location",
+	             Pair.cons(_pos,null)),
+	            Pair.cons(
+	             "code",
+	             (Pair<InputPosition,java.lang.Object>) _children[7]),
+	            Pair.cons(
+	             "members",
+	             Pair.cons(_pos,_children[4])));
+	]]></code>
+		<lhs><nonterm id="LexDecl"/></lhs>
+		<rhs>
+			<term id="disambiguate_kwd"/>
+			<term id="name_tok"/>
+			<term id="colon_kwd"/>
+			<term id="lparen"/>
+			<nonterm id="CommaSymSeq"/>
+			<term id="rparen"/>
+			<term id="code_block_open_kwd"/>
+			<term id="code_t"/>
+			<term id="code_block_close_kwd"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="GroupDeclSimple" class="main" precedence="1">
+		<code><![CDATA[
+	    // FIXME Put in a check if the regex disambiguated to is outside the group.
+	    Pair<InputPosition,java.lang.Object> code = (Pair<InputPosition,java.lang.Object>) _children[7];
+	    code = Pair.cons(code.first(),(Object) ("return " + ((String) code.second()) + ";\n"));
+	    RESULT = new IntermediateSymbolNode(
+	            IntermediateSymbolSort.DISAMBIGUATION_GROUP,
+	            Symbol.symbol((String) ((Pair<InputPosition,java.lang.Object>) _children[1]).second()),
+	            Pair.cons(
+	             "location",
+	             Pair.cons(_pos,null)),
+	            Pair.cons(
+	             "code",
+	             code),
+	            Pair.cons(
+	             "members",
+	             Pair.cons(_pos,_children[4])));
+	]]></code>
+		<lhs><nonterm id="LexDecl"/></lhs>
+		<rhs>
+			<term id="disambiguate_kwd"/>
+			<term id="name_tok"/>
+			<term id="colon_kwd"/>
+			<term id="lparen"/>
+			<nonterm id="CommaSymSeq"/>
+			<term id="rparen"/>
+			<term id="goesto_kwd"/>
+			<term id="name_tok"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CodeBlockOptMain" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = ((Pair) _children[1]).second();
+	]]></code>
+		<lhs><nonterm id="CodeBlockOpt"/></lhs>
+		<rhs>
+			<term id="code_block_open_kwd"/>
+			<term id="code_t"/>
+			<term id="code_block_close_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CodeBlockOptEps" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = "";
+	]]></code>
+		<lhs><nonterm id="CodeBlockOpt"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="IgnoreTerm" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = Pair.cons(_pos,true);
+	]]></code>
+		<lhs><nonterm id="IgnoreOpt"/></lhs>
+		<rhs>
+			<term id="ignore_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="LanguageTerm" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = Pair.cons(_pos,false);
+	]]></code>
+		<lhs><nonterm id="IgnoreOpt"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="PrecedenceDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    InputPosition pos = (InputPosition) ((Pair<InputPosition,java.lang.Object>) _children[0]).first();
+	    IntermediateNode rv = null;
+	    LinkedList<String> terminals = (LinkedList<String>) _children[2];
+	    String opClassName = " OpMain ";
+	    for(String terminal : terminals)
+	    {
+	        rv = IntermediateConsNode.cons(
+	              new IntermediateSymbolNode(
+	               IntermediateSymbolSort.TERMINAL_CLASS,
+	               Symbol.symbol(opClassName),
+	               Pair.cons(
+	                "location",
+	                Pair.cons(pos,null))),
+	              new IntermediateSymbolNode(
+	               IntermediateSymbolSort.TERMINAL,
+	               Symbol.symbol(terminal),
+	               Pair.cons(
+	                "location",
+	                Pair.cons(pos,null)),
+	               Pair.cons(
+	                "operatorClass",
+	                Pair.cons(_pos,(Object) opClassName)),
+	               Pair.cons(
+	                "operatorPrecedence",
+	                Pair.cons(_pos,(Object) nextOpPrecedence)),
+	               Pair.cons(
+	                "operatorAssociativity",
+	                Pair.cons(_pos,_children[1]))),
+	              rv);
+	    }
+	    nextOpPrecedence++;
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="CFDecl"/></lhs>
+		<rhs>
+			<term id="precedence_kwd"/>
+			<term id="assoctypes_kwd"/>
+			<nonterm id="CommaOrSymSeq"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CommaOrSymSeqNoComma" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair sym = (Pair) _children[0];
+	    ((LinkedList<String>) _children[1]).addFirst((String) sym.second());
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="CommaOrSymSeq"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<nonterm id="SymSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CommaOrSymSeqWithComma" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair sym = (Pair) _children[0];
+	    ((LinkedList<String>) _children[2]).addFirst((String) sym.second());
+	    RESULT = _children[2];
+	]]></code>
+		<lhs><nonterm id="CommaOrSymSeq"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<term id="comma_kwd"/>
+			<nonterm id="CommaSymSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TypedNonTermDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    InputPosition pos = ((Pair<InputPosition,String>) _children[0]).first();
+	    LinkedList<String> nonTerms = (LinkedList<String>) _children[3];
+	    String nontermType = (String) _children[2];//((Pair<InputPosition,java.lang.Object>) _children[2]).second();
+	    IntermediateNode rv = null;
+	    for(String nonTerm : nonTerms)
+	    {
+	         rv = IntermediateConsNode.cons(
+	               new IntermediateSymbolNode(
+	                IntermediateSymbolSort.NON_TERMINAL,
+	                Symbol.symbol(nonTerm),
+	                /*Symbol.symbol(((Pair<InputPosition,String>) _children[0]).second()),*/
+	                Pair.cons(
+	                 "location",
+	                 Pair.cons(pos,null)),
+	                Pair.cons(
+	                 "type",
+	                 Pair.cons(pos,(Object) nontermType))),
+	               rv);        
+	    }
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="CFDecl"/></lhs>
+		<rhs>
+			<term id="non_kwd"/>
+			<term id="terminal_kwd"/>
+			<nonterm id="TypeName"/>
+			<nonterm id="CommaSymSeq"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="UntypedNonTermDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    InputPosition pos = ((Pair<InputPosition,String>) _children[0]).first();
+	    LinkedList<String> nonTerms = (LinkedList<String>) _children[2];
+	    String nontermType = "Object";
+	    IntermediateNode rv = null;
+	    for(String nonTerm : nonTerms)
+	    {
+	         rv = IntermediateConsNode.cons(
+	               new IntermediateSymbolNode(
+	                IntermediateSymbolSort.NON_TERMINAL,
+	                Symbol.symbol(nonTerm),
+	                /*Symbol.symbol(((Pair<InputPosition,String>) _children[0]).second()),*/
+	                Pair.cons(
+	                 "location",
+	                 Pair.cons(pos,null)),
+	                Pair.cons(
+	                 "type",
+	                 Pair.cons(pos,(Object) nontermType))),
+	               rv);        
+	    }
+	    RESULT = rv;
+	]]></code>
+		<lhs><nonterm id="CFDecl"/></lhs>
+		<rhs>
+			<term id="non_kwd"/>
+			<term id="terminal_kwd"/>
+			<nonterm id="CommaSymSeq"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+		
+	<prod id="TypeNameBase" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="TypeName"/></lhs>
+		<rhs>
+			<nonterm id="QualifiedName"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TypeNameGeneric" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0] + "<" + _children[2] + ">";
+	]]></code>
+		<lhs><nonterm id="TypeName"/></lhs>
+		<rhs>
+			<nonterm id="QualifiedName"/>
+			<term id="lt_kwd"/>
+			<nonterm id="TypeNameSeq"/>
+			<term id="gt_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="QualifiedNameOne" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = ((Pair) _children[0]).second();
+	]]></code>
+		<lhs><nonterm id="QualifiedName"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="QualifiedNameCons" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = ((Pair) _children[0]).second() + "." + _children[2];
+	]]></code>
+		<lhs><nonterm id="QualifiedName"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<term id="wildcard"/>
+			<nonterm id="QualifiedName"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TypeNameSeqCons" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0] + "," + _children[2];
+	]]></code>
+		<lhs><nonterm id="TypeNameSeq"/></lhs>
+		<rhs>
+			<nonterm id="TypeName"/>
+			<term id="comma_kwd"/>
+			<nonterm id="TypeNameSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="TypeNameSeqOne" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="TypeNameSeq"/></lhs>
+		<rhs>
+			<nonterm id="TypeName"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="StartDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    InputPosition pos = (InputPosition) ((Pair<InputPosition,java.lang.Object>) _children[0]).first();
+	    RESULT = new IntermediateSymbolNode(
+	            IntermediateSymbolSort.NON_TERMINAL,
+	            Symbol.symbol(((Pair<InputPosition,String>) _children[2]).second()),
+	            Pair.cons(
+	             "isStart",
+	             Pair.cons(pos,(Object) new Boolean(true))));
+	]]></code>
+		<lhs><nonterm id="CFDecl"/></lhs>
+		<rhs>
+			<term id="start_kwd"/>
+			<term id="with_kwd"/>
+			<term id="name_tok"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="ProdDecl" class="main" precedence="1">
+		<code><![CDATA[
+	    IntermediateNode rhss = (IntermediateNode) _children[2];
+	    rhss.acceptVisitor(new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.syntaxtranslator.LHSAssigner(),(Pair<InputPosition,Object>) _children[0]);
+	    RESULT = rhss;
+	]]></code>
+		<lhs><nonterm id="CFDecl"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<term id="goesto_kwd"/>
+			<nonterm id="RHSSeq"/>
+			<term id="semi_kwd"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="RHSMain" class="main" precedence="1">
+		<code><![CDATA[
+	    boolean noOperator = false;
+	    Pair< LinkedList<String>,String > flags = (Pair< LinkedList<String>,String >) _children[2];
+	    Pair< LinkedList<String>,LinkedList<String> > fullRHS = (Pair< LinkedList<String>,LinkedList<String> >) _children[0];
+	    //if(((LinkedList<String>) _children[8]).size() > 1) error(_pos,"Productions cannot have more than one custom operator");
+	    /*else*/ if(flags.second() == null) noOperator = true;
+	    String prodClassName = " ProdMain ";
+	    RESULT = IntermediateConsNode.cons(
+	           new IntermediateSymbolNode(
+	            IntermediateSymbolSort.TERMINAL_CLASS,
+	            Symbol.symbol(prodClassName),
+	            Pair.cons(
+	             "location",
+	             Pair.cons(_pos,null))),
+	           new IntermediateSymbolNode(
+	            IntermediateSymbolSort.PRODUCTION,
+	            Symbol.symbol("p_" + grammarNameGrabbed + "_" + (prodNameCounter++)),
+	            /* Symbol.symbol((String) ((Pair<InputPosition,java.lang.Object>) _children[1]).second()), */
+	            Pair.cons(
+	             "location",
+	             Pair.cons(_pos,null)),
+	            Pair.cons(
+	             "class",
+	             Pair.cons(_pos,(Object) prodClassName)),
+	            Pair.cons(
+	             "precedence",
+	             Pair.cons(_pos,(Object) nextProdPrecedence--)),
+	            noOperator ? null : Pair.cons(
+	             "operator",
+	             Pair.cons(_pos,(Object) flags.second())),
+	            (flags.first() == null ? null :
+	             Pair.cons(
+	              "layout",
+	              Pair.cons(_pos,(Object) flags.first()))),
+	            Pair.cons(
+	             "code",
+	             Pair.cons(_pos,_children[1])),
+	            /*Pair.cons(
+	             "LHS",
+	             Pair.cons(_pos,(Object) ((Pair<InputPosition,String>) _children[17]).second())),*/
+	            Pair.cons(
+	             "RHSVars",
+	             Pair.cons(_pos,(Object) fullRHS.first())),
+	            Pair.cons(
+	             "RHS",
+	             Pair.cons(_pos,(Object) fullRHS.second()))));
+	]]></code>
+		<lhs><nonterm id="RHS"/></lhs>
+		<rhs>
+			<nonterm id="LabeledSymSeq"/>
+			<nonterm id="CodeBlockOpt"/>
+			<nonterm id="RHSFlags"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="RHSSeqCons" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = IntermediateConsNode.cons(_children[0],_children[2]);
+	]]></code>
+		<lhs><nonterm id="RHSSeq"/></lhs>
+		<rhs>
+			<nonterm id="RHS"/>
+			<term id="bar"/>
+			<nonterm id="RHSSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="RHSSeqOne" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="RHSSeq"/></lhs>
+		<rhs>
+			<nonterm id="RHS"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="RHSFlagsConsOperator" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair< LinkedList<String>,String > flags = (Pair< LinkedList<String>,String >) _children[2];
+	    // FIXME Put in a check if the same flag is used twice.
+	    RESULT = Pair.cons(flags.first(),((Pair<InputPosition,Object>) _children[1]).second());
+	]]></code>
+		<lhs><nonterm id="RHSFlags"/></lhs>
+		<rhs>
+			<term id="prec_decl_kwd"/>
+			<term id="name_tok"/>
+			<nonterm id="RHSFlags"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="RHSFlagsConsLayout" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair< LinkedList<String>,String > flags = (Pair< LinkedList<String>,String >) _children[4];
+	    // FIXME Put in a check if the same flag is used twice.
+	    RESULT = Pair.cons((LinkedList<String>) _children[2],flags.second());
+	]]></code>
+		<lhs><nonterm id="RHSFlags"/></lhs>
+		<rhs>
+			<term id="layout_decl_kwd"/>
+			<term id="lparen"/>
+			<nonterm id="CommaSymSeqOpt"/>
+			<term id="rparen"/>
+			<nonterm id="RHSFlags"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="RHSFlagsEps" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = Pair.cons((LinkedList<String>) null,(String) null);
+	]]></code>
+		<lhs><nonterm id="RHSFlags"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CommaSymSeqOptMain" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="CommaSymSeqOpt"/></lhs>
+		<rhs>
+			<nonterm id="CommaSymSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CommaSymSeqOptEps" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new LinkedList<String>();
+	]]></code>
+		<lhs><nonterm id="CommaSymSeqOpt"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CommaSymSeqMain" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair sym = (Pair) _children[0];
+	    ((LinkedList<String>) _children[2]).addFirst((String) sym.second());
+	    RESULT = _children[2];
+	]]></code>
+		<lhs><nonterm id="CommaSymSeq"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<term id="comma_kwd"/>
+			<nonterm id="CommaSymSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="CommaSymSeqOne" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair sym = (Pair) _children[0];
+	    LinkedList<String> seq = new LinkedList<String>();
+	    seq.addFirst((String) sym.second()); 
+	    RESULT = seq;
+	]]></code>
+		<lhs><nonterm id="CommaSymSeq"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	
+	<prod id="LabeledSymSeqLabel" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair sym = (Pair) _children[0];
+	    Pair name = (Pair) _children[2];
+	    Pair< LinkedList<String>,LinkedList<String> > lists = (Pair< LinkedList<String>,LinkedList<String> >) _children[3];
+	    lists.first().addFirst((String) name.second());
+	    lists.second().addFirst((String) sym.second());
+	    RESULT = _children[3];
+	]]></code>
+		<lhs><nonterm id="LabeledSymSeq"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<term id="colon"/>
+			<term id="name_tok"/>
+			<nonterm id="LabeledSymSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="LabeledSymSeqNoLabel" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair sym = (Pair) _children[0];
+	    Pair< LinkedList<String>,LinkedList<String> > lists = (Pair< LinkedList<String>,LinkedList<String> >) _children[1];
+	    lists.first().addFirst(null);
+	    lists.second().addFirst((String) sym.second());
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="LabeledSymSeq"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<nonterm id="LabeledSymSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="LabeledSymSeqEps" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new Pair< LinkedList<String>,LinkedList<String> >(new LinkedList<String>(),new LinkedList<String>());
+	]]></code>
+		<lhs><nonterm id="LabeledSymSeq"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="SymSeqMain" class="main" precedence="1">
+		<code><![CDATA[
+	    Pair sym = (Pair) _children[0];
+	    ((LinkedList<String>) _children[1]).addFirst((String) sym.second());
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="SymSeq"/></lhs>
+		<rhs>
+			<term id="name_tok"/>
+			<nonterm id="SymSeq"/>
+		</rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="SymSeqEps" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new LinkedList<String>();
+	]]></code>
+		<lhs><nonterm id="SymSeq"/></lhs>
+		<rhs></rhs>
+		<layout>
+			<term id="ws"/>
+		</layout>
+	</prod>
+	
+	<prod id="RoottoR" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="RegexRoot"/></lhs>
+		<rhs>
+			<term id="slash_kwd"/>
+			<nonterm id="Regex_R"/>
+			<term id="slash_kwd"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="Roottoeps" class="main" precedence="1">
+		<code><![CDATA[
+	    RESULT = new EmptyString();
+	]]></code>
+		<lhs><nonterm id="RegexRoot"/></lhs>
+		<rhs>
+			<term id="slash_kwd"/>
+			<term id="slash_kwd"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	
+	<prod id="RtoDR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="Regex_R"/></lhs>
+		<rhs>
+			<nonterm id="Regex_DR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="RtoDR_bar_R" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new Choice(
+	            (ParsedRegex) _children[0],
+	            (ParsedRegex) _children[2]);
+	]]></code>
+		<lhs><nonterm id="Regex_R"/></lhs>
+		<rhs>
+			<nonterm id="Regex_DR"/>
+			<term id="bar"/>
+			<nonterm id="Regex_R"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="DRtoUR_RR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new Concatenation(
+	            (ParsedRegex) _children[0],
+	            (ParsedRegex) _children[1]);
+	]]></code>
+		<lhs><nonterm id="Regex_DR"/></lhs>
+		<rhs>
+			<nonterm id="Regex_UR"/>
+			<nonterm id="Regex_RR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="DRtoUR_star_RR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new Concatenation(
+	            new KleeneStar(
+	             (ParsedRegex) _children[0]),
+	            (ParsedRegex) _children[2]);
+	]]></code>
+		<lhs><nonterm id="Regex_DR"/></lhs>
+		<rhs>
+			<nonterm id="Regex_UR"/>
+			<term id="star"/>
+			<nonterm id="Regex_RR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="DRtoUR_plus_RR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new Concatenation(
+	            new Concatenation(
+	             (ParsedRegex) _children[0]),
+	            new KleeneStar(
+	             ((ParsedRegex) _children[0]).clone()),
+	            (ParsedRegex) _children[2]);
+	]]></code>
+		<lhs><nonterm id="Regex_DR"/></lhs>
+		<rhs>
+			<nonterm id="Regex_UR"/>
+			<term id="plus"/>
+			<nonterm id="Regex_RR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="DRtoUR_question_RR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new Concatenation(
+	            new Choice(
+	             new EmptyString(),
+	             (ParsedRegex) _children[0]),
+	            (ParsedRegex) _children[2]);
+	]]></code>
+		<lhs><nonterm id="Regex_DR"/></lhs>
+		<rhs>
+			<nonterm id="Regex_UR"/>
+			<term id="question"/>
+			<nonterm id="Regex_RR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="RRtoDR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="Regex_RR"/></lhs>
+		<rhs>
+			<nonterm id="Regex_DR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="RRtoeps" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new EmptyString();
+	]]></code>
+		<lhs><nonterm id="Regex_RR"/></lhs>
+		<rhs></rhs>
+		<layout></layout>
+	</prod>
+	
+	
+	<prod id="URtoCHAR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="Regex_UR"/></lhs>
+		<rhs>
+			<nonterm id="Regex_CHAR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="URtowildcard" class="regex" precedence="1">
+		<code><![CDATA[
+		CharacterSet Newline =
+		       CharacterSet.instantiate(
+		        CharacterSet.LOOSE_CHARACTERS,'\n');
+	    RESULT = Newline.invertSet();
+	]]></code>
+		<lhs><nonterm id="Regex_UR"/></lhs>
+		<rhs>
+			<term id="wildcard"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="URtolb_G_rb" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="Regex_UR"/></lhs>
+		<rhs>
+			<term id="lbrack"/>
+			<nonterm id="Regex_G"/>
+			<term id="rbrack"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="URtolb_not_G_rb" class="regex" precedence="1">
+		<code><![CDATA[
+	    if(_children[2] instanceof CharacterSet)
+		{
+			CharacterSet CGNode =
+			   (CharacterSet) _children[2];
+			RESULT = CGNode.invertSet();
+		}
+		else
+		{
+			error(_pos,"Type error in regex");
+			RESULT = null;
+		}
+	]]></code>
+		<lhs><nonterm id="Regex_UR"/></lhs>
+		<rhs>
+			<term id="lbrack"/>
+			<term id="not"/>
+			<nonterm id="Regex_G"/>
+			<term id="rbrack"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="URtomacro" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new MacroHole(
+	            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal((String) _children[2]));
+	]]></code>
+		<lhs><nonterm id="Regex_UR"/></lhs>
+		<rhs>
+			<term id="lbrack"/>
+			<term id="colon"/>
+			<term id="termname"/>
+			<term id="colon"/>
+			<term id="rbrack"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="URtolp_R_rp" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[1];
+	]]></code>
+		<lhs><nonterm id="Regex_UR"/></lhs>
+		<rhs>
+			<term id="lparen"/>
+			<nonterm id="Regex_R"/>
+			<term id="rparen"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="GtoUG_RG" class="regex" precedence="1">
+		<code><![CDATA[
+		ParsedRegex UGNode =
+			(ParsedRegex) _children[0];
+		ParsedRegex RGNode =
+			(ParsedRegex) _children[1];
+		
+		if(UGNode instanceof CharacterSet &&
+		   (RGNode == null || RGNode instanceof EmptyString))
+		{
+			RESULT = UGNode;
+		}
+		else if(UGNode instanceof CharacterSet &&
+		        RGNode instanceof CharacterSet)
+		{
+			RESULT = CharacterSet.union(
+					 (CharacterSet) UGNode,
+					 (CharacterSet) RGNode);
+		}
+		else
+		{
+			error(_pos,"Type error in regex");
+			RESULT = new EmptyString();
+		}
+	]]></code>
+		<lhs><nonterm id="Regex_G"/></lhs>
+		<rhs>
+			<nonterm id="Regex_UG"/>
+			<nonterm id="Regex_RG"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="UGtoCHAR" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="Regex_UG"/></lhs>
+		<rhs>
+			<nonterm id="Regex_CHAR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="UGtoCHAR_dash_CHAR" class="regex" precedence="1">
+		<code><![CDATA[
+		ParsedRegex characterNode1 =
+			(ParsedRegex) _children[0];
+		ParsedRegex characterNode2 =
+			(ParsedRegex) _children[2];
+		
+		if(characterNode1 instanceof CharacterSet &&
+		   characterNode2 instanceof CharacterSet)
+		{
+			char lowerLimit = ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) characterNode1).getFirstChar();
+			char upperLimit = ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) characterNode2).getFirstChar();
+			RESULT = CharacterSet.instantiate(
+			        CharacterSet.RANGES,
+			        '+',lowerLimit,upperLimit);
+		}
+		else
+		{
+			error(_pos,"Type error in regex");
+			RESULT = CharacterSet.instantiate(
+			        CharacterSet.LOOSE_CHARACTERS);
+		}
+	]]></code>
+		<lhs><nonterm id="Regex_UG"/></lhs>
+		<rhs>
+			<nonterm id="Regex_CHAR"/>
+			<term id="dash"/>
+			<nonterm id="Regex_CHAR"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="RGtoG" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = _children[0];
+	]]></code>
+		<lhs><nonterm id="Regex_RG"/></lhs>
+		<rhs>
+			<nonterm id="Regex_G"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="RGtoeps" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = new EmptyString();
+	]]></code>
+		<lhs><nonterm id="Regex_RG"/></lhs>
+		<rhs></rhs>
+		<layout></layout>
+	</prod>
+	<prod id="CHARtochar" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = CharacterSet.instantiate(
+	            CharacterSet.LOOSE_CHARACTERS,
+			     (((String) _children[0]).toCharArray()));
+	]]></code>
+		<lhs><nonterm id="Regex_CHAR"/></lhs>
+		<rhs>
+			<term id="character"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+	<prod id="CHARtoescaped" class="regex" precedence="1">
+		<code><![CDATA[
+	    RESULT = CharacterSet.instantiate(
+	            CharacterSet.LOOSE_CHARACTERS,
+			     (((String) _children[0]).toCharArray()));
+	]]></code>
+		<lhs><nonterm id="Regex_CHAR"/></lhs>
+		<rhs>
+			<term id="escaped"/>
+		</rhs>
+		<layout></layout>
+	</prod>
+</copperspec>

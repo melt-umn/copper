@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name='copper' basedir='.'>
+	<property environment='env'/>
+	<property name='src' location='src'/>
+	<property name='build' location='bin'/>
+	<property name='dist' location='jar'/>
+	<property name='javadoc' location='doc/javadoc'/>
+	<property name='etcbase' location='.'/>
+	<property name='doc' location='doc'/>
+	<property name='version' value='0.9.0'/>
+	<property name='debug' value='false'/>
+	
+	<target name='init'>
+		<tstamp>
+			<format property='TIMESTAMP' pattern='yyyyMMdd-kkmm'/>
+		</tstamp>
+		<mkdir dir='${build}'/>
+		<mkdir dir='${dist}'/>
+	</target>
+	
+	<target name='build' depends='init'>
+		<javac source='1.5' target='1.5' debug='true' srcdir='${src}' destdir='${build}' includes='edu/umn/cs/melt/copper/**/*.java' excludes='edu/umn/cs/melt/copper/compiletime/concretesyntax/skins/**/*.java'>
+			<!--<compilerarg value='-Xlint:unchecked'/>-->
+		</javac>
+	</target>
+	
+    <target name='javadoc'>
+        <javadoc access='protected'
+        	     author='true'
+        		 classpath='tests:/usr/share/ant/lib/ant.jar'
+        		 destdir='${javadoc}'
+        		 doctitle='Copper Javadoc'
+        	     nodeprecated='false'
+        	     nodeprecatedlist='false'
+        		 noindex='false'
+        		 nonavbar='false'
+        	     notree='false'
+        		 packagenames='edu.umn.cs.melt.copper.ant,edu.umn.cs.melt.copper.main,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans,edu.umn.cs.melt.copper.runtime.io,edu.umn.cs.melt.copper.runtime.auxiliary,edu.umn.cs.melt.copper.runtime.engines,edu.umn.cs.melt.copper.runtime.engines.semantics,edu.umn.cs.melt.copper.compiletime.logging,edu.umn.cs.melt.copper.runtime.logging'
+        	     source='1.5'
+        	     sourcepath='tests:src'
+        	     splitindex='true'
+        	     use='true'
+        	     version='true'>
+	    	<group title='Copper ANT task'>
+	    		<package name='edu.umn.cs.melt.copper.ant'/>
+	    	</group>
+	    	<group title='Copper compiler API'>
+	    		<package name='edu.umn.cs.melt.copper.main'/>
+	    		<package name='edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans'/>
+	    	</group>
+	    	<group title='Copper parser API'>
+	    		<package name='edu.umn.cs.melt.copper.runtime.engines'/>
+	    	</group>
+	    	<group title='Other packages'>
+	    		<package name='edu.umn.cs.melt.copper.runtime.io'/>
+	    		<package name='edu.umn.cs.melt.copper.runtime.auxiliary'/>
+	    		<package name='edu.umn.cs.melt.copper.runtime.engines.semantics'/>
+	    		<package name='edu.umn.cs.melt.copper.compiletime.logging'/>
+	    		<package name='edu.umn.cs.melt.copper.runtime.logging'/>
+	    	</group>
+    	</javadoc>
+    </target>
+	
+	<!--<target name='GrammarGrammar' depends='build'>
+		<java fork='true' logError='true' failonerror='true' classpath='copper_src.classpath' classname='edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParserCompiler' output='${src}/edu/umn/cs/melt/copper/compiletime/concretesyntax/GrammarParser.java'/>
+		<javac source='1.5' target='1.5' debug='${debug}' srcdir='${src}' destdir='${src}' includes='edu/umn/cs/melt/copper/compiletime/concretesyntax/GrammarParser.java'/>
+	</target>
+	
+	<target name='CupSkinGrammar' depends='build'>
+		<java fork='true' logError='true' failonerror='true' classpath='copper_src.classpath' classname='edu.umn.cs.melt.copper.compiletime.concretesyntax.SkinParserCompiler' output='${src}/edu/umn/cs/melt/copper/compiletime/concretesyntax/skins/cup/CupSkinParser.java'>
+			<arg value='cup'/>
+		</java>
+		<javac source='1.5' target='1.5' debug='${debug}' srcdir='${src}' destdir='${src}' includes='edu/umn/cs/melt/copper/compiletime/concretesyntax/skins/cup/CupSkinParser.java'/>
+	</target>
+
+	<target name='buildGenerated' depends='build,GrammarGrammar,CupSkinGrammar'>
+		<ant target='build'/>
+	</target>-->
+	
+	<target name='CopperCompilerJar' depends='build'>
+		<jar destfile='${dist}/CopperCompiler.jar'>
+			<fileset dir='${build}' includes='**/*.class'/>
+			<fileset dir='${etcbase}' includes='etc/*'/>
+			<fileset dir='${doc}' includes='CREDITS.txt'/>
+			<fileset dir='${doc}' includes='LICENSE.txt'/>
+			<manifest>
+				<attribute name='Main-Class' value='edu.umn.cs.melt.copper.main.ParserCompiler'/>
+				<attribute name='Built-By' value='${user.name}'/>
+				<attribute name='Bundle-Name' value='Copper Compile and Runtime'/>
+				<attribute name='Bundle-Version' value='${version}'/>
+				<attribute name='Bundle-SymbolicName' value='edu.umn.cs.melt.copper'/>
+				<attribute name='Export-Package' value='edu.umn.cs.melt.copper;version="${version}", edu.umn.cs.melt.copper.runtime;version="${version}", edu.umn.cs.melt.copper.runtime.auxiliary;version="${version}", edu.umn.cs.melt.copper.runtime.engines;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.split;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.logging;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree.stripped;version="${version}"'/>
+				<section name='version'>
+					<!--<attribute name='Version' value=''/>-->
+					<attribute name='Build' value='${TIMESTAMP}'/>
+				</section>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name='CopperRuntimeJar' depends='build'>
+		<jar destfile='${dist}/CopperRuntime.jar'>
+			<fileset dir='${build}' includes='edu/umn/cs/melt/copper/runtime/**/*.class'/>
+			<fileset dir='${doc}' includes='CREDITS.txt'/>
+			<fileset dir='${doc}' includes='LICENSE.txt'/>
+			<manifest>
+				<attribute name='Main-Class' value='edu.umn.cs.melt.copper.main.ParserCompiler'/>
+				<attribute name='Built-By' value='${user.name}'/>
+				<attribute name='Bundle-Name' value='Copper Runtime'/>
+				<attribute name='Bundle-Version' value='${version}'/>
+				<attribute name='Bundle-SymbolicName' value='edu.umn.cs.melt.copper.runtime'/>
+				<attribute name='Export-Package' value='edu.umn.cs.melt.copper;version="${version}", edu.umn.cs.melt.copper.runtime;version="${version}", edu.umn.cs.melt.copper.runtime.auxiliary;version="${version}", edu.umn.cs.melt.copper.runtime.engines;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.split;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.logging;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree.stripped;version="${version}"'/>
+				<section name='version'>
+					<!--<attribute name='Version' value=''/>-->
+					<attribute name='Build' value='${TIMESTAMP}'/>
+				</section>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name='dist' depends='CopperCompilerJar,CopperRuntimeJar'/>
+
+	<target name='build_clean' depends=''>
+		<delete includeemptydirs='true' verbose='false'>
+			<fileset dir='${build}' includes='*,**'/>
+		</delete>
+	</target>
+
+	<target name='dist_clean' depends=''>
+		<delete verbose='true'>
+			<fileset dir='${dist}' includes='CopperCompiler.jar,CopperRuntime.jar'/>
+		</delete>
+	</target>
+	
+	<target name='javadoc_clean' depends=''>
+		<delete includeemptydirs='true' verbose='false'>
+			<fileset dir='${javadoc}' includes='*,**'/>
+		</delete>
+	</target>
+	
+	<target name='clean' depends='build_clean,dist_clean,javadoc_clean'/>
+</project>

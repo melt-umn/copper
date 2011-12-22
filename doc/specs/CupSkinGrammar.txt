@@ -1,0 +1,1033 @@
+grammar name CupSkinGrammar spectype LALR1 1.0
+# This skin imitates JLex and JavaCUP, as closely as is possible in Copper's parsing paradigm.
+
+term barrier_kwd :%%
+token barrier_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term goesto_kwd :::=
+token goesto_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term comma_kwd :,
+token comma_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term semi_kwd :;
+token semi_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term slash_kwd :/
+token slash_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term lt_kwd :<
+token lt_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term gt_kwd :>
+token gt_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term colon_kwd ::
+token colon_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term attribute_decl_kwd :%attr
+token attribute_decl_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term layout_decl_kwd :%layout
+token layout_decl_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term parser_decl_kwd :%parser
+token parser_decl_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term prec_decl_kwd :%prec
+token prec_decl_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term prefix_decl_kwd :%prefix
+token prefix_decl_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term aux_block_open_kwd :%aux{
+token aux_block_open_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term aux_block_close_kwd :%aux}
+token aux_block_close_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term init_block_open_kwd :%init{
+token init_block_open_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term init_block_close_kwd :%init}
+token init_block_close_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term lex_block_open_kwd :%lex{
+token lex_block_open_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term lex_block_close_kwd :%lex}
+token lex_block_close_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term cf_block_open_kwd :%cf{
+token cf_block_open_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term cf_block_close_kwd :%cf}
+token cf_block_close_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term code_block_open_kwd :{:
+token code_block_open_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term code_block_close_kwd ::}
+token code_block_close_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term non_kwd :non
+token non_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term ignore_kwd :ignore
+token ignore_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term terminal_kwd :terminal
+token terminal_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term class_kwd :class
+token class_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+term precedence_kwd :precedence
+token precedence_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term disambiguate_kwd :disambiguate
+token disambiguate_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term start_kwd :start
+token start_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term with_kwd :with
+token with_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term in_kwd :in
+token in_kwd class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+
+term assoctypes_kwd :(left)|(right)|(nonassoc)
+token assoctypes_kwd class {} precedence submits to {} dominates {} prefix {} code @
+   if(lexeme.equals("nonassoc")) RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.OperatorAttributes.ASSOC_NONASSOC);
+   else if(lexeme.equals("left")) RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.OperatorAttributes.ASSOC_LEFT);
+   else /* if(lexeme.equals("right")) */ RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.OperatorAttributes.ASSOC_RIGHT);
+@
+
+term name_tok :[A-Za-z_][A-Za-z0-9_]*
+token name_tok class {} precedence submits to {} dominates {} prefix {} code @
+     if(logger.isLoggable(edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort.TICK)) logger.logTick(edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.syntaxtranslator.MasterController.AST_DOT_WINDOW,".");
+     /*if(reporter.willHaveEffect(edu.umn.cs.melt.copper.runtime.auxiliary.ErrorDegree.DEGREE_NOTA_BENE) &&
+      (dotCounter = (dotCounter + 1) % edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.syntaxtranslator.MasterController.AST_DOT_WINDOW) == 0) reporter.reportRaw(edu.umn.cs.melt.copper.runtime.auxiliary.ErrorDegree.DEGREE_NOTA_BENE,"",".");*/
+     RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term prec_number :0|([1-9][0-9]*)
+token prec_number class {} precedence submits to {} dominates {} prefix {} code @ RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,Integer.parseInt(lexeme)); @
+
+term plus :\+
+token plus class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term star :\*
+token star class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term question :\?
+token question class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term bar :\|
+token bar class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term dash :\-
+token dash class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term colon :\:
+token colon class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term not :\^
+token not class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term lbrack :\[
+token lbrack class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term rbrack :\]
+token rbrack class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term lparen :\(
+token lparen class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term rparen :\)
+token rparen class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term lbrace :\{
+token lbrace class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term rbrace :\}
+token rbrace class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term wildcard :\.
+token wildcard class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term character :.
+token character class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term termname :[^\:]+
+token termname class {} precedence submits to {} dominates {} prefix {} code @ RESULT = lexeme; @
+
+term escaped :\\.
+token escaped class {} precedence submits to {} dominates {} prefix {} code @
+    char escapedChar = edu.umn.cs.melt.copper.runtime.auxiliary.QuotedStringFormatter.getRepresentedCharacter(lexeme);
+    if(escapedChar == edu.umn.cs.melt.copper.runtime.io.ScannerBuffer.EOFIndicator) error(_pos,"Illegal escaped character");
+    RESULT = String.valueOf(escapedChar);
+@
+
+
+term code_t :([^%:]*|[^%\n]%|:[^}])*
+token code_t class {} precedence submits to {} dominates {} prefix {} code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,lexeme);
+@
+
+term ws :([ \t\n]*)|(//.*)|(/\*([^*]|\*[^/])*\*/)
+token ws class {} precedence submits to {} dominates {} prefix {} code @ RESULT = null; @
+
+term ws_no_line :([ \t\n]*)|(/\*([^*]|\*[^/])*\*/)
+
+attribute nextProdPrecedence type Integer code @ nextProdPrecedence = Integer.MAX_VALUE; @
+attribute nextOpPrecedence type Integer code @ nextOpPrecedence = 0; @
+attribute grammarLayout type [String] code @@
+attribute grammarNameGrabbed type String code @@
+attribute prodNameCounter type Integer code @ prodNameCounter = 0; @
+
+ambiguous term group char1  code @ return lparen;   @ members lparen character
+ambiguous term group char2  code @ return rparen;   @ members rparen character
+ambiguous term group char3  code @ return wildcard; @ members wildcard character
+ambiguous term group char4  code @ return lbrack;   @ members lbrack character
+ambiguous term group char5  code @ return rbrack;   @ members rbrack character
+ambiguous term group char6  code @ return bar;      @ members bar character
+ambiguous term group char7  code @ return question; @ members question character
+ambiguous term group char8  code @ return star;     @ members star character
+ambiguous term group char9  code @ return dash;     @ members dash character
+ambiguous term group char10 code @ return not;      @ members not character
+ambiguous term group char11 code @ return colon;    @ members colon character
+ambiguous term group char12 code @ return plus;     @ members plus character
+ambiguous term group char13 code @ return slash_kwd; @ members slash_kwd character
+
+ambiguous term group name1 code @ return non_kwd; @ members non_kwd name_tok
+ambiguous term group name2 code @ return start_kwd; @ members start_kwd name_tok
+ambiguous term group name3 code @ return precedence_kwd; @ members precedence_kwd name_tok
+
+attribute dotCounter type Integer code @ dotCounter = 0; @
+
+nonterm GrammarFile
+nonterm ParserDecl
+nonterm DeclBlocks
+nonterm DeclBlock
+nonterm LexDecls
+nonterm CFDecls
+nonterm LexDecl
+nonterm CFDecl
+nonterm IgnoreOpt
+nonterm PrecListsOpt
+nonterm PrecLists
+nonterm PrecList
+nonterm TerminalFlags
+nonterm SuperRegexRoot
+nonterm RegexRoot
+nonterm CommaOrSymSeq
+nonterm CommaSymSeq
+nonterm CommaSymSeqOpt
+nonterm TypeNameOpt
+nonterm TypeNameSeq
+nonterm TypeName
+nonterm QualifiedName
+nonterm SymSeq
+nonterm LabeledSymSeq
+nonterm RHS
+nonterm RHSSeq
+nonterm RHSFlags
+nonterm CodeBlockOpt
+
+nonterm Regex_R Regex_DR Regex_UR Regex_RR Regex_G Regex_RG Regex_UG Regex_CHAR
+
+start GrammarFile layout { ws }
+
+prod GrammarFileMain class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+              new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.GRAMMAR_NAME,
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol((String) _children[2]),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "location",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "layout",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) grammarLayout)),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "spectype",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) "JavaCUP")),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "parserName",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[2]))),
+              new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.DIRECTIVE,
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(" startCode "),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "location",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "code",
+                (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[0])),
+              _children[3]);
+@ bnf GrammarFile -> code_t barrier_kwd ParserDecl DeclBlocks
+
+prod ParserDeclMain class main precedence 1 operator {} layout { ws } code @
+    grammarNameGrabbed = (String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[1]).second();
+    RESULT = grammarNameGrabbed;
+@ bnf ParserDecl -> parser_decl_kwd name_tok
+
+
+prod DeclBlocksCons class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(_children[0],_children[1]);
+@ bnf DeclBlocks -> DeclBlock DeclBlocks
+
+prod DeclBlocksOne class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf DeclBlocks -> DeclBlock
+
+prod AttrDeclBlock class main precedence 1 operator {} layout { ws } code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.PARSER_ATTRIBUTE,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[2]).second()),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "location",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "type",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[1])),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "code",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) "")));
+@ bnf DeclBlock -> attribute_decl_kwd TypeName name_tok semi_kwd
+
+prod AuxDeclBlock class main precedence 1 operator {} layout { ws } code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+              edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.DIRECTIVE,
+              edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(" auxCode "),
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+              "location",
+              edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+              "code",
+              (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[1]));
+@ bnf DeclBlock -> aux_block_open_kwd code_t aux_block_close_kwd
+
+prod InitDeclBlock class main precedence 1 operator {} layout { ws } code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+              edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.DIRECTIVE,
+              edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(" initCode "),
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+              "location",
+              edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+              "code",
+              (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[1]));
+@ bnf DeclBlock -> init_block_open_kwd code_t init_block_close_kwd
+
+prod LexDeclBlock class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[1];
+@ bnf DeclBlock -> lex_block_open_kwd LexDecls lex_block_close_kwd
+
+prod CFDeclBlock class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[1];
+@ bnf DeclBlock -> cf_block_open_kwd CFDecls cf_block_close_kwd
+
+prod LexDeclsCons class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(_children[0],_children[1]);
+@ bnf LexDecls -> LexDecl LexDecls
+
+prod LexDeclsOne class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf LexDecls -> LexDecl
+
+prod CFDeclsCons class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(_children[0],_children[1]);
+@ bnf CFDecls -> CFDecl CFDecls
+
+prod CFDeclsOne class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf CFDecls -> CFDecl
+
+prod TermClassDecl class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode rv = null;
+    java.util.LinkedList<String> classes = (java.util.LinkedList<String>) _children[1];
+    for(String termClass : classes)
+    {
+        rv = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+                  new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+                   edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.TERMINAL_CLASS,
+                   edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(termClass),
+                   edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                    "location",
+                    edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null))),
+                  rv);
+    }
+    RESULT = rv;
+@ bnf LexDecl -> class_kwd CommaSymSeq semi_kwd
+
+prod TermDecl class main precedence 1 operator {} layout { ws } code @
+    boolean isIgnore;
+    isIgnore = (Boolean) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[0]).second();
+    if(isIgnore) grammarLayout.add((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[2]).second());
+    boolean noPrefix = true;
+    if(((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[6]).second() != null) noPrefix = false;
+    String type = "Object";
+    java.util.ArrayList< java.util.LinkedList<String> > precLists = (java.util.ArrayList< java.util.LinkedList<String> >) _children[4];
+    edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode node = null;
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+           node,
+           new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.TERMINAL,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[2]).second()),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "location",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "type",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) type)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "regex",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[3])),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "classes",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) precLists.get(0))),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "submits",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) precLists.get(1))),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "dominates",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) precLists.get(2))),
+            noPrefix ? null : edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "prefix",
+             (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[6]),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "code",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[5]))));
+@ bnf LexDecl -> IgnoreOpt terminal_kwd name_tok SuperRegexRoot PrecListsOpt CodeBlockOpt TerminalFlags semi_kwd
+
+prod SuperRRoot class main precedence 1 operator {} layout { ws_no_line } code @
+    RESULT = _children[1];
+@ bnf SuperRegexRoot -> goesto_kwd RegexRoot
+
+prod TypedTermDecl class main precedence 1 operator {} layout { ws } code @
+    boolean isIgnore;
+    isIgnore = (Boolean) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[0]).second();
+    if(isIgnore) grammarLayout.add((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[3]).second());
+    boolean noPrefix = true;
+    if(((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[8]).second() != null) noPrefix = false;
+    String type = (String) _children[2];
+    java.util.ArrayList< java.util.LinkedList<String> > precLists = (java.util.ArrayList< java.util.LinkedList<String> >) _children[6];
+    edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode node = null;
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+           node,
+           new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.TERMINAL,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[3]).second()),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "location",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "type",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) type)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "regex",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[5])),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "classes",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) precLists.get(0))),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "submits",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) precLists.get(1))),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "dominates",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) precLists.get(2))),
+            noPrefix ? null : edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "prefix",
+             (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[8]),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "code",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[7]))));
+@ bnf LexDecl -> IgnoreOpt terminal_kwd TypeName name_tok goesto_kwd RegexRoot PrecListsOpt CodeBlockOpt TerminalFlags semi_kwd
+
+prod PrecDeclsCons class main precedence 1 operator {} layout { ws } code @
+    java.util.ArrayList< java.util.LinkedList<String> > rv = (java.util.ArrayList< java.util.LinkedList<String> >) _children[2];
+    java.util.ArrayList< java.util.LinkedList<String> > additions = (java.util.ArrayList< java.util.LinkedList<String> >) _children[0]; 
+    rv.get(0).addAll(additions.get(0));
+    rv.get(1).addAll(additions.get(1));
+    rv.get(2).addAll(additions.get(2));
+    RESULT = rv;
+@ bnf PrecLists -> PrecList comma_kwd PrecLists
+
+prod PrecDeclsOne class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf PrecLists -> PrecList
+
+prod PrecDeclInList class main precedence 1 operator {} layout { ws } code @
+    java.util.ArrayList< java.util.LinkedList<String> > rv = new java.util.ArrayList< java.util.LinkedList<String> >();
+    rv.add((java.util.LinkedList<String>) _children[2]);
+    rv.add(new java.util.LinkedList<String>());
+    rv.add(new java.util.LinkedList<String>());
+    RESULT = rv;
+@ bnf PrecList -> in_kwd lparen CommaSymSeqOpt rparen
+
+prod PrecDeclSubmitList class main precedence 1 operator {} layout { ws } code @
+    java.util.ArrayList< java.util.LinkedList<String> > rv = new java.util.ArrayList< java.util.LinkedList<String> >();
+    rv.add(new java.util.LinkedList<String>());
+    rv.add((java.util.LinkedList<String>) _children[2]);
+    rv.add(new java.util.LinkedList<String>());
+    RESULT = rv;
+@ bnf PrecList -> lt_kwd lparen CommaSymSeqOpt rparen
+
+prod PrecDeclDominateList class main precedence 1 operator {} layout { ws } code @
+    java.util.ArrayList< java.util.LinkedList<String> > rv = new java.util.ArrayList< java.util.LinkedList<String> >();
+    rv.add(new java.util.LinkedList<String>());
+    rv.add(new java.util.LinkedList<String>());
+    rv.add((java.util.LinkedList<String>) _children[2]);
+    RESULT = rv;
+@ bnf PrecList -> gt_kwd lparen CommaSymSeqOpt rparen
+
+prod PrecDeclsMain class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf PrecListsOpt -> PrecLists
+
+prod PrecDeclsEps class main precedence 1 operator {} layout { ws } code @
+    java.util.ArrayList< java.util.LinkedList<String> > rv = new java.util.ArrayList< java.util.LinkedList<String> >();
+    rv.add(new java.util.LinkedList<String>());
+    rv.add(new java.util.LinkedList<String>());
+    rv.add(new java.util.LinkedList<String>());
+    RESULT = rv;
+@ bnf PrecListsOpt ->
+
+prod TerminalFlagsCons class main precedence 1 operator {} layout { ws } code @
+    // FIXME Put in a check if the same flag is used twice.
+    RESULT = _children[1];
+@ bnf TerminalFlags -> prefix_decl_kwd name_tok TerminalFlags
+
+prod TerminalFlagsEps class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null);
+@ bnf TerminalFlags -> eps
+
+prod GroupDecl class main precedence 1 operator {} layout { ws } code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.DISAMBIGUATION_GROUP,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[1]).second()),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "location",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "code",
+             (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[7]),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "members",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[4])));
+@ bnf LexDecl -> disambiguate_kwd name_tok colon_kwd lparen CommaSymSeq rparen code_block_open_kwd code_t code_block_close_kwd semi_kwd
+
+prod GroupDeclSimple class main precedence 1 operator {} layout { ws } code @
+    // FIXME Put in a check if the regex disambiguated to is outside the group.
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object> code = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[7];
+    code = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(code.first(),(Object) ("return " + ((String) code.second()) + ";\n"));
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.DISAMBIGUATION_GROUP,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[1]).second()),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "location",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "code",
+             code),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "members",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[4])));
+@ bnf LexDecl -> disambiguate_kwd name_tok colon_kwd lparen CommaSymSeq rparen goesto_kwd name_tok semi_kwd
+
+prod CodeBlockOptMain class main precedence 1 operator {} layout { ws } code @
+    RESULT = ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[1]).second();
+@ bnf CodeBlockOpt -> code_block_open_kwd code_t code_block_close_kwd
+
+prod CodeBlockOptEps class main precedence 1 operator {} layout { ws } code @
+    RESULT = "";
+@ bnf CodeBlockOpt -> eps
+
+prod IgnoreTerm class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,true);
+@ bnf IgnoreOpt -> ignore_kwd
+
+prod LanguageTerm class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,false);
+@ bnf IgnoreOpt -> eps
+
+prod PrecedenceDecl class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.io.InputPosition pos = (edu.umn.cs.melt.copper.runtime.io.InputPosition) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[0]).first();
+    edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode rv = null;
+    java.util.LinkedList<String> terminals = (java.util.LinkedList<String>) _children[2];
+    String opClassName = " OpMain ";
+    for(String terminal : terminals)
+    {
+        rv = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+              new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.TERMINAL_CLASS,
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(opClassName),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "location",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(pos,null))),
+              new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.TERMINAL,
+               edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(terminal),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "location",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(pos,null)),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "operatorClass",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) opClassName)),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "operatorPrecedence",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) nextOpPrecedence)),
+               edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                "operatorAssociativity",
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[1]))),
+              rv);
+    }
+    nextOpPrecedence++;
+    RESULT = rv;
+@ bnf CFDecl -> precedence_kwd assoctypes_kwd CommaOrSymSeq semi_kwd
+
+prod CommaOrSymSeqNoComma class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair sym = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0];
+    ((java.util.LinkedList<String>) _children[1]).addFirst((String) sym.second());
+    RESULT = _children[1];
+@ bnf CommaOrSymSeq -> name_tok SymSeq
+
+prod CommaOrSymSeqWithComma class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair sym = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0];
+    ((java.util.LinkedList<String>) _children[2]).addFirst((String) sym.second());
+    RESULT = _children[2];
+@ bnf CommaOrSymSeq -> name_tok comma_kwd CommaSymSeq
+
+prod TypedNonTermDecl class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.io.InputPosition pos = ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,String>) _children[0]).first();
+    java.util.LinkedList<String> nonTerms = (java.util.LinkedList<String>) _children[3];
+    String nontermType = (String) _children[2];//((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[2]).second();
+    edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode rv = null;
+    for(String nonTerm : nonTerms)
+    {
+         rv = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+               new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+                edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.NON_TERMINAL,
+                edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(nonTerm),
+                /*edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,String>) _children[0]).second()),*/
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                 "location",
+                 edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(pos,null)),
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                 "type",
+                 edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(pos,(Object) nontermType))),
+               rv);        
+    }
+    RESULT = rv;
+@ bnf CFDecl -> non_kwd terminal_kwd TypeName CommaSymSeq semi_kwd
+
+prod UntypedNonTermDecl class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.io.InputPosition pos = ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,String>) _children[0]).first();
+    java.util.LinkedList<String> nonTerms = (java.util.LinkedList<String>) _children[2];
+    String nontermType = "Object";
+    edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode rv = null;
+    for(String nonTerm : nonTerms)
+    {
+         rv = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+               new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+                edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.NON_TERMINAL,
+                edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(nonTerm),
+                /*edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,String>) _children[0]).second()),*/
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                 "location",
+                 edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(pos,null)),
+                edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+                 "type",
+                 edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(pos,(Object) nontermType))),
+               rv);        
+    }
+    RESULT = rv;
+@ bnf CFDecl -> non_kwd terminal_kwd CommaSymSeq semi_kwd
+
+prod TypeNameOptMain class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf TypeNameOpt -> TypeName
+
+prod TypeNameOptEps class main precedence 1 operator {} layout { ws } code @
+    RESULT = "";
+@ bnf TypeNameOpt -> eps
+
+prod TypeNameBase class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf TypeName -> QualifiedName
+
+prod TypeNameGeneric class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0] + "<" + _children[2] + ">";
+@ bnf TypeName -> QualifiedName lt_kwd TypeNameSeq gt_kwd
+
+prod QualifiedNameOne class main precedence 1 operator {} layout { ws } code @
+    RESULT = ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0]).second();
+@ bnf QualifiedName -> name_tok
+
+prod QualifiedNameCons class main precedence 1 operator {} layout { ws } code @
+    RESULT = ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0]).second() + "." + _children[2];
+@ bnf QualifiedName -> name_tok wildcard QualifiedName
+
+prod TypeNameSeqCons class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0] + "," + _children[2];
+@ bnf TypeNameSeq -> TypeName comma_kwd TypeNameSeq
+
+prod TypeNameSeqOne class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf TypeNameSeq -> TypeName
+
+prod StartDecl class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.io.InputPosition pos = (edu.umn.cs.melt.copper.runtime.io.InputPosition) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[0]).first();
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.NON_TERMINAL,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,String>) _children[2]).second()),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "isStart",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(pos,(Object) new Boolean(true))));
+@ bnf CFDecl -> start_kwd with_kwd name_tok semi_kwd
+
+prod ProdDecl class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode rhss = (edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateNode) _children[2];
+    rhss.acceptVisitor(new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.syntaxtranslator.LHSAssigner(),(edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,Object>) _children[0]);
+    RESULT = rhss;
+@ bnf CFDecl -> name_tok goesto_kwd RHSSeq semi_kwd
+
+prod RHSMain class main precedence 1 operator {} layout { ws } code @
+    boolean noOperator = false;
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String > flags = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String >) _children[2];
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,java.util.LinkedList<String> > fullRHS = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,java.util.LinkedList<String> >) _children[0];
+    //if(((java.util.LinkedList<String>) _children[8]).size() > 1) error(_pos,"Productions cannot have more than one custom operator");
+    /*else*/ if(flags.second() == null) noOperator = true;
+    String prodClassName = " ProdMain ";
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(
+           new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.TERMINAL_CLASS,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(prodClassName),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "location",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null))),
+           new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolSort.PRODUCTION,
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol("p_" + grammarNameGrabbed + "_" + (prodNameCounter++)),
+            /* edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol((String) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[1]).second()), */
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "location",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,null)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "class",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) prodClassName)),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "precedence",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) nextProdPrecedence--)),
+            noOperator ? null : edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "operator",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) flags.second())),
+            (flags.first() == null ? null :
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+              "layout",
+              edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) flags.first()))),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "code",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,_children[1])),
+            /*edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "LHS",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) ((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,String>) _children[17]).second())),*/
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "RHSVars",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) fullRHS.first())),
+            edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(
+             "RHS",
+             edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(_pos,(Object) fullRHS.second()))));
+@ bnf RHS -> LabeledSymSeq CodeBlockOpt RHSFlags
+
+prod RHSSeqCons class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateConsNode.cons(_children[0],_children[2]);
+@ bnf RHSSeq -> RHS bar RHSSeq
+
+prod RHSSeqOne class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf RHSSeq -> RHS
+
+prod RHSFlagsConsOperator class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String > flags = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String >) _children[2];
+    // FIXME Put in a check if the same flag is used twice.
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(flags.first(),((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,Object>) _children[1]).second());
+@ bnf RHSFlags -> prec_decl_kwd name_tok RHSFlags
+
+prod RHSFlagsConsLayout class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String > flags = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String >) _children[4];
+    // FIXME Put in a check if the same flag is used twice.
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons((java.util.LinkedList<String>) _children[2],flags.second());
+@ bnf RHSFlags -> layout_decl_kwd lparen CommaSymSeqOpt rparen RHSFlags
+
+prod RHSFlagsEps class main precedence 1 operator {} layout { ws } code @
+    RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons((java.util.LinkedList<String>) null,(String) null);
+@ bnf RHSFlags -> eps
+
+prod CommaSymSeqOptMain class main precedence 1 operator {} layout { ws } code @
+    RESULT = _children[0];
+@ bnf CommaSymSeqOpt -> CommaSymSeq
+
+prod CommaSymSeqOptEps class main precedence 1 operator {} layout { ws } code @
+    RESULT = new java.util.LinkedList<String>();
+@ bnf CommaSymSeqOpt -> eps
+
+prod CommaSymSeqMain class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair sym = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0];
+    ((java.util.LinkedList<String>) _children[2]).addFirst((String) sym.second());
+    RESULT = _children[2];
+@ bnf CommaSymSeq -> name_tok comma_kwd CommaSymSeq
+
+prod CommaSymSeqOne class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair sym = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0];
+    java.util.LinkedList<String> seq = new java.util.LinkedList<String>();
+    seq.addFirst((String) sym.second()); 
+    RESULT = seq;
+@ bnf CommaSymSeq -> name_tok
+
+
+prod LabeledSymSeqLabel class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair sym = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0];
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair name = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[2];
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,java.util.LinkedList<String> > lists = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,java.util.LinkedList<String> >) _children[3];
+    lists.first().addFirst((String) name.second());
+    lists.second().addFirst((String) sym.second());
+    RESULT = _children[3];
+@ bnf LabeledSymSeq -> name_tok colon name_tok LabeledSymSeq
+
+prod LabeledSymSeqNoLabel class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair sym = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0];
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,java.util.LinkedList<String> > lists = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,java.util.LinkedList<String> >) _children[1];
+    lists.first().addFirst(null);
+    lists.second().addFirst((String) sym.second());
+    RESULT = _children[1];
+@ bnf LabeledSymSeq -> name_tok LabeledSymSeq
+
+prod LabeledSymSeqEps class main precedence 1 operator {} layout { ws } code @
+    RESULT = new edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,java.util.LinkedList<String> >(new java.util.LinkedList<String>(),new java.util.LinkedList<String>());
+@ bnf LabeledSymSeq -> eps
+
+prod SymSeqMain class main precedence 1 operator {} layout { ws } code @
+    edu.umn.cs.melt.copper.runtime.auxiliary.Pair sym = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair) _children[0];
+    ((java.util.LinkedList<String>) _children[1]).addFirst((String) sym.second());
+    RESULT = _children[1];
+@ bnf SymSeq -> name_tok SymSeq
+
+prod SymSeqEps class main precedence 1 operator {} layout { ws } code @
+    RESULT = new java.util.LinkedList<String>();
+@ bnf SymSeq -> eps
+
+prod RoottoR class main precedence 1 operator {} layout {} code @
+    RESULT = _children[1];
+@ bnf RegexRoot -> slash_kwd Regex_R slash_kwd
+prod Roottoeps class main precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString();
+@ bnf RegexRoot -> slash_kwd slash_kwd
+
+prod RtoDR              class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf Regex_R -> Regex_DR
+prod RtoDR_bar_R        class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Choice(
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0],
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_R -> Regex_DR bar Regex_R
+prod DRtoUR_RR           class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0],
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[1]);
+@ bnf  Regex_DR -> Regex_UR Regex_RR
+prod DRtoUR_star_RR      class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.KleeneStar(
+             (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]),
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_DR -> Regex_UR star Regex_RR
+prod DRtoUR_plus_RR      class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+             (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]),
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.KleeneStar(
+             ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]).clone()),
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_DR -> Regex_UR plus Regex_RR
+prod DRtoUR_question_RR  class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Concatenation(
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.Choice(
+             new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString(),
+             (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0]),
+            (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2]);
+@ bnf  Regex_DR -> Regex_UR question Regex_RR
+prod RRtoDR              class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_RR -> Regex_DR
+prod RRtoeps            class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString();
+@ bnf  Regex_RR -> eps
+
+
+prod URtoCHAR           class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_UR -> Regex_CHAR
+prod URtowildcard       class regex precedence 1 operator {} layout {} code @
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet Newline =
+	       edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.instantiate(
+	        edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS,'\n');
+    RESULT = Newline.invertSet();
+@ bnf  Regex_UR -> wildcard
+prod URtolb_G_rb        class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[1];
+@ bnf  Regex_UR -> lbrack Regex_G rbrack
+prod URtolb_not_G_rb    class regex precedence 1 operator {} layout {} code @
+    if(_children[2] instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet)
+	{
+		edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet CGNode =
+		   (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) _children[2];
+		RESULT = CGNode.invertSet();
+	}
+	else
+	{
+		error(_pos,"Type error in regex");
+		RESULT = null;
+	}
+@ bnf  Regex_UR -> lbrack not Regex_G rbrack
+prod URtomacro          class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.MacroHole(
+            new edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal((String) _children[2]));
+@ bnf  Regex_UR -> lbrack colon termname colon rbrack
+prod URtolp_R_rp        class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[1];
+@ bnf  Regex_UR -> lparen Regex_R rparen
+prod GtoUG_RG           class regex precedence 1 operator {} layout {} code @
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex UGNode =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0];
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex RGNode =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[1];
+	
+	if(UGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet &&
+	   (RGNode == null || RGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString))
+	{
+		RESULT = UGNode;
+	}
+	else if(UGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet &&
+	        RGNode instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet)
+	{
+		RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.union(
+				 (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) UGNode,
+				 (edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) RGNode);
+	}
+	else
+	{
+		error(_pos,"Type error in regex");
+		RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString();
+	}
+@ bnf  Regex_G -> Regex_UG Regex_RG
+prod UGtoCHAR           class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_UG -> Regex_CHAR
+prod UGtoCHAR_dash_CHAR class regex precedence 1 operator {} layout {} code @
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex characterNode1 =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[0];
+	edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex characterNode2 =
+		(edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.ParsedRegex) _children[2];
+	
+	if(characterNode1 instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet &&
+	   characterNode2 instanceof edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet)
+	{
+		char lowerLimit = ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) characterNode1).getFirstChar();
+		char upperLimit = ((edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet) characterNode2).getFirstChar();
+		RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.instantiate(
+		        edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.RANGES,
+		        '+',lowerLimit,upperLimit);
+	}
+	else
+	{
+		error(_pos,"Type error in regex");
+		RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.instantiate(
+		        edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS);
+	}
+@ bnf  Regex_UG -> Regex_CHAR dash Regex_CHAR
+prod RGtoG              class regex precedence 1 operator {} layout {} code @
+    RESULT = _children[0];
+@ bnf  Regex_RG -> Regex_G
+prod RGtoeps            class regex precedence 1 operator {} layout {} code @
+    RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.EmptyString();
+@ bnf  Regex_RG -> eps
+prod CHARtochar         class regex precedence 1 operator {} layout {} code @
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.instantiate(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS,
+		     (((String) _children[0]).toCharArray()));
+@ bnf  Regex_CHAR -> character
+prod CHARtoescaped      class regex precedence 1 operator {} layout {} code @
+    RESULT = edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.instantiate(
+            edu.umn.cs.melt.copper.compiletime.abstractsyntax.regex.CharacterSet.LOOSE_CHARACTERS,
+		     (((String) _children[0]).toCharArray()));
+@ bnf  Regex_CHAR -> escaped
+
