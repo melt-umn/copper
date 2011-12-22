@@ -7,7 +7,7 @@
 	<property name='javadoc' location='doc/javadoc'/>
 	<property name='etcbase' location='.'/>
 	<property name='doc' location='doc'/>
-	<property name='version' value='0.6'/>
+	<property name='version' value='0.6.0'/>
 	<property name='debug' value='false'/>
 	
 	<target name='init'>
@@ -29,7 +29,7 @@
         	     author='true'
         		 classpath='tests:/usr/share/ant/lib/ant.jar'
         		 destdir='${javadoc}'
-        		 doctitle='Copper Javadoc'
+        		 doctitle='Copper ${version} Javadoc'
         	     nodeprecated='false'
         	     nodeprecatedlist='false'
         		 noindex='false'
