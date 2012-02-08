@@ -169,7 +169,7 @@ public class ParserCompilerParameters
 	public void setComposition(boolean isComposition)
 	{
 		this.isComposition = isComposition;
-		if(isComposition()) setQuietLevel(CompilerLogMessageSort.ERROR);
+		if(isComposition() && quietLevel == CompilerLogMessageSort.getDefaultSort()) setQuietLevel(CompilerLogMessageSort.ERROR);
 	}
 
 	public void setPretty(boolean isPretty)
