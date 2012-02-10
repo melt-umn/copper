@@ -444,6 +444,7 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 			{
 				// This should not happen.
 				System.err.println("Ambiguous match");
+				// TODO: Should probably throw an exception instead of printing...
 			}
 			// DEBUG-X-BEGIN
 			//System.err.println(bitVecToString(scanResult.terms));
@@ -484,7 +485,9 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 				parseStack.push(new SingleDFAParseStackNode(gotoState,currentState.pos,synthAttr));
 				break;
 			default:
-				System.err.println(bitVecToString(scanResult.terms));
+				// DEBUG-X-BEGIN
+				//System.err.println(bitVecToString(scanResult.terms));
+				// DEBUG-X-END
 				disjointMatch = scanResult;
 				reportSyntaxError();
 			}
