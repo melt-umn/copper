@@ -234,7 +234,7 @@ public class ComposabilityChecker
 					if(isInvalidBridgeItem(grammarHostAndExt,hostnameS,item))
 					{
 						passed = false;
-						if(logger.isLoggable(CompilerLogMessageSort.ERROR)) logger.logMessage(CompilerLogMessageSort.ERROR,null,"DFA state " + hostAndExt.getLabel(state) + "has invalid bridge item " + item);
+						if(logger.isLoggable(CompilerLogMessageSort.ERROR)) logger.logMessage(CompilerLogMessageSort.ERROR,null,"DFA state " + hostAndExt.getLabel(state) + " has invalid bridge item " + item);
 					}
 				}
 				if(!hasExtItem)
