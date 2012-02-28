@@ -469,6 +469,11 @@ public abstract class SplitEngine<ROOT,EXCEPT extends Exception> implements Copp
 		parseStack = new Stack<SingleDFAParseStackNode>();
 		parseStack.push(new SingleDFAParseStackNode(PARSER_START_STATENUM,initialPos,null));
 		virtualLocation = new VirtualLocation(initialPos.getFileName(),1,0);
+		currentState = null;
+		lastPosition = null;
+		lastMatched = null;
+		lastShiftable = null;
+		scanResult = null;
 	}
 	
 	protected Object runEngine()
