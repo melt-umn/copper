@@ -417,10 +417,16 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 	protected void startEngine(InputPosition initialPos)
     throws IOException,EXCEPT
 	{
-		functionalDisambiguationUsed = false;
 		parseStack = new Stack<SingleDFAParseStackNode>();
 		parseStack.push(new SingleDFAParseStackNode(getPARSER_START_STATENUM(),initialPos,null));
 		virtualLocation = new VirtualLocation(initialPos.getFileName(),1,0);
+		currentState = null;
+		disjointMatch = null;
+		functionalDisambiguationUsed = false;
+		lastPosition = null;
+		lastMatched = null;
+		lastShiftable = null;
+		scanResult = null;
 	}
 	
 	protected Object runEngine()
