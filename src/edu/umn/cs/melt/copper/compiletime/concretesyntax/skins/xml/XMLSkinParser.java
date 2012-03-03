@@ -271,6 +271,7 @@ public class XMLSkinParser extends DefaultHandler
 	private Set<CopperElementReference> refSet = null;
 	private ArrayList<String> varNames = null;
 	private String nodeText = null;
+	private SAXStackElement lastTextNode = null;
 	
 	@Override
 	public void setDocumentLocator(Locator locator)
@@ -582,7 +583,12 @@ public class XMLSkinParser extends DefaultHandler
 		case PP_ELEMENT:
 		case PRECEDENCE_ELEMENT:
 		case TYPE_ELEMENT:
-			nodeText = String.copyValueOf(ch,start,length);
+			if(peek() != lastTextNode)
+			{
+				nodeText = "";
+				lastTextNode = peek();
+			}
+			nodeText += String.copyValueOf(ch,start,length);
 			break;
 		default:
 		}
