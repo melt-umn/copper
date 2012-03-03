@@ -373,7 +373,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 				HashSet<String> varNames = new HashSet<String>();
 				for(String n : bean.getRhsVarNames())
 				{
-					if(!varNames.add(n))
+					if(n != null && !varNames.add(n))
 					{
 						reportError(bean.getLocation(),"In production " + bean.getDisplayName() + ": Duplicate variable name: " + n);
 						hasError = true;
