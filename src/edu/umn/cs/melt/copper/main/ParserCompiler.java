@@ -154,9 +154,11 @@ public class ParserCompiler
 		CopperSkinType useSkin = args.getUseSkin();
 		CompilerLogger logger;
 
-		if(isComposition && files.size() != 2)
+		if(isComposition &&
+		   ((useSkin != CopperSkinType.XML && files.size() != 2) ||
+		    (useSkin == CopperSkinType.XML && files.size() != 1)))
 		{
-			System.err.println("Switch -compose requires two file arguments");
+			System.err.println("Switch -compose requires exactly two input grammars");
 			usageMessageError();
 		}
 		logger = getOrMakeLogger(args);
@@ -290,7 +292,7 @@ public class ParserCompiler
 			hostOnly.add(grammar.getHostGrammarName());
 			hostGrammar = ComposabilityChecker.extractWantedGrammars(grammar,hostOnly);
 			// DEBUG-X-BEGIN
-			//System.err.println(hostBuilderGrammar + "\n=========\n" + grammar);
+			//System.err.println(hostGrammar + "\n=========\n" + grammar);
 			// DEBUG-X-END
 			hostBuilder = new LALR1DFABuilder(grammar,hostOnly,logger);
 		}
