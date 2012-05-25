@@ -6,8 +6,8 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.C
 
 /**
  * Represents a disambiguation function &#8210; a method for resolving a specific
- * lexical ambiguity. This is done by specifying either a "declarative target" -- one of
- * the disambiguation group's members to which the ambiguity always disambiguates --
+ * lexical ambiguity. This is done by specifying either a "declarative target" &#8210; one of
+ * the disambiguation group's members to which the ambiguity always disambiguates &#8210;
  * or (for the more general case) a block of code that returns one of the members.
  * 
  * The field <code>members</code>, as well as either the field <code>code</code> or

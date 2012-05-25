@@ -38,8 +38,15 @@ public class ProductionBean extends GrammarElementBean
 	/**
 	 * The production's precedence class. Reduce-reduce conflicts can only
 	 * be resolved on productions within the same precedence class.
+	 * If this is not set, the production will be placed into an anonymous
+	 * "default" class.
+	 * <br/>
+	 * <b>N.B.:</b> This precedence class is not used when resolving <em>shift</em>-reduce conflicts.
+	 * The operator class (see {@link TerminalBean#operatorClass}) of the production's operator
+	 * (see {@link #operator}) is used for that.
+	 * @see OperatorClassBean
 	 */
-	protected String productionClass;
+	protected CopperElementReference precedenceClass;
 	/** The production's precedence for resolving reduce-reduce conflicts. */
 	protected Integer precedence;
 	/** 
@@ -60,7 +67,7 @@ public class ProductionBean extends GrammarElementBean
 		rhs = null;
 		rhsVarNames = null;
 		operator = null;
-		productionClass = null;
+		precedenceClass = null;
 		precedence = null;
 		layout = null;
 		code = null;
@@ -153,19 +160,19 @@ public class ProductionBean extends GrammarElementBean
 	}
 
 	/**
-	 * @see ProductionBean#productionClass
+	 * @see ProductionBean#precedenceClass
 	 */
-	public String getProductionClass()
+	public CopperElementReference getPrecedenceClass()
 	{
-		return productionClass;
+		return precedenceClass;
 	}
 
 	/**
-	 * @see ProductionBean#productionClass
+	 * @see ProductionBean#precedenceClass
 	 */
-	public void setProductionClass(String productionClass)
+	public void setPrecedenceClass(CopperElementReference operatorClass)
 	{
-		this.productionClass = productionClass;
+		this.precedenceClass = operatorClass;
 	}
 
 	/**

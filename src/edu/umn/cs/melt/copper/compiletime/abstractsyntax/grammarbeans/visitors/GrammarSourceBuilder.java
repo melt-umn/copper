@@ -39,6 +39,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.NonTermina
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserAttributeBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ProductionBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.OperatorClassBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.RegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalClassBean;
@@ -197,6 +198,13 @@ class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeExcep
 			Symbol name = generateName(bean);
 			grammar.addTClass(new TerminalClass(name));
 			if(bean.hasDisplayName()) grammar.setDisplayName(name,bean.getDisplayName());
+			return false;
+		}
+
+		@Override
+		public Boolean visitOperatorClassBean(OperatorClassBean bean)
+		throws RuntimeException
+		{
 			return false;
 		}
 		
@@ -370,8 +378,8 @@ class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeExcep
 			}
 			
 			TerminalClass productionClass;
-			if(bean.getProductionClass() == null) productionClass = new TerminalClass(FringeSymbols.STARTPROD_SYMBOL);
-			else productionClass = new TerminalClass(Symbol.symbol(bean.getProductionClass()));
+			if(bean.getPrecedenceClass() == null) productionClass = new TerminalClass(FringeSymbols.STARTPROD_SYMBOL);
+			else productionClass = new TerminalClass(generateName(bean.getPrecedenceClass()));
 
 			int precedence = bean.getPrecedence() == null ? FringeSymbols.PRECEDENCE_NONE : bean.getPrecedence();
 			
@@ -429,7 +437,9 @@ class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeExcep
 				
 				Integer operatorPrecedence = bean.getOperatorPrecedence();
 				
-				TerminalClass precClass = new TerminalClass(Symbol.symbol(bean.getOperatorClass()));
+				TerminalClass precClass;
+				if(bean.getOperatorClass() == null) precClass = new TerminalClass(FringeSymbols.STARTPROD_SYMBOL);
+				else precClass = new TerminalClass(generateName(bean.getOperatorClass()));
 				
 				OperatorAttributes operatorAttributes = new OperatorAttributes(associativityType,
 						                                                       operatorPrecedence,
@@ -463,8 +473,12 @@ class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeExcep
 			return false;
 		}
 
-	
-	
+		@Override
+		public Boolean visitOperatorClassBean(OperatorClassBean bean)
+		throws RuntimeException
+		{
+			return false;
+		}
 
 		@Override
 		public ParsedRegex visitChoiceRegex(ChoiceRegexBean bean)
@@ -590,6 +604,12 @@ class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeExcep
 		throw new RuntimeException("This method should not be reached");
 	}
 
+	@Override
+	public Boolean visitOperatorClassBean(OperatorClassBean bean)
+	throws RuntimeException
+	{
+		throw new RuntimeException("This method should not be reached");
+	}
 
 	// Assumes that nameIsDefined(symbol) == true.
 	private GrammarElementBean dereference(CopperElementReference symbol)

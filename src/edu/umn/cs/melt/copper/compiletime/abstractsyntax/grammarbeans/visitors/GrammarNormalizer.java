@@ -15,6 +15,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.NonTermina
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserAttributeBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ProductionBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.OperatorClassBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalClassBean;
 
@@ -140,6 +141,13 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 				if(!n.isFQ()) terminal.addTerminalClass(CopperElementReference.ref(bean.getName(),bean.getLocation()));
 				else terminal.addTerminalClass(CopperElementReference.ref(currentGrammar.getName(),bean.getName(),bean.getLocation()));
 			}
+			return false;
+		}
+
+		@Override
+		public Boolean visitOperatorClassBean(OperatorClassBean bean)
+		throws RuntimeException
+		{
 			return false;
 		}
 	}
@@ -270,6 +278,13 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		{
 			return false;
 		}
+
+		@Override
+		public Boolean visitOperatorClassBean(OperatorClassBean bean)
+		throws RuntimeException
+		{
+			return false;
+		}
 		
 	}
 
@@ -343,6 +358,12 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		throw new RuntimeException("This method should not be reached");
 	}
 
+	@Override
+	public Boolean visitOperatorClassBean(OperatorClassBean bean)
+	throws RuntimeException
+	{
+		throw new RuntimeException("This method should not be reached");
+	}
 
 	// Assumes that nameIsDefined(symbol) == true.
 	private GrammarElementBean dereference(CopperElementReference symbol)

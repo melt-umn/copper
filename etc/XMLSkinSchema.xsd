@@ -38,14 +38,16 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
-	<xs:simpleType name="PrecedenceClass">
+	<xs:complexType name="PrecedenceClass">
 		<xs:annotation>
 			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
 				For operator precedence on terminals and production precedence on productions.
 			</xs:documentation>
 		</xs:annotation>
-		<xs:union memberTypes="CopperName"/>
-	</xs:simpleType>
+		<xs:sequence>
+			<xs:element name="OperatorClassRef" type="OperatorClassRef" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
 	
 	<xs:simpleType name="Precedence">
 		<xs:annotation>
@@ -188,6 +190,17 @@
 		<xs:annotation>
 			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
 				A reference to a terminal class (local or fully-qualified).
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="Reference"/>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="OperatorClassRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to an operator class (local or fully-qualified).
 			</xs:documentation>
 		</xs:annotation>
     	<xs:complexContent>
@@ -403,7 +416,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Class" type="PrecedenceClass" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Class" type="PrecedenceClass" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Precedence" type="Precedence" minOccurs="0" maxOccurs="1"/>
 			<xs:choice minOccurs="0" maxOccurs="1">
 				<xs:element name="LeftAssociative" type="Blank"/>
@@ -593,6 +606,7 @@
 				<xs:element name="Terminal" type="Terminal"/>
 				<xs:element name="Nonterminal" type="Nonterminal"/>
 				<xs:element name="TerminalClass" type="TerminalClass"/>
+				<xs:element name="OperatorClass" type="OperatorClass"/>
 				<xs:element name="Production" type="Production"/>
 				<xs:element name="DisambiguationFunction" type="DisambiguationFunction"/>
 				<xs:element name="ParserAttribute" type="ParserAttribute"/>
@@ -649,6 +663,17 @@
 					<xs:element name="Members" type="TerminalRefSet" minOccurs="0" maxOccurs="1"/>
 				</xs:sequence>
 			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+
+	<xs:complexType name="OperatorClass">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents an operator class (grammarbeans.OperatorClassBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct"/>
 		</xs:complexContent> 
 	</xs:complexType>
 	

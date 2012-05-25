@@ -7,13 +7,15 @@ package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans;
  */
 public enum CopperElementType
 {
-	PARSER,
-	GRAMMAR,
-	EXTENSION_GRAMMAR,
 	TERMINAL,
 	NON_TERMINAL,
 	PRODUCTION,
 	DISAMBIGUATION_FUNCTION,
+	TERMINAL_CLASS,
+	OPERATOR_CLASS,
 	PARSER_ATTRIBUTE,
-	TERMINAL_CLASS
+	GRAMMAR,
+	EXTENSION_GRAMMAR,
+	PARSER,
+	SPECIAL
 }
