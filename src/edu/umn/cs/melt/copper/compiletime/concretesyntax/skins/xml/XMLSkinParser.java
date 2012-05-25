@@ -37,6 +37,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.KleeneStar
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.MacroHoleRegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.NonTerminalBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.OperatorAssociativity;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.OperatorClassBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserAttributeBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ProductionBean;
@@ -85,6 +86,8 @@ public class XMLSkinParser extends DefaultHandler
 		NONTERMINAL_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Nonterminal"; } },
 		NONTERMINAL_REF_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "NonterminalRef"; } },
 		OPERATOR_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Operator"; } },
+		OPERATOR_CLASS_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "OperatorClass"; } },
+		OPERATOR_CLASS_REF_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "OperatorClassRef"; } },
 		PACKAGE_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Package"; } },
 		PARSER_ATTRIBUTE_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "ParserAttribute"; } },
 		PARSER_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Parser"; } },
@@ -137,12 +140,6 @@ public class XMLSkinParser extends DefaultHandler
 	{
 		nodeTypes = new Hashtable<String,XMLSkinElementType>();
 		for(XMLSkinElementType t : XMLSkinElementType.values()) nodeTypes.put(t.getName(),t);
-	}
-	
-	public static void formalError(CompilerLogger logger,InputPosition pos,String message)
-	throws CopperException
-	{
-		if(logger.isLoggable(CompilerLogMessageSort.ERROR)) logger.logErrorMessage(CompilerLogMessageSort.ERROR,pos,message);
 	}
 
 	private ArrayList< Pair<String,Reader> > files;
@@ -263,6 +260,7 @@ public class XMLSkinParser extends DefaultHandler
 	private GrammarBean currentGrammar = null;
 	private TerminalBean currentTerminal = null;
 	private TerminalClassBean currentTerminalClass = null;
+	private OperatorClassBean currentOperatorClass = null;
 	private NonTerminalBean currentNonTerminal = null;
 	private ProductionBean currentProduction = null;
 	private DisambiguationFunctionBean currentDisambiguationFunction = null;
@@ -345,7 +343,7 @@ public class XMLSkinParser extends DefaultHandler
 			// Empty; all work is done in endElement() after the element's text content is known.
 			break;
 		case CLASS_ELEMENT:
-			// Empty; all work is done in endElement() after the element's text content is known.
+			refList = new ArrayList<CopperElementReference>();
 			break;
 		case CLASS_NAME_ELEMENT:
 			// Empty; all work is done in endElement() after the element's text content is known.
@@ -437,6 +435,17 @@ public class XMLSkinParser extends DefaultHandler
 			if(saxStack[saxStackPointer - 1].type == XMLSkinElementType.PRODUCTION_ELEMENT)
 			{
 				refList = new ArrayList<CopperElementReference>();
+			}
+			break;
+		case OPERATOR_CLASS_ELEMENT:
+			CopperElementName currentOperatorClassName = CopperElementName.newName(attributes.getValue("id"));
+			currentOperatorClass = (OperatorClassBean) currentGrammar.getGrammarElement(currentOperatorClassName);
+			if(currentOperatorClass == null)
+			{
+				currentOperatorClass = new OperatorClassBean();
+				currentOperatorClass.setName(currentOperatorClassName);
+				currentOperatorClass.setLocation(peek().startLocation);
+				currentGrammar.addGrammarElement(currentOperatorClass);
 			}
 			break;
 		case PACKAGE_ELEMENT:
@@ -559,6 +568,7 @@ public class XMLSkinParser extends DefaultHandler
 				if(varName == null || varName.equals("")) varNames.add(null);
 				else varNames.add(varName);
 			}
+		case OPERATOR_CLASS_REF_ELEMENT:
 		case TERMINAL_CLASS_REF_ELEMENT:
 			grammar = attributes.getValue("grammar");
 			if(grammar == null || grammar.equals("")) grammarName = currentGrammar.getName();
@@ -577,7 +587,6 @@ public class XMLSkinParser extends DefaultHandler
 		switch(peek().type)
 		{
 		case CODE_ELEMENT:
-		case CLASS_ELEMENT:
 		case CLASS_NAME_ELEMENT:
 		case PACKAGE_ELEMENT:
 		case PP_ELEMENT:
@@ -634,10 +643,10 @@ public class XMLSkinParser extends DefaultHandler
 			switch(peek().type)
 			{
 			case OPERATOR_ELEMENT:
-				currentTerminal.setOperatorClass(nodeText);
+				currentTerminal.setOperatorClass(refList.get(0));
 				break;
 			case PRODUCTION_ELEMENT:
-				currentProduction.setProductionClass(nodeText);
+				currentProduction.setPrecedenceClass(refList.get(0));
 				break;
 			}
 			break;
@@ -767,6 +776,12 @@ public class XMLSkinParser extends DefaultHandler
 				refSet = null;
 			}
 			break;
+		case OPERATOR_CLASS_ELEMENT:
+			currentOperatorClass = null;
+			break;
+		case OPERATOR_CLASS_REF_ELEMENT:
+			// Empty
+			break;
 		case PACKAGE_ELEMENT:
 			currentParser.setPackageDecl(nodeText);
 			break;
@@ -790,6 +805,9 @@ public class XMLSkinParser extends DefaultHandler
 				break;
 			case GRAMMAR_ELEMENT:
 				currentGrammar.setDisplayName(nodeText);
+				break;
+			case OPERATOR_CLASS_ELEMENT:
+				currentOperatorClass.setDisplayName(nodeText);
 				break;
 			case PARSER_ATTRIBUTE_ELEMENT:
 				currentParserAttribute.setDisplayName(nodeText);
@@ -888,6 +906,8 @@ public class XMLSkinParser extends DefaultHandler
 				break;
 			}
 			break;
+		default:
+			logger.logErrorMessage(CompilerLogMessageSort.FATAL_ERROR,peek().startLocation,"Unrecognized XML tag '" + localName + "'. There is a bug in Copper's XML schema.");
 		}
 	}
 }

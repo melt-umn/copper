@@ -15,11 +15,11 @@ public class CopperElementName implements Comparable<CopperElementName>
 	
     private Symbol symbol;
 
-    private CopperElementName(String name)
+    protected CopperElementName(String name)
     {
     	symbol = Symbol.symbol(name);
     }
-
+    
     /**
      * Creates a new local element name. Names must match the regular expression {@code [A-Za-z_][A-Za-z0-9_]*}.
      * @param name The string representation of the name.
@@ -42,7 +42,7 @@ public class CopperElementName implements Comparable<CopperElementName>
     @Override
     public int compareTo(CopperElementName n)
     {
-    	if(n instanceof CopperElementName) return symbol.compareTo(((CopperElementName) n).symbol);
+    	if(n instanceof CopperElementName) return symbol.toString().compareTo(((CopperElementName) n).symbol.toString());
     	else return -1;
     }
         

@@ -20,8 +20,10 @@ public class TerminalBean extends GrammarSymbolBean
 	/**
 	 * The terminal's operator precedence class. Shift-reduce conflicts can
 	 * only be resolved on operators within the same precedence class.
+	 * If this is not set, the terminal will be placed into an anonymous
+	 * "default" class.
 	 */
-	protected String operatorClass;
+	protected CopperElementReference operatorClass;
 	/**
 	 * The terminal's operator precedence.
 	 */
@@ -94,7 +96,7 @@ public class TerminalBean extends GrammarSymbolBean
 	/**
 	 * @see TerminalBean#operatorClass
 	 */
-	public String getOperatorClass()
+	public CopperElementReference getOperatorClass()
 	{
 		return operatorClass;
 	}
@@ -102,7 +104,7 @@ public class TerminalBean extends GrammarSymbolBean
 	/**
 	 * @see TerminalBean#operatorClass
 	 */
-	public void setOperatorClass(String operatorClass)
+	public void setOperatorClass(CopperElementReference operatorClass)
 	{
 		this.operatorClass = operatorClass;
 	}

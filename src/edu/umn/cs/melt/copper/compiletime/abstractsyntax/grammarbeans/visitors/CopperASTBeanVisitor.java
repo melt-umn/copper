@@ -8,6 +8,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.NonTermina
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserAttributeBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ProductionBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.OperatorClassBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalClassBean;
 
@@ -23,4 +24,5 @@ public interface CopperASTBeanVisitor<RT, E extends Exception>
 	public RT visitProductionBean(ProductionBean bean) throws E;
 	public RT visitTerminalBean(TerminalBean bean) throws E;
 	public RT visitTerminalClassBean(TerminalClassBean bean) throws E;
+	public RT visitOperatorClassBean(OperatorClassBean bean) throws E;
 }

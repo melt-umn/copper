@@ -23,6 +23,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.NonTermina
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserAttributeBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ProductionBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.OperatorClassBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.RegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalClassBean;
@@ -395,6 +396,20 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 					hasError = true;					
 				}
 			}
+			// Check that the production's operator class, if specified, refers to an operator class.
+			if(bean.getPrecedenceClass() != null)
+			{
+				CopperElementReference n = bean.getPrecedenceClass();
+				isDefined = nameIsDefined(n);
+				hasError |= !isDefined;
+				// and is a terminal.
+				if(isDefined &&
+						dereference(n).getType() != CopperElementType.OPERATOR_CLASS)
+				{
+					reportError(n.getLocation(),getDisplayName(n) + ", designated as production " + bean.getDisplayName() + "'s operator class, is not an operator class");
+					hasError = true;					
+				}
+			}
 			// Check that the production's precedence is not a negative number.
 			if(bean.getPrecedence() != null && bean.getPrecedence() < 0)
 			{
@@ -434,6 +449,20 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 		}
 		else
 		{
+			// Check that the production's operator class, if specified, refers to an operator class.
+			if(bean.getOperatorClass() != null)
+			{
+				CopperElementReference n = bean.getOperatorClass();
+				boolean isDefined = nameIsDefined(n);
+				hasError |= !isDefined;
+				// and is a terminal.
+				if(isDefined &&
+						dereference(n).getType() != CopperElementType.OPERATOR_CLASS)
+				{
+					reportError(n.getLocation(),getDisplayName(n) + ", designated as terminal " + bean.getDisplayName() + "'s operator class, is not an operator class");
+					hasError = true;					
+				}
+			}
 			// Check that the terminal's operator precedence is not a negative number.
 			if(bean.getOperatorPrecedence() != null && bean.getOperatorPrecedence() < 0)
 			{
@@ -512,6 +541,20 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 
 
+	@Override
+	public Boolean visitOperatorClassBean(OperatorClassBean bean)
+	throws RuntimeException
+	{
+		boolean hasError = false;
+		// Check that none of the production class's required elements are missing.
+		if(!bean.isComplete())
+		{
+			Set<String> whatIsMissing = bean.whatIsMissing();
+			reportError(bean.getLocation(),"Production class " + bean.getDisplayName() + " is missing the following required attributes: " + whatIsMissing);
+			hasError = true;
+		}
+		return hasError;
+	}
 	
 	
 	

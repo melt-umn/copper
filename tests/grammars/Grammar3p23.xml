@@ -12,6 +12,8 @@
       elements contain only grammar elements and grammar layout;
       parsers contain the rest of the metadata.
     * Terminal classes must now be explicitly declared.
+    * Operator classes (terminal and production precedence classes) are now optional;
+      those that are used must be explicitly declared.
     * Regex elements <loosechar>/<SingleCharacter> and
       <range>/<CharacterRange> now use attributes instead of sub-elements
       to hold character information.
@@ -77,7 +79,7 @@
 	<Grammar id="edu_umn_cs_melt_copper_example1">
 	
 		<!-- Display name; optional. -->
-		<PP>edu:umn:cs:melt:copper:example1</PP>
+		<PP>ex1</PP>
 	
 		<!-- 
              Default layout for productions in this grammar. A grammar
@@ -178,7 +180,7 @@
 				<PP>'+'</PP>
 				<Regex><CharacterSet><SingleCharacter char="+"/></CharacterSet></Regex>
 				<Operator>
-					<Class>main</Class>
+					<!--<Class><OperatorClassRef id="main_o"/></Class>-->
 					<Precedence>1</Precedence>
 					<RightAssociative/> <!-- Also LeftAssociative, NonAssociative -->
 				</Operator>
@@ -205,7 +207,7 @@
 
 			<Production id="EtoTplusX">
 				<!-- Production class and precedence (for resolving reduce-reduce conflicts). -->
-				<Class>main</Class>
+				<Class><OperatorClassRef id="main_o"/></Class>
 				<Precedence>1</Precedence>
 				<Code><![CDATA[ RESULT = left + "\n[+]\n" + right; ]]></Code>
 				<LHS><NonterminalRef id="E"/></LHS>
@@ -249,10 +251,13 @@
 					<NonterminalRef id="x" name="x"/>
 				</RHS>
 			</Production>
+			
+			<OperatorClass id="main_o"/>
 		</Declarations>
 	</Grammar>
 	
 	<Grammar id="edu_umn_cs_melt_copper_example2">
+	    <PP>ex2</PP>
 		<!-- minus and x2; disambiguation function; transparent prefix. -->
 		<Layout>
 			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="ws"/>

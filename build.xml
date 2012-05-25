@@ -7,7 +7,7 @@
 	<property name='javadoc' location='doc/javadoc'/>
 	<property name='etcbase' location='.'/>
 	<property name='doc' location='doc'/>
-	<property name='version' value='0.6.1'/>
+	<property name='version' value='0.6.9'/>
 	<property name='debug' value='false'/>
 	
 	<target name='init'>

@@ -16,12 +16,24 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.FringeSymbols;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarName;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSource;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.NumericParserSpecBuilder;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecPlaintextPrinter;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecProcessor;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.SymbolTableBuilder;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ContextSets;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
+import edu.umn.cs.melt.copper.compiletime.builders.ContextSetBuilder;
+import edu.umn.cs.melt.copper.compiletime.builders.LALRLookaheadSetBuilder;
+import edu.umn.cs.melt.copper.compiletime.builders.LR0DFABuilder;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.oldxml.XMLGrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.XMLSkinParser;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1DFABuilder;
+import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRDFAPrinter;
+import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadSets;
+import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.FinalReporter;
@@ -520,6 +532,142 @@ public class ParserCompiler
 		return errorlevel;
 	}
 	
+	private static ParserBean parseInputGrammarNew(ParserCompilerParameters args)
+	{
+		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
+		//boolean isComposition = args.isComposition();
+		CopperSkinType useSkin = args.getUseSkin();
+		CompilerLogger logger;
+
+		logger = getOrMakeLogger(args);
+
+		//WellFormedGrammarChecker wfcheck = new WellFormedGrammarChecker(logger);
+		
+		ParserBean spec = null;
+		switch(useSkin)
+		{
+		/*case NATIVE:
+			try { grammar = GrammarParser.parseGrammar(files,logger); }
+			catch(Exception ex)
+			{
+				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
+				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+				return null;
+			}
+			grammar.getParserSources().setPackageName(args.getPackageDecl());
+			grammar.getParserSources().setParserName(args.getParserName());
+			break;
+		case OLD_XML:
+			try { grammar = XMLGrammarParser.parseGrammar(files,logger); }
+			catch(CopperException ex)
+			{
+				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
+				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+				return null;
+			}
+			catch(Exception ex)
+			{
+				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
+				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+				else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
+				return null;
+			}
+			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
+			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
+			break;*/
+		case XML:
+		default:
+			try
+			{
+				spec = new XMLSkinParser(files,logger).parse();
+			}
+			catch(CopperException ex)
+			{
+				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
+				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+				return null;
+			}
+			catch(Exception ex)
+			{
+				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
+				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+				else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
+				return null;
+			}
+			if(args.getPackageDecl() != null) spec.setPackageDecl(args.getPackageDecl());
+			if(args.getParserName() != null && !args.getParserName().equals("")) spec.setClassName(args.getParserName());
+			break;
+		/*case CUP:
+		default:
+			try { grammar = CupSkinParser.parseGrammar(files,logger); }
+			catch(Exception ex)
+			{
+				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
+				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+				return null;
+			}
+			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
+			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());*/
+		}
+		if(spec != null)
+		{
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,ParserSpecPlaintextPrinter.specToString(spec));
+//			if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nChecking grammar well-formedness");
+//
+//			try
+//			{
+//				wfcheck.checkWellFormedness(grammar,args.isWarnUselessNTs());
+//			}
+//			catch(CopperException ex)
+//			{
+//				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
+//				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+//				grammar = null;
+//			}
+		}
+		return spec;
+	}
+
+	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
+	throws CopperException
+	{
+		CompilerLogger logger = args.getLogger();
+		PSSymbolTable symbolTable = SymbolTableBuilder.build(spec);
+		ParserSpec numericSpec = NumericParserSpecBuilder.build(spec,symbolTable);
+		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Numeric spec:\n" + numericSpec.toString(symbolTable));
+		logger.flushMessages();
+		System.err.println("Constructing context sets");
+		ContextSets contextSets = ContextSetBuilder.build(numericSpec);
+		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Context sets:\n" + contextSets.toString(symbolTable));
+		logger.flushMessages();
+		System.err.println("Constructing LR(0) DFA");
+		LR0DFA dfa = LR0DFABuilder.build(numericSpec);
+		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LR(0) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa));
+		logger.flushMessages();
+		System.err.println("Constructing LALR lookahead sets");
+		LRLookaheadSets lookaheadSets = LALRLookaheadSetBuilder.build(numericSpec,contextSets,dfa);
+		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LALR(1) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa,lookaheadSets));
+		logger.flushMessages();
+		
+		return 0;
+	}
+
+	public static int compileNew(ParserCompilerParameters args)
+	{
+		ParserBean spec = parseInputGrammarNew(args);
+		int errorlevel;
+		try
+		{
+			errorlevel = compileParser(args,spec);
+		}
+		catch(CopperException ex)
+		{
+			errorlevel = 1;
+		}
+		
+		return errorlevel;
+	}
+
 	/**
 	 * Copper's command-line interface.
 	 * @param args Run this class with a single parameter, "-?", to see a list of parameters and switches.
@@ -551,10 +699,14 @@ public class ParserCompiler
 		String runtimeQuietLevel = "ERROR";
 		String packageDecl = null;
 		String parserName = null;
+		// FIXME: Rip this out when GrammarSource is gone.
+		boolean useNewPipeline = false;
 		int i;
 		for(i = 0;i < args.length;i++)
 		{
 			if(args[i].charAt(0) != '-') break;
+			// FIXME: Rip this out when GrammarSource is gone. 
+			else if(args[i].equals("-n")) useNewPipeline = true;
 			else if(args[i].equals("-q"))
 			{
 				quietLevel = CompilerLogMessageSort.getQuietSort();
@@ -672,7 +824,10 @@ public class ParserCompiler
 		argTable.setPackageDecl(packageDecl);
 		argTable.setParserName(parserName);
 		
-		int errorlevel = compile(argTable);
+		int errorlevel;
+		
+		if(useNewPipeline) errorlevel = compileNew(argTable);
+		else errorlevel = compile(argTable);
 		
 		System.exit(errorlevel);
 	}
