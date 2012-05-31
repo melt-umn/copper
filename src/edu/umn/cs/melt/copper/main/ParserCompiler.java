@@ -21,17 +21,23 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.P
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecProcessor;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.SymbolTableBuilder;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ContextSets;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.GrammarStatistics;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.builders.ContextSetBuilder;
+import edu.umn.cs.melt.copper.compiletime.builders.GrammarWellFormednessChecker;
 import edu.umn.cs.melt.copper.compiletime.builders.LALRLookaheadAndLayoutSetBuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.LR0DFABuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.LRParseTableBuilder;
+import edu.umn.cs.melt.copper.compiletime.builders.SingleScannerDFAAnnotationBuilder;
+import edu.umn.cs.melt.copper.compiletime.builders.SingleScannerDFABuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.TransparentPrefixSetBuilder;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.oldxml.XMLGrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.XMLSkinParser;
+import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedDFA;
+import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1DFABuilder;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRDFAPrinter;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
@@ -51,6 +57,7 @@ import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.WellFormedGrammarCheck
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.EngineBuilder;
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.lalr.LALREngineBuilder;
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.moded.ModedEngineBuilder;
+import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.newbuilders.SingleDFAEngineBuilderNew;
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.SingleDFAEngineBuilder;
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.split.SplitEngineBuilder;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
@@ -636,33 +643,154 @@ public class ParserCompiler
 	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
 	throws CopperException
 	{
+		boolean isPretty = args.isPretty();
+		boolean gatherStatistics = args.isGatherStatistics();
 		CompilerLogger logger = args.getLogger();
+		String packageDecl = 
+				(args.getPackageDecl() != null && !args.getPackageDecl().equals("")) ?
+						args.getPackageDecl() :
+						(spec.getPackageDecl() != null && !spec.getPackageDecl().equals("") ?
+								spec.getPackageDecl() : 
+						        "");
+		String parserName =
+			(args.getParserName() != null && !args.getParserName().equals("")) ?
+					args.getParserName() :
+					(spec.getClassName() != null && !spec.getClassName().equals("") ?
+							spec.getClassName() : 
+					        "Parser");
+					
+		String runtimeQuietLevel = args.getRuntimeQuietLevel();
+
+		long timeBefore;
+		
+			System.err.print("Constructing symbol table");
+			timeBefore = System.currentTimeMillis();
+		
 		PSSymbolTable symbolTable = SymbolTableBuilder.build(spec);
-		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Symbol table:\n" + symbolTable);
-		logger.flushMessages();
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Symbol table:\n" + symbolTable);
+			logger.flushMessages();
+			
+			System.err.print("Constructing numeric grammar specification");
+			timeBefore = System.currentTimeMillis();
+		
 		ParserSpec numericSpec = NumericParserSpecBuilder.build(spec,symbolTable);
-		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Numeric spec:\n" + numericSpec.toString(symbolTable));
-		logger.flushMessages();
-		System.err.println("Constructing context sets");
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Numeric spec:\n" + numericSpec.toString(symbolTable));
+			logger.flushMessages();
+			
+			System.err.print("Checking grammar well-formedness");
+			GrammarStatistics stats = new GrammarStatistics();
+			timeBefore = System.currentTimeMillis();
+		
+		GrammarWellFormednessChecker.check(logger, stats, symbolTable, numericSpec, true);
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			logger.flushMessages();
+			
+			System.err.print("Constructing context sets");
+			timeBefore = System.currentTimeMillis();
+		
 		ContextSets contextSets = ContextSetBuilder.build(numericSpec);
-		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Context sets:\n" + contextSets.toString(symbolTable));
-		logger.flushMessages();
-		System.err.println("Constructing LR(0) DFA");
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Context sets:\n" + contextSets.toString(symbolTable));
+			logger.flushMessages();
+			
+			System.err.print("Constructing LR(0) DFA");
+			timeBefore = System.currentTimeMillis();
+		
 		LR0DFA dfa = LR0DFABuilder.build(numericSpec);
-		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LR(0) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa));
-		logger.flushMessages();
-		System.err.println("Constructing LALR lookahead/layout sets");
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LR(0) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa));
+			logger.flushMessages();
+			
+			System.err.print("Constructing LALR lookahead/layout sets");
+			timeBefore = System.currentTimeMillis();
+		
 		LRLookaheadAndLayoutSets lookaheadSets = LALRLookaheadAndLayoutSetBuilder.build(numericSpec,contextSets,dfa);
-		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LALR(1) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa,lookaheadSets));
-		logger.flushMessages();
-		System.err.println("Constructing parse table");
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LALR(1) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa,lookaheadSets));
+			logger.flushMessages();
+			
+			System.err.print("Constructing parse table");
+			timeBefore = System.currentTimeMillis();
+		
 		LRParseTable parseTable = LRParseTableBuilder.build(numericSpec,dfa,lookaheadSets);
-		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Parse table:\n" + LRParseTablePrinter.toString(symbolTable,numericSpec,parseTable));
-		logger.flushMessages();
-		System.err.println("Constructing transparent prefix sets");
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Parse table:\n" + LRParseTablePrinter.toString(symbolTable,numericSpec,parseTable));
+			logger.flushMessages();
+			
+			System.err.print("Constructing transparent prefix sets");
+			timeBefore = System.currentTimeMillis();
+		
 		TransparentPrefixes prefixes = TransparentPrefixSetBuilder.build(numericSpec,parseTable);
-		if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Transparent prefix sets:\n" + prefixes.toString(symbolTable));
-		logger.flushMessages();
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Transparent prefix sets:\n" + prefixes.toString(symbolTable));
+			logger.flushMessages();
+			
+			System.err.print("Constructing scanner DFA");
+			timeBefore = System.currentTimeMillis();
+		
+		GeneralizedDFA scannerDFA = SingleScannerDFABuilder.build(numericSpec);
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Scanner DFA:\n" + scannerDFA);
+			logger.flushMessages();
+			
+			System.err.print("Constructing scanner DFA annotations (accept/reject/possible sets, character map)");
+			timeBefore = System.currentTimeMillis();
+		
+		SingleScannerDFAAnnotations scannerDFAAnnotations = SingleScannerDFAAnnotationBuilder.build(logger,symbolTable,numericSpec,scannerDFA);
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Scanner DFA annotations:\n" + scannerDFAAnnotations);
+			logger.flushMessages();
+			
+
+		PrintStream out = args.getOutput();
+		String rootType = symbolTable.getNonTerminal(numericSpec.pr.getRHSSym(numericSpec.getStartProduction(),0)).getReturnType();
+		String errorType = CopperParserException.class.getName();
+		String ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel) + 
+	              edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserMainFunction(packageDecl,parserName,rootType,errorType,gatherStatistics,isPretty,runtimeQuietLevel);
+		SingleDFAEngineBuilderNew engineBuilder = new SingleDFAEngineBuilderNew(symbolTable, numericSpec, lookaheadSets, parseTable, prefixes, scannerDFA, scannerDFAAnnotations);
+			
+		try
+		{
+			System.err.print("Generating parser code");
+			timeBefore = System.currentTimeMillis();
+			engineBuilder.buildLALREngine(out,
+				       ((packageDecl == null || packageDecl.equals("")) ? "" : "package " + packageDecl + ";"),
+			           "",
+			           parserName,parserName + "Scanner",
+			           ancillaries,
+			           "");
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+		}
+		catch(IOException ex)
+		{
+			System.err.println("I/O error in code generation");
+			ex.printStackTrace(System.err);
+			return 1;
+		}
+		catch(CopperException ex)
+		{
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+			return 1;
+		}
+		catch(Exception ex)
+		{
+			System.err.println("Unexpected error in code generation");
+			ex.printStackTrace(System.err);
+			return 1;
+		}
+
 		
 		return 0;
 	}
