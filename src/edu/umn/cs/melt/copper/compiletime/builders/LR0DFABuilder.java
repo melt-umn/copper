@@ -39,8 +39,13 @@ public class LR0DFABuilder
 		return new LR0DFABuilder(spec).buildDFA();
 	}
 	
-	public LR0DFA buildDFA()
+	private LR0DFA buildDFA()
 	{
+		itemSets.add(new LR0ItemSet(new int[0]));
+		transitionLabels.add(new BitSet());
+		transitions.add(new int[transitionArraySize]);
+		gotoItems.add(new BitSet[transitionArraySize]);
+		
 		// Initialize E to empty.
 		BitSet fringe1 = new BitSet();
 		BitSet fringe2 = new BitSet();

@@ -115,6 +115,8 @@ public class ParserSpec
 		protected int[] precedences;
 		/** Each production's precedence class (note that this is distinct from the precedence of its operator -- see {@link ProductionBean#precedenceClass()}. */
 		protected int[] precedenceClasses;
+		/** For each production, whether it specifies its own set of layout (which might be the empty set) or uses the grammar-wide set. */ 
+		protected boolean[] hasLayout;
 		/** For each production, the set of layout symbols that may appear between the symbols on its right-hand side. */ 
 		protected BitSet[] layouts;
 		
@@ -124,6 +126,7 @@ public class ParserSpec
 		public final int getOperator(int p) { return operators[p]; }
 		public final int getPrecedence(int p) { return precedences[p]; }
 		public final int getPrecedenceClass(int p) { return precedenceClasses[p]; }
+		public final boolean hasLayout(int p) { return hasLayout[p]; }
 		public final BitSet getLayouts(int p) { return layouts[p]; }
 		
 		public final void setLHS(int p,int lhs) { LHSs[p] = lhs; }
@@ -132,6 +135,7 @@ public class ParserSpec
 		public final void setOperator(int p,int o) { operators[p] = o; }
 		public final void setPrecedence(int p,int pr) { precedences[p] = pr; }
 		public final void setPrecedenceClass(int p,int pc) { precedenceClasses[p] = pc; }
+		public final void setHasLayout(int p,boolean h) { hasLayout[p] = h; }
 		
 		public ProductionData(int count,int maxRHS)
 		{
@@ -141,6 +145,7 @@ public class ParserSpec
 			operators = new int[count];
 			precedences = new int[count];
 			precedenceClasses = new int[count];
+			hasLayout = new boolean[count];
 			layouts = new BitSet[count];
 			
 			for(int i = 0;i < count;i++)

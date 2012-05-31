@@ -51,9 +51,14 @@ public class PSSymbolTable extends SymbolTable<CopperASTBean>
 		int currentLineCharCount = 0;
 		for(int i = coll.nextSetBit(0);i >= 0;i = coll.nextSetBit(i + 1))
 		{
-			if(currentLineCharCount > maxWidth)
+			T o = nameMap.get(i);
+			String s;
+			if(o instanceof CopperASTBean) s = ((CopperASTBean) o).getDisplayName();
+			else s = o.toString();
+
+			if(currentLineCharCount + s.length() + 1 >= maxWidth && currentLineCharCount > linePrefix.length())
 			{
-				rv += "\n" + linePrefix;
+				rv += ",\n" + linePrefix;
 				currentLineCharCount = linePrefix.length();
 			}
 			else if(!first)
@@ -61,15 +66,21 @@ public class PSSymbolTable extends SymbolTable<CopperASTBean>
 				rv += ",";
 				currentLineCharCount++;
 			}
-			T o = nameMap.get(i);
-			String s;
-			if(o instanceof CopperASTBean) s = ((CopperASTBean) o).getDisplayName();
-			else s = o.toString();
 			currentLineCharCount += s.length();
 			first = false;
 			rv += s;
 		}
 		rv += /*"\n" + linePrefix +*/ "]";
 		return rv;
+	}
+	
+	public String toString()
+	{
+		StringBuffer rv = new StringBuffer();
+		for(int i = 0;i < size();i++)
+		{
+			rv.append("[").append(i).append("] ").append(get(i).getType()).append(" : ").append(get(i).getDisplayName()).append("\n");
+		}
+		return rv.toString();
 	}
 }
