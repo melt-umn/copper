@@ -17,6 +17,7 @@ public class LRDFAPrinter
 	
 	public static String toString(SymbolTable<CopperASTBean> symbolTable,ParserSpec spec,LR0DFA dfa,LRLookaheadSets lookaheadSets)
 	{
+		boolean hasLayouts = lookaheadSets instanceof LRLookaheadAndLayoutSets;
 		StringBuffer rv = new StringBuffer();
 		for(int i = 0;i < dfa.size();i++)
 		{
@@ -45,6 +46,18 @@ public class LRDFAPrinter
 					rv.append("]");
 				}
 				rv.append("\n");
+			}
+			if(hasLayouts)
+			{
+				rv.append("  Layouts: [");
+				boolean first = true;
+				for(int k = ((LRLookaheadAndLayoutSets) lookaheadSets).getLayout(i).nextSetBit(0);k >= 0;k = ((LRLookaheadAndLayoutSets) lookaheadSets).getLayout(i).nextSetBit(k+1))
+				{
+					if(first) first = false;
+					else rv.append(",");
+					rv.append(symbolTable.get(k).getDisplayName());
+				}
+				rv.append("]\n");
 			}
 			for(int j = dfa.getTransitionLabels(i).nextSetBit(0);j >= 0;j = dfa.getTransitionLabels(i).nextSetBit(j+1))
 			{

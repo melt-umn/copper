@@ -14,7 +14,7 @@ public class LRLookaheadSets
 	
 	public LRLookaheadSets(LR0DFA dfa)
 	{
-		int maxItemCount = -1;
+		maxItemCount = -1;
 		for(int i = 0;i < dfa.size();i++) maxItemCount = Math.max(maxItemCount,dfa.getItemSet(i).size());
 		
 		lookahead = new BitSet[dfa.size()][maxItemCount];
