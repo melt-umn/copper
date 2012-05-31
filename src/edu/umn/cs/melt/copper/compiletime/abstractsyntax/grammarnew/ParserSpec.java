@@ -168,6 +168,7 @@ public class ParserSpec
 		
 		public final BitSet getMembers(int dg) { return members[dg]; }
 		public final int getDisambiguateTo(int dg) { return disambiguateTos[dg]; }
+		public final boolean hasDisambiguateTo(int dg) { return disambiguateTos[dg] != -1; }
 		
 		public final void setDisambiguateTo(int dg,int t) { disambiguateTos[dg] = t; }
 		

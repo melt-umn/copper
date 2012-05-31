@@ -57,6 +57,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		else
 		{
+			newSpec.owners[beanId] = symbolTable.get(currentGrammar);
 			if(bean.getDisambiguateTo() != null) newSpec.df.setDisambiguateTo(beanId,dereference(bean.getDisambiguateTo()));
 			else newSpec.df.setDisambiguateTo(beanId,-1);
 			
@@ -128,6 +129,10 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		{
 			newSpec.nonterminals.set(beanId);
 		}
+		else
+		{
+			newSpec.owners[beanId] = symbolTable.get(currentGrammar);
+		}
 		return false;
 	}
 
@@ -139,6 +144,10 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		if(!metadataInitialized)
 		{
 			newSpec.parserAttributes.set(beanId);
+		}
+		else
+		{
+			newSpec.owners[beanId] = symbolTable.get(currentGrammar);			
 		}
 		return false;
 	}
@@ -206,6 +215,8 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		else
 		{
+			newSpec.owners[beanId] = symbolTable.get(currentGrammar);
+
 			int lhs = dereference(bean.getLhs());
 			newSpec.nt.getProductions(lhs).set(beanId);
 			newSpec.pr.setLHS(beanId,lhs);
@@ -257,6 +268,8 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		else
 		{
+			newSpec.owners[beanId] = symbolTable.get(currentGrammar);
+
 			newSpec.t.setRegex(beanId,bean.getRegex());
 			for(CopperElementReference tc : bean.getTerminalClasses())
 			{
@@ -294,6 +307,8 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		else
 		{
+			newSpec.owners[beanId] = symbolTable.get(currentGrammar);
+
 			for(CopperElementReference ref : bean.getMembers()) newSpec.tc.getMembers(beanId).set(dereference(ref));			
 		}
 		return false;
@@ -307,6 +322,10 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		if(!metadataInitialized)
 		{
 			newSpec.operatorClasses.set(beanId);
+		}
+		else
+		{
+			newSpec.owners[beanId] = symbolTable.get(currentGrammar);			
 		}
 		return false;
 	}
