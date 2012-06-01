@@ -25,18 +25,22 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.GrammarStati
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.builders.ContextSetBuilder;
-import edu.umn.cs.melt.copper.compiletime.builders.GrammarWellFormednessChecker;
 import edu.umn.cs.melt.copper.compiletime.builders.LALRLookaheadAndLayoutSetBuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.LR0DFABuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.LRParseTableBuilder;
+import edu.umn.cs.melt.copper.compiletime.builders.LexicalAmbiguitySetBuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.SingleScannerDFAAnnotationBuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.SingleScannerDFABuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.TransparentPrefixSetBuilder;
+import edu.umn.cs.melt.copper.compiletime.checkers.GrammarWellFormednessChecker;
+import edu.umn.cs.melt.copper.compiletime.checkers.LexicalAmbiguityChecker;
+import edu.umn.cs.melt.copper.compiletime.checkers.ParseTableConflictChecker;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.oldxml.XMLGrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.XMLSkinParser;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedDFA;
+import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.LexicalAmbiguities;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1DFABuilder;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRDFAPrinter;
@@ -726,6 +730,14 @@ public class ParserCompiler
 			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Parse table:\n" + LRParseTablePrinter.toString(symbolTable,numericSpec,parseTable));
 			logger.flushMessages();
 			
+			System.err.print("Checking parse table conflicts");
+			timeBefore = System.currentTimeMillis();
+		
+		ParseTableConflictChecker.check(logger, symbolTable, numericSpec, parseTable, stats);
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			logger.flushMessages();
+
 			System.err.print("Constructing transparent prefix sets");
 			timeBefore = System.currentTimeMillis();
 		
@@ -752,7 +764,23 @@ public class ParserCompiler
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
 			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Scanner DFA annotations:\n" + scannerDFAAnnotations);
 			logger.flushMessages();
-			
+
+			System.err.print("Checking lexical ambiguities");
+			timeBefore = System.currentTimeMillis();
+		
+		LexicalAmbiguities lexicalAmbiguities = LexicalAmbiguitySetBuilder.build(numericSpec,lookaheadSets,parseTable,prefixes,scannerDFAAnnotations);
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			logger.flushMessages();
+
+			System.err.print("Reporting lexical ambiguities");
+			timeBefore = System.currentTimeMillis();
+		
+		LexicalAmbiguityChecker.check(logger, symbolTable, lexicalAmbiguities, stats);
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			logger.flushMessages();
+
 
 		PrintStream out = args.getOutput();
 		String rootType = symbolTable.getNonTerminal(numericSpec.pr.getRHSSym(numericSpec.getStartProduction(),0)).getReturnType();

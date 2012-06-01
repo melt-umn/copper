@@ -6,4 +6,10 @@ public class GrammarStatistics
 {
 	public BitSet uselessNTs;
 	public BitSet nonTerminalNTs;
+	public int parseTableConflictCount;
+	public int unresolvedParseTableConflictCount;
+	public int lexicalAmbiguityCount;
+	public int contextResolvedLexicalAmbiguityCount;
+	public int disambiguationFunctionResolvedLexicalAmbiguityCount;
+	public int unresolvableLexicalAmbiguityCount;
 }

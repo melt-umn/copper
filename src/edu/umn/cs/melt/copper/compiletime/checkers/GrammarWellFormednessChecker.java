@@ -1,5 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.builders;
-
+package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 
@@ -11,6 +10,12 @@ import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
+/**
+ * Checks that a grammar is "well-formed;" i.e., that it contains no nonterminals with no terminal
+ * derivations, and, if specified, that it contains no "useless" nonterminals.
+ * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ *
+ */
 public class GrammarWellFormednessChecker
 {
 	public static boolean check(CompilerLogger logger,GrammarStatistics stats,SymbolTable<CopperASTBean> symbolTable,ParserSpec spec,boolean reportUselessWarnings)
