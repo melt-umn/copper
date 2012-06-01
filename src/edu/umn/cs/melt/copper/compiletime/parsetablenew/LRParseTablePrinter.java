@@ -55,18 +55,19 @@ public class LRParseTablePrinter
 		switch(actionType)
 		{
 		case LRParseTable.SHIFT:
-			if(t == spec.getEOFTerminal()) rv.append("Accept");
-			else if(spec.terminals.get(t)) rv.append("Shift to state ").append(actionParameter);
-			else                          rv.append("Goto state ").append(actionParameter);
+			if(t == spec.getEOFTerminal()) rv.append("ACCEPT");
+			else if(spec.terminals.get(t)) rv.append("SHIFT(").append(actionParameter).append(")");
+			else                          rv.append("GOTO(").append(actionParameter).append(")");
 			break;
 		case LRParseTable.REDUCE:
-			rv.append("Reduce on production ");
+			rv.append("REDUCE(");
 			rv.append(symbolTable.get(spec.pr.getLHS(actionParameter)).getDisplayName());
 			rv.append(" ::=");
 			for(int i = 0;i < spec.pr.getRHSLength(actionParameter);i++)
 			{
 				rv.append(" ").append(symbolTable.get(spec.pr.getRHSSym(actionParameter,i)).getDisplayName());
 			}
+			rv.append(")");
 			break;
 		case LRParseTable.CONFLICT:
 			rv.append("*UNRESOLVED CONFLICT*");
@@ -75,5 +76,12 @@ public class LRParseTablePrinter
 			rv.append("[ERROR]");
 		}
 		
+	}
+	
+	public static String printAction(SymbolTable<CopperASTBean> symbolTable,ParserSpec spec,int state,int t,byte actionType,int actionParameter)
+	{
+		StringBuffer rv = new StringBuffer();
+		printAction(rv, symbolTable, spec, state, t, actionType, actionParameter);
+		return rv.toString();
 	}
 }

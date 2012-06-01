@@ -314,6 +314,15 @@ public class ParserSpec
 		p = new ParserData(parser + 1);
 	}
 	
+	public String productionToString(SymbolTable<CopperASTBean> symbolTable,int production)
+	{
+		StringBuffer rv = new StringBuffer();
+		rv.append(symbolTable.get(pr.getLHS(production)).getDisplayName()).append(" ::=");
+		for(int rhs = 0;rhs < pr.getRHSLength(production);rhs++) rv.append(" ").append(symbolTable.get(pr.getRHSSym(production,rhs)).getDisplayName());
+		rv.append("\n");
+		return rv.toString();
+	}
+	
 	public String toString(SymbolTable<CopperASTBean> symbolTable)
 	{
 		StringBuffer rv = new StringBuffer();
