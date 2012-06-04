@@ -108,7 +108,7 @@ public class LexicalAmbiguitySetBuilder
 						{
 							int ambiguity = ambiguities.get(scannerDFAAnnotations.getAcceptSet(i));
 							unresolved.set(ambiguity);
-							locations.get(ambiguity).set(i);
+							locations.get(ambiguity).set(statenum);
 						}
 					}
 				}

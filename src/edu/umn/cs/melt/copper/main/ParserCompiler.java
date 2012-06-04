@@ -35,6 +35,7 @@ import edu.umn.cs.melt.copper.compiletime.builders.TransparentPrefixSetBuilder;
 import edu.umn.cs.melt.copper.compiletime.checkers.GrammarWellFormednessChecker;
 import edu.umn.cs.melt.copper.compiletime.checkers.LexicalAmbiguityChecker;
 import edu.umn.cs.melt.copper.compiletime.checkers.ParseTableConflictChecker;
+import edu.umn.cs.melt.copper.compiletime.checkers.PrecedenceCycleChecker;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.oldxml.XMLGrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParser;
@@ -54,6 +55,10 @@ import edu.umn.cs.melt.copper.compiletime.logging.GrammarDumper;
 import edu.umn.cs.melt.copper.compiletime.logging.PlainTextGrammarDumper;
 import edu.umn.cs.melt.copper.compiletime.logging.StringBasedCompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.XMLGrammarDumper;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.PrintCompilerLogHandler;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.FinalReportMessage;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTablePrinter;
 import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.ComposabilityChecker;
@@ -649,7 +654,23 @@ public class ParserCompiler
 	{
 		boolean isPretty = args.isPretty();
 		boolean gatherStatistics = args.isGatherStatistics();
-		CompilerLogger logger = args.getLogger();
+		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = new edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger(new PrintCompilerLogHandler(args.getLogger().getOut()));
+		switch(args.getQuietLevel())
+		{
+		case DEBUG:
+			logger.setLevel(CompilerLevel.VERY_VERBOSE);
+			break;
+		case DUMP:
+			logger.setLevel(CompilerLevel.VERBOSE);
+			break;
+		case ERROR:
+		case FATAL_ERROR:
+			logger.setLevel(CompilerLevel.QUIET);
+			break;
+		case WARNING:
+			break;
+		}
+		
 		String packageDecl = 
 				(args.getPackageDecl() != null && !args.getPackageDecl().equals("")) ?
 						args.getPackageDecl() :
@@ -673,8 +694,8 @@ public class ParserCompiler
 		PSSymbolTable symbolTable = SymbolTableBuilder.build(spec);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Symbol table:\n" + symbolTable);
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"Symbol table:\n" + symbolTable));
+			logger.flush();
 			
 			System.err.print("Constructing numeric grammar specification");
 			timeBefore = System.currentTimeMillis();
@@ -682,17 +703,17 @@ public class ParserCompiler
 		ParserSpec numericSpec = NumericParserSpecBuilder.build(spec,symbolTable);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Numeric spec:\n" + numericSpec.toString(symbolTable));
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"Numeric spec:\n" + numericSpec.toString(symbolTable)));
+			logger.flush();
 			
 			System.err.print("Checking grammar well-formedness");
-			GrammarStatistics stats = new GrammarStatistics();
+			GrammarStatistics stats = new GrammarStatistics(numericSpec);
 			timeBefore = System.currentTimeMillis();
 		
 		GrammarWellFormednessChecker.check(logger, stats, symbolTable, numericSpec, true);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			logger.flushMessages();
+			logger.flush();
 			
 			System.err.print("Constructing context sets");
 			timeBefore = System.currentTimeMillis();
@@ -700,17 +721,18 @@ public class ParserCompiler
 		ContextSets contextSets = ContextSetBuilder.build(numericSpec);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Context sets:\n" + contextSets.toString(symbolTable));
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"Context sets:\n" + contextSets.toString(symbolTable)));
+			logger.flush();
 			
 			System.err.print("Constructing LR(0) DFA");
 			timeBefore = System.currentTimeMillis();
 		
 		LR0DFA dfa = LR0DFABuilder.build(numericSpec);
+		stats.parseStateCount = dfa.size() - 1;
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LR(0) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa));
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"LR(0) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa)));
+			logger.flush();
 			
 			System.err.print("Constructing LALR lookahead/layout sets");
 			timeBefore = System.currentTimeMillis();
@@ -718,8 +740,8 @@ public class ParserCompiler
 		LRLookaheadAndLayoutSets lookaheadSets = LALRLookaheadAndLayoutSetBuilder.build(numericSpec,contextSets,dfa);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"LALR(1) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa,lookaheadSets));
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"LALR(1) DFA:\n" + LRDFAPrinter.toString(symbolTable,numericSpec,dfa,lookaheadSets)));
+			logger.flush();
 			
 			System.err.print("Constructing parse table");
 			timeBefore = System.currentTimeMillis();
@@ -727,8 +749,8 @@ public class ParserCompiler
 		LRParseTable parseTable = LRParseTableBuilder.build(numericSpec,dfa,lookaheadSets);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Parse table:\n" + LRParseTablePrinter.toString(symbolTable,numericSpec,parseTable));
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"Parse table:\n" + LRParseTablePrinter.toString(symbolTable,numericSpec,parseTable)));
+			logger.flush();
 			
 			System.err.print("Checking parse table conflicts");
 			timeBefore = System.currentTimeMillis();
@@ -736,7 +758,7 @@ public class ParserCompiler
 		ParseTableConflictChecker.check(logger, symbolTable, numericSpec, parseTable, stats);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			logger.flushMessages();
+			logger.flush();
 
 			System.err.print("Constructing transparent prefix sets");
 			timeBefore = System.currentTimeMillis();
@@ -744,34 +766,42 @@ public class ParserCompiler
 		TransparentPrefixes prefixes = TransparentPrefixSetBuilder.build(numericSpec,parseTable);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Transparent prefix sets:\n" + prefixes.toString(symbolTable));
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"Transparent prefix sets:\n" + prefixes.toString(symbolTable)));
+			logger.flush();
 			
 			System.err.print("Constructing scanner DFA");
 			timeBefore = System.currentTimeMillis();
 		
 		GeneralizedDFA scannerDFA = SingleScannerDFABuilder.build(numericSpec);
+		stats.scannerStateCount = scannerDFA.stateCount();
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Scanner DFA:\n" + scannerDFA);
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"Scanner DFA:\n" + scannerDFA));
+			logger.flush();
 			
 			System.err.print("Constructing scanner DFA annotations (accept/reject/possible sets, character map)");
 			timeBefore = System.currentTimeMillis();
 		
-		SingleScannerDFAAnnotations scannerDFAAnnotations = SingleScannerDFAAnnotationBuilder.build(logger,symbolTable,numericSpec,scannerDFA);
+		SingleScannerDFAAnnotations scannerDFAAnnotations = SingleScannerDFAAnnotationBuilder.build(numericSpec,scannerDFA);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,"Scanner DFA annotations:\n" + scannerDFAAnnotations);
-			logger.flushMessages();
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) logger.log(new GenericMessage(CompilerLevel.VERY_VERBOSE,"Scanner DFA annotations:\n" + scannerDFAAnnotations));
+			logger.flush();
 
+			System.err.print("Checking for precedence dependency cycles");
+			timeBefore = System.currentTimeMillis();
+		
+		PrecedenceCycleChecker.check(logger, symbolTable, scannerDFAAnnotations);
+		
+			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
+			logger.flush();
 			System.err.print("Checking lexical ambiguities");
 			timeBefore = System.currentTimeMillis();
 		
 		LexicalAmbiguities lexicalAmbiguities = LexicalAmbiguitySetBuilder.build(numericSpec,lookaheadSets,parseTable,prefixes,scannerDFAAnnotations);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			logger.flushMessages();
+			logger.flush();
 
 			System.err.print("Reporting lexical ambiguities");
 			timeBefore = System.currentTimeMillis();
@@ -779,7 +809,7 @@ public class ParserCompiler
 		LexicalAmbiguityChecker.check(logger, symbolTable, lexicalAmbiguities, stats);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
-			logger.flushMessages();
+			logger.flush();
 
 
 		PrintStream out = args.getOutput();
@@ -809,7 +839,7 @@ public class ParserCompiler
 		}
 		catch(CopperException ex)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
 			return 1;
 		}
 		catch(Exception ex)
@@ -819,6 +849,8 @@ public class ParserCompiler
 			return 1;
 		}
 
+		logger.log(new FinalReportMessage(stats));
+		logger.flush();
 		
 		return 0;
 	}

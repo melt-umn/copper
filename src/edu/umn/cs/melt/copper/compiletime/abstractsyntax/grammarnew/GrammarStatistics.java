@@ -4,6 +4,21 @@ import java.util.BitSet;
 
 public class GrammarStatistics
 {
+	public GrammarStatistics(ParserSpec spec)
+	{
+		terminalCount = spec.terminals.cardinality();
+		nonterminalCount = spec.nonterminals.cardinality();
+		productionCount = spec.productions.cardinality();
+		disambiguationFunctionCount = spec.disambiguationFunctions.cardinality();
+	}
+	
+	public int terminalCount;
+	public int nonterminalCount;
+	public int productionCount;
+	public int disambiguationFunctionCount;
+	public int parseStateCount;
+	public int scannerStateCount;
+
 	public BitSet uselessNTs;
 	public BitSet nonTerminalNTs;
 	public int parseTableConflictCount;

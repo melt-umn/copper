@@ -1,13 +1,10 @@
 package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew;
 
 import java.util.BitSet;
-import java.util.LinkedList;
 import java.util.Queue;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
@@ -29,8 +26,7 @@ public class PrecedenceGraph extends Digraph
 	 * @return The partition, in the form of the reject set (terminals to be excluded).
 	 * @throws CopperException When an error such as a circular dependency occurs.
 	 */
-	public <T> BitSet partitionAcceptSet(CompilerLogger logger,String location,SymbolTable<T> symbolTable,BitSet acceptSet)
-	throws CopperException
+	public <T> BitSet partitionAcceptSet(Queue<BitSet> detectedCycles,BitSet acceptSet)
 	{
 		// DEBUG-X-BEGIN
 		//System.err.println("Before partition, graph is: " + this);
@@ -38,18 +34,10 @@ public class PrecedenceGraph extends Digraph
 		//for(int i : inDegrees) System.err.print(" " + i);
 		//System.err.println(" ]");
 		// DEBUG-X-END
-		Queue<BitSet> detectedCycles = new LinkedList<BitSet>();
 		detectCycles(acceptSet, detectedCycles, null);
 		if(!detectedCycles.isEmpty())
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.ERROR))
-			{
-				for(BitSet bs : detectedCycles)
-				{
-					logger.logErrorMessage(CompilerLogMessageSort.ERROR,null,"In " + location + ":\nCyclic precedence relation involving terminals\n" + PSSymbolTable.bitSetPrettyPrint(bs,symbolTable,"  ",80) + " on graph\n" + this);
-				}
-			}
-			else return acceptSet;
+			return acceptSet;
 		}
 		BitSet acceptSetW = new BitSet(acceptSet.length());
 		acceptSetW.or(acceptSet);

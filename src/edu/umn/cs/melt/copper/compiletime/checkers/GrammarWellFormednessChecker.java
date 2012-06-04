@@ -2,12 +2,13 @@ package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.GrammarStatistics;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.NonterminalNonterminalMessage;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.UselessNonterminalMessage;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
@@ -18,7 +19,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public class GrammarWellFormednessChecker
 {
-	public static boolean check(CompilerLogger logger,GrammarStatistics stats,SymbolTable<CopperASTBean> symbolTable,ParserSpec spec,boolean reportUselessWarnings)
+	public static boolean check(CompilerLogger logger,GrammarStatistics stats,PSSymbolTable symbolTable,ParserSpec spec,boolean reportUselessWarnings)
 	throws CopperException
 	{
 		boolean passed = true;
@@ -71,16 +72,7 @@ public class GrammarWellFormednessChecker
 		
 		for(int nt = uselessNTs.nextSetBit(0);nt >= 0;nt = uselessNTs.nextSetBit(nt+1))
 		{
-			CompilerLogMessageSort sort = CompilerLogMessageSort.WARNING;
-			// Comment out this conditional to make all useless-nonterminal messages into warnings.
-			/*if(!spec.nt.getProductions(nt).isEmpty())
-			{
-				passed = false;
-				sort = CompilerLogMessageSort.ERROR;
-			}
-			else*/ if(!reportUselessWarnings) continue;
-			
-			if(logger.isLoggable(sort)) logger.logMessage(sort,null,"Useless nonterminal '" + symbolTable.get(nt).getDisplayName() + "'");
+			if(logger.isLoggable(CompilerLevel.REGULAR)) logger.log(new UselessNonterminalMessage(symbolTable.getNonTerminal(nt)));
 		}
 		
 		stats.uselessNTs = uselessNTs;
@@ -149,7 +141,7 @@ public class GrammarWellFormednessChecker
 		for(int nt = fringe.nextSetBit(0);nt >= 0;nt = fringe.nextSetBit(nt+1))
 		{
 			passed = false;
-			if(logger.isLoggable(CompilerLogMessageSort.ERROR)) logger.logMessage(CompilerLogMessageSort.ERROR,null,"Nonterminal '" + symbolTable.get(nt).getDisplayName() + "' has no terminal derivations");
+			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new NonterminalNonterminalMessage(symbolTable.getNonTerminal(nt)));
 		}
 		
 		return passed;		
