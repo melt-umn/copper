@@ -2,40 +2,37 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 public class SingleScannerDFAAnnotationBuilder
 {
-	private CompilerLogger logger;
-	private SymbolTable<CopperASTBean> symbolTable;
 	private ParserSpec spec;
 	private GeneralizedDFA dfa;
 	
-	private SingleScannerDFAAnnotationBuilder(CompilerLogger logger,SymbolTable<CopperASTBean> symbolTable,ParserSpec spec,GeneralizedDFA dfa)
+	private SingleScannerDFAAnnotationBuilder(ParserSpec spec,GeneralizedDFA dfa)
 	{
-		this.logger = logger;
-		this.symbolTable = symbolTable;
 		this.spec = spec;
 		this.dfa = dfa;
 	}
 	
-	public static SingleScannerDFAAnnotations build(CompilerLogger logger,SymbolTable<CopperASTBean> symbolTable,ParserSpec spec,GeneralizedDFA dfa)
-	throws CopperException
+	public static SingleScannerDFAAnnotations build(ParserSpec spec,GeneralizedDFA dfa)
 	{
-		return new SingleScannerDFAAnnotationBuilder(logger,symbolTable,spec,dfa).buildAnnotations();
+		return new SingleScannerDFAAnnotationBuilder(spec,dfa).buildAnnotations();
 	}
 	
 	private SingleScannerDFAAnnotations buildAnnotations()
-	throws CopperException
 	{
 		int i;
+
+		HashSet<BitSet> circularDependencies = new HashSet<BitSet>();
+		Queue<BitSet> stateCircularDependencies = new LinkedList<BitSet>();
+		
 		// Set up holders for expanded state information.
 		int SCANNER_STATE_COUNT = dfa.stateCount();
 		BitSet[] acceptSets = new BitSet[SCANNER_STATE_COUNT];
@@ -47,7 +44,14 @@ public class SingleScannerDFAAnnotationBuilder
 		for(int state = 0;state < dfa.stateCount();state++)
 		{
 			BitSet accF = dfa.getAcceptSymbols(state);
-			BitSet rej = spec.t.precedences.partitionAcceptSet(logger, "static precedence disambiguator, scanner state " + state, symbolTable, accF);
+			
+			stateCircularDependencies.clear();
+			BitSet rej = spec.t.precedences.partitionAcceptSet(stateCircularDependencies,accF);
+			if(!stateCircularDependencies.isEmpty())
+			{
+				circularDependencies.addAll(stateCircularDependencies);
+			}
+			
 			acceptSets[state] = new BitSet();
 			rejectSets[state] = new BitSet();
 			possibleSets[state] = new BitSet();
@@ -107,6 +111,9 @@ public class SingleScannerDFAAnnotationBuilder
 			}
 		}
 		
-		return new SingleScannerDFAAnnotations(acceptSets, rejectSets, possibleSets, cMap);
+		BitSet[] circularDependenciesA = new BitSet[circularDependencies.size()];
+		circularDependencies.toArray(circularDependenciesA);
+		
+		return new SingleScannerDFAAnnotations(acceptSets, rejectSets, possibleSets, cMap, circularDependenciesA);
 	}
 }

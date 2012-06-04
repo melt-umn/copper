@@ -8,7 +8,6 @@ import java.util.Stack;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
-import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
  * A generic digraph implementation, used to represent precedence relations.
@@ -74,7 +73,6 @@ public class Digraph
 	}
 	
 	protected boolean detectCycles(BitSet vertices,Queue<BitSet> detectedCycles,Queue<Integer> topologicallySortedVertices)
-	throws CopperException
 	{
 		int[] colors = new int[vertexCount];
 		Stack<Integer> searchStack = new Stack<Integer>();

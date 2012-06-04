@@ -40,7 +40,7 @@ public class PSSymbolTable extends SymbolTable<CopperASTBean>
 	/**
 	 * Produces a string representation of a bit set given a string representation of each bit.
 	 * @param coll The bit set.
-	 * @param nameMap The string representation of each bit.
+	 * @param nameMap The string representation of each bit. Set to {@code null} to print the numbers themselves.
 	 * @param linePrefix A string with which to prefix each line in the output (e.g., indentation).
 	 * @param itemsPerLine The number of objects in the bit set to place on each line of the output.
 	 */
@@ -51,10 +51,14 @@ public class PSSymbolTable extends SymbolTable<CopperASTBean>
 		int currentLineCharCount = 0;
 		for(int i = coll.nextSetBit(0);i >= 0;i = coll.nextSetBit(i + 1))
 		{
-			T o = nameMap.get(i);
 			String s;
-			if(o instanceof CopperASTBean) s = ((CopperASTBean) o).getDisplayName();
-			else s = o.toString();
+			if(nameMap != null)
+			{
+				T o = nameMap.get(i);
+				if(o instanceof CopperASTBean) s = ((CopperASTBean) o).getDisplayName();
+				else s = o.toString();
+			}
+			else s = String.valueOf(i);
 
 			if(currentLineCharCount + s.length() + 1 >= maxWidth && currentLineCharCount > linePrefix.length())
 			{

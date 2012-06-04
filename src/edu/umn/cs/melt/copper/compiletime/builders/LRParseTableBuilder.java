@@ -101,6 +101,11 @@ public class LRParseTableBuilder
 				}
 				if(!allOneClass || reduceActions.cardinality() > 1) continue;
 			}
+			else
+			{
+				reduceActions.clear();
+				reduceActions.or(conflict.reduce);
+			}
 			
 			if(shiftAction != -1 && reduceActions.cardinality() == 1)
 			{
@@ -135,7 +140,7 @@ public class LRParseTableBuilder
 					}
 				}
 			}
-
+			
 			if(shiftAction == -1 && reduceActions.isEmpty())
 			{
 				parseTable.setActionType(conflict.getState(),conflict.getSymbol(),LRParseTable.ERROR);
