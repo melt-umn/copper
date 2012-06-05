@@ -37,7 +37,7 @@ public class LexicalAmbiguityMessage implements CompilerLogMessage
 	@Override
 	public int getType()
 	{
-		return CompilerLogMessageType.LEXICAL_CONFLICT;
+		return CompilerLogMessageType.LEXICAL_AMBIGUITY;
 	}
 
 	@Override
