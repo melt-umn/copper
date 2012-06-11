@@ -165,46 +165,57 @@ public class LALRLookaheadAndLayoutSetBuilder
 			for(int item = fringe1.nextSetBit(0);item >= 0;item = fringe1.nextSetBit(item+1))
 			{
 				combinedFirst.clear();
+				lookaheadLayoutBuffer.clear();
 				boolean useLookahead = computeCombinedFirst(stateI.getProduction(item),stateI.getPosition(item),combinedFirst);
 				
-				if(useLookahead)
+				if(stateI.getPosition(item) == 0)
+				{
+					lookaheadSets.getLayout(state).or(beginningLayout[state][item]);
+				}
+				else if(stateI.getPosition(item) == spec.pr.getRHSLength(stateI.getProduction(item)))
+				{
+					lookaheadLayoutBuffer.or(spec.pr.getLayouts(stateI.getProduction(item)));
+				}
+				
+				if(useLookahead && (stateI.getPosition(item) == spec.pr.getRHSLength(stateI.getProduction(item)) ||
+						            contextSets.isNullable(spec.pr.getRHSSym(stateI.getProduction(item),stateI.getPosition(item)))))
 				{
 					lookaheadSets.getLayout(state).or(lookaheadLayout[state][item]);
 					lookaheadLayoutBuffer.or(lookaheadLayout[state][item]);
 				}
-
+				
 				if(stateI.getPosition(item) >= spec.pr.getRHSLength(stateI.getProduction(item))) continue;
 
 				// BOTTLENECK -- could speed this up by having a map of productions
 				// e.g. A -> b (*) C d  -->   C -> e
 				for(int i = 0;i < stateI.size();i++)
 				{
-					if(spec.pr.getLHS(stateI.getProduction(i)) == spec.pr.getRHSSym(stateI.getProduction(item),stateI.getPosition(item)))
+					if(stateI.getPosition(i) == 0 &&
+					   spec.pr.getLHS(stateI.getProduction(i)) == spec.pr.getRHSSym(stateI.getProduction(item),stateI.getPosition(item)))
 					{
 						boolean setChanged = false;
 						
 						setChanged |= ParserSpec.union(lookaheadSets.getLookahead(state,i),combinedFirst);
 						
-						if(stateI.getPosition(i) == 0)
+						if(stateI.getPosition(item) == 0)
 						{
 							setChanged |= ParserSpec.union(beginningLayout[state][i],beginningLayout[state][item]);
-							if(spec.pr.getRHSLength(stateI.getProduction(i)) > 0 &&
-							   spec.terminals.get(spec.pr.getRHSSym(stateI.getProduction(i),0)))
-							{
-								ParserSpec.union(lookaheadSets.getLayout(state),beginningLayout[state][item]);
-							}
 						}
 						else
 						{
 							setChanged |= ParserSpec.union(beginningLayout[state][i],spec.pr.getLayouts(stateI.getProduction(item)));
-							lookaheadSets.getLayout(state).or(spec.pr.getLayouts(stateI.getProduction(item)));
+						}
+
+						if(spec.pr.getRHSLength(stateI.getProduction(i)) > 0 &&
+						   spec.terminals.get(spec.pr.getRHSSym(stateI.getProduction(i),0)))
+						{
+							ParserSpec.union(lookaheadSets.getLayout(state),beginningLayout[state][i]);
 						}
 
 						setChanged |= ParserSpec.union(lookaheadLayout[state][i],lookaheadLayoutBuffer);
 						if(useLookahead)
 						{
 							setChanged |= ParserSpec.union(lookaheadSets.getLookahead(state,i),lookaheadSets.getLookahead(state,item));
-							lookaheadSets.getLayout(state).or(lookaheadLayoutBuffer);
 						}
 						if(setChanged)
 						{
@@ -239,6 +250,7 @@ public class LALRLookaheadAndLayoutSetBuilder
 			}
 			stillNullable &= contextSets.isNullable(spec.pr.getRHSSym(production,i));
 		}
+		System.err.println("Production " + production + ", position " + position + ": " + stillNullable);
 		
 		return stillNullable;
 	}

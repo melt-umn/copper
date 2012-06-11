@@ -142,7 +142,8 @@ public class LALRLookaheadSetBuilder
 				// e.g. A -> b (*) C d  -->   C -> e
 				for(int i = 0;i < stateI.size();i++)
 				{
-					if(spec.pr.getLHS(stateI.getProduction(i)) == spec.pr.getRHSSym(stateI.getProduction(item),stateI.getPosition(item)))
+					if(spec.pr.getLHS(stateI.getProduction(i)) == spec.pr.getRHSSym(stateI.getProduction(item),stateI.getPosition(item)) &&
+					   stateI.getPosition(i) == 0)
 					{
 						boolean setChanged;
 						setChanged = ParserSpec.union(lookaheadSets.getLookahead(state,i),combinedFirst);

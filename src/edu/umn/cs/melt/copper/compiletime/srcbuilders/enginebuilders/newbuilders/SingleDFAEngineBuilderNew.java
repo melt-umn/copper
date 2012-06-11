@@ -106,8 +106,9 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		ParserBean parser = symbolTable.getParser(spec.parser);
 		
 		if(packageDecl.equals("") &&
-		   importDecls.equals("")) packageDecl = parser.getPreambleCode();
-		else importDecls += "\n" + parser.getPreambleCode();
+		   importDecls.equals("") &&
+		   parser.getPreambleCode() != null) packageDecl = parser.getPreambleCode();
+		else if(parser.getPreambleCode() != null) importDecls += "\n" + parser.getPreambleCode();
 		
 		String rootType = symbolTable.getNonTerminal(spec.pr.getRHSSym(spec.getStartProduction(),0)).getReturnType();
 		String errorType = CopperParserException.class.getName();
@@ -243,7 +244,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 	    parserAncillaries += "    return parseTree;\n";
 	    parserAncillaries += "    }\n";
 	    parserAncillaries += "\n";
-		parserAncillaries += parser.getParserClassAuxCode();
+		if(parser.getParserClassAuxCode() != null) parserAncillaries += parser.getParserClassAuxCode();
 
 		out.print(packageDecl + "\n");
 		out.print(importDecls + "\n");
@@ -412,7 +413,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		out.print("    public class Semantics extends " + SingleDFASemanticActionContainer.class.getName() + "<" + errorType + ">\n");
 		out.print("    {\n");
 		
-		out.print(parser.getSemanticActionAuxCode());
+		if(parser.getSemanticActionAuxCode() != null) out.print(parser.getSemanticActionAuxCode());
 		
 		for(int attrN = spec.parserAttributes.nextSetBit(0);attrN >= 0;attrN = spec.parserAttributes.nextSetBit(attrN+1))
 		{
@@ -436,21 +437,21 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		out.print("        public void runDefaultTermAction()\n");
 		out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
 		out.print("        {\n");
-		out.print("            " + parser.getDefaultTerminalCode() + "\n");
+		if(parser.getDefaultTerminalCode() != null) out.print("            " + parser.getDefaultTerminalCode() + "\n");
 		out.print("        }\n");
 	    out.print("        public void runDefaultProdAction()\n");
 		out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
 		out.print("        {\n");
-		out.print("            " + parser.getDefaultProductionCode() + "\n");
+		if(parser.getDefaultProductionCode() != null) out.print("            " + parser.getDefaultProductionCode() + "\n");
 		out.print("        }\n");
 		out.print("        public void runInit()\n");
 		out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
 		out.print("        {\n");
-		out.print("            " + parser.getParserInitCode());// grammar.getParserSources().getParserAttrInitCode());
+		if(parser.getParserInitCode() != null) out.print("            " + parser.getParserInitCode());// grammar.getParserSources().getParserAttrInitCode());
 		for(int attrN = spec.parserAttributes.nextSetBit(0);attrN >= 0;attrN = spec.parserAttributes.nextSetBit(attrN+1))
 		{
 			ParserAttributeBean attr = symbolTable.getParserAttribute(attrN);
-			out.print("            " + attr.getCode() + "\n");
+			if(attr.getCode() != null) out.print("            " + attr.getCode() + "\n");
 		}
 		out.print("        }\n");
 
@@ -467,6 +468,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		for(int p = spec.productions.nextSetBit(0);p >= 0;p = spec.productions.nextSetBit(p+1))
 		{
 			if(p == spec.getStartProduction() ||
+			   symbolTable.getProduction(p).getCode() == null ||
 			   QuotedStringFormatter.isJavaWhitespace(symbolTable.getProduction(p).getCode()))
 			{
 				continue;
@@ -495,6 +497,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
 		{
 			if(t == spec.getEOFTerminal() ||
+			   symbolTable.getTerminal(t).getCode() == null ||
 			   QuotedStringFormatter.isJavaWhitespace(symbolTable.getTerminal(t).getCode()))
 			{
 				continue;
@@ -522,6 +525,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		for(int p = spec.productions.nextSetBit(0);p >= 0;p = spec.productions.nextSetBit(p+1))
 		{
 			if(p == spec.getStartProduction() ||
+			   symbolTable.getProduction(p).getCode() == null ||
 			   QuotedStringFormatter.isJavaWhitespace(symbolTable.getProduction(p).getCode()))
 			{
 				continue;
@@ -559,6 +563,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
 		{
 			if(t == spec.getEOFTerminal() ||
+			   symbolTable.getTerminal(t).getCode() == null ||
 			   QuotedStringFormatter.isJavaWhitespace(symbolTable.getTerminal(t).getCode()))
 			{
 				continue;
@@ -598,7 +603,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 			{
 				out.print("            @SuppressWarnings(\"unused\") int " + symbolNames[t] + " = " + t + ";\n");
 			}
-			if(spec.df.hasDisambiguateTo(group)) out.print("            return " + symbolNames[spec.df.getDisambiguateTo(group)] + "\n");
+			if(spec.df.hasDisambiguateTo(group)) out.print("            return " + symbolNames[spec.df.getDisambiguateTo(group)] + ";\n");
 			else out.print("            " + symbolTable.getDisambiguationFunction(group).getCode() + "\n");
 			out.print("        }\n");
 		}
