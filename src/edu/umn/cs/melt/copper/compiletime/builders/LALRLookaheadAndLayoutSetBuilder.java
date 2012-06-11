@@ -250,7 +250,6 @@ public class LALRLookaheadAndLayoutSetBuilder
 			}
 			stillNullable &= contextSets.isNullable(spec.pr.getRHSSym(production,i));
 		}
-		System.err.println("Production " + production + ", position " + position + ": " + stillNullable);
 		
 		return stillNullable;
 	}
