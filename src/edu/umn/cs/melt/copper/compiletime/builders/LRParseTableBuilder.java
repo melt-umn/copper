@@ -79,7 +79,7 @@ public class LRParseTableBuilder
 			LRParseTableConflict conflict = parseTable.getConflict(i);
 			
 			int shiftAction = conflict.shift;
-						
+			
 			if(conflict.reduce.cardinality() > 1)
 			{
 				int encounteredOperatorClass = Integer.MIN_VALUE;
@@ -117,10 +117,15 @@ public class LRParseTableBuilder
 					if(spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator))
 					{
 						if(spec.t.getOperatorPrecedence(shiftOperator) > spec.t.getOperatorPrecedence(reduceOperator)) reduceActions.clear();
-						else if(spec.t.getOperatorPrecedence(shiftOperator) > spec.t.getOperatorPrecedence(reduceOperator)) shiftAction = -1;
+						else if(spec.t.getOperatorPrecedence(reduceOperator) > spec.t.getOperatorPrecedence(shiftOperator)) shiftAction = -1;
 					}
 				}
-				else /*if(shiftOperator == reduceOperator)*/
+				
+				if(shiftOperator == reduceOperator ||
+				   (spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator) &&
+				    spec.t.getOperatorPrecedence(shiftOperator) == spec.t.getOperatorPrecedence(reduceOperator) &&
+				    spec.t.getOperatorAssociativity(shiftOperator) == spec.t.getOperatorAssociativity(reduceOperator)))
+				    
 				{
 					switch(spec.t.getOperatorAssociativity(shiftOperator))
 					{

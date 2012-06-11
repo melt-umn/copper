@@ -79,9 +79,12 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		else
 		{
-			for(CopperElementReference ref : bean.getGrammarLayout())
+			if(bean.getGrammarLayout() != null)
 			{
-				newSpec.g.getLayouts(beanId).set(dereference(ref));
+				for(CopperElementReference ref : bean.getGrammarLayout())
+				{
+					newSpec.g.getLayouts(beanId).set(dereference(ref));
+				}
 			}
 		}
 		for(CopperElementName n : bean.getGrammarElements())
@@ -105,9 +108,12 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		else
 		{
-			for(CopperElementReference ref : bean.getGrammarLayout())
+			if(bean.getGrammarLayout() != null)
 			{
-				newSpec.g.getLayouts(beanId).set(dereference(ref));
+				for(CopperElementReference ref : bean.getGrammarLayout())
+				{
+					newSpec.g.getLayouts(beanId).set(dereference(ref));
+				}
 			}
 		}
 		hasError |= bean.getMarkingTerminal().acceptVisitor(this);
@@ -187,9 +193,12 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 			hasError |= bean.getGrammar(n).acceptVisitor(this);
 		}
 		
-		for(CopperElementReference layout : bean.getStartLayout())
+		if(bean.getStartLayout() != null)
 		{
-			newSpec.p.getLayout().set(dereference(layout));
+			for(CopperElementReference layout : bean.getStartLayout())
+			{
+				newSpec.p.getLayout().set(dereference(layout));
+			}
 		}
 		newSpec.pr.getLayouts(startProdN).or(newSpec.p.getLayout());
 
@@ -248,9 +257,12 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 			else
 			{
 				newSpec.pr.setHasLayout(beanId,false);
-				for(CopperElementReference layout : currentGrammar.getGrammarLayout())
+				if(currentGrammar.getGrammarLayout() != null)
 				{
-					newSpec.pr.getLayouts(beanId).set(dereference(layout));
+					for(CopperElementReference layout : currentGrammar.getGrammarLayout())
+					{
+						newSpec.pr.getLayouts(beanId).set(dereference(layout));
+					}
 				}
 			}
 		}
