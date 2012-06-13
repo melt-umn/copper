@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
  * Holds a reference to a Copper grammar element. 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  */
-public class CopperElementReference
+public class CopperElementReference implements Comparable<CopperElementReference>
 {
 	/**
 	 * The grammar in which the element being referred to is located.
@@ -142,5 +142,13 @@ public class CopperElementReference
 	{
 		if(grammarName == null) return name.toString();
 		else return grammarName + ":" + name;
+	}
+
+	@Override
+	public int compareTo(CopperElementReference o)
+	{
+		int gC = grammarName.compareTo(o.grammarName);
+		if(gC != 0) return gC;
+		else return name.compareTo(o.name);
 	}
 }

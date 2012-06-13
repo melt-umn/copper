@@ -64,7 +64,7 @@ public class Grammar3p23API
 		ws.setLocation(l);
 		ws.setCode("System.out.print(\"[space]\" + Grammar3p23$lineBreak);");
 		ws.setRegex(
-		 new ConcatenationRegexBean(
+		 new ConcatenationRegexBean().addSubexps(
 		  new CharacterSetRegexBean().addLooseChar(' '),
 		  new KleeneStarRegexBean(
 		   new CharacterSetRegexBean().addLooseChar(' '))));

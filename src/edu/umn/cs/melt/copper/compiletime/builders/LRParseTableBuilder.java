@@ -112,36 +112,39 @@ public class LRParseTableBuilder
 				int shiftOperator = conflict.getSymbol();
 				int reduceOperator = spec.pr.getOperator(reduceActions.nextSetBit(0));
 				
-				if(shiftOperator != reduceOperator)
+				if(reduceOperator != -1)
 				{
-					if(spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator))
+					if(shiftOperator != reduceOperator)
 					{
-						if(spec.t.getOperatorPrecedence(shiftOperator) > spec.t.getOperatorPrecedence(reduceOperator)) reduceActions.clear();
-						else if(spec.t.getOperatorPrecedence(reduceOperator) > spec.t.getOperatorPrecedence(shiftOperator)) shiftAction = -1;
+						if(spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator))
+						{
+							if(spec.t.getOperatorPrecedence(shiftOperator) > spec.t.getOperatorPrecedence(reduceOperator)) reduceActions.clear();
+							else if(spec.t.getOperatorPrecedence(reduceOperator) > spec.t.getOperatorPrecedence(shiftOperator)) shiftAction = -1;
+						}
 					}
-				}
-				
-				if(shiftOperator == reduceOperator ||
-				   (spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator) &&
-				    spec.t.getOperatorPrecedence(shiftOperator) == spec.t.getOperatorPrecedence(reduceOperator) &&
-				    spec.t.getOperatorAssociativity(shiftOperator) == spec.t.getOperatorAssociativity(reduceOperator)))
-				    
-				{
-					switch(spec.t.getOperatorAssociativity(shiftOperator))
+					
+					if(shiftOperator == reduceOperator ||
+					   (spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator) &&
+					    spec.t.getOperatorPrecedence(shiftOperator) == spec.t.getOperatorPrecedence(reduceOperator) &&
+					    spec.t.getOperatorAssociativity(shiftOperator) == spec.t.getOperatorAssociativity(reduceOperator)))
+					    
 					{
-					case LEFT:
-						shiftAction = -1;
-						break;
-					case RIGHT:
-						reduceActions.clear();
-						break;
-					case NONASSOC:
-						shiftAction = -1;
-						reduceActions.clear();
-						break;
-					case NONE:
-					default:
-						// No action
+						switch(spec.t.getOperatorAssociativity(shiftOperator))
+						{
+						case LEFT:
+							shiftAction = -1;
+							break;
+						case RIGHT:
+							reduceActions.clear();
+							break;
+						case NONASSOC:
+							shiftAction = -1;
+							reduceActions.clear();
+							break;
+						case NONE:
+						default:
+							// No action
+						}
 					}
 				}
 			}

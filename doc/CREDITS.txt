@@ -1,6 +1,6 @@
-Portions (C) 2005-2006 August Schwerdfeger
+Portions (C) 2005-2006, 2012 August Schwerdfeger
          (C) 2006-2010 Regents of the University of Minnesota
-         (C) 2011 Adventium Enterprises LLC
+         (C) 2011-2012 Adventium Enterprises LLC
          
 Research and development of Copper has been partially supported by
 the National Science Foundation under grants #1047961, #0905581,

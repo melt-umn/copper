@@ -12,6 +12,8 @@ import java.util.HashSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.xml.sax.SAXException;
+
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.FringeSymbols;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarName;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSource;
@@ -39,6 +41,7 @@ import edu.umn.cs.melt.copper.compiletime.checkers.PrecedenceCycleChecker;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.oldxml.XMLGrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParser;
+import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.ParserSpecXMLPrinter;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.XMLSkinParser;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.LexicalAmbiguities;
@@ -654,6 +657,7 @@ public class ParserCompiler
 	{
 		boolean isPretty = args.isPretty();
 		boolean gatherStatistics = args.isGatherStatistics();
+		boolean succeeded = true;
 		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = new edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger(new PrintCompilerLogHandler(args.getLogger().getOut()));
 		switch(args.getQuietLevel())
 		{
@@ -710,7 +714,7 @@ public class ParserCompiler
 			GrammarStatistics stats = new GrammarStatistics(numericSpec);
 			timeBefore = System.currentTimeMillis();
 		
-		GrammarWellFormednessChecker.check(logger, stats, symbolTable, numericSpec, true);
+		succeeded &= GrammarWellFormednessChecker.check(logger, stats, symbolTable, numericSpec, true);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
 			logger.flush();
@@ -755,7 +759,7 @@ public class ParserCompiler
 			System.err.print("Checking parse table conflicts");
 			timeBefore = System.currentTimeMillis();
 		
-		ParseTableConflictChecker.check(logger, symbolTable, numericSpec, parseTable, stats);
+		succeeded &= ParseTableConflictChecker.check(logger, symbolTable, numericSpec, parseTable, stats);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
 			logger.flush();
@@ -791,7 +795,7 @@ public class ParserCompiler
 			System.err.print("Checking for precedence dependency cycles");
 			timeBefore = System.currentTimeMillis();
 		
-		PrecedenceCycleChecker.check(logger, symbolTable, scannerDFAAnnotations);
+		succeeded &= PrecedenceCycleChecker.check(logger, symbolTable, scannerDFAAnnotations);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
 			logger.flush();
@@ -806,11 +810,34 @@ public class ParserCompiler
 			System.err.print("Reporting lexical ambiguities");
 			timeBefore = System.currentTimeMillis();
 		
-		LexicalAmbiguityChecker.check(logger, symbolTable, lexicalAmbiguities, stats);
+		succeeded &= LexicalAmbiguityChecker.check(logger, symbolTable, lexicalAmbiguities, stats);
 		
 			System.err.println(" - " + (System.currentTimeMillis() - timeBefore) + " ms");
 			logger.flush();
 
+		if(args.isDumpReport() &&
+		   args.getDumpType() == CopperDumpType.XML_SPEC && 
+		   (!args.isDumpOnlyOnError() || !succeeded))
+		{
+			PrintStream dumpStream = null;
+			if(!args.isDumpReport() || args.getDumpFile().equals("") || args.getDumpFile().equals(args.getLogFile())) dumpStream = args.getLogger().getOut();
+			else
+			{
+				try { dumpStream = new PrintStream(new FileOutputStream(args.getDumpFile())); }
+				catch(FileNotFoundException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+			try
+			{
+				spec.acceptVisitor(new ParserSpecXMLPrinter(dumpStream));
+			}
+			catch(SAXException ex)
+			{
+				ex.printStackTrace();
+			}
+		}
 
 		PrintStream out = args.getOutput();
 		String rootType = symbolTable.getNonTerminal(numericSpec.pr.getRHSSym(numericSpec.getStartProduction(),0)).getReturnType();
