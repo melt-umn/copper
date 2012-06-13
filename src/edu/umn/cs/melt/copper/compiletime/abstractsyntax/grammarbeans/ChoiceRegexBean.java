@@ -53,6 +53,16 @@ public class ChoiceRegexBean extends RegexBean
 		for(int i = 0;i < subexps.length;i++) this.subexps.add(subexps[i]);
 		return this;
 	}
+	
+	/**
+	 * Alters this choice regex to add several sub-expressions at the end.
+	 * @return {@code this} (to enable chaining of mutator calls).
+	 */
+	public ChoiceRegexBean addSubexps(List<RegexBean> subexps)
+	{
+		this.subexps.addAll(subexps);
+		return this;
+	}
 
 	/**
 	 * @see #subexps

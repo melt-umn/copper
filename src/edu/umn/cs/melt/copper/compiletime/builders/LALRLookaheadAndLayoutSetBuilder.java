@@ -172,15 +172,18 @@ public class LALRLookaheadAndLayoutSetBuilder
 				{
 					lookaheadSets.getLayout(state).or(beginningLayout[state][item]);
 				}
-				else if(stateI.getPosition(item) == spec.pr.getRHSLength(stateI.getProduction(item)))
+				else if(stateI.getPosition(item) < spec.pr.getRHSLength(stateI.getProduction(item)))
 				{
 					lookaheadLayoutBuffer.or(spec.pr.getLayouts(stateI.getProduction(item)));
 				}
 				
-				if(useLookahead && (stateI.getPosition(item) == spec.pr.getRHSLength(stateI.getProduction(item)) ||
-						            contextSets.isNullable(spec.pr.getRHSSym(stateI.getProduction(item),stateI.getPosition(item)))))
+				if(useLookahead)
 				{
-					lookaheadSets.getLayout(state).or(lookaheadLayout[state][item]);
+					if(stateI.getPosition(item) == spec.pr.getRHSLength(stateI.getProduction(item)) ||
+				       contextSets.isNullable(spec.pr.getRHSSym(stateI.getProduction(item),stateI.getPosition(item))))
+				    {
+						lookaheadSets.getLayout(state).or(lookaheadLayout[state][item]);
+				    }
 					lookaheadLayoutBuffer.or(lookaheadLayout[state][item]);
 				}
 				

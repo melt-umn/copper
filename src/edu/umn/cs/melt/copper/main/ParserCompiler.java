@@ -841,6 +841,7 @@ public class ParserCompiler
 
 		PrintStream out = args.getOutput();
 		String rootType = symbolTable.getNonTerminal(numericSpec.pr.getRHSSym(numericSpec.getStartProduction(),0)).getReturnType();
+		if(rootType == null) rootType = "Object";
 		String errorType = CopperParserException.class.getName();
 		String ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel) + 
 	              edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserMainFunction(packageDecl,parserName,rootType,errorType,gatherStatistics,isPretty,runtimeQuietLevel);

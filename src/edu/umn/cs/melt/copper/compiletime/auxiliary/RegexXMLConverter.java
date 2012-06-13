@@ -10,6 +10,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.Concatenat
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.EmptyStringRegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.KleeneStarRegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.RegexBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.RegexSimplifier;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.ParserSpecXMLPrinter;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
@@ -28,6 +29,10 @@ public class RegexXMLConverter
 		RegexXMLConverter parser = new RegexXMLConverter(logger);
 		parser.setToParse(args[0]);
 		RegexBean regex = parser.parse();
+
+		RegexSimplifier simplifier = new RegexSimplifier();
+		regex = regex.acceptVisitor(simplifier);
+
 		ParserSpecXMLPrinter printer = new ParserSpecXMLPrinter(System.out,"    ");
 		try
 		{

@@ -29,6 +29,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalBe
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalClassBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.CopperASTBeanVisitor;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.RegexBeanVisitor;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.RegexSimplifier;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.xml.SAXWriter;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.xml.SAXWriterImpl;
@@ -42,6 +43,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 {
 	private ParserBean currentParser;
 	private GrammarBean currentGrammar;
+	private RegexSimplifier regexSimplifier;
 	private SAXWriter out;
 	
 	public ParserSpecXMLPrinter(PrintStream out)
@@ -52,6 +54,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	public ParserSpecXMLPrinter(PrintStream out,String ppIndentation)
 	{
 		this.out = new SAXWriterImpl(out,ppIndentation,false);
+		regexSimplifier = new RegexSimplifier();
 		currentParser = null;
 		currentGrammar = null;
 	}
@@ -374,7 +377,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 		}
 		
 		startElement(XMLSkinElements.Type.REGEX_ELEMENT);
-		bean.getRegex().acceptVisitor(this);
+		bean.getRegex().acceptVisitor(regexSimplifier).acceptVisitor(this);
 		endElement(XMLSkinElements.Type.REGEX_ELEMENT);
 
 		if(bean.getOperatorClass() != null ||

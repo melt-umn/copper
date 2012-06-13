@@ -111,6 +111,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		else if(parser.getPreambleCode() != null) importDecls += "\n" + parser.getPreambleCode();
 		
 		String rootType = symbolTable.getNonTerminal(spec.pr.getRHSSym(spec.getStartProduction(),0)).getReturnType();
+		if(rootType == null) rootType = "Object";
 		String errorType = CopperParserException.class.getName();
 
 	    parserAncillaries += "		private static int TERMINAL_COUNT;\n";
@@ -513,7 +514,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		out.print("            return RESULT;\n");
 		out.print("        }\n");
 
-		if(!QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
+		if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
 		{
 			out.print("        public void runPostParseCode(Object __root)\n");
 			out.print("        {\n");
@@ -621,7 +622,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 	    out.print("    {\n");
 	    out.print("        return semantics.runSemanticAction(_pos,_terminal);\n");
 	    out.print("    }\n");
-		if(!QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
+		if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
 		{
 		    out.print("    public void runPostParseCode(Object __root)\n");
 		    out.print("    {\n");
