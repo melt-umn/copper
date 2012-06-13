@@ -55,6 +55,16 @@ public class ConcatenationRegexBean extends RegexBean
 	}
 	
 	/**
+	 * Alters this concatenation regex to add several sub-expressions at the end.
+	 * @return {@code this} (to enable chaining of mutator calls).
+	 */
+	public ConcatenationRegexBean addSubexps(List<RegexBean> subexps)
+	{
+		this.subexps.addAll(subexps);
+		return this;
+	}
+	
+	/**
 	 * @see #subexps
 	 */
 	public void setSubexps(List<RegexBean> subexps)
