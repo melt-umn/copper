@@ -161,7 +161,7 @@ public class ComposabilityChecker
 				if(grammar.getPrecedenceRelationsGraph().hasEdge(t,u)) newGS.addStaticPrecedenceRelation(t,u);
 			}
 		}
-		// TODO Add other components of GrammarSource as necessary.
+		// Add other components of GrammarSource as necessary.
 		// Parser attributes.
 		// Disambiguation groups.
 		if(isWanted(grammar,wantedGrammars,grammar.getStartSym())) newGS.setStartSym(grammar.getStartSym());

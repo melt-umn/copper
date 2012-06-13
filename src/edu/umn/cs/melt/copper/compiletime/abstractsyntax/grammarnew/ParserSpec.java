@@ -304,7 +304,8 @@ public class ParserSpec
 		// TODO: Reduce the sizes of the arrays in the inner classes
 		//       by allocating only as many elements as are required
 		//       for the respective sort of grammar element, and using
-		//       offsets in the getter functions.
+		//       offsets in the getter functions. See if this saves
+		//       more memory than it costs time.
 		t = new TerminalData(terminals.length());
 		nt = new NonterminalData(nonterminals.length());
 		pr = new ProductionData(productions.length(),maxRHS);

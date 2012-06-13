@@ -40,7 +40,6 @@ public class RegexXMLConverter
 		}
 		catch (SAXException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -38,14 +38,17 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
-	<xs:complexType name="PrecedenceClass">
+	<!-- This type has been designated as "mixed" and the sub-element "OperatorClassRef"
+	     made optional for backward compatibility with Copper 0.6.1. For Copper 0.7 it
+	     should not be mixed and the "OperatorClassRef" should be mandatory. -->
+	<xs:complexType name="PrecedenceClass" mixed="true">
 		<xs:annotation>
 			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
 				For operator precedence on terminals and production precedence on productions.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="OperatorClassRef" type="OperatorClassRef" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="OperatorClassRef" type="OperatorClassRef" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 	

@@ -43,7 +43,7 @@ public class ParserSpecProcessor
 		normalizer.visitParserBean(spec);
 	}
 	
-	// Remove this when the other skins can produce ParserBeans instead of GrammarSource objects.
+	// TODO: Remove this when the other skins can produce ParserBeans instead of GrammarSource objects.
 	public static GrammarSource buildGrammarSource(ParserBean spec,CompilerLogger logger)
 	{
 		GrammarSourceBuilder builder = new GrammarSourceBuilder();

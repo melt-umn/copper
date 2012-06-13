@@ -32,7 +32,6 @@ public abstract class CompilerLogger
 		hasErrors = false;
 	}
 	
-	// TODO: Specify a general Location object for the location instead of an InputPosition object. 
 	public void logMessage(CompilerLogMessageSort sort,InputPosition location,String message)
 	{
 		Object[] parameters = new Object[3];

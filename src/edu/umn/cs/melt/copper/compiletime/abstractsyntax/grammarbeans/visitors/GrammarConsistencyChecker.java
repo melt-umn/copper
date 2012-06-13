@@ -183,7 +183,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 		}
 		if(!hasError)
 		{
-			// TODO: Check that the grammar's bridge production is of the correct form.
+			// In the future, check that the grammar's bridge production is of the correct form.
 			
 			// Full list of conditions (conditions 3 and 5 have been dropped for practical reasons):
 			

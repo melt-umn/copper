@@ -186,7 +186,6 @@ public class ModedEngineBuilder implements EngineBuilder,ParseActionVisitor<Pair
 	       allDFAs.containsKey(shiftable)) return null;
 		NFA dfa = buildDFA(shiftable);
 		allDFAs.put(shiftable,dfa);
-		// FIXME May not handle all layout situations.
 		if(ModedEngine.isMelded(meldedSituations[statenum]) &&
 	       dfa.getStartState().getAccepts().isEmpty() &&
 	       (builtParseTable.hasLayout(statenum) &&

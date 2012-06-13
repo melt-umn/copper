@@ -3556,7 +3556,6 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
             else if(_prod.equals(p_58))
             {
                 
-    // FIXME Put in a check if the same flag is used twice.
     RESULT = _children[1];
 
             }
@@ -3678,7 +3677,6 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
             else if(_prod.equals(p_64))
             {
                 
-    // FIXME Put in a check if the regex disambiguated to is outside the group.
     edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object> code = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,java.lang.Object>) _children[7];
     code = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(code.first(),(Object) ("return " + ((String) code.second()) + ";\n"));
     RESULT = new edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.IntermediateSymbolNode(
@@ -3869,7 +3867,6 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
             {
                 
     edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String > flags = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String >) _children[4];
-    // FIXME Put in a check if the same flag is used twice.
     RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons((java.util.LinkedList<String>) _children[2],flags.second());
 
             }
@@ -3877,7 +3874,6 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
             {
                 
     edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String > flags = (edu.umn.cs.melt.copper.runtime.auxiliary.Pair< java.util.LinkedList<String>,String >) _children[2];
-    // FIXME Put in a check if the same flag is used twice.
     RESULT = edu.umn.cs.melt.copper.runtime.auxiliary.Pair.cons(flags.first(),((edu.umn.cs.melt.copper.runtime.auxiliary.Pair<edu.umn.cs.melt.copper.runtime.io.InputPosition,Object>) _children[1]).second());
 
             }

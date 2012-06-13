@@ -13,6 +13,7 @@ public class CopperElementName implements Comparable<CopperElementName>
 {
 	private static final Pattern validNames = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*");
 	
+	// TODO: Remove this class's dependence on grammar.Symbol.
     private Symbol symbol;
 
     protected CopperElementName(String name)

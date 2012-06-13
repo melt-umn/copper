@@ -29,9 +29,9 @@ class PlaceholderBean extends CopperASTBean
 	}
 
 	@Override
-	public <RT, E extends Exception> RT acceptVisitor(
-			CopperASTBeanVisitor<RT, E> visitor) throws E {
-		// TODO Auto-generated method stub
+	public <RT, E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT, E> visitor)
+	throws E
+	{
 		return null;
 	}
 

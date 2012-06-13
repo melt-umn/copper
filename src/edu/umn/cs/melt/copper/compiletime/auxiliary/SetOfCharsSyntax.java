@@ -15,7 +15,8 @@ public class SetOfCharsSyntax
 {
 	private String stringRep = null;
 	private int size = -1;
-	// TODO: Optimize.
+	// TODO: This is used to sort ranges when constructing a SetOfCharsSyntax
+	//       object. It could do with some optimization.
 	private class CharRange implements Comparable<CharRange>
 	{
 		public char min,max;
