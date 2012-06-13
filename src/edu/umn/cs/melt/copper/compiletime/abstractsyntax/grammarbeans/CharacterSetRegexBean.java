@@ -13,6 +13,13 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
  */
 public class CharacterSetRegexBean extends RegexBean
 {
+	public static CharacterSetRegexBean union(CharacterSetRegexBean left,CharacterSetRegexBean right)
+	{
+		CharacterSetRegexBean rv = new CharacterSetRegexBean();
+		rv.chars = SetOfCharsSyntax.union(left.chars,right.chars);
+		return rv;
+	}
+	
 	private SetOfCharsSyntax chars;
 	
 	/**
@@ -21,6 +28,16 @@ public class CharacterSetRegexBean extends RegexBean
 	public CharacterSetRegexBean()
 	{
 		chars = new SetOfCharsSyntax();
+	}
+	
+	/**
+	 * If this character set contains only one character, return that character.
+	 * @throws ArrayIndexOutOfBoundsException If the character set does not contain exactly one character.
+	 */
+	public char getOnlyChar()
+	{
+		if(cardinality() == 1) return chars.getMembers()[0][0];
+		else throw new ArrayIndexOutOfBoundsException();
 	}
 	
 	/**
@@ -62,6 +79,14 @@ public class CharacterSetRegexBean extends RegexBean
 	public boolean isComplete()
 	{
 		return !chars.isEmpty();
+	}
+	
+	/**
+	 * Returns the total number of characters in the character set.
+	 */
+	public int cardinality()
+	{
+		return chars.size();
 	}
 
 	@Override

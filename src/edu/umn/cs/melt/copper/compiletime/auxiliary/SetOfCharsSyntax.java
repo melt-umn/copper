@@ -254,6 +254,8 @@ public class SetOfCharsSyntax
 			if(!extrema.containsKey(left.canonicalRanges[i][1])) extrema.put(left.canonicalRanges[i][1],Masks.LEFT_TURNS_OFF);
 			else extrema.put(left.canonicalRanges[i][1],(byte)(extrema.get(left.canonicalRanges[i][1]) | Masks.LEFT_TURNS_OFF));
 		}
+		boolean rightHasMin = false;
+		boolean rightHasMax = false;
 		for(int i = 0;i < right.canonicalRanges.length;i++)
 		{
 			if(right.canonicalRanges[i][0] != Character.MIN_VALUE)
@@ -261,18 +263,32 @@ public class SetOfCharsSyntax
 				if(!extrema.containsKey((char)(right.canonicalRanges[i][0] - 1))) extrema.put((char)(right.canonicalRanges[i][0] - 1),Masks.RIGHT_TURNS_OFF);
 				else extrema.put((char)(right.canonicalRanges[i][0] - 1),(byte)(extrema.get((char)(right.canonicalRanges[i][0] - 1)) | Masks.RIGHT_TURNS_OFF));
 			}
+			else rightHasMin = true;
+			
 			if(right.canonicalRanges[i][1] != Character.MAX_VALUE)
 			{
 				if(!extrema.containsKey((char)(right.canonicalRanges[i][1] + 1))) extrema.put((char)(right.canonicalRanges[i][1] + 1),Masks.RIGHT_TURNS_ON);
 				else extrema.put((char)(right.canonicalRanges[i][1] + 1),(byte)(extrema.get((char)(right.canonicalRanges[i][1] + 1)) | Masks.RIGHT_TURNS_ON));
 			}
+			else rightHasMax = true;
 		}
-		if(!extrema.containsKey(Character.MIN_VALUE)) extrema.put(Character.MIN_VALUE,Masks.RIGHT_TURNS_ON);
-		else extrema.put(Character.MIN_VALUE,(byte)(extrema.get(Character.MIN_VALUE) | Masks.RIGHT_TURNS_ON));
-		if(!extrema.containsKey(Character.MAX_VALUE)) extrema.put(Character.MAX_VALUE,Masks.RIGHT_TURNS_OFF);
-		else extrema.put(Character.MAX_VALUE,(byte)(extrema.get(Character.MAX_VALUE) | Masks.RIGHT_TURNS_OFF));
+		if(!rightHasMin)
+		{
+			if(!extrema.containsKey(Character.MIN_VALUE)) extrema.put(Character.MIN_VALUE,Masks.RIGHT_TURNS_ON);
+			else extrema.put(Character.MIN_VALUE,(byte)(extrema.get(Character.MIN_VALUE) | Masks.RIGHT_TURNS_ON));
+		}
+		if(!rightHasMax)
+		{
+			if(!extrema.containsKey(Character.MAX_VALUE)) extrema.put(Character.MAX_VALUE,Masks.RIGHT_TURNS_OFF);
+			else extrema.put(Character.MAX_VALUE,(byte)(extrema.get(Character.MAX_VALUE) | Masks.RIGHT_TURNS_OFF));
+		}
 		// DEBUG-X-BEGIN
-		// System.err.println(extrema);
+		//System.err.print("[");
+		//for(char extremum : extrema.keySet())
+		//{
+		//	System.err.printf(" U+%x=%s",(int) extremum,Integer.toBinaryString(extrema.get(extremum))); 
+		//}
+		//System.err.println(" ]");
 		// DEBUG-X-END
 		return extrema;
 	}
@@ -365,18 +381,18 @@ public class SetOfCharsSyntax
 
 	/*public static void main(String[] args)
 	{
-		char[][] canonicalRanges = new char[args.length][2];
+		char[][] canonicalRanges = new char[args.length / 2][2];
 		
-		for(int i = 0;i < args.length;i++)
+		for(int i = 0;i < args.length / 2;i++)
 		{
-			canonicalRanges[i][0] = args[i].charAt(0);
-			canonicalRanges[i][1] = args[i].charAt(1);
+			canonicalRanges[i][0] = (char)Integer.parseInt(args[2*i]);
+			canonicalRanges[i][1] = (char)Integer.parseInt(args[2*i+1]);
 		}
 		
-		char[][] initCanonicalRanges = new char[args.length / 2][2];
-		System.arraycopy(canonicalRanges,0,initCanonicalRanges,0,args.length / 2);
+		char[][] initCanonicalRanges = new char[args.length / 4][2];
+		System.arraycopy(canonicalRanges,0,initCanonicalRanges,0,args.length / 4);
 		SetOfCharsSyntax left = new SetOfCharsSyntax(initCanonicalRanges);
-		System.arraycopy(canonicalRanges,args.length / 2,initCanonicalRanges,0,args.length / 2);
+		System.arraycopy(canonicalRanges,args.length / 4,initCanonicalRanges,0,args.length / 4);
 		SetOfCharsSyntax right = new SetOfCharsSyntax(initCanonicalRanges);
 		
 		System.out.println("========================");

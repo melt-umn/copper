@@ -27,16 +27,6 @@ public class ConcatenationRegexBean extends RegexBean
 	}
 	
 	/**
-	 * Constructs a concatenation regex complete with constituents.
-	 * @param subexps The regex's constituents.
-	 */
-	public ConcatenationRegexBean(RegexBean... subexps)
-	{
-		this.subexps = new ArrayList<RegexBean>(subexps.length);
-		for(int i = 0;i < subexps.length;i++) this.subexps.add(subexps[i]);
-	}
-	
-	/**
 	 * @see #subexps
 	 */
 	public List<RegexBean> getSubexps()
@@ -51,6 +41,16 @@ public class ConcatenationRegexBean extends RegexBean
 	public ConcatenationRegexBean addSubexp(RegexBean subexp)
 	{
 		subexps.add(subexp);
+		return this;
+	}
+	
+	/**
+	 * Alters this concatenation regex to add several sub-expressions at the end.
+	 * @return {@code this} (to enable chaining of mutator calls).
+	 */
+	public ConcatenationRegexBean addSubexps(RegexBean... subexps)
+	{
+		for(int i = 0;i < subexps.length;i++) this.subexps.add(subexps[i]);
 		return this;
 	}
 	
