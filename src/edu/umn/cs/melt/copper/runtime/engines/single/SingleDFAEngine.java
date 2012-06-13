@@ -449,8 +449,7 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 			else if(scanResult.terms.cardinality() > 1)
 			{
 				// This should not happen.
-				System.err.println("Ambiguous match");
-				// TODO: Should probably throw an exception instead of printing...
+				throw new RuntimeException("Ambiguous match: " + bitVecToDisplayStringList(scanResult.terms));
 			}
 			// DEBUG-X-BEGIN
 			//System.err.println(bitVecToString(scanResult.terms));

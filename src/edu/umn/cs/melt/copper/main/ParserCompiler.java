@@ -183,7 +183,7 @@ public class ParserCompiler
 	}
 	
 	@SuppressWarnings("deprecation")
-	private static GrammarSource parseInputGrammar(ParserCompilerParameters args)
+	private static GrammarSource parseInputGrammarLegacy(ParserCompilerParameters args)
 	{
 		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
 		boolean isComposition = args.isComposition();
@@ -288,7 +288,7 @@ public class ParserCompiler
 	}
 		
 	@SuppressWarnings("deprecation")
-	private static int compileParser(ParserCompilerParameters args,GrammarSource grammar)
+	private static int compileParserLegacy(ParserCompilerParameters args,GrammarSource grammar)
 	throws CopperException
 	{
 		boolean isPretty = args.isPretty();
@@ -530,21 +530,34 @@ public class ParserCompiler
 			return 1;
 		}
 		ParserSpecProcessor.normalizeParser(spec,logger);
+		return compileParser(args,spec);
+	}
+	
+	public static int compileLegacy(ParserBean spec,ParserCompilerParameters args)
+	throws CopperException
+	{
+		CompilerLogger logger = getOrMakeLogger(args);
+		if(args.getFiles() != null)
+		{
+			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,"Input files cannot be specified when compiling a parser from Java objects");
+			return 1;
+		}
+		ParserSpecProcessor.normalizeParser(spec,logger);
 		GrammarSource grammar = ParserSpecProcessor.buildGrammarSource(spec,logger);
 
-		return compileParser(args,grammar);
+		return compileParserLegacy(args,grammar);
 	}
 
-	public static int compile(ParserCompilerParameters args)
+	public static int compileLegacy(ParserCompilerParameters args)
 	{
-		GrammarSource grammar = parseInputGrammar(args);
+		GrammarSource grammar = parseInputGrammarLegacy(args);
 		int errorlevel;
 		if(grammar == null) errorlevel = 1;
 		else
 		{
 			try
 			{
-				errorlevel = compileParser(args,grammar);
+				errorlevel = compileParserLegacy(args,grammar);
 			}
 			catch(CopperException ex)
 			{
@@ -556,7 +569,7 @@ public class ParserCompiler
 		return errorlevel;
 	}
 	
-	private static ParserBean parseInputGrammarNew(ParserCompilerParameters args)
+	private static ParserBean parseInputGrammar(ParserCompilerParameters args)
 	{
 		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
 		//boolean isComposition = args.isComposition();
@@ -655,10 +668,12 @@ public class ParserCompiler
 	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
 	throws CopperException
 	{
+		if(spec == null) return 1;
 		boolean isPretty = args.isPretty();
 		boolean gatherStatistics = args.isGatherStatistics();
 		boolean succeeded = true;
-		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = new edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger(new PrintCompilerLogHandler(args.getLogger().getOut()));
+		CompilerLogger oldStyleLogger = getOrMakeLogger(args);
+		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = new edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger(new PrintCompilerLogHandler(oldStyleLogger.getOut()));
 		switch(args.getQuietLevel())
 		{
 		case DEBUG:
@@ -880,12 +895,13 @@ public class ParserCompiler
 		logger.log(new FinalReportMessage(stats));
 		logger.flush();
 		
-		return 0;
+		if(!succeeded) return 1;
+		else return 0;
 	}
 
-	public static int compileNew(ParserCompilerParameters args)
+	public static int compile(ParserCompilerParameters args)
 	{
-		ParserBean spec = parseInputGrammarNew(args);
+		ParserBean spec = parseInputGrammar(args);
 		int errorlevel;
 		try
 		{
@@ -930,14 +946,13 @@ public class ParserCompiler
 		String runtimeQuietLevel = "ERROR";
 		String packageDecl = null;
 		String parserName = null;
-		// FIXME: Rip this out when GrammarSource is gone.
-		boolean useNewPipeline = false;
+		// TODO: Rip this out when GrammarSource is gone. 
+		boolean useOldPipeline = false;
 		int i;
 		for(i = 0;i < args.length;i++)
 		{
 			if(args[i].charAt(0) != '-') break;
-			// FIXME: Rip this out when GrammarSource is gone. 
-			else if(args[i].equals("-n")) useNewPipeline = true;
+			else if(args[i].equals("-legacy")) useOldPipeline = true;
 			else if(args[i].equals("-q"))
 			{
 				quietLevel = CompilerLogMessageSort.getQuietSort();
@@ -1057,7 +1072,7 @@ public class ParserCompiler
 		
 		int errorlevel;
 		
-		if(useNewPipeline) errorlevel = compileNew(argTable);
+		if(useOldPipeline) errorlevel = compileLegacy(argTable);
 		else errorlevel = compile(argTable);
 		
 		System.exit(errorlevel);

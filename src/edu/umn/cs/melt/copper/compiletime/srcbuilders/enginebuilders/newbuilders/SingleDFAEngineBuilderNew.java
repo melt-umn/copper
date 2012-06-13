@@ -319,7 +319,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 			
 			for(int t = builtParseTable.getValidLA(statenum).nextSetBit(0);t >= 0;t = builtParseTable.getValidLA(statenum).nextSetBit(t+1))
 			{
-				// TODO Take nonterminals out of the 'validLA' sets in the parse table.
+				// TODO Remove nonterminals from the 'validLA' sets in the parse table.
 				if(spec.terminals.get(t))
 				{
 					terminalUses[t] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_SHIFTABLE;
@@ -387,11 +387,11 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 				prefixMaps[statenum][prefix].or(prefixes.getFollowingTerminals(statenum,prefix));
 			}
 
-			// TODO Take nonterminals out of the 'validLA' sets in the parse table.
+			// TODO Remove nonterminals from the 'validLA' sets in the parse table.
 			shiftableSets[statenum].andNot(spec.nonterminals);
 		}
 
-		// TODO Take nonterminals out of the 'validLA' sets in the parse table.
+		// TODO Remove nonterminals from the 'validLA' sets in the parse table.
 		shiftableUnion.andNot(spec.nonterminals);
 
 		// To switch between scanner generation engines, change this line.
