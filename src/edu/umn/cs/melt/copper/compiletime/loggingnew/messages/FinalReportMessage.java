@@ -62,7 +62,7 @@ public class FinalReportMessage implements CompilerLogMessage
 		else
 		{
 			rv.append(stats.lexicalAmbiguityCount + " lexical ambiguit" + ((stats.lexicalAmbiguityCount == 1) ? "y" : "ies") + " detected; " + (stats.contextResolvedLexicalAmbiguityCount + stats.disambiguationFunctionResolvedLexicalAmbiguityCount) + " resolved,\n");
-			rv.append("   " + stats.contextResolvedLexicalAmbiguityCount + " by context, " + stats.disambiguationFunctionResolvedLexicalAmbiguityCount + " by disambiguation function/group.\n");
+			rv.append("   " + stats.contextResolvedLexicalAmbiguityCount + " by context, " + stats.disambiguationFunctionResolvedLexicalAmbiguityCount + " by disambiguation function/group.");
 		}
 		return rv.toString();
 	}

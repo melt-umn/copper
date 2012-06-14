@@ -39,7 +39,12 @@ public class PrintCompilerLogHandler implements CompilerLogHandler
 		boolean fail = false;
 		for(;marker < messageQueue.size();marker++)
 		{
-			out.println(messageQueue.get(marker) + "\n");
+			CompilerLogMessage m = messageQueue.get(marker);
+			if(m.getType() == CompilerLogMessageType.LEXICAL_AMBIGUITY ||
+			   m.getType() == CompilerLogMessageType.PARSE_TABLE_CONFLICT ||
+			   marker > 0 && (messageQueue.get(marker - 1).getType() == CompilerLogMessageType.LEXICAL_AMBIGUITY ||
+			                  messageQueue.get(marker - 1).getType() == CompilerLogMessageType.PARSE_TABLE_CONFLICT)) out.println();
+			out.println(m);
 			if(messageQueue.get(marker).isFatalError()) fail = true;
 		}
 		if(fail) throw new CopperException("Error(s) raised in compilation");

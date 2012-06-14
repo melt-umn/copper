@@ -42,32 +42,32 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 	
 	
 	/** Names of terminals, nonterminals, productions, etc. */
-	public String[] symbolNames;
+	private String[] symbolNames;
 	/** Display names of terminals, nonterminals, productions, etc. */
-	public String[] symbolDisplayNames;
+	private String[] symbolDisplayNames;
 	/** Lengths of productions, types of symbols. */
-	public int[] symbolNumbers;
+	private int[] symbolNumbers;
 	/** Symbols on the left-hand sides of productions. */
-	public int[] productionLHSs;
+	private int[] productionLHSs;
 	
 	/** Parse actions. */
-	public int[][] parseTable;
+	private int[][] parseTable;
 	/** Shiftable sets. */
-	public BitSet[] shiftableSets;
+	private BitSet[] shiftableSets;
 	/** Layout sets. */
-	public BitSet[] layoutSets;
+	private BitSet[] layoutSets;
 	/** Prefix sets. */
-	public BitSet[] prefixSets;
+	private BitSet[] prefixSets;
 	/** Maps of prefix terminals. */
-	public BitSet[][] prefixMaps;
+	private BitSet[][] prefixMaps;
 	/** What terminals are used as: only layout, only prefix, only shiftable, or versatile. */
-	public int[] terminalUses;
+	private int[] terminalUses;
 	
 	/** Shiftable union --- all terminals with a parse action,
 	 * plus all layout and prefixes that can appear before them. */
-	public BitSet shiftableUnion;
+	private BitSet shiftableUnion;
 	
-	public int[][] delta;
+	private int[][] delta;
 
 	/* Counts for building arrays statically. */
 	private int TERMINAL_COUNT;
