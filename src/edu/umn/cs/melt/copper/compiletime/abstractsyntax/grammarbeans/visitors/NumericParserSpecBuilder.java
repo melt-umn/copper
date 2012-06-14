@@ -200,6 +200,10 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 				newSpec.p.getLayout().set(dereference(layout));
 			}
 		}
+		else if(bean.getGrammar(bean.getStartSymbol().getGrammarName()).getGrammarLayout() != null)
+		{
+			for(CopperElementReference n : bean.getGrammar(bean.getStartSymbol().getGrammarName()).getGrammarLayout()) newSpec.p.getLayout().set(dereference(n));
+		}
 		newSpec.pr.getLayouts(startProdN).or(newSpec.p.getLayout());
 
 		currentParser = null;

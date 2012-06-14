@@ -15,7 +15,6 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.C
  */
 public class ParserAttributeBean extends GrammarElementBean
 {
-	// TODO: Is there an actual Java type object that can be used to represent these?
 	/** The Java type of the parser attribute. */
 	protected String attributeType;
 	/** The code block executed at parser start time to initialize the parser attribute. */
