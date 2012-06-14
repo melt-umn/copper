@@ -111,7 +111,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		else if(parser.getPreambleCode() != null) importDecls += "\n" + parser.getPreambleCode();
 		
 		String rootType = symbolTable.getNonTerminal(spec.pr.getRHSSym(spec.getStartProduction(),0)).getReturnType();
-		if(rootType == null) rootType = "Object";
+		if(rootType == null) rootType = Object.class.getName();
 		String errorType = CopperParserException.class.getName();
 
 	    parserAncillaries += "		private static int TERMINAL_COUNT;\n";
@@ -456,14 +456,14 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		}
 		out.print("        }\n");
 
-		out.print("        public Object runSemanticAction(" + InputPosition.class.getName() + " _pos,Object[] _children,int _prod)\n");
+		out.print("        public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + Object.class.getName() + "[] _children,int _prod)\n");
 	    out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
 		out.print("        {\n");
 		out.print("            this._pos = _pos;\n");
 		out.print("            this._children = _children;\n");
 		out.print("            this._prod = _prod;\n");
 		out.print("            this._specialAttributes = new " + SpecialParserAttributes.class.getName() + "(virtualLocation);\n");
-		out.print("            Object RESULT = null;\n");
+		out.print("            " + Object.class.getName() + " RESULT = null;\n");
 		out.print("            switch(_prod)\n");
 		out.print("            {\n");
 		for(int p = spec.productions.nextSetBit(0);p >= 0;p = spec.productions.nextSetBit(p+1))
@@ -485,14 +485,14 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		out.print("            return RESULT;\n");
 		out.print("        }\n");
 
-		out.print("        public Object runSemanticAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " _terminal)\n");
+		out.print("        public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " _terminal)\n");
 	    out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
 		out.print("        {\n");
 		out.print("            this._pos = _pos;\n");
 		out.print("            this._terminal = _terminal;\n");
 		out.print("            this._specialAttributes = new " + SpecialParserAttributes.class.getName() + "(virtualLocation);\n");
 		out.print("            @SuppressWarnings(\"unused\") String lexeme = _terminal.lexeme;\n");
-		out.print("            Object RESULT = null;\n");
+		out.print("            " + Object.class.getName() + " RESULT = null;\n");
 		out.print("            switch(_terminal.firstTerm)\n");
 		out.print("            {\n");
 		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
@@ -516,7 +516,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 
 		if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
 		{
-			out.print("        public void runPostParseCode(Object __root)\n");
+			out.print("        public void runPostParseCode(" + Object.class.getName() + " __root)\n");
 			out.print("        {\n");
 			out.print("            " + rootType + " root = (" + rootType + ") __root;\n");
 			out.print("            " + parser.getPostParseCode() + "\n");
@@ -531,7 +531,9 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 			{
 				continue;
 			}
-			out.print("        public " + symbolTable.getNonTerminal(spec.pr.getLHS(p)).getReturnType() + " runSemanticAction_" + p + "()\n");
+			String returnType = symbolTable.getNonTerminal(spec.pr.getLHS(p)).getReturnType();
+			if(returnType == null) returnType = Object.class.getName();
+			out.print("        public " + returnType + " runSemanticAction_" + p + "()\n");
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
 			if(symbolTable.getProduction(p).getRhsVarNames() != null)
@@ -542,7 +544,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 					if(var != null)
 					{
 						int sym = spec.pr.getRHSSym(p,k);
-						String type = "Object";
+						String type = Object.class.getName();
 						if(spec.terminals.get(sym))
 						{
 							type = symbolTable.getTerminal(sym).getReturnType();
@@ -556,7 +558,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 					k++;
 				}
 			}
-			out.print("            " + symbolTable.getNonTerminal(spec.pr.getLHS(p)).getReturnType() + " RESULT = null;\n");
+			out.print("            " + returnType + " RESULT = null;\n");
 			out.print("            " + symbolTable.getProduction(p).getCode() + "\n");
 			out.print("            return RESULT;\n");
 			out.print("        }\n");
@@ -569,10 +571,13 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 			{
 				continue;
 			}
-			out.print("        public " + symbolTable.getTerminal(t).getReturnType() + " runSemanticAction_" + t + "(String lexeme)\n");
+			String returnType = symbolTable.getTerminal(t).getReturnType();
+			if(returnType == null) returnType = Object.class.getName();
+			
+			out.print("        public " + returnType + " runSemanticAction_" + t + "(String lexeme)\n");
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
-			out.print("            " + symbolTable.getTerminal(t).getReturnType() + " RESULT = null;\n");
+			out.print("            " + returnType + " RESULT = null;\n");
 			out.print("            " + symbolTable.getTerminal(t).getCode() + "\n");
 			out.print("            return RESULT;\n");
 			out.print("        }\n");
@@ -612,19 +617,19 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		out.print("    }\n");
 	    
 	    out.print("    public Semantics semantics;\n");
-		out.print("    public Object runSemanticAction(" + InputPosition.class.getName() + " _pos,Object[] _children,int _prod)\n");
+		out.print("    public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + Object.class.getName() + "[] _children,int _prod)\n");
 	    out.print("    throws " + IOException.class.getName() + "," + errorType + "\n");
 	    out.print("    {\n");
 	    out.print("        return semantics.runSemanticAction(_pos,_children,_prod);\n");
 	    out.print("    }\n");
-	    out.print("    public Object runSemanticAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " _terminal)\n");
+	    out.print("    public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " _terminal)\n");
 	    out.print("    throws " + IOException.class.getName() + "," + errorType + "\n");
 	    out.print("    {\n");
 	    out.print("        return semantics.runSemanticAction(_pos,_terminal);\n");
 	    out.print("    }\n");
 		if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
 		{
-		    out.print("    public void runPostParseCode(Object __root)\n");
+		    out.print("    public void runPostParseCode(" + Object.class.getName() + " __root)\n");
 		    out.print("    {\n");
 		    out.print("        semantics.runPostParseCode(__root);\n");
 		    out.print("    }\n");
