@@ -39,7 +39,7 @@ span.grayed { color: #808080; font-style: italic; }
 <li><a href="#nonterminals" class="toclink">Nonterminals</a></li>
 <li><a href="#productions" class="toclink">Productions</a></li>
 <li><a href="#disambig_groups" class="toclink">Disambiguation functions/groups</a></li>
-<!-- <li><a href="#precgraph" class="toclink">Precedence relation graph</a></li>-->
+<xsl:if test="./precgraph/img"><li><a href="#precgraph" class="toclink">Precedence relation graph</a></li></xsl:if>
 <li><a href="#lalr_dfa" class="toclink">LALR(1) DFA</a></li>
 <li><a href="#parsetable" class="toclink">Parse and goto tables</a></li>
 </ul>
@@ -108,8 +108,9 @@ span.grayed { color: #808080; font-style: italic; }
 </xsl:otherwise>
 </xsl:choose>
 <a name="precgraph"/>
-<!-- <h1>Precedence relation graph</h1>
-Put a generated SVG graph in here? -->
+<xsl:if test="./precgraph/img"><h1>Precedence relation graph</h1></xsl:if>
+<!-- Put a generated SVG graph in here? -->
+<xsl:apply-templates select="precgraph"/>
 <a name="lalr_dfa"/>
 <h1>LALR(1) DFA</h1>
    <xsl:apply-templates select="lalr_dfa"/>
@@ -232,7 +233,7 @@ Put a generated SVG graph in here? -->
 <td class="fixedcell">
 <xsl:variable name="lhs" select="./lhs"/>
 <xsl:variable name="lhsid" select="/copper_spec/nonterminal[@tag=$lhs]"/>
-<a href="#{$lhsid}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$lhsid"/></xsl:call-template></a>
+<a href="#{$lhsid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$lhsid"/></xsl:call-template></a>
 ::=
 <xsl:for-each select="./rhssym">
     <xsl:variable name="this" select="."/>
@@ -301,7 +302,7 @@ Put a generated SVG graph in here? -->
              <xsl:variable name="prod" select="/copper_spec/production[@tag=$prodtag]"/>
              <xsl:variable name="lhs" select="$prod/lhs"/>
              <xsl:variable name="lhsid" select="/copper_spec/nonterminal[@tag=$lhs]"/>
-             <a href="#{$lhsid}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$lhsid"/></xsl:call-template></a>
+             <a href="#{$lhsid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$lhsid"/></xsl:call-template></a>
              ::=
              <xsl:if test="$marker = 0">&#x25CF; <!--(*)--></xsl:if>
              <xsl:for-each select="$prod/rhssym">
@@ -561,6 +562,16 @@ Put a generated SVG graph in here? -->
 			<xsl:value-of select="$element/@id"/>
 		</xsl:otherwise>
 	</xsl:choose>
+</xsl:template>
+
+<xsl:template match="precgraph">
+	<xsl:apply-templates select="img"/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
 </xsl:template>
 
 </xsl:stylesheet>

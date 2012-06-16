@@ -320,7 +320,6 @@ public class ParserSpec
 		StringBuffer rv = new StringBuffer();
 		rv.append(symbolTable.get(pr.getLHS(production)).getDisplayName()).append(" ::=");
 		for(int rhs = 0;rhs < pr.getRHSLength(production);rhs++) rv.append(" ").append(symbolTable.get(pr.getRHSSym(production,rhs)).getDisplayName());
-		rv.append("\n");
 		return rv.toString();
 	}
 	

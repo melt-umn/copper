@@ -3,6 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -135,5 +136,100 @@ public class Digraph
 		}
 		return rv;
 	}
-
+	
+	/**
+	 * Converts a graph to the GraphViz DOT format.
+	 * @param graphName The name to give the graph specification.
+	 * @param symbolTable Symbol table containing the labels of each vertex. 
+	 */
+	public <T> String toDot(String graphName,SymbolTable<T> symbolTable)
+	{
+    	StringBuffer rv = new StringBuffer();
+		rv.append("digraph ").append(graphName).append("\n{\n");
+        for(int i = 0;i < vertexCount;i++)
+        {
+            rv.append("\tt" + i + " [shape=box, label=\"" + symbolTable.get(i) + "\"];\n");
+        }
+        
+        rv.append("\n");
+        
+        for(int i = 0;i < vertexCount;i++)
+        {
+            for(int j = 0;j < vertexCount;j++)
+            {
+                if(adjacencyMatrix[i][j]) rv.append("\tt" + i + " -> t" + j + ";\n");
+            }
+        }
+        rv.append("}\n");
+        return rv.toString();
+	}
+	    
+	/**
+	 * Converts a graph to the GraphViz DOT format, but instead of generating one
+	 * GraphViz node for each vertex, generate one for each set of vertices with the
+	 * same adjacency list.
+	 * 
+	 * This is intended to produce more compact precedence-relation graphs, since the
+	 * usual grammar will have many terminals with no precedence relations defined
+	 * on them, and many (keyword) terminals taking precedence over the same one
+	 * or two (identifier) terminals.
+	 * 
+	 * @param graphName The name to give the graph specification.
+	 */
+    public String toEquivalenceClassDot(String graphName)
+    {
+    	StringBuffer rv = new StringBuffer();
+    	
+    	ArrayList<BitSet> existingAdjacencyListsL = new ArrayList<BitSet>();
+    	Hashtable<BitSet,Integer> existingAdjacencyListsM = new Hashtable<BitSet, Integer>();
+    	Hashtable<Integer,Integer> adjacencyListMaps = new Hashtable<Integer, Integer>();
+    	
+    	for(int i = 0;i < vertexCount;i++)
+    	{
+    		BitSet adjacencyList = new BitSet(vertexCount * 2);
+    		for(int j = 0;j < vertexCount;j++)
+    		{
+    			adjacencyList.set(j,adjacencyMatrix[i][j]);
+    			adjacencyList.set(vertexCount+j,adjacencyMatrix[j][i]);
+    		}
+    		if(!existingAdjacencyListsM.containsKey(adjacencyList))
+    		{
+    			BitSet verticesWithAdjacencyList = new BitSet(vertexCount);
+    			existingAdjacencyListsL.add(verticesWithAdjacencyList);
+    			existingAdjacencyListsM.put(adjacencyList,existingAdjacencyListsL.size() - 1);
+    		}
+			existingAdjacencyListsL.get(existingAdjacencyListsM.get(adjacencyList)).set(i);
+			adjacencyListMaps.put(i,existingAdjacencyListsM.get(adjacencyList));
+    	}
+    	
+    	PrecedenceGraph equivalenceClassGraph = new PrecedenceGraph(existingAdjacencyListsL.size());
+    	ArrayList<String> labels = new ArrayList<String>();
+        for(int i = 0;i < existingAdjacencyListsL.size();i++)
+        {
+        	String label = "";
+            int sqrt = (int) Math.ceil(Math.sqrt(existingAdjacencyListsL.get(i).cardinality()));
+            for(int k = 0, j = existingAdjacencyListsL.get(i).nextSetBit(0);j >= 0;k++,j = existingAdjacencyListsL.get(i).nextSetBit(j+1))
+            {
+            	if(k != 0)
+            	{
+            		label += ",";
+                	if(existingAdjacencyListsL.get(i).cardinality() >= 5 && k % sqrt == 0) label += "\\n";
+                	else label += " ";
+            	}
+            	label += j;
+            }
+            labels.add(label);
+        }
+    	        
+        for(int i = 0;i < vertexCount;i++)
+        {
+            for(int j = 0;j < vertexCount;j++)
+            {
+                if(adjacencyMatrix[i][j]) equivalenceClassGraph.addEdge(adjacencyListMaps.get(j),adjacencyListMaps.get(i));
+            }
+        }
+        
+        rv.append(equivalenceClassGraph.toDot(graphName,new SymbolTable<String>(labels)));
+        return rv.toString();
+    }
 }
