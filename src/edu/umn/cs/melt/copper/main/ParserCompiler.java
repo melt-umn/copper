@@ -12,8 +12,6 @@ import java.util.HashSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.FringeSymbols;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarName;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSource;
@@ -41,8 +39,12 @@ import edu.umn.cs.melt.copper.compiletime.checkers.PrecedenceCycleChecker;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.oldxml.XMLGrammarParser;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParser;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.ParserSpecXMLPrinter;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.XMLSkinParser;
+import edu.umn.cs.melt.copper.compiletime.dumpers.Dumper;
+import edu.umn.cs.melt.copper.compiletime.dumpers.DumperFactory;
+import edu.umn.cs.melt.copper.compiletime.dumpers.PlainTextParserDumper;
+import edu.umn.cs.melt.copper.compiletime.dumpers.XHTMLParserDumper;
+import edu.umn.cs.melt.copper.compiletime.dumpers.XMLSpecDumper;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.LexicalAmbiguities;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
@@ -124,6 +126,7 @@ public class ParserCompiler
 		return rv;
 	}
 	
+
 	private static void usageMessageNoError()
 	{
 		System.err.println(usageMessage());
@@ -135,6 +138,16 @@ public class ParserCompiler
 		System.err.println(usageMessage());
 		System.exit(1);
 	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Returns Copper's default parse-engine target, which is currently {@link CopperEngineType#SINGLE}.
@@ -158,6 +171,14 @@ public class ParserCompiler
 		return CopperDumpType.PLAIN;
 	}
 		
+
+	
+	
+	
+	
+	
+	
+	
 	private static CompilerLogger getOrMakeLogger(ParserCompilerParameters args)
 	{
 		CompilerLogger logger;
@@ -182,6 +203,14 @@ public class ParserCompiler
 		else logger = args.getLogger();
 		return logger;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@SuppressWarnings("deprecation")
 	private static GrammarSource parseInputGrammarLegacy(ParserCompilerParameters args)
@@ -513,27 +542,7 @@ public class ParserCompiler
 		logger.flushMessages();
 		return 0;
 	}
-	
-	/**
-	 * Compiles a parser from a Java-object-based parser specification.
-	 * @param spec The parser specification.
-	 * @param args Arguments to the parser generator. Attempting to include any input files in this object will result in an error.
-	 * @return 0 if successful, non-zero if an error occurred.
-	 * @throws CopperException If an error occurred during compilation.
-	 */
-	public static int compile(ParserBean spec,ParserCompilerParameters args)
-	throws CopperException
-	{
-		CompilerLogger logger = getOrMakeLogger(args);
-		if(args.getFiles() != null)
-		{
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,"Input files cannot be specified when compiling a parser from Java objects");
-			return 1;
-		}
-		ParserSpecProcessor.normalizeParser(spec,logger);
-		return compileParser(args,spec);
-	}
-	
+
 	public static int compileLegacy(ParserBean spec,ParserCompilerParameters args)
 	throws CopperException
 	{
@@ -570,6 +579,12 @@ public class ParserCompiler
 		return errorlevel;
 	}
 	
+	
+	
+	
+	
+	
+	
 	private static ParserBean parseInputGrammar(ParserCompilerParameters args)
 	{
 		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
@@ -579,40 +594,9 @@ public class ParserCompiler
 
 		logger = getOrMakeLogger(args);
 
-		//WellFormedGrammarChecker wfcheck = new WellFormedGrammarChecker(logger);
-		
 		ParserBean spec = null;
 		switch(useSkin)
 		{
-		/*case NATIVE:
-			try { grammar = GrammarParser.parseGrammar(files,logger); }
-			catch(Exception ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				return null;
-			}
-			grammar.getParserSources().setPackageName(args.getPackageDecl());
-			grammar.getParserSources().setParserName(args.getParserName());
-			break;
-		case OLD_XML:
-			try { grammar = XMLGrammarParser.parseGrammar(files,logger); }
-			catch(CopperException ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				return null;
-			}
-			catch(Exception ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
-				return null;
-			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
-			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
-			break;*/
 		case XML:
 		default:
 			try
@@ -650,22 +634,42 @@ public class ParserCompiler
 		if(spec != null)
 		{
 			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,ParserSpecPlaintextPrinter.specToString(spec));
-//			if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nChecking grammar well-formedness");
-//
-//			try
-//			{
-//				wfcheck.checkWellFormedness(grammar,args.isWarnUselessNTs());
-//			}
-//			catch(CopperException ex)
-//			{
-//				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-//				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-//				grammar = null;
-//			}
+			if(args.isDumpReport() && !args.isDumpOnlyOnError() && args.getDumpType() == CopperDumpType.XML_SPEC)
+			{
+				try
+				{
+					PrintStream dumpStream = DumperFactory.getDumpStream(args);
+					new XMLSpecDumper(spec).dump(args.getDumpType(),dumpStream);
+				}
+				catch(IOException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
 		}
 		return spec;
 	}
-
+	
+	/**
+	 * Compiles a parser from a Java-object-based parser specification.
+	 * @param spec The parser specification.
+	 * @param args Arguments to the parser generator. Attempting to include any input files in this object will result in an error.
+	 * @return 0 if successful, non-zero if an error occurred.
+	 * @throws CopperException If an error occurred during compilation.
+	 */
+	public static int compile(ParserBean spec,ParserCompilerParameters args)
+	throws CopperException
+	{
+		CompilerLogger logger = getOrMakeLogger(args);
+		if(args.getFiles() != null)
+		{
+			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,"Input files cannot be specified when compiling a parser from Java objects");
+			return 1;
+		}
+		ParserSpecProcessor.normalizeParser(spec,logger);
+		return compileParser(args,spec);
+	}
+	
 	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
 	throws CopperException
 	{
@@ -819,26 +823,46 @@ public class ParserCompiler
 			logger.flush();
 
 		if(args.isDumpReport() &&
-		   args.getDumpType() == CopperDumpType.XML_SPEC && 
 		   (!args.isDumpOnlyOnError() || !succeeded))
 		{
 			PrintStream dumpStream = null;
-			if(!args.isDumpReport() || args.getDumpFile().equals("") || args.getDumpFile().equals(args.getLogFile())) dumpStream = args.getLogger().getOut();
-			else
-			{
-				try { dumpStream = new PrintStream(new FileOutputStream(args.getDumpFile())); }
-				catch(FileNotFoundException ex)
-				{
-					ex.printStackTrace();
-				}
-			}
+			Dumper dumper = null;
 			try
 			{
-				spec.acceptVisitor(new ParserSpecXMLPrinter(dumpStream));
+				dumpStream = DumperFactory.getDumpStream(args);
 			}
-			catch(SAXException ex)
+			catch(FileNotFoundException ex)
 			{
 				ex.printStackTrace();
+			}
+			
+			switch(args.getDumpType())
+			{
+			case HTML:
+			case XML:
+				try { dumper = new XHTMLParserDumper(symbolTable, numericSpec, dfa, lookaheadSets, parseTable, prefixes); }
+				catch(ParserConfigurationException ex) { ex.printStackTrace(); }
+				break;
+			case PLAIN:
+				dumper = new PlainTextParserDumper(80, symbolTable, numericSpec, dfa, lookaheadSets, parseTable, prefixes);
+				break;
+			case XML_SPEC:
+				break;
+			}
+			
+			if(dumpStream != null && dumper != null)
+			{
+				try
+				{
+					dumper.dump(args.getDumpType(),dumpStream);
+				}
+				catch (UnsupportedOperationException e)
+				{
+					e.printStackTrace();
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -903,6 +927,14 @@ public class ParserCompiler
 		return errorlevel;
 	}
 
+
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Copper's command-line interface.
 	 * @param args Run this class with a single parameter, "-?", to see a list of parameters and switches.

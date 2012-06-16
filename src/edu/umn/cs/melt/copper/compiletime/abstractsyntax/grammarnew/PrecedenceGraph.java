@@ -3,8 +3,6 @@ package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew;
 import java.util.BitSet;
 import java.util.Queue;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
-import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
@@ -119,26 +117,4 @@ public class PrecedenceGraph extends Digraph
 		}
 		return rv.toString();
 	}
-	
-    public String toDot(String graphName,SymbolTable<CopperASTBean> symbolTable)
-    {
-    	StringBuffer rv = new StringBuffer();
-		rv.append("digraph ").append(graphName).append("\n{\n");
-        for(int i = 0;i < vertexCount;i++)
-        {
-            rv.append("\tt" + i + " [label=\"" + symbolTable.get(i).getName() + "\"];\n");
-        }
-        
-        rv.append("\n");
-        
-        for(int i = 0;i < vertexCount;i++)
-        {
-            for(int j = 0;j < vertexCount;j++)
-            {
-                if(adjacencyMatrix[i][j]) rv.append("\tt" + i + " -> " + j + ";\n");
-            }
-        }
-        rv.append("}\n");
-        return rv.toString();
-    }
 }
