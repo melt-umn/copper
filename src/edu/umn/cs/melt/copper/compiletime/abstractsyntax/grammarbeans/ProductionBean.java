@@ -138,7 +138,7 @@ public class ProductionBean extends GrammarElementBean
 	/**
 	 * @see ProductionBean#rhsVarNames
 	 */
-	public void setRHSVarNames(ArrayList<String> rhsVarNames)
+	public void setRhsVarNames(ArrayList<String> rhsVarNames)
 	{
 		this.rhsVarNames = rhsVarNames;
 	}

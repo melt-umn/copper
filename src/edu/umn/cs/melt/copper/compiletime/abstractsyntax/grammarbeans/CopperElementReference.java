@@ -147,8 +147,13 @@ public class CopperElementReference implements Comparable<CopperElementReference
 	@Override
 	public int compareTo(CopperElementReference o)
 	{
-		int gC = grammarName.compareTo(o.grammarName);
-		if(gC != 0) return gC;
-		else return name.compareTo(o.name);
+		if(grammarName == null && o.grammarName != null) return -1;
+		if(grammarName != null && o.grammarName == null) return 1;
+		if(grammarName != null && o.grammarName != null)
+		{
+			int gC = grammarName.compareTo(o.grammarName);
+			if(gC != 0) return gC;
+		}
+		return name.compareTo(o.name);
 	}
 }

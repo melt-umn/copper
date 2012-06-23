@@ -192,6 +192,14 @@ public class TerminalBean extends GrammarSymbolBean
 	/**
 	 * @see TerminalBean#submitList
 	 */
+	public boolean addSubmitsTo(CopperElementReference t)
+	{
+		return submitList.add(t);
+	}
+
+	/**
+	 * @see TerminalBean#submitList
+	 */
 	public void setSubmitList(Set<CopperElementReference> submitList)
 	{
 		this.submitList = submitList;
@@ -203,6 +211,14 @@ public class TerminalBean extends GrammarSymbolBean
 	public Set<CopperElementReference> getDominateList()
 	{
 		return dominateList;
+	}
+
+	/**
+	 * @see TerminalBean#dominateList
+	 */
+	public boolean addDominates(CopperElementReference t)
+	{
+		return dominateList.add(t);
 	}
 
 	/**

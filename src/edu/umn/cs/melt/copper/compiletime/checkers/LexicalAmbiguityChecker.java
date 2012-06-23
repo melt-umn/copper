@@ -59,7 +59,6 @@ public class LexicalAmbiguityChecker
 			if(ambiguities.isUnresolved(i))
 			{
 				passed = false;
-				stats.lexicalAmbiguityCount++;
 			}
 			else
 			{
