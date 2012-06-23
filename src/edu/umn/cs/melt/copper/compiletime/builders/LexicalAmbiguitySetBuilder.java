@@ -59,12 +59,12 @@ public class LexicalAmbiguitySetBuilder
 			disambiguationFunctions.put(spec.df.getMembers(i),i);
 		}
 		
-		BitSet unitedValidLA = new BitSet();
-		BitSet acceptSet = new BitSet();
+		BitSet unitedValidLA;
+		BitSet acceptSet;
 		
 		for(int statenum = 0;statenum < parseTable.size();statenum++)
 		{
-			unitedValidLA.clear();
+			unitedValidLA = new BitSet(Math.max(spec.terminals.length(),spec.nonterminals.length()));
 			unitedValidLA.or(parseTable.getValidLA(statenum));
 			unitedValidLA.or(layouts.getLayout(statenum));
 			unitedValidLA.or(prefixes.getPrefixes(statenum));
@@ -74,13 +74,14 @@ public class LexicalAmbiguitySetBuilder
 			// For every state in the scanner:
 			for(int i = 0;i < scannerDFAAnnotations.size();i++)
 			{
+				acceptSet = new BitSet(Math.max(spec.terminals.length(),spec.nonterminals.length()));
 				disambiguateState(i,unitedValidLA,acceptSet);
 				// If there is an ambiguity in the shiftable set, add it to the set of ambiguities.
 				if(acceptSet.cardinality() > 1 && !disambiguationFunctions.containsKey(acceptSet))
 				{
 					// If there is an ambiguity between terminals that have the same reduce action,
 					// it need not be listed as an ambiguity.
-					boolean allOneReduceAction = false;
+					boolean allOneReduceAction = true;
 					byte type = -1;
 					int parameter = -1;
 					for(int t = acceptSet.nextSetBit(0);t >= 0;t = acceptSet.nextSetBit(t+1))
@@ -95,18 +96,19 @@ public class LexicalAmbiguitySetBuilder
 							break;
 						}
 					}
-					if(allOneReduceAction)
+					if(!allOneReduceAction)
 					{
-						if(!ambiguities.containsKey(scannerDFAAnnotations.getAcceptSet(i)))
+						if(!ambiguities.containsKey(acceptSet))
 						{
-							ambiguities.put(scannerDFAAnnotations.getAcceptSet(i),ambiguityCount++);
+							ambiguities.put(acceptSet,ambiguityCount++);
 							locations.add(new BitSet());
-							resolutions.add(0);							
+							resolutions.add(0);
 						}
 
-						if(ambiguities.get(scannerDFAAnnotations.getAcceptSet(i)) != null)
+						if(ambiguities.get(acceptSet) != null)
 						{
-							int ambiguity = ambiguities.get(scannerDFAAnnotations.getAcceptSet(i));
+							int ambiguity = ambiguities.get(acceptSet);
+							if(!unresolved.get(ambiguity)) locations.get(ambiguity).clear();
 							unresolved.set(ambiguity);
 							locations.get(ambiguity).set(statenum);
 						}
@@ -122,17 +124,21 @@ public class LexicalAmbiguitySetBuilder
 						else resolutions.add(disambiguationFunctions.get(acceptSet));
 					}
 
-					if(ambiguities.get(scannerDFAAnnotations.getAcceptSet(i)) != null)
+					if(ambiguities.get(scannerDFAAnnotations.getAcceptSet(i)) != null &&
+					   !unresolved.get(ambiguities.get(scannerDFAAnnotations.getAcceptSet(i))))
 					{
 						int ambiguity = ambiguities.get(scannerDFAAnnotations.getAcceptSet(i));
-						locations.get(ambiguity).set(i);
+						locations.get(ambiguity).set(statenum);
 					}
 				}
 			}
 		}
 		
 		BitSet[] ambiguitiesA = new BitSet[ambiguities.keySet().size()];
-		ambiguities.keySet().toArray(ambiguitiesA);
+		for(BitSet ambiguity : ambiguities.keySet())
+		{
+			ambiguitiesA[ambiguities.get(ambiguity)] = ambiguity;
+		}
 		BitSet[] locationsA = new BitSet[locations.size()];
 		locations.toArray(locationsA);
 		int[] resolutionsA = new int[resolutions.size()];
@@ -144,7 +150,6 @@ public class LexicalAmbiguitySetBuilder
 	private void disambiguateState(int scannerState,BitSet unitedValidLA,BitSet finalAcceptSet)
 	{
 		// Calculate the intersection of the accept set and the valid lookahead set.
-		finalAcceptSet.clear();
 		finalAcceptSet.or(unitedValidLA);
 		finalAcceptSet.and(scannerDFAAnnotations.getAcceptSet(scannerState));
 	}

@@ -633,7 +633,18 @@ public class ParserCompiler
 		}
 		if(spec != null)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,ParserSpecPlaintextPrinter.specToString(spec));
+			if(logger.isLoggable(CompilerLogMessageSort.DEBUG))
+			{
+				logger.logMessage(CompilerLogMessageSort.DEBUG,null,ParserSpecPlaintextPrinter.specToString(spec));
+				try
+				{
+					logger.flushMessages();
+				}
+				catch (CopperException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
 			if(args.isDumpReport() && !args.isDumpOnlyOnError() && args.getDumpType() == CopperDumpType.XML_SPEC)
 			{
 				try
@@ -827,14 +838,6 @@ public class ParserCompiler
 		{
 			PrintStream dumpStream = null;
 			Dumper dumper = null;
-			try
-			{
-				dumpStream = DumperFactory.getDumpStream(args);
-			}
-			catch(FileNotFoundException ex)
-			{
-				ex.printStackTrace();
-			}
 			
 			switch(args.getDumpType())
 			{
@@ -850,18 +853,31 @@ public class ParserCompiler
 				break;
 			}
 			
-			if(dumpStream != null && dumper != null)
+			if(dumper != null)
 			{
 				try
 				{
-					dumper.dump(args.getDumpType(),dumpStream);
+					dumpStream = DumperFactory.getDumpStream(args);
 				}
-				catch (UnsupportedOperationException e)
+				catch(FileNotFoundException ex)
 				{
-					e.printStackTrace();
-				} catch (IOException e)
+					ex.printStackTrace();
+				}
+				
+				if(dumpStream != null)
 				{
-					e.printStackTrace();
+					try
+					{
+						dumper.dump(args.getDumpType(),dumpStream);
+					}
+					catch (UnsupportedOperationException e)
+					{
+						e.printStackTrace();
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 		}

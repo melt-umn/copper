@@ -570,7 +570,7 @@ public class XMLSkinParser extends DefaultHandler
 			switch(peek().type)
 			{
 			case OPERATOR_ELEMENT:
-				// FIXME: Remove this condition, and the changes to
+				// FIXME: Remove these conditions, and the changes to
 				//        the 'PrecedenceClass' element type in the
 				//        schema, when it is no longer necessary for
 				//        backward compatibility with Copper 0.6.1.
@@ -578,9 +578,14 @@ public class XMLSkinParser extends DefaultHandler
 				{
 					currentTerminal.setOperatorClass(refList.get(0));
 				}
+				refList = null;
 				break;
 			case PRODUCTION_ELEMENT:
-				currentProduction.setPrecedenceClass(refList.get(0));
+				if(!refList.isEmpty())
+				{
+					currentProduction.setPrecedenceClass(refList.get(0));
+				}
+				refList = null;
 				break;
 			}
 			break;
@@ -789,7 +794,7 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case RHS_ELEMENT:
 			currentProduction.setRhs(refList);
-			currentProduction.setRHSVarNames(varNames);
+			currentProduction.setRhsVarNames(varNames);
 			refList = null;
 			varNames = null;
 			break;

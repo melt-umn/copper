@@ -320,6 +320,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	@Override
 	public Boolean visitProductionBean(ProductionBean bean)
 	{
+		// FIXME: Check that all production signatures in the parser spec are unique.
 		boolean hasError = false;
 		// Check that none of the production's required elements are missing.
 		if(!bean.isComplete())

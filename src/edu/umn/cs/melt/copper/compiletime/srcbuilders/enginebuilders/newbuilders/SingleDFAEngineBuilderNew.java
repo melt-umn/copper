@@ -544,7 +544,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 					if(var != null)
 					{
 						int sym = spec.pr.getRHSSym(p,k);
-						String type = Object.class.getName();
+						String type = null;
 						if(spec.terminals.get(sym))
 						{
 							type = symbolTable.getTerminal(sym).getReturnType();
@@ -553,6 +553,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 						{
 							type = symbolTable.getNonTerminal(sym).getReturnType();
 						}
+						if(type == null) type = Object.class.getName();
 						out.print("            " + type + " " + var + " = (" + type + ") _children[" + k + "];\n");
 					}
 					k++;
