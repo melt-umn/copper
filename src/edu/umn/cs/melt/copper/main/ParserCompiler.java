@@ -598,7 +598,6 @@ public class ParserCompiler
 		switch(useSkin)
 		{
 		case XML:
-		default:
 			try
 			{
 				spec = new XMLSkinParser(files,logger).parse();
@@ -619,17 +618,20 @@ public class ParserCompiler
 			if(args.getPackageDecl() != null) spec.setPackageDecl(args.getPackageDecl());
 			if(args.getParserName() != null && !args.getParserName().equals("")) spec.setClassName(args.getParserName());
 			break;
-		/*case CUP:
+		case CUP:
 		default:
-			try { grammar = CupSkinParser.parseGrammar(files,logger); }
+			try
+			{
+				edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger newStyleLogger = getNewStyleLogger(logger,args);
+				spec = edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParserNew.parseGrammar(files,logger,newStyleLogger);
+			}
 			catch(Exception ex)
 			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
 				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
 				return null;
 			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
-			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());*/
+			if(args.getPackageDecl() != null) spec.setPackageDecl(args.getPackageDecl());
+			if(args.getParserName() != null && !args.getParserName().equals("")) spec.setClassName(args.getParserName());
 		}
 		if(spec != null)
 		{
@@ -681,14 +683,8 @@ public class ParserCompiler
 		return compileParser(args,spec);
 	}
 	
-	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
-	throws CopperException
+	private static edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger getNewStyleLogger(CompilerLogger oldStyleLogger,ParserCompilerParameters args)
 	{
-		if(spec == null) return 1;
-		boolean isPretty = args.isPretty();
-		boolean gatherStatistics = args.isGatherStatistics();
-		boolean succeeded = true;
-		CompilerLogger oldStyleLogger = getOrMakeLogger(args);
 		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = new edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger(new PrintCompilerLogHandler(oldStyleLogger.getOut()));
 		switch(args.getQuietLevel())
 		{
@@ -705,6 +701,19 @@ public class ParserCompiler
 		case WARNING:
 			break;
 		}
+		return logger;
+	}
+	
+	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
+	throws CopperException
+	{
+		if(spec == null) return 1;
+		boolean isPretty = args.isPretty();
+		boolean gatherStatistics = args.isGatherStatistics();
+		boolean succeeded = true;
+		CompilerLogger oldStyleLogger = getOrMakeLogger(args);
+		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = getNewStyleLogger(oldStyleLogger,args);
+
 		
 		String packageDecl = 
 				(args.getPackageDecl() != null && !args.getPackageDecl().equals("")) ?

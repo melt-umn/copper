@@ -57,7 +57,7 @@ public class FinalReportMessage implements CompilerLogMessage
 		}
 		if(stats.lexicalAmbiguityCount == 0)
 		{
-			rv.append("No lexical ambiguities detected.\n");
+			rv.append("No lexical ambiguities detected.");
 		}
 		else
 		{

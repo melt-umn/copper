@@ -491,7 +491,18 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		out.print("            this._pos = _pos;\n");
 		out.print("            this._terminal = _terminal;\n");
 		out.print("            this._specialAttributes = new " + SpecialParserAttributes.class.getName() + "(virtualLocation);\n");
-		out.print("            @SuppressWarnings(\"unused\") String lexeme = _terminal.lexeme;\n");
+		boolean lexemeUsed = false;
+		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
+		{
+			if(t == spec.getEOFTerminal() ||
+			   symbolTable.getTerminal(t).getCode() == null ||
+			   QuotedStringFormatter.isJavaWhitespace(symbolTable.getTerminal(t).getCode()))
+			{
+				lexemeUsed = true;
+				break;
+			}
+		}
+		if(lexemeUsed) out.print("            String lexeme = _terminal.lexeme;\n");
 		out.print("            " + Object.class.getName() + " RESULT = null;\n");
 		out.print("            switch(_terminal.firstTerm)\n");
 		out.print("            {\n");
@@ -553,8 +564,10 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 						{
 							type = symbolTable.getNonTerminal(sym).getReturnType();
 						}
+						out.print("            ");
 						if(type == null) type = Object.class.getName();
-						out.print("            " + type + " " + var + " = (" + type + ") _children[" + k + "];\n");
+						if(type.contains("<")) out.print("@SuppressWarnings(\"unchecked\") ");
+						out.print(type + " " + var + " = (" + type + ") _children[" + k + "];\n");
 					}
 					k++;
 				}
@@ -587,7 +600,7 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 		out.print("        public int runDisambiguationAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " match)\n");
 	    out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
 	    out.print("        {\n");
-		out.print("            @SuppressWarnings(\"unused\") String lexeme = match.lexeme;\n");
+		if(spec.disambiguationFunctions.nextSetBit(0) >= 0) out.print("            String lexeme = match.lexeme;\n");
 		boolean first = true;
 	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
 		{
@@ -606,12 +619,18 @@ public class SingleDFAEngineBuilderNew implements EngineBuilder
 			out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(String lexeme)\n");
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
-			for(int t = spec.df.getMembers(group).nextSetBit(0);t >= 0;t = spec.df.getMembers(group).nextSetBit(t+1))
+			if(spec.df.hasDisambiguateTo(group))
 			{
-				out.print("            @SuppressWarnings(\"unused\") int " + symbolNames[t] + " = " + t + ";\n");
+				out.print("            return /* " + symbolNames[spec.df.getDisambiguateTo(group)] + " */ " + spec.df.getDisambiguateTo(group) + ";\n");
 			}
-			if(spec.df.hasDisambiguateTo(group)) out.print("            return " + symbolNames[spec.df.getDisambiguateTo(group)] + ";\n");
-			else out.print("            " + symbolTable.getDisambiguationFunction(group).getCode() + "\n");
+			else
+			{
+				for(int t = spec.df.getMembers(group).nextSetBit(0);t >= 0;t = spec.df.getMembers(group).nextSetBit(t+1))
+				{
+					out.print("            @SuppressWarnings(\"unused\") int " + symbolNames[t] + " = " + t + ";\n");
+				}
+				out.print("            " + symbolTable.getDisambiguationFunction(group).getCode() + "\n");
+			}
 			out.print("        }\n");
 		}
 

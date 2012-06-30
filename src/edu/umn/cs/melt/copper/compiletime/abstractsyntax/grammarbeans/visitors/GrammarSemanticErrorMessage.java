@@ -5,11 +5,11 @@ import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLocatedLogMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogMessageType;
 import edu.umn.cs.melt.copper.runtime.io.Location;
 
-public class GrammarParsingErrorMessage implements CompilerLocatedLogMessage<Location>
+public class GrammarSemanticErrorMessage implements CompilerLocatedLogMessage<Location>
 {
 	private GrammarError errorMessage;
 	
-	public GrammarParsingErrorMessage(GrammarError errorMessage)
+	public GrammarSemanticErrorMessage(GrammarError errorMessage)
 	{
 		this.errorMessage = errorMessage;
 	}
@@ -23,7 +23,7 @@ public class GrammarParsingErrorMessage implements CompilerLocatedLogMessage<Loc
 	@Override
 	public int getType()
 	{
-		return CompilerLogMessageType.GRAMMAR_ERROR;
+		return CompilerLogMessageType.GRAMMAR_SEMANTIC_ERROR;
 	}
 
 	@Override

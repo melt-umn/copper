@@ -25,54 +25,58 @@ public abstract class CompilerLogMessageType
 	/**
 	 * Errors parsing a grammar.
 	 */
-	public static final int GRAMMAR_ERROR = 3;
+	public static final int GRAMMAR_SYNTAX_ERROR = 3;
+	/**
+	 * Errors raised on grammars that are not well-formed.
+	 */
+	public static final int GRAMMAR_SEMANTIC_ERROR = 4;
 	/**
 	 * Parse table conflicts.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.ParseTableConflictMessage
 	 */
-	public static final int PARSE_TABLE_CONFLICT = 4;
+	public static final int PARSE_TABLE_CONFLICT = 5;
 	/**
 	 * Lexical ambiguities.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.LexicalAmbiguityMessage
 	 */
-	public static final int LEXICAL_AMBIGUITY = 5;
+	public static final int LEXICAL_AMBIGUITY = 6;
 	/**
 	 * "Useless nonterminal" warnings.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.UselessNonterminalMessage
 	 */
-	public static final int USELESS_NONTERMINAL = 6;
+	public static final int USELESS_NONTERMINAL = 7;
 	/**
 	 * "Nonterminal X has no terminal derivations" errors.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.NonterminalNonterminalMessage
 	 */
-	public static final int NONTERMINAL_NONTERMINAL = 7;
+	public static final int NONTERMINAL_NONTERMINAL = 8;
 	/**
 	 * Errors on cyclic precedence relations (e.g., A and B are on each other's submit lists).
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.CyclicPrecedenceRelationMessage
 	 */
-	public static final int CYCLIC_PRECEDENCE = 8;
+	public static final int CYCLIC_PRECEDENCE = 9;
 	/**
 	 * "Lookahead spillage" errors from the modular determinism analysis, raised when an
 	 * extension introduces new lookahead.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.LookaheadSpillageMessage
 	 */
-	public static final int LOOKAHEAD_SPILLAGE = 9;
+	public static final int LOOKAHEAD_SPILLAGE = 10;
 	/**
 	 * "Follow spillage" errors from the modular determinism analysis, raised when an
 	 * extension introduces new members to the follow set of a host nonterminal.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.FollowSpillageMessage
 	 */
-	public static final int FOLLOW_SPILLAGE = 10;
+	public static final int FOLLOW_SPILLAGE = 11;
 	/**
 	 * "Non-IL-subset condition" errors from the modular determinism analysis, raised when
 	 * an extension introduces a state that may conflict with one introduced by another extension.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.NonILSubsetMessage
 	 */
-	public static final int NON_IL_SUBSET = 11;
+	public static final int NON_IL_SUBSET = 12;
 	/**
 	 * The final report message, containing grammar and parse table metrics, as well as the number
 	 * of parse table conflicts and lexical ambiguities found and resolved.
 	 * @see edu.umn.cs.melt.copper.compiletime.loggingnew.messages.FinalReportMessage
 	 */
-	public static final int FINAL_REPORT = 12;
+	public static final int FINAL_REPORT = 13;
 }
