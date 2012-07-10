@@ -364,6 +364,18 @@
 			<xs:element name="Code" type="xs:string" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
+	
+	<xs:complexType name="SingleGrammar">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents a reference to a single grammar in a parser. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="GrammarRef" type="GrammarRef" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
 
 	<xs:complexType name="Grammars">
 		<xs:annotation>
@@ -570,22 +582,46 @@
 			<xs:extension base="SpecConstruct">
 				<xs:sequence>
 					<xs:element name="Grammars" type="Grammars" minOccurs="1" maxOccurs="1"/>
-					<xs:element name="StartSymbol" type="StartSymbol" minOccurs="1" maxOccurs="1"/>
-					<xs:element name="StartLayout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="Package" type="JavaFQN" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="ClassName" type="JavaName" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="ClassAuxiliaryCode" type="Code" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="DefaultProductionCode" type="Code" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="DefaultTerminalCode" type="Code" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="ParserInitCode" type="Code" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="PostParseCode" type="Code" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="Preamble" type="Code" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="SemanticActionAuxiliaryCode" type="Code" minOccurs="0" maxOccurs="1"/>
+					<xs:group ref="ParserAncillaries"/>
 				</xs:sequence>
 				<xs:attribute name="isUnitary" type="xs:boolean" use="optional" default="false"/>
 			</xs:extension>
 		</xs:complexContent> 
 	</xs:complexType>
+	
+	<xs:complexType name="ExtendedParser">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents an extended parser (grammarbeans.ExtendedParserBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="HostGrammar" type="SingleGrammar" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="ExtensionGrammars" type="Grammars" minOccurs="1" maxOccurs="1"/>
+					<xs:group ref="ParserAncillaries"/>
+				</xs:sequence>
+				<xs:attribute name="isUnitary" type="xs:boolean" use="optional" default="false"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType> 
+	
+	<xs:group name="ParserAncillaries">
+		<xs:sequence>
+			<xs:element name="StartSymbol" type="StartSymbol" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="StartLayout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Package" type="JavaFQN" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ClassName" type="JavaName" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ClassAuxiliaryCode" type="Code" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="DefaultProductionCode" type="Code" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="DefaultTerminalCode" type="Code" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ParserInitCode" type="Code" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="PostParseCode" type="Code" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="Preamble" type="Code" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="SemanticActionAuxiliaryCode" type="Code" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:group>
 	
 	<xs:complexType name="Grammar">
 		<xs:annotation>
@@ -597,6 +633,36 @@
 			<xs:extension base="SpecConstruct">
 				<xs:sequence>
 					<xs:element name="Layout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="Declarations" type="GrammarElements" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent> 
+	</xs:complexType>
+
+	<xs:complexType name="ExtensionGrammar">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				Represents an extension grammar (grammarbeans.ExtensionGrammarBean).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="SpecConstruct">
+				<xs:sequence>
+					<xs:element name="Layout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="MarkingTerminals" minOccurs="1" maxOccurs="1">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Terminal" type="Terminal"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="BridgeProductions" minOccurs="1" maxOccurs="1">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Production" type="Production"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
 					<xs:element name="Declarations" type="GrammarElements" minOccurs="1" maxOccurs="1"/>
 				</xs:sequence>
 			</xs:extension>
@@ -765,18 +831,34 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Parser" type="Parser" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="Grammar" type="Grammar" minOccurs="1" maxOccurs="unbounded">
-			    <xs:key name="element_ids">
-			    	<xs:annotation>
-						<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
-						All grammar elements within a grammar must have distinct names.
-						</xs:documentation>
-					</xs:annotation>
-					<xs:selector xpath="./copper:Declarations/*"/>
-					<xs:field xpath="@id"/>
-				</xs:key>
-			</xs:element>
+			<xs:choice minOccurs="1" maxOccurs="1">
+				<xs:element name="Parser" type="Parser" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="ExtendedParser" type="ExtendedParser" minOccurs="1" maxOccurs="1"/>
+			</xs:choice>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element name="Grammar" type="Grammar">
+				    <xs:key name="element_ids">
+				    	<xs:annotation>
+							<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+							All grammar elements within a grammar must have distinct names.
+							</xs:documentation>
+						</xs:annotation>
+						<xs:selector xpath="./copper:Declarations/*"/>
+						<xs:field xpath="@id"/>
+					</xs:key>
+				</xs:element>
+				<xs:element name="ExtensionGrammar" type="ExtensionGrammar">
+				    <xs:key name="extension_element_ids">
+				    	<xs:annotation>
+							<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+							All grammar elements within a grammar must have distinct names.
+							</xs:documentation>
+						</xs:annotation>
+						<xs:selector xpath="./copper:Declarations/*"/>
+						<xs:field xpath="@id"/>
+					</xs:key>
+				</xs:element>
+			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
 	

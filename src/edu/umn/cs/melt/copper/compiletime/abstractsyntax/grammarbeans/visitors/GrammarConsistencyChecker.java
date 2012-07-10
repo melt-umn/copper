@@ -343,13 +343,16 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 			reportError(bean.getStartSymbol().getLocation(),getDisplayName(bean.getStartSymbol()) + ", designated as the start symbol of parser " + bean.getDisplayName() + ", does not belong to the host grammar");
 			hasError = true;
 		}
-		for(CopperElementReference layout : bean.getStartLayout())
+		if(bean.getStartLayout() != null)
 		{
-			if(!layout.isFQ() || !layout.getGrammarName().equals(bean.getHostGrammar()))
+			for(CopperElementReference layout : bean.getStartLayout())
 			{
-				reportError(bean.getStartSymbol().getLocation(),getDisplayName(bean.getStartSymbol()) + ", designated as a start layout symbol of parser " + bean.getDisplayName() + ", does not belong to the host grammar");
-				hasError = true;
-			}			
+				if(!layout.isFQ() || !layout.getGrammarName().equals(bean.getHostGrammar()))
+				{
+					reportError(bean.getStartSymbol().getLocation(),getDisplayName(bean.getStartSymbol()) + ", designated as a start layout symbol of parser " + bean.getDisplayName() + ", does not belong to the host grammar");
+					hasError = true;
+				}			
+			}
 		}
 		
 		return hasError;
@@ -383,8 +386,8 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 			if(isBridgeProduction)
 			{
 				if(bean.getRhs().size() < 1 ||
-				   bean.getRhs().get(0).isFQ() ||
-				   ((ExtensionGrammarBean) currentGrammar).getMarkingTerminals().contains(bean.getRhs().get(0).getName()))
+				   (bean.getRhs().get(0).isFQ() && !bean.getRhs().get(0).getGrammarName().equals(currentGrammar.getName())) ||
+				   !((ExtensionGrammarBean) currentGrammar).getMarkingTerminals().contains(bean.getRhs().get(0).getName()))
 				{
 					reportError(bean.getLocation(),bean.getDisplayName() + ", designated as a bridge production of grammar " + currentGrammar.getDisplayName() + ", must have a marking terminal as its first right-hand side symbol");
 					hasError = true;

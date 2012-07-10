@@ -30,8 +30,11 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ChoiceRege
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ConcatenationRegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementName;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementReference;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementType;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.DisambiguationFunctionBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.EmptyStringRegexBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ExtendedParserBean;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ExtensionGrammarBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.GrammarBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.KleeneStarRegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.MacroHoleRegexBean;
@@ -184,7 +187,9 @@ public class XMLSkinParser extends DefaultHandler
 	private Hashtable<CopperElementName,GrammarBean> grammars = new Hashtable<CopperElementName,GrammarBean>();
 	private boolean foundMoreThanOneParser = false;
 	private ParserBean currentParser = null;
+	private ExtendedParserBean currentExtendedParser = null;
 	private GrammarBean currentGrammar = null;
+	private ExtensionGrammarBean currentExtensionGrammar = null;
 	private TerminalBean currentTerminal = null;
 	private TerminalClassBean currentTerminalClass = null;
 	private OperatorClassBean currentOperatorClass = null;
@@ -249,13 +254,18 @@ public class XMLSkinParser extends DefaultHandler
 	private void startElementInner(String uri,String localName,String qName,Attributes attributes)
 	throws ParseException,CopperException
 	{
+		SAXStackElement parent = null;
+		if(saxStackPointer != -1) parent = peek();
 		push(new SAXStackElement(XMLSkinElements.nodeTypes.get(qName),InputPosition.fromSAXLocator(loc,locator)));
 		switch(peek().type)
 		{
+		case BRIDGE_PRODUCTIONS_ELEMENT:
+			// Empty
+			break;
 		case CHARACTER_RANGE_ELEMENT:
 			String lowerBound = attributes.getValue("lower");
 			String upperBound = attributes.getValue("upper");
-			((CharacterSetRegexBean) saxStack[saxStackPointer - 1].regexChildren.get(0)).addRange(lowerBound.charAt(0), upperBound.charAt(0));
+			((CharacterSetRegexBean) parent.regexChildren.get(0)).addRange(lowerBound.charAt(0), upperBound.charAt(0));
 			break;
 		case CHARACTER_SET_ELEMENT:
 			String invert = attributes.getValue("invert");
@@ -313,11 +323,23 @@ public class XMLSkinParser extends DefaultHandler
 		case EMPTY_STRING_REGEX_ELEMENT:
 			// Empty; all work is done in endElement() after the element's text content is known.
 			break;
+		case EXTENSION_GRAMMARS_ELEMENT:
 		case GRAMMARS_ELEMENT:
 			refSet = new HashSet<CopperElementReference>();
 			break;
-		case GRAMMAR_ELEMENT:
+		case EXTENSION_GRAMMAR_ELEMENT:
 			CopperElementName grammarName = CopperElementName.newName(attributes.getValue("id"));
+			if(!grammars.containsKey(grammarName))
+			{
+				grammars.put(grammarName,new ExtensionGrammarBean());
+				grammars.get(grammarName).setName(grammarName);
+			}
+			currentGrammar = grammars.get(grammarName);
+			if(currentGrammar.getType() == CopperElementType.EXTENSION_GRAMMAR) currentExtensionGrammar = (ExtensionGrammarBean) currentGrammar;
+			if(currentGrammar.getLocation() == null) grammars.get(grammarName).setLocation(peek().startLocation);
+			break;
+		case GRAMMAR_ELEMENT:
+			grammarName = CopperElementName.newName(attributes.getValue("id"));
 			if(!grammars.containsKey(grammarName))
 			{
 				grammars.put(grammarName,new GrammarBean());
@@ -325,6 +347,9 @@ public class XMLSkinParser extends DefaultHandler
 			}
 			currentGrammar = grammars.get(grammarName);
 			if(currentGrammar.getLocation() == null) grammars.get(grammarName).setLocation(peek().startLocation);
+			break;
+		case HOST_GRAMMAR_ELEMENT:
+			refList = new ArrayList<CopperElementReference>();
 			break;
 		case IN_CLASSES_ELEMENT:
 			refSet = new HashSet<CopperElementReference>();
@@ -340,6 +365,9 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case LHS_ELEMENT:
 			refList = new ArrayList<CopperElementReference>();
+			break;
+		case MARKING_TERMINALS_ELEMENT:
+			// Empty.
 			break;
 		case MEMBERS_ELEMENT:
 			refSet = new HashSet<CopperElementReference>();
@@ -359,7 +387,7 @@ public class XMLSkinParser extends DefaultHandler
 			}
 			break;
 		case OPERATOR_ELEMENT:
-			if(saxStack[saxStackPointer - 1].type == XMLSkinElements.Type.PRODUCTION_ELEMENT)
+			if(parent.type == XMLSkinElements.Type.PRODUCTION_ELEMENT)
 			{
 				refList = new ArrayList<CopperElementReference>();
 			}
@@ -389,16 +417,19 @@ public class XMLSkinParser extends DefaultHandler
 				currentGrammar.addGrammarElement(currentParserAttribute);
 			}
 			break;
+		case EXTENDED_PARSER_ELEMENT:
+			currentExtendedParser = new ExtendedParserBean();
 		case PARSER_ELEMENT:
 			if(currentParser != null)
 			{
 				foundMoreThanOneParser = true;
 			}
-			currentParser = new ParserBean();
+			if(currentExtendedParser != null) currentParser = currentExtendedParser;
+			else currentParser = new ParserBean();
 			currentParser.setName(attributes.getValue("id"));
 			currentParser.setLocation(peek().startLocation);
 			String isUnitary = attributes.getValue("isUnitary");
-			if(isUnitary.equals("true") || isUnitary.equals("1")) currentParser.setUnitary(true);
+			if(isUnitary != null && (isUnitary.equals("true") || isUnitary.equals("1"))) currentParser.setUnitary(true);
 			break;
 		case PARSER_INIT_CODE_ELEMENT:
 			// Empty; all work is done in endElement() after the element's text content is known.
@@ -420,13 +451,26 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case PRODUCTION_ELEMENT:
 			CopperElementName currentProductionName = CopperElementName.newName(attributes.getValue("id"));
-			currentProduction = (ProductionBean) currentGrammar.getGrammarElement(currentProductionName);
+			switch(parent.type)
+			{
+			case BRIDGE_PRODUCTIONS_ELEMENT:
+				break;
+			default:
+				currentProduction = (ProductionBean) currentGrammar.getGrammarElement(currentProductionName);
+			}
 			if(currentProduction == null)
 			{
 				currentProduction = new ProductionBean();
 				currentProduction.setName(currentProductionName);
 				currentProduction.setLocation(peek().startLocation);
-				currentGrammar.addGrammarElement(currentProduction);
+				switch(parent.type)
+				{
+				case BRIDGE_PRODUCTIONS_ELEMENT:
+					currentExtensionGrammar.addBridgeProduction(currentProduction);
+					break;
+				default:
+					currentGrammar.addGrammarElement(currentProduction);
+				}
 			}
 			break;
 		case REGEX_ELEMENT:
@@ -444,7 +488,7 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case SINGLE_CHARACTER_ELEMENT:
 			String character = attributes.getValue("char");
-			((CharacterSetRegexBean) saxStack[saxStackPointer - 1].regexChildren.get(0)).addLooseChar(character.charAt(0));
+			((CharacterSetRegexBean) parent.regexChildren.get(0)).addLooseChar(character.charAt(0));
 			break;
 		case START_LAYOUT_ELEMENT:
 			refSet = new HashSet<CopperElementReference>();
@@ -468,13 +512,26 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case TERMINAL_ELEMENT:
 			CopperElementName currentTerminalName = CopperElementName.newName(attributes.getValue("id"));
-			currentTerminal = (TerminalBean) currentGrammar.getGrammarElement(currentTerminalName);
+			switch(parent.type)
+			{
+			case MARKING_TERMINALS_ELEMENT:
+				break;
+			default:
+				currentTerminal = (TerminalBean) currentGrammar.getGrammarElement(currentTerminalName);
+			}
 			if(currentTerminal == null)
 			{
 				currentTerminal = new TerminalBean();
 				currentTerminal.setName(currentTerminalName);
 				currentTerminal.setLocation(peek().startLocation);
-				currentGrammar.addGrammarElement(currentTerminal);
+				switch(parent.type)
+				{
+				case MARKING_TERMINALS_ELEMENT:
+					currentExtensionGrammar.addMarkingTerminal(currentTerminal);
+					break;
+				default:
+					currentGrammar.addGrammarElement(currentTerminal);
+				}
 			}
 			break;
 		case TYPE_ELEMENT:
@@ -505,6 +562,8 @@ public class XMLSkinParser extends DefaultHandler
 		case GRAMMAR_REF_ELEMENT:
 			(refList != null ? refList : refSet).add(CopperElementReference.ref(CopperElementName.newName(attributes.getValue("id")),peek().startLocation));
 			break;
+		default:
+			logger.logErrorMessage(CompilerLogMessageSort.FATAL_ERROR,peek().startLocation,"Unrecognized XML tag '" + localName + "'. There is a bug in Copper's XML schema.");
 		}
 	}
 	
@@ -550,6 +609,9 @@ public class XMLSkinParser extends DefaultHandler
 		SAXStackElement element = pop();
 		switch(element.type)
 		{
+		case BRIDGE_PRODUCTIONS_ELEMENT:
+			// Empty
+			break;
 		case CHARACTER_RANGE_ELEMENT:
 			// Empty; all work is done in startElement() when the element's attributes are known.
 			break;
@@ -639,6 +701,18 @@ public class XMLSkinParser extends DefaultHandler
 		case EMPTY_STRING_REGEX_ELEMENT:
 			peek().regexChildren.add(new EmptyStringRegexBean());
 			break;
+		case EXTENSION_GRAMMARS_ELEMENT:
+			for(CopperElementReference ref : refSet)
+			{
+				if(!grammars.containsKey(ref.getName()))
+				{
+					grammars.put(ref.getName(),new ExtensionGrammarBean());
+					grammars.get(ref.getName()).setName(ref.getName());
+				}
+				currentParser.addGrammar(grammars.get(ref.getName()));
+			}
+			refSet = null;
+			break;
 		case GRAMMARS_ELEMENT:
 			for(CopperElementReference ref : refSet)
 			{
@@ -651,11 +725,25 @@ public class XMLSkinParser extends DefaultHandler
 			}
 			refSet = null;
 			break;
+		case EXTENSION_GRAMMAR_ELEMENT:
+			currentExtensionGrammar = null;
 		case GRAMMAR_ELEMENT:
+			currentGrammar = null;
 			// Empty
 			break;
 		case GRAMMAR_REF_ELEMENT:
 			// Empty
+			break;
+		case HOST_GRAMMAR_ELEMENT:
+			CopperElementReference ref = refList.get(0);
+			if(!grammars.containsKey(ref.getName()))
+			{
+				grammars.put(ref.getName(),new GrammarBean());
+				grammars.get(ref.getName()).setName(ref.getName());
+			}
+			currentParser.addGrammar(grammars.get(ref.getName()));
+			currentExtendedParser.setHostGrammar(ref.getName());
+			refList = null;
 			break;
 		case IN_CLASSES_ELEMENT:
 			currentTerminal.setTerminalClasses(refSet);
@@ -686,6 +774,9 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case MACRO_REF_ELEMENT:
 			peek().regexChildren.add(element.regexChildren.get(0));
+			break;
+		case MARKING_TERMINALS_ELEMENT:
+			// Empty
 			break;
 		case MEMBERS_ELEMENT:
 			switch(peek().type)
@@ -727,6 +818,7 @@ public class XMLSkinParser extends DefaultHandler
 		case PARSER_ATTRIBUTE_ELEMENT:
 			currentParserAttribute = null;
 			break;
+		case EXTENDED_PARSER_ELEMENT:
 		case PARSER_ELEMENT:
 			// Empty
 			break;

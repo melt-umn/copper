@@ -109,13 +109,13 @@ public class ExtensionGrammarBean extends GrammarBean
 	}
 	
 	/**
-	 * @see #bridgeProduction
+	 * @see #bridgeProductions
 	 */
 	public boolean addBridgeProduction(ProductionBean production)
 	{
 		if(bridgeElements.containsKey(production.getName())) return false;
 		bridgeElements.put(production.getName(),production);
-		markingTerminals.add(production.getName());
+		bridgeProductions.add(production.getName());
 		return true;
 	}
 	

@@ -31,6 +31,8 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	private PSSymbolTable symbolTable;
 	private ParserSpec newSpec;
 	
+	private boolean inBridgeProduction;
+	
 	public static ParserSpec build(ParserBean spec,PSSymbolTable symbolTable)
 	{
 		NumericParserSpecBuilder builder = new NumericParserSpecBuilder(symbolTable);
@@ -44,6 +46,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		this.currentParser = null;
 		this.currentGrammar = null;
 		this.symbolTable = symbolTable;
+		inBridgeProduction = false;
 	}
 
 	@Override
@@ -122,7 +125,9 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		for(CopperElementName n : bean.getBridgeProductions())
 		{
+			inBridgeProduction = true;
 			hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
+			inBridgeProduction = false;
 		}
 		for(CopperElementName n : bean.getGrammarElements())
 		{
@@ -248,8 +253,17 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 			if(bean.getOperator() != null) newSpec.pr.setOperator(beanId,dereference(bean.getOperator()));
 			
 			int lastTerminal = -1;
+			
+			int i = 0;
+			
+			if(inBridgeProduction)
+			{
+				int sym0 = symbolTable.get(((ExtensionGrammarBean) currentGrammar).getMarkingTerminal(bean.getRhs().get(0).getName()));
+				newSpec.pr.setRHSSym(beanId,0,sym0);
+				i++;
+			}
 
-			for(int i = 0;i < bean.getRhs().size();i++)
+			for(;i < bean.getRhs().size();i++)
 			{
 				int symI = dereference(bean.getRhs().get(i));
 				newSpec.pr.setRHSSym(beanId,i,symI);
