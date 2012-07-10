@@ -26,7 +26,8 @@ public class ParserSpecProcessor
 	{
 		boolean hasError = false;
 		GrammarConsistencyChecker checker = new GrammarConsistencyChecker();
-		hasError |= checker.visitParserBean(spec);
+		if(spec != null) hasError |= spec.acceptVisitor(checker);
+		else hasError = true;
 		if(hasError)
 		{
 			StringBuffer sb = new StringBuffer();
@@ -40,7 +41,7 @@ public class ParserSpecProcessor
 			return;
 		}
 		GrammarNormalizer normalizer = new GrammarNormalizer();
-		normalizer.visitParserBean(spec);
+		if(spec != null) spec.acceptVisitor(normalizer);
 	}
 	
 	// TODO: Remove this when the other skins can produce ParserBeans instead of GrammarSource objects.
