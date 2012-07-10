@@ -7,6 +7,7 @@ class XMLSkinElements
 
 	static enum Type
 	{
+		BRIDGE_PRODUCTIONS_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "BridgeProductions"; } },
 		CHARACTER_RANGE_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "CharacterRange"; } },
 		CHARACTER_SET_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "CharacterSet"; } },
 		CHOICE_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Choice"; } },
@@ -23,6 +24,10 @@ class XMLSkinElements
 		DISAMBIGUATION_FUNCTION_ELEMENT			{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "DisambiguationFunction"; } },
 		DOMINATES_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Dominates"; } },
 		EMPTY_STRING_REGEX_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "EmptyString"; } },
+		EXTENSION_GRAMMAR_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "ExtensionGrammar"; } },
+		EXTENSION_GRAMMARS_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "ExtensionGrammars"; } },
+		EXTENDED_PARSER_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "ExtendedParser"; } },
+		HOST_GRAMMAR_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "HostGrammar"; } },
 		GRAMMARS_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Grammars"; } },
 		GRAMMAR_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Grammar"; } },
 		GRAMMAR_REF_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "GrammarRef"; } },
@@ -32,6 +37,7 @@ class XMLSkinElements
 		LEFT_ASSOCIATIVE_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "LeftAssociative"; } },
 		LHS_ELEMENT								{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "LHS"; } },
 		MACRO_REF_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "MacroRef"; } },
+		MARKING_TERMINALS_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "MarkingTerminals"; } },
 		MEMBERS_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Members"; } },
 		NON_ASSOCIATIVE_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "NonAssociative"; } },
 		NONTERMINAL_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Nonterminal"; } },

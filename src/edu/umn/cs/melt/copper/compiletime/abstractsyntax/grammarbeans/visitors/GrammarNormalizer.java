@@ -348,7 +348,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 	public Boolean visitExtendedParserBean(ExtendedParserBean bean)
 	throws RuntimeException
 	{
-		throw new RuntimeException("This method should not be reached");
+		return visitParserBean(bean);
 	}
 
 	@Override

@@ -69,7 +69,16 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	public PSSymbolTable visitExtensionGrammarBean(ExtensionGrammarBean bean)
 	throws RuntimeException
 	{
-		return visitGrammarBean(bean);
+		visitGrammarBean(bean);
+		for(CopperElementName n : bean.getMarkingTerminals())
+		{
+			bean.getMarkingTerminal(n).acceptVisitor(this);
+		}
+		for(CopperElementName n : bean.getBridgeProductions())
+		{
+			bean.getBridgeProduction(n).acceptVisitor(this);
+		}
+		return null;
 	}
 
 	@Override
