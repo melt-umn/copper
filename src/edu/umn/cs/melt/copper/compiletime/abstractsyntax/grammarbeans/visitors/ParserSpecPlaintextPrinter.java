@@ -90,10 +90,16 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 		currentGrammar = bean;
 		out.append("  Extension grammar " + bean.getName() + "(" + bean.getDisplayName() + ")\n");
 		boolean hasError = false;
-		out.append("    Marking terminal:\n");
-		hasError |= bean.getMarkingTerminal().acceptVisitor(this);
-		out.append("\n    Start production:\n");
-		hasError |= bean.getStartProduction().acceptVisitor(this);
+		out.append("    Marking terminals:\n");
+		for(CopperElementName n : bean.getMarkingTerminals())
+		{
+			hasError |= bean.getMarkingTerminal(n).acceptVisitor(this);
+		}
+		out.append("\n    Bridge productions:\n");
+		for(CopperElementName n : bean.getBridgeProductions())
+		{
+			hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
+		}
 		out.append("\n    Grammar layout:");
 		if(bean.getGrammarLayout() == null) out.append(" NONE\n");
 		else for(CopperElementReference layout : bean.getGrammarLayout())

@@ -1,5 +1,7 @@
 package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans;
 
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.CopperASTBeanVisitor;
@@ -9,20 +11,23 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.C
  * attached to another grammar and that matches the form to be passed
  * to Copper's composability checker (modular determinism analysis).
  * 
- * Fields <code>markingTerminal</code> and <code>startProduction</code>,
- * as well as all fields required for ordinary grammars, must be set
- * to non-null values before an extension grammar is passed to the compiler.
+ * An extension grammar contains two additional fields, {@link #markingTerminals}
+ * and {@link #bridgeProductions}, which must be non-empty before an extension grammar is
+ * passed to the compiler.
+ * 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  *
  */
 public class ExtensionGrammarBean extends GrammarBean
 {
+	private Hashtable<CopperElementName,GrammarElementBean> bridgeElements;
 	/**
-	 * The grammar's marking terminal. This must appear as the first
-	 * right-hand-side symbol in <code>startProduction</code>.
+	 * The grammar's marking terminals. Each production in {@code bridgeProductions}
+	 * must have one of these as their first right-hand-side symbol, and they may
+	 * not be used anywhere else.
 	 */
-	protected TerminalBean markingTerminal;
-	/** The start production of the grammar, which must be of the form
+	protected Set<CopperElementName> markingTerminals;
+	/** The start productions of the grammar, which must be of the form
 	 * <code>H ::= m E</code>, where:
 	 * <ul><li><code>H</code> is the name of a nonterminal
 	 * in the "host" language;</li><li><code>m</code> is the name of
@@ -31,13 +36,14 @@ public class ExtensionGrammarBean extends GrammarBean
 	 * The start production should not be placed in the
 	 * grammar's list of productions.
 	 */
-	protected ProductionBean startProduction;
+	protected Set<CopperElementName> bridgeProductions;
 	
 	public ExtensionGrammarBean()
 	{
 		super(CopperElementType.EXTENSION_GRAMMAR);
-		markingTerminal = null;
-		startProduction = null;
+		markingTerminals = new HashSet<CopperElementName>();
+		bridgeProductions = new HashSet<CopperElementName>();
+		bridgeElements = new Hashtable<CopperElementName,GrammarElementBean>();
 	}
 	
 	/**
@@ -56,13 +62,70 @@ public class ExtensionGrammarBean extends GrammarBean
 		grammarLayout = grammar.grammarLayout;		
 	}
 	
+	
+	/**
+	 * @see #markingTerminals 
+	 */
+	public Set<CopperElementName> getMarkingTerminals()
+	{
+		return markingTerminals;
+	}
+	
+	/**
+	 * @see #markingTerminals 
+	 */
+	public TerminalBean getMarkingTerminal(CopperElementName name)
+	{
+		if(!markingTerminals.contains(name)) return null;
+		return (TerminalBean) bridgeElements.get(name);
+	}
+
+	/**
+	 * @see #bridgeProductions
+	 */
+	public Set<CopperElementName> getBridgeProductions()
+	{
+		return bridgeProductions;
+	}
+	
+	/**
+	 * @see #bridgeProductions
+	 */
+	public ProductionBean getBridgeProduction(CopperElementName name)
+	{
+		if(!bridgeProductions.contains(name)) return null;
+		return (ProductionBean) bridgeElements.get(name);
+	}
+
+	/**
+	 * @see #markingTerminals
+	 */
+	public boolean addMarkingTerminal(TerminalBean terminal)
+	{
+		if(bridgeElements.containsKey(terminal.getName())) return false;
+		bridgeElements.put(terminal.getName(),terminal);
+		markingTerminals.add(terminal.getName());
+		return true;
+	}
+	
+	/**
+	 * @see #bridgeProduction
+	 */
+	public boolean addBridgeProduction(ProductionBean production)
+	{
+		if(bridgeElements.containsKey(production.getName())) return false;
+		bridgeElements.put(production.getName(),production);
+		markingTerminals.add(production.getName());
+		return true;
+	}
+	
 	@Override
 	/**
 	 * @see CopperASTBean#isComplete(), GrammarBean#isComplete()
 	 */
 	public boolean isComplete()
 	{
-		return super.isComplete() && (markingTerminal != null && startProduction != null);
+		return super.isComplete() && (!markingTerminals.isEmpty() && !bridgeProductions.isEmpty());
 	}
 	
 	@Override
@@ -72,41 +135,9 @@ public class ExtensionGrammarBean extends GrammarBean
 	public Set<String> whatIsMissing()
 	{
 		Set<String> rv = super.whatIsMissing();
-		if(markingTerminal == null) rv.add("markingTerminal");
-		if(startProduction == null) rv.add("startProduction");
+		if(markingTerminals.isEmpty()) rv.add("markingTerminals");
+		if(bridgeProductions.isEmpty()) rv.add("bridgeProductions");
 		return rv;
-	}
-
-	/**
-	 * @see ExtensionGrammarBean#markingTerminal
-	 */
-	public TerminalBean getMarkingTerminal()
-	{
-		return markingTerminal;
-	}
-
-	/**
-	 * @see ExtensionGrammarBean#markingTerminal
-	 */
-	public void setMarkingTerminal(TerminalBean markingTerminal)
-	{
-		this.markingTerminal = markingTerminal;
-	}
-
-	/**
-	 * @see ExtensionGrammarBean#startProduction
-	 */
-	public ProductionBean getStartProduction()
-	{
-		return startProduction;
-	}
-
-	/**
-	 * @see ExtensionGrammarBean#startProduction
-	 */
-	public void setStartProduction(ProductionBean startProduction)
-	{
-		this.startProduction = startProduction;
 	}
 	
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)

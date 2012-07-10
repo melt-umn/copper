@@ -121,8 +121,14 @@ class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeExcep
 			GrammarName grammarName = new GrammarName(generateName(bean));
 			grammar.addContainedGrammar(grammarName);
 			boolean hasError = false;
-			hasError |= bean.getMarkingTerminal().acceptVisitor(this);
-			hasError |= bean.getStartProduction().acceptVisitor(this);
+			for(CopperElementName n : bean.getMarkingTerminals())
+			{
+				hasError |= bean.getMarkingTerminal(n).acceptVisitor(this);
+			}
+			for(CopperElementName n : bean.getBridgeProductions())
+			{
+				hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
+			}
 			for(CopperElementName n : bean.getGrammarElements())
 			{
 				hasError |= bean.getGrammarElement(n).acceptVisitor(this);
@@ -255,8 +261,14 @@ class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeExcep
 			GrammarName grammarName = new GrammarName(generateName(bean));
 			if(bean.getGrammarLayout() != null) for(CopperElementReference n : bean.getGrammarLayout()) grammar.addGrammarLayout(grammarName, new Terminal(generateName(n)));
 			boolean hasError = false;
-			hasError |= bean.getMarkingTerminal().acceptVisitor(this);
-			hasError |= bean.getStartProduction().acceptVisitor(this);
+			for(CopperElementName n : bean.getMarkingTerminals())
+			{
+				hasError |= bean.getMarkingTerminal(n).acceptVisitor(this);
+			}
+			for(CopperElementName n : bean.getBridgeProductions())
+			{
+				hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
+			}
 			for(CopperElementName n : bean.getGrammarElements())
 			{
 				hasError |= bean.getGrammarElement(n).acceptVisitor(this);

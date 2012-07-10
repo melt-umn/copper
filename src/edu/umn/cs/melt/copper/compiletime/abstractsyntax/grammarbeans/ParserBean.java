@@ -31,7 +31,7 @@ public class ParserBean extends CopperASTBean
 	 * no grammar information recorded in its element names (i.e., a terminal
 	 * named "x" contained in a grammar named "Grammar" will, in the compiled
 	 * parser, be named "x" rather than "Grammar$x".
-	 * A unitary parser must not contain more than one grammar.
+	 * A unitary parser must contain exactly one grammar.
 	 */
 	protected boolean isUnitary;
 	
@@ -68,7 +68,12 @@ public class ParserBean extends CopperASTBean
 	
 	public ParserBean()
 	{
-		super(CopperElementType.PARSER);
+		this(CopperElementType.PARSER);
+	}
+	
+	protected ParserBean(CopperElementType type)
+	{
+		super(type);
 		grammars = new Hashtable<CopperElementName,GrammarBean>();
 		isUnitary = false;
 		startSymbol = null;

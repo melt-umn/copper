@@ -73,7 +73,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 			{
 				hasError |= bean.getGrammarElement(n).acceptVisitor(this);
 			}
-			hasError |= bean.getMarkingTerminal().acceptVisitor(this);
+			for(CopperElementName n : bean.getMarkingTerminals())
+			{
+				hasError |= bean.getMarkingTerminal(n).acceptVisitor(this);
+			}
+			for(CopperElementName n : bean.getBridgeProductions())
+			{
+				hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
+			}
 			return hasError;			
 		}
 
@@ -196,7 +203,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 			{
 				hasError |= bean.getGrammarElement(n).acceptVisitor(this);
 			}
-			hasError |= bean.getMarkingTerminal().acceptVisitor(this);
+			for(CopperElementName n : bean.getMarkingTerminals())
+			{
+				hasError |= bean.getMarkingTerminal(n).acceptVisitor(this);
+			}
+			for(CopperElementName n : bean.getBridgeProductions())
+			{
+				hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
+			}
 			return hasError;			
 		}
 

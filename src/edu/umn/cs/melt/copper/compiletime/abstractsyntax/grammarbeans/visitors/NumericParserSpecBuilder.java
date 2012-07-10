@@ -116,8 +116,14 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 				}
 			}
 		}
-		hasError |= bean.getMarkingTerminal().acceptVisitor(this);
-		hasError |= bean.getStartProduction().acceptVisitor(this);
+		for(CopperElementName n : bean.getMarkingTerminals())
+		{
+			hasError |= bean.getMarkingTerminal(n).acceptVisitor(this);
+		}
+		for(CopperElementName n : bean.getBridgeProductions())
+		{
+			hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
+		}
 		for(CopperElementName n : bean.getGrammarElements())
 		{
 			hasError |= bean.getGrammarElement(n).acceptVisitor(this);

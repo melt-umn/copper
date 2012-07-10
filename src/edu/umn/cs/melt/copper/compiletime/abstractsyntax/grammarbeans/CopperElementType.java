@@ -17,5 +17,6 @@ public enum CopperElementType
 	GRAMMAR,
 	EXTENSION_GRAMMAR,
 	PARSER,
+	EXTENDED_PARSER,
 	SPECIAL
 }
