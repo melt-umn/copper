@@ -10,6 +10,8 @@ public class GrammarStatistics
 		nonterminalCount = spec.nonterminals.cardinality();
 		productionCount = spec.productions.cardinality();
 		disambiguationFunctionCount = spec.disambiguationFunctions.cardinality();
+		mdaRun = false;
+		mdaPassed = true;
 	}
 	
 	public int terminalCount;
@@ -27,4 +29,11 @@ public class GrammarStatistics
 	public int contextResolvedLexicalAmbiguityCount;
 	public int disambiguationFunctionResolvedLexicalAmbiguityCount;
 	public int unresolvableLexicalAmbiguityCount;
+	
+	public boolean mdaRun;
+	public boolean mdaPassed;
+	public int hostStateCount;
+	public int extStateCount;
+	public int newHostStateCount;
+	public int unpartitionableStateCount;
 }

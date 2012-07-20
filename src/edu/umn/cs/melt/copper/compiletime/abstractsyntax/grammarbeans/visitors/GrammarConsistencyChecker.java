@@ -1,6 +1,7 @@
 package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors;
 
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -45,7 +46,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	 */
 	protected SortedSet<GrammarError> errors;
 	
-	public GrammarConsistencyChecker()
+	GrammarConsistencyChecker()
 	{
 		errors = new TreeSet<GrammarError>();
 		currentParser = null;
@@ -193,10 +194,19 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 			{
 				hasError |= bean.getMarkingTerminal(m).acceptVisitor(this);				
 			}
+			
+			Hashtable<CopperElementName,CopperElementName> markingToLHS = new Hashtable<CopperElementName, CopperElementName>();
+			
 			isBridgeProduction = true;
 			for(CopperElementName p : bean.getBridgeProductions())
 			{
 				hasError |= bean.getBridgeProduction(p).acceptVisitor(this);
+				CopperElementName marking = bean.getBridgeProduction(p).getRhs().get(0).getName();
+				if(markingToLHS.containsKey(marking) && !markingToLHS.equals(bean.getBridgeProduction(p).getLhs().getName()))
+				{
+					reportError(bean.getLocation(),"Marking terminal " + marking + " used on bridge productions with different left-hand sides");
+				}
+				else markingToLHS.put(marking, bean.getBridgeProduction(p).getLhs().getName());
 			}
 			isBridgeProduction = false;
 		}
