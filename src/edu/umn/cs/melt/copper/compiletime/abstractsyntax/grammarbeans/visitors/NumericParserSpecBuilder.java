@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementName;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementReference;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementType;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.DisambiguationFunctionBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ExtendedParserBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ExtensionGrammarBean;
@@ -30,23 +31,29 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	private GrammarBean currentGrammar;
 	private PSSymbolTable symbolTable;
 	private ParserSpec newSpec;
+	private boolean buildHostOnly;
 	
-	private boolean inBridgeProduction;
+	public static ParserSpec buildExt(ExtendedParserBean spec,PSSymbolTable symbolTable,boolean hostOnly)
+	{
+		NumericParserSpecBuilder builder = new NumericParserSpecBuilder(symbolTable,hostOnly);
+		spec.acceptVisitor(builder);
+		return builder.newSpec;		
+	}
 	
 	public static ParserSpec build(ParserBean spec,PSSymbolTable symbolTable)
 	{
-		NumericParserSpecBuilder builder = new NumericParserSpecBuilder(symbolTable);
+		NumericParserSpecBuilder builder = new NumericParserSpecBuilder(symbolTable,false);
 		spec.acceptVisitor(builder);
-		return builder.newSpec;
+		return builder.newSpec;		
 	}
 
-	public NumericParserSpecBuilder(PSSymbolTable symbolTable)
+	private NumericParserSpecBuilder(PSSymbolTable symbolTable,boolean buildHostOnly)
 	{
 		metadataInitialized = false;
 		this.currentParser = null;
 		this.currentGrammar = null;
 		this.symbolTable = symbolTable;
-		inBridgeProduction = false;
+		this.buildHostOnly = buildHostOnly;
 	}
 
 	@Override
@@ -121,13 +128,13 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		}
 		for(CopperElementName n : bean.getMarkingTerminals())
 		{
+			newSpec.bridgeConstructs.set(symbolTable.get(bean.getMarkingTerminal(n)));
 			hasError |= bean.getMarkingTerminal(n).acceptVisitor(this);
 		}
 		for(CopperElementName n : bean.getBridgeProductions())
 		{
-			inBridgeProduction = true;
+			newSpec.bridgeConstructs.set(symbolTable.get(bean.getBridgeProduction(n)));
 			hasError |= bean.getBridgeProduction(n).acceptVisitor(this);
-			inBridgeProduction = false;
 		}
 		for(CopperElementName n : bean.getGrammarElements())
 		{
@@ -186,9 +193,16 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 
 		currentParser = bean;
 		boolean hasError = false;
-		for(CopperElementName n : bean.getGrammars())
+		if(buildHostOnly && bean.getType() == CopperElementType.EXTENDED_PARSER)
 		{
-			hasError |= bean.getGrammar(n).acceptVisitor(this);
+			bean.getGrammar(((ExtendedParserBean) bean).getHostGrammar()).acceptVisitor(this);
+		}
+		else
+		{
+			for(CopperElementName n : bean.getGrammars())
+			{
+				hasError |= bean.getGrammar(n).acceptVisitor(this);
+			}
 		}
 		newSpec.initAttributes(symbolTable);
 		metadataInitialized = true;
@@ -199,9 +213,16 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 		newSpec.pr.setRHSSym(startProdN,0,dereference(bean.getStartSymbol()));
 		newSpec.pr.setRHSSym(startProdN,1,eofN);
 		
-		for(CopperElementName n : bean.getGrammars())
+		if(buildHostOnly && bean.getType() == CopperElementType.EXTENDED_PARSER)
 		{
-			hasError |= bean.getGrammar(n).acceptVisitor(this);
+			bean.getGrammar(((ExtendedParserBean) bean).getHostGrammar()).acceptVisitor(this);
+		}
+		else
+		{
+			for(CopperElementName n : bean.getGrammars())
+			{
+				hasError |= bean.getGrammar(n).acceptVisitor(this);
+			}
 		}
 		
 		if(bean.getStartLayout() != null)
@@ -256,7 +277,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 			
 			int i = 0;
 			
-			if(inBridgeProduction)
+			if(newSpec.bridgeConstructs.get(beanId))
 			{
 				int sym0 = symbolTable.get(((ExtensionGrammarBean) currentGrammar).getMarkingTerminal(bean.getRhs().get(0).getName()));
 				newSpec.pr.setRHSSym(beanId,0,sym0);

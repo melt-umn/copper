@@ -254,6 +254,9 @@ public class ParserSpec
 	/** The grammar in which each grammar element was declared. */
 	public int[] owners;
 	
+	/** Marking terminals and bridge productions. */
+	public BitSet bridgeConstructs;
+	
 	public TerminalData t;
 	public NonterminalData nt;
 	public ProductionData pr;
@@ -289,6 +292,7 @@ public class ParserSpec
 		parserAttributes = new BitSet(symbolCount);
 		grammars = new BitSet(symbolCount);
 		owners = new int[symbolCount];
+		bridgeConstructs = new BitSet(symbolCount);
 	}
 	
 	/**

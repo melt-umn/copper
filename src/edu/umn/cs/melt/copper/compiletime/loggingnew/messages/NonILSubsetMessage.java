@@ -9,6 +9,11 @@ public class NonILSubsetMessage implements CompilerLogMessage
 	private int state;
 	private int iSubsetOf;	
 	
+	public NonILSubsetMessage(int state)
+	{
+		this(state,-1);
+	}
+	
 	public NonILSubsetMessage(int state, int iSubsetOf)
 	{
 		this.state = state;

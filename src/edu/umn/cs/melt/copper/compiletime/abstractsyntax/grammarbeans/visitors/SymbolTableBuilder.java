@@ -41,7 +41,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 		return spec.acceptVisitor(new SymbolTableBuilder());
 	}
 
-	public SymbolTableBuilder()
+	private SymbolTableBuilder()
 	{
 	}
 	

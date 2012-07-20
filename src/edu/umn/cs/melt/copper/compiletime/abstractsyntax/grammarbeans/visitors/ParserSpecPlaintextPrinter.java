@@ -40,7 +40,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 		return printer.out.toString();
 	}
 	
-	public ParserSpecPlaintextPrinter()
+	private ParserSpecPlaintextPrinter()
 	{
 		this.out = new StringBuffer();
 		currentParser = null;

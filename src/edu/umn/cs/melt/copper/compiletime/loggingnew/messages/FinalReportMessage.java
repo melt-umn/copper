@@ -64,6 +64,12 @@ public class FinalReportMessage implements CompilerLogMessage
 			rv.append(stats.lexicalAmbiguityCount + " lexical ambiguit" + ((stats.lexicalAmbiguityCount == 1) ? "y" : "ies") + " detected; " + (stats.contextResolvedLexicalAmbiguityCount + stats.disambiguationFunctionResolvedLexicalAmbiguityCount) + " resolved,\n");
 			rv.append("   " + stats.contextResolvedLexicalAmbiguityCount + " by context, " + stats.disambiguationFunctionResolvedLexicalAmbiguityCount + " by disambiguation function/group.");
 		}
+		if(stats.mdaRun)
+		{
+			rv.append("\n----------\nModular determinism analysis " + (stats.mdaPassed ? "passed" : "failed") + ".\n");
+			rv.append("Composed parser has " + stats.hostStateCount + " host state" + (stats.hostStateCount == 1 ? "" : "s") + ", " + stats.extStateCount + " extension state" + (stats.extStateCount == 1 ? "" : "s") + ",\n");
+			rv.append(stats.newHostStateCount + " new-host state" + (stats.newHostStateCount == 1 ? "" : "s") + ", and " + stats.unpartitionableStateCount + " unpartitionable state" + (stats.unpartitionableStateCount == 1 ? "" : "s") + ".");
+		}
 		return rv.toString();
 	}
 

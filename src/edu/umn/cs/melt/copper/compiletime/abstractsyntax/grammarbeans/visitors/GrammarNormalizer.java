@@ -35,7 +35,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 	private ParserBean currentParser;
 	private GrammarBean currentGrammar;
 
-	public GrammarNormalizer()
+	GrammarNormalizer()
 	{
 		filler = new TerminalClassFiller();
 		normalizer = new PrecedenceListNormalizer();

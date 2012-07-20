@@ -652,7 +652,7 @@
 					<xs:element name="MarkingTerminals" minOccurs="1" maxOccurs="1">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="Terminal" type="Terminal"/>
+								<xs:element name="Terminal" type="Terminal" minOccurs="1" maxOccurs="unbounded"/>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
