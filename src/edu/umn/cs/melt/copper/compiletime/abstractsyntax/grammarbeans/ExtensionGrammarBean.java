@@ -1,7 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans;
 
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.CopperASTBeanVisitor;
@@ -20,7 +19,6 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.C
  */
 public class ExtensionGrammarBean extends GrammarBean
 {
-	private Hashtable<CopperElementName,GrammarElementBean> bridgeElements;
 	/**
 	 * The grammar's marking terminals. Each production in {@code bridgeProductions}
 	 * must have one of these as their first right-hand-side symbol, and they may
@@ -43,7 +41,6 @@ public class ExtensionGrammarBean extends GrammarBean
 		super(CopperElementType.EXTENSION_GRAMMAR);
 		markingTerminals = new HashSet<CopperElementName>();
 		bridgeProductions = new HashSet<CopperElementName>();
-		bridgeElements = new Hashtable<CopperElementName,GrammarElementBean>();
 	}
 	
 	/**
@@ -77,7 +74,7 @@ public class ExtensionGrammarBean extends GrammarBean
 	public TerminalBean getMarkingTerminal(CopperElementName name)
 	{
 		if(!markingTerminals.contains(name)) return null;
-		return (TerminalBean) bridgeElements.get(name);
+		return (TerminalBean) grammarElements.get(name);
 	}
 
 	/**
@@ -94,29 +91,23 @@ public class ExtensionGrammarBean extends GrammarBean
 	public ProductionBean getBridgeProduction(CopperElementName name)
 	{
 		if(!bridgeProductions.contains(name)) return null;
-		return (ProductionBean) bridgeElements.get(name);
+		return (ProductionBean) grammarElements.get(name);
 	}
 
 	/**
 	 * @see #markingTerminals
 	 */
-	public boolean addMarkingTerminal(TerminalBean terminal)
+	public boolean addMarkingTerminal(CopperElementName terminal)
 	{
-		if(bridgeElements.containsKey(terminal.getName())) return false;
-		bridgeElements.put(terminal.getName(),terminal);
-		markingTerminals.add(terminal.getName());
-		return true;
+		return markingTerminals.add(terminal);
 	}
 	
 	/**
 	 * @see #bridgeProductions
 	 */
-	public boolean addBridgeProduction(ProductionBean production)
+	public boolean addBridgeProduction(CopperElementName production)
 	{
-		if(bridgeElements.containsKey(production.getName())) return false;
-		bridgeElements.put(production.getName(),production);
-		bridgeProductions.add(production.getName());
-		return true;
+		return bridgeProductions.add(production);
 	}
 	
 	@Override

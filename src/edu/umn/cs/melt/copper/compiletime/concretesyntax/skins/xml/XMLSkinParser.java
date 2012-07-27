@@ -260,7 +260,7 @@ public class XMLSkinParser extends DefaultHandler
 		switch(peek().type)
 		{
 		case BRIDGE_PRODUCTIONS_ELEMENT:
-			// Empty
+			refSet = new HashSet<CopperElementReference>();
 			break;
 		case CHARACTER_RANGE_ELEMENT:
 			String lowerBound = attributes.getValue("lower");
@@ -367,7 +367,7 @@ public class XMLSkinParser extends DefaultHandler
 			refList = new ArrayList<CopperElementReference>();
 			break;
 		case MARKING_TERMINALS_ELEMENT:
-			// Empty.
+			refSet = new HashSet<CopperElementReference>();
 			break;
 		case MEMBERS_ELEMENT:
 			refSet = new HashSet<CopperElementReference>();
@@ -451,26 +451,13 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case PRODUCTION_ELEMENT:
 			CopperElementName currentProductionName = CopperElementName.newName(attributes.getValue("id"));
-			switch(parent.type)
-			{
-			case BRIDGE_PRODUCTIONS_ELEMENT:
-				break;
-			default:
-				currentProduction = (ProductionBean) currentGrammar.getGrammarElement(currentProductionName);
-			}
+			currentProduction = (ProductionBean) currentGrammar.getGrammarElement(currentProductionName);
 			if(currentProduction == null)
 			{
 				currentProduction = new ProductionBean();
 				currentProduction.setName(currentProductionName);
 				currentProduction.setLocation(peek().startLocation);
-				switch(parent.type)
-				{
-				case BRIDGE_PRODUCTIONS_ELEMENT:
-					currentExtensionGrammar.addBridgeProduction(currentProduction);
-					break;
-				default:
-					currentGrammar.addGrammarElement(currentProduction);
-				}
+				currentGrammar.addGrammarElement(currentProduction);
 			}
 			break;
 		case REGEX_ELEMENT:
@@ -512,26 +499,13 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case TERMINAL_ELEMENT:
 			CopperElementName currentTerminalName = CopperElementName.newName(attributes.getValue("id"));
-			switch(parent.type)
-			{
-			case MARKING_TERMINALS_ELEMENT:
-				break;
-			default:
-				currentTerminal = (TerminalBean) currentGrammar.getGrammarElement(currentTerminalName);
-			}
+			currentTerminal = (TerminalBean) currentGrammar.getGrammarElement(currentTerminalName);
 			if(currentTerminal == null)
 			{
 				currentTerminal = new TerminalBean();
 				currentTerminal.setName(currentTerminalName);
 				currentTerminal.setLocation(peek().startLocation);
-				switch(parent.type)
-				{
-				case MARKING_TERMINALS_ELEMENT:
-					currentExtensionGrammar.addMarkingTerminal(currentTerminal);
-					break;
-				default:
-					currentGrammar.addGrammarElement(currentTerminal);
-				}
+				currentGrammar.addGrammarElement(currentTerminal);
 			}
 			break;
 		case TYPE_ELEMENT:
@@ -554,6 +528,7 @@ public class XMLSkinParser extends DefaultHandler
 			}
 		case OPERATOR_CLASS_REF_ELEMENT:
 		case TERMINAL_CLASS_REF_ELEMENT:
+		case PRODUCTION_REF_ELEMENT:
 			grammar = attributes.getValue("grammar");
 			if(grammar == null || grammar.equals("")) grammarName = currentGrammar.getName();
 			else grammarName = CopperElementName.newName(grammar);
@@ -610,7 +585,15 @@ public class XMLSkinParser extends DefaultHandler
 		switch(element.type)
 		{
 		case BRIDGE_PRODUCTIONS_ELEMENT:
-			// Empty
+			for(CopperElementReference ref : refSet)
+			{
+				if(ref.isFQ() && !ref.getGrammarName().equals(currentExtensionGrammar.getName()))
+				{
+					logger.logErrorMessage(CompilerLogMessageSort.ERROR,element.startLocation,"Only local references are allowed in <" + element.type.getName() + "> elements");
+				}
+				else currentExtensionGrammar.addBridgeProduction(ref.getName());
+			}
+			refSet = null;
 			break;
 		case CHARACTER_RANGE_ELEMENT:
 			// Empty; all work is done in startElement() when the element's attributes are known.
@@ -776,7 +759,15 @@ public class XMLSkinParser extends DefaultHandler
 			peek().regexChildren.add(element.regexChildren.get(0));
 			break;
 		case MARKING_TERMINALS_ELEMENT:
-			// Empty
+			for(CopperElementReference ref1 : refSet)
+			{
+				if(ref1.isFQ() && !ref1.getGrammarName().equals(currentExtensionGrammar.getName()))
+				{
+					logger.logErrorMessage(CompilerLogMessageSort.ERROR,element.startLocation,"Only local references are allowed in <" + element.type.getName() + "> elements");
+				}
+				currentExtensionGrammar.addMarkingTerminal(ref1.getName());
+			}
+			refSet = null;
 			break;
 		case MEMBERS_ELEMENT:
 			switch(peek().type)
@@ -880,6 +871,9 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case PRODUCTION_ELEMENT:
 			currentProduction = null;
+			break;
+		case PRODUCTION_REF_ELEMENT:
+			// Empty
 			break;
 		case REGEX_ELEMENT:
 			currentTerminal.setRegex(element.regexChildren.get(0));
