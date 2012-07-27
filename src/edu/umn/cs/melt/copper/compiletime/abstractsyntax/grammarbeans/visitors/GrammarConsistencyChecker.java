@@ -110,8 +110,11 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 		return hasError;
 	}
 	
-	private boolean visitCompleteGrammarBean(GrammarBean bean)
+	private boolean visitCompleteGrammarBean(GrammarBean bean,boolean isExtensionGrammar)
 	{
+		ExtensionGrammarBean extBean;
+		if(isExtensionGrammar) extBean = (ExtensionGrammarBean) bean;
+		else extBean = null;
 		boolean hasError = false;
 		boolean isDefined;
 		// Check that the grammar's grammar-layout symbols are all defined and are all terminals.
@@ -132,7 +135,9 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 		// Check all the grammar's elements for errors.
 		for(CopperElementName n : bean.getGrammarElements())
 		{
+			if(isExtensionGrammar && extBean.getBridgeProductions().contains(n)) isBridgeProduction = true;
 			hasError |= bean.getGrammarElement(n).acceptVisitor(this);
+			isBridgeProduction = false;
 		}
 		return hasError;
 	}
@@ -157,7 +162,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 		}
 		else
 		{
-			hasError |= visitCompleteGrammarBean(bean);
+			hasError |= visitCompleteGrammarBean(bean,false);
 		}
 		currentGrammar = null;
 		return hasError;
@@ -177,30 +182,12 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 		}
 		else
 		{
-			hasError |= visitCompleteGrammarBean(bean);
-			
-			HashSet<CopperElementName> nameSet = new HashSet<CopperElementName>();
-			nameSet.addAll(bean.getMarkingTerminals());
-			nameSet.addAll(bean.getBridgeProductions());
-			nameSet.retainAll(bean.getGrammarElements());
-			
-			if(!nameSet.isEmpty())
-			{
-				reportError(bean.getLocation(),"Duplicate name" + (nameSet.size() == 1 ? "" : "s") + ": " + nameSet);
-				hasError = true;
-			}
-			
-			for(CopperElementName m : bean.getMarkingTerminals())
-			{
-				hasError |= bean.getMarkingTerminal(m).acceptVisitor(this);				
-			}
+			hasError |= visitCompleteGrammarBean(bean,true);
 			
 			Hashtable<CopperElementName,CopperElementName> markingToLHS = new Hashtable<CopperElementName, CopperElementName>();
 			
-			isBridgeProduction = true;
 			for(CopperElementName p : bean.getBridgeProductions())
 			{
-				hasError |= bean.getBridgeProduction(p).acceptVisitor(this);
 				CopperElementName marking = bean.getBridgeProduction(p).getRhs().get(0).getName();
 				if(markingToLHS.containsKey(marking) && !markingToLHS.equals(bean.getBridgeProduction(p).getLhs().getName()))
 				{
@@ -208,7 +195,6 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 				}
 				else markingToLHS.put(marking, bean.getBridgeProduction(p).getLhs().getName());
 			}
-			isBridgeProduction = false;
 		}
 		return hasError;
 	}
@@ -425,14 +411,24 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 				// Check that all the names on the right-hand side are defined,
 				isDefined = nameIsDefined(n) && nameIsHost(n);
 				hasError |= !isDefined;
-				// and refer to terminals or nonterminals.
+				// refer to terminals or nonterminals,
 				if(isDefined &&
 						dereference(n).getType() != CopperElementType.TERMINAL &&
 						dereference(n).getType() != CopperElementType.NON_TERMINAL)
 				{
 					reportError(n.getLocation(),getDisplayName(n) + " is not a terminal or a nonterminal");
 					hasError = true;					
-				}				
+				}
+				// and are not marking terminals.
+				if(isDefined &&
+				   currentParser.getType() == CopperElementType.EXTENDED_PARSER &&
+				   currentGrammar.getType() == CopperElementType.EXTENSION_GRAMMAR &&
+				   (!n.isFQ() || n.getGrammarName().equals(currentGrammar.getName())) &&
+				   ((ExtensionGrammarBean) currentGrammar).getMarkingTerminals().contains(dereference(n).getName()))
+				{
+					reportError(n.getLocation(),getDisplayName(n) + ", designated as a marking terminal, must be referenced only as the first right-hand-side element in a bridge production");
+					hasError = true;
+				}
 			}
 			// Check that the list of variable names is of equal length to the right-hand side.
 			if(bean.getRhsVarNames() != null && bean.getRhsVarNames().size() != bean.getRhs().size())

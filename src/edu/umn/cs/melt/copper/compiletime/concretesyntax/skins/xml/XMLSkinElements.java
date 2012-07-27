@@ -55,6 +55,7 @@ class XMLSkinElements
 		PRECEDENCE_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Precedence"; } },
 		PREFIX_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Prefix"; } },
 		PRODUCTION_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Production"; } },
+		PRODUCTION_REF_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "ProductionRef"; } },
 		REGEX_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Regex"; } },
 		RHS_ELEMENT								{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "RHS"; } },
 		RIGHT_ASSOCIATIVE_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "RightAssociative"; } },

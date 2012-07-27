@@ -211,6 +211,17 @@
     	</xs:complexContent>
     </xs:complexType>
 
+    <xs:complexType name="ProductionRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a production (local or fully-qualified).
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="Reference"/>
+    	</xs:complexContent>
+    </xs:complexType>
+
     <xs:complexType name="GrammarRef">
 		<xs:annotation>
 			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
@@ -652,14 +663,14 @@
 					<xs:element name="MarkingTerminals" minOccurs="1" maxOccurs="1">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="Terminal" type="Terminal" minOccurs="1" maxOccurs="unbounded"/>
+								<xs:element name="TerminalRef" type="TerminalRef" minOccurs="1" maxOccurs="unbounded"/>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
 					<xs:element name="BridgeProductions" minOccurs="1" maxOccurs="1">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="Production" type="Production"/>
+								<xs:element name="ProductionRef" type="ProductionRef"/>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
