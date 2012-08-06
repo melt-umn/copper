@@ -282,7 +282,7 @@ public class Grammar3p23API
 		compilerArgs.setDumpFile("Grammar3p23Dump.html");
 		try
 		{
-			compilerArgs.setOutput(new PrintStream("parsers/Grammar3p23Parser.java"));
+			compilerArgs.setOutputStream(new PrintStream("parsers/Grammar3p23Parser.java"));
 		}
 		catch(FileNotFoundException ex)
 		{
