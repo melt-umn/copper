@@ -4,11 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
+import edu.umn.cs.melt.copper.compiletime.pipeline.SpecCompilerParameters;
 
 public class DumperFactory
 {
-	public static PrintStream getDumpStream(ParserCompilerParameters args)
+	public static PrintStream getDumpStream(SpecCompilerParameters args)
 	throws FileNotFoundException
 	{
 		PrintStream dumpStream = null;

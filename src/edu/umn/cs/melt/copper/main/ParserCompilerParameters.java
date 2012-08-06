@@ -1,18 +1,22 @@
 package edu.umn.cs.melt.copper.main;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
+import edu.umn.cs.melt.copper.compiletime.pipeline.SpecCompilerParameters;
+import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
  * Holds all parameters that may be passed to the parser compiler.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  */
-public class ParserCompilerParameters
+public class ParserCompilerParameters implements SpecParserParameters,SpecCompilerParameters,SourceBuilderParameters
 {
 	private ArrayList< Pair<String,Reader> > files;
 	private boolean isPretty,isComposition,gatherStatistics,dumpReport,dumpOnlyOnError;
@@ -22,7 +26,9 @@ public class ParserCompilerParameters
 	private CopperSkinType useSkin;
 	private CompilerLogger logger;
 	private CompilerLogMessageSort quietLevel;
-	private PrintStream output;
+	private PrintStream outputStream;
+	private File outputFile;
+	private CopperOutputType outputType;
 	
 	private boolean isWarnUselessNTs;
 	
@@ -46,7 +52,9 @@ public class ParserCompilerParameters
 		quietLevel = CompilerLogMessageSort.getDefaultSort();
 		packageDecl = null;
 		parserName = null;
-		output = System.out;
+		outputStream = null;
+		outputFile = null;
+		outputType = null;
 		
 		isWarnUselessNTs = true;
 	}
@@ -252,13 +260,33 @@ public class ParserCompilerParameters
 		this.dumpOnlyOnError = dumpOnlyOnError;
 	}
 
-	public PrintStream getOutput()
+	public PrintStream getOutputStream()
 	{
-		return output;
+		return outputStream;
+	}
+	
+	public void setOutputStream(PrintStream output)
+	{
+		this.outputStream = output;
+	}
+	
+	public File getOutputFile()
+	{
+		return outputFile;
+	}
+	
+	public void setOutputFile(File output)
+	{
+		this.outputFile = output;
 	}
 
-	public void setOutput(PrintStream output)
+	public CopperOutputType getOutputType()
 	{
-		this.output = output;
+		return outputType;
+	}
+	
+	public void setOutputType(CopperOutputType outputType)
+	{
+		this.outputType = outputType;
 	}
 }

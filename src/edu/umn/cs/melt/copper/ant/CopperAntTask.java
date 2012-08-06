@@ -1,9 +1,8 @@
 package edu.umn.cs.melt.copper.ant;
 
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 
@@ -13,6 +12,7 @@ import org.apache.tools.ant.Task;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 import edu.umn.cs.melt.copper.main.CopperEngineType;
+import edu.umn.cs.melt.copper.main.CopperOutputType;
 import edu.umn.cs.melt.copper.main.CopperSkinType;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
@@ -35,7 +35,7 @@ public class CopperAntTask extends Task
 	private CopperEngineType engine = ParserCompiler.getDefaultEngine();
 	private CopperSkinType skin = ParserCompiler.getDefaultSkin();
 	private Reader input = null;
-	private PrintStream output = null;
+	private File outputFile = null;
 	private CompilerLogMessageSort compileVerbosity = CompilerLogMessageSort.getDefaultSort();
 	private boolean isWarnUselessNTs = true;
 	private boolean isRunVerbose = false;
@@ -87,7 +87,17 @@ public class CopperAntTask extends Task
 		params.setFiles(files);
 		
 		//System.setOut(output);
-		params.setOutput(output);
+		if(outputFile != null)
+		{
+			params.setOutputType(CopperOutputType.FILE);
+			params.setOutputFile(outputFile);
+		}
+		else
+		{
+			params.setOutputType(CopperOutputType.STREAM);
+			params.setOutputStream(System.out);
+		}
+		
 		
 		int errorlevel = 1;
 		try
@@ -137,7 +147,7 @@ public class CopperAntTask extends Task
 	
 	/**
 	 * Sets the name of the file where Copper will place the source code of the finished parser.
-	 * A combination of <code>setOutput()</code> and <code>setOutputLabel()</code>.
+	 * A combination of <code>setOutputFile()</code> and <code>setOutputLabel()</code>.
 	 * @param fileName The filename.
 	 * @throws IOException If there is an error opening the file.
 	 */
@@ -145,7 +155,7 @@ public class CopperAntTask extends Task
 	throws IOException
 	{
 		setOutputLabel(fileName);
-		setOutput(new PrintStream(new FileOutputStream(fileName)));
+		outputFile = new File(fileName);
 	}
 	
 	/**
@@ -210,13 +220,13 @@ public class CopperAntTask extends Task
 		return inputLabel;
 	}
 
-	/**
+	/*
 	 * Returns the <code>PrintStream</code> object to which Copper will write the source code of the finished parser.
 	 */
-	public PrintStream getOutput()
-	{
-		return output;
-	}
+//	public PrintStream getOutput()
+//	{
+//		return output;
+//	}
 
 	/**
 	 * Returns the name of the <code>PrintStream</code> object (filename, stream ID, etc.) to which Copper will write the source code of the finished parser.
@@ -316,13 +326,13 @@ public class CopperAntTask extends Task
 		this.inputLabel = inputLabel;
 	}
 
-	/**
+	/*
 	 * Sets the <code>PrintStream</code> object to which Copper will write the source code of the finished parser.
 	 */
-	public void setOutput(PrintStream output)
-	{
-		this.output = output;
-	}
+//	public void setOutput(PrintStream output)
+//	{
+//		this.output = output;
+//	}
 
 	/**
 	 * Sets the name of the <code>PrintStream</code> object (filename, stream ID, etc.) to which Copper will write the source code of the finished parser.
