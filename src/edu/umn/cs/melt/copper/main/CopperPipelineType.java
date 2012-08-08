@@ -1,7 +1,7 @@
 package edu.umn.cs.melt.copper.main;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.pipeline.CompilerReturnData;
+import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardPipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompiler;
@@ -21,9 +21,9 @@ public enum CopperPipelineType
 	GRAMMARBEANS
 	{
 		@Override
-		StandardPipeline<ParserBean,CompilerReturnData> getPipeline(ParserCompilerParameters args)
+		StandardPipeline<ParserBean,StandardSpecCompilerReturnData> getPipeline(ParserCompilerParameters args)
 		{
-			return new StandardPipeline<ParserBean, CompilerReturnData>(args.getUseSkin().getStandardSpecParser(args),new StandardSpecCompiler(),args.getUseEngine().getStandardSourceBuilder(args));
+			return new StandardPipeline<ParserBean, StandardSpecCompilerReturnData>(args.getUseSkin().getStandardSpecParser(args),new StandardSpecCompiler(),args.getUseEngine().getStandardSourceBuilder(args));
 		}
 	};
 	

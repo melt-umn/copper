@@ -10,13 +10,13 @@ import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.FinalReportMessage
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.TimingMessage;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
-import edu.umn.cs.melt.copper.compiletime.pipeline.CompilerReturnData;
+import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilder;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
-public class SingleDFACompilationProcess implements SourceBuilder<CompilerReturnData>
+public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCompilerReturnData>
 {
 	boolean outputSource;
 	
@@ -26,7 +26,7 @@ public class SingleDFACompilationProcess implements SourceBuilder<CompilerReturn
 	}
 
 	@Override
-	public int buildSource(CompilerReturnData c,SourceBuilderParameters args)
+	public int buildSource(StandardSpecCompilerReturnData c,SourceBuilderParameters args)
 	throws CopperException
 	{
 		CompilerLogger oldStyleLogger;

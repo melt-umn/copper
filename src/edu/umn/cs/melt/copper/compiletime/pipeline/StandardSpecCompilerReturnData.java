@@ -9,7 +9,12 @@ import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLa
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
 
-public class CompilerReturnData
+/**
+ * This is a container class for all the data returned by {@link StandardSpecCompiler}.
+ * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ *
+ */
+public class StandardSpecCompilerReturnData
 {
 	public boolean succeeded;
 	public int errorlevel;

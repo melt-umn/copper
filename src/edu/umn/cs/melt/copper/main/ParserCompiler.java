@@ -74,19 +74,23 @@ public class ParserCompiler
 		rv += "\t\t\textension's composability. EXPERIMENTAL.\n";
 		rv += "\t-logfile [lout]\tPipe all log output to the file 'lout'\n\t\t\t(default standard error).\n";
 		rv += "\t-dump\tProduce a detailed report of the grammar and generated parser.\n";
-		rv += "\t-errordump\tProduce a detailed report, but only if the parser compiler has generated an error.\n";
+		rv += "\t-errordump\tProduce a detailed report, but only if the parser\n\t\t\tcompiler has generated an error.\n";
 		rv += "\t-dumpfile [dout]\tPipe the dumped report to the file 'dout'\n\t\t\t\t(default to log output).\n";
-		rv += "\t-dumptype [type]\tGenerate the dumped report in the specified format (plain, xml, html).\n";
-		rv += "\t-skin [skin]\tGenerate a parser based on input from the specified input skin:\n";
-		rv += "\t\tnative: The original input format used by Silver. DEPRECATED.\n";
-		rv += "\t\toldxml: The original XML input schema. DEPRECATED.\n";
-		rv += "\t\txml: An XML input schema.\n";
-		rv += "\t\tcup: (DEFAULT) A JavaCUP-like skin.\n";
+		rv += "\t-dumptype [type]\tGenerate the dumped report in the\n\t\t\t\tspecified format:\n";
+		for(String dt : CopperDumpType.strings())
+		{
+			rv += "\t\t" + dt + ": " + CopperDumpType.fromString(dt).usageMessage() + "\n";
+		}
+		rv += "\t-skin [skin]\tGenerate a parser based on input from the specified\n\t\t\tinput skin:\n";
+		for(String st : CopperSkinType.strings())
+		{
+			rv += "\t\t" + st + ": " + CopperSkinType.fromString(st).usageMessage() + "\n";
+		}
 		rv += "\t-engine [eng]\tGenerate a parser based on the specified parsing engine:\n";
-		rv += "\t\toldnslow: The original JCF-based parsing engine.\n\t\t           Not included in 'CopperRuntime.jar'.\n";
-		rv += "\t\tsingle: (DEFAULT) A parsing engine with a single scanner for all parsing contexts.\n";
-		rv += "\t\tmoded: An engine with a separate scanner for each different parsing context. EXPERIMENTAL.\n";
-		rv += "\t\tsplit: An engine made for assembling pieces of parse tables on-the-fly. EXPERIMENTAL.";
+		for(String et : CopperEngineType.strings())
+		{
+			rv += "\t\t" + et + ": " + CopperEngineType.fromString(et).usageMessage() + "\n";
+		}
 		return rv;
 	}
 	
@@ -559,12 +563,12 @@ public class ParserCompiler
 	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
 	throws CopperException
 	{
-		return ((StandardPipeline<ParserBean,?>) CopperPipelineType.GRAMMARBEANS.getPipeline(args)).compile(spec,args);
+		return ((StandardPipeline<ParserBean,?>) CopperPipelineType.GRAMMARBEANS.getPipeline(args)).execute(spec,args);
 	}
 
 	public static int compile(ParserCompilerParameters args)
 	{
-		return CopperPipelineType.GRAMMARBEANS.getPipeline(args).compile(args);
+		return CopperPipelineType.GRAMMARBEANS.getPipeline(args).execute(args);
 	}
 
 
