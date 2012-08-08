@@ -1,6 +1,8 @@
 package edu.umn.cs.melt.copper.main;
 
 import java.util.Hashtable;
+import java.util.Set;
+import java.util.TreeSet;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CUPParsingProcess;
@@ -24,6 +26,9 @@ public enum CopperSkinType
 		{
 			throw new UnsupportedOperationException();
 		}
+		
+		@Override
+		String usageMessage() { return "The original input format used by Silver. DEPRECATED."; }
 	},
 	/**
 	 * Copper's old XML-based skin (an XML/custom-parser hybrid).
@@ -36,6 +41,9 @@ public enum CopperSkinType
 		{
 			throw new UnsupportedOperationException();
 		}
+
+		@Override
+		String usageMessage() { return "The original XML input schema. DEPRECATED."; }
 	},
 	/**
 	 * An XML-based skin meant primarily for use with machine-generated specs, when
@@ -49,6 +57,9 @@ public enum CopperSkinType
 		{
 			return new XMLParsingProcess();
 		}
+		
+		@Override
+		String usageMessage() { return "An XML input schema."; }
 	},
 	/**
 	 * A skin based on the input format of JavaCUP (which is, in turn, based on the input
@@ -61,11 +72,14 @@ public enum CopperSkinType
 		{
 			return new CUPParsingProcess();
 		}
+		
+		@Override
+		String usageMessage() { return "(DEFAULT) A JavaCUP-like skin."; }
 	};
 	
 	abstract SpecParser<ParserBean> getStandardSpecParser(ParserCompilerParameters args);
 	
-	private static Hashtable<String,CopperSkinType> fromStringTable;
+	private static Hashtable<String,CopperSkinType> fromStringTable = null;
 	
 	static void initTable()
 	{
@@ -81,8 +95,16 @@ public enum CopperSkinType
 		return fromStringTable.containsKey(s);
 	}
 	
+	static Set<String> strings()
+	{
+		initTable();
+		return new TreeSet<String>(fromStringTable.keySet());
+	}
+
 	static CopperSkinType fromString(String s)
 	{
 		return fromStringTable.get(s);
 	}
+
+	abstract String usageMessage();
 }

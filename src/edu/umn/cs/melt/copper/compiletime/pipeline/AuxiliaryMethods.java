@@ -9,6 +9,11 @@ import edu.umn.cs.melt.copper.compiletime.logging.StringBasedCompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.PrintCompilerLogHandler;
 
+/**
+ * Auxiliary methods commonly used in pipelines. 
+ * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ *
+ */
 public class AuxiliaryMethods
 {
 	public static edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger getNewStyleLogger(CompilerLogger oldStyleLogger,UniversalProcessParameters args)

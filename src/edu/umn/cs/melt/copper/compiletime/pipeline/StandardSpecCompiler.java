@@ -50,10 +50,10 @@ import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTablePrinter;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
-public class StandardSpecCompiler implements SpecCompiler<ParserBean, CompilerReturnData>
+public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSpecCompilerReturnData>
 {
 	@Override
-	public CompilerReturnData compileParser(ParserBean spec, SpecCompilerParameters args)
+	public StandardSpecCompilerReturnData compileParser(ParserBean spec, SpecCompilerParameters args)
 	throws CopperException
 	{
 		if(spec == null) return null;
@@ -267,7 +267,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, CompilerRe
 		
 		
 		
-		CompilerReturnData rv = new CompilerReturnData();
+		StandardSpecCompilerReturnData rv = new StandardSpecCompilerReturnData();
 		
 		rv.succeeded = succeeded;
 		rv.errorlevel = succeeded ? 0 : 1;
