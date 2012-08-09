@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+	<Parser id="MathGrammarParser" isUnitary="true">
+		<Grammars>
+			<GrammarRef id="MathGrammar"/>
+		</Grammars>
+		<StartSymbol>
+			<NonterminalRef grammar="MathGrammar" id="E"/>
+		</StartSymbol>
+		<!-- All elements below are optional. -->
+		<!--
+		     Start layout. If not specified, defaults to the grammar layout
+		     of the start symbol's grammar.
+		  -->
+		<StartLayout/>
+		<!--<StartLayout>
+			<TerminalRef grammar="MathGrammar" id="spaces"/>
+		</StartLayout>-->
+		<Package>parsers</Package>
+		<ClassName>MathGrammarParser</ClassName>
+		<PostParseCode>
+			<Code><![CDATA[ System.out.println(root + "\nParser has finished."); ]]></Code>
+		</PostParseCode>
+	</Parser>
+	
+	<Grammar id="MathGrammar">
+		<Layout>
+			<TerminalRef id="spaces"/>
+		</Layout>		
+		<Declarations>
+			<Terminal id="spaces">
+				<Regex>
+					<Concatenation>
+						<CharacterSet><SingleCharacter char=" "/></CharacterSet>
+						<KleeneStar>
+							<CharacterSet><SingleCharacter char=" "/></CharacterSet>
+						</KleeneStar>
+					</Concatenation>
+				</Regex>
+			</Terminal>
+			
+			<Terminal id="plus">
+				<Regex>
+					<CharacterSet><SingleCharacter char="+"/></CharacterSet>
+				</Regex>
+				<Operator>
+					<Precedence>1</Precedence>
+					<LeftAssociative/>
+				</Operator>
+			</Terminal>
+
+			<Terminal id="minus">
+				<Regex>
+					<CharacterSet><SingleCharacter char="-"/></CharacterSet>
+				</Regex>
+				<Operator>
+					<Precedence>1</Precedence>
+					<LeftAssociative/>
+				</Operator>
+			</Terminal>
+
+			<Terminal id="times">
+				<Regex>
+					<CharacterSet><SingleCharacter char="*"/></CharacterSet>
+				</Regex>
+				<Operator>
+					<Precedence>2</Precedence>
+					<LeftAssociative/>
+				</Operator>
+			</Terminal>
+
+			<Terminal id="slash">
+				<Regex>
+					<CharacterSet><SingleCharacter char="/"/></CharacterSet>
+				</Regex>
+				<Operator>
+					<Precedence>2</Precedence>
+					<LeftAssociative/>
+				</Operator>
+			</Terminal>
+
+			<Terminal id="lp">
+				<Regex>
+					<CharacterSet><SingleCharacter char="("/></CharacterSet>
+				</Regex>
+			</Terminal>
+
+			<Terminal id="rp">
+				<Regex>
+					<CharacterSet><SingleCharacter char=")"/></CharacterSet>
+				</Regex>
+			</Terminal>
+
+			<Terminal id="lb">
+				<Regex>
+					<CharacterSet><SingleCharacter char="["/></CharacterSet>
+				</Regex>
+			</Terminal>
+
+			<Terminal id="rb">
+				<Regex>
+					<CharacterSet><SingleCharacter char="]"/></CharacterSet>
+				</Regex>
+			</Terminal>
+
+			<Terminal id="min">
+				<Regex>
+					<CharacterSet><SingleCharacter char="m"/></CharacterSet>
+				</Regex>
+				<Operator>
+					<Precedence>3</Precedence>
+					<LeftAssociative/>
+				</Operator>
+			</Terminal>
+
+			<Terminal id="max">
+				<Regex>
+					<CharacterSet><SingleCharacter char="M"/></CharacterSet>
+				</Regex>
+				<Operator>
+					<Precedence>3</Precedence>
+					<LeftAssociative/>
+				</Operator>
+			</Terminal>
+			
+			<Terminal id="digit">
+				<Regex>
+					<Choice>
+						<CharacterSet><SingleCharacter char="0"/></CharacterSet>
+						<Concatenation>
+							<CharacterSet>
+								<CharacterRange lower="1" upper="9"/>
+							</CharacterSet>
+							<KleeneStar>
+								<CharacterSet>
+									<CharacterRange lower="0" upper="9"/>
+								</CharacterSet>
+							</KleeneStar>
+						</Concatenation>
+					</Choice>
+				</Regex>
+				<Type>Float</Type>
+				<Code><![CDATA[ RESULT = Float.parseFloat(lexeme); ]]></Code>
+			</Terminal>
+
+			<Terminal id="ndigit">
+				<Regex>
+					<Choice>
+						<CharacterSet><SingleCharacter char="0"/></CharacterSet>
+						<Concatenation>
+							<CharacterSet>
+								<CharacterRange lower="1" upper="9"/>
+							</CharacterSet>
+							<KleeneStar>
+								<CharacterSet>
+									<CharacterRange lower="0" upper="9"/>
+								</CharacterSet>
+							</KleeneStar>
+						</Concatenation>
+					</Choice>
+				</Regex>
+				<Type>Float</Type>
+				<Code><![CDATA[ RESULT = new Float(-1.0 * Float.parseFloat(lexeme)); ]]></Code>
+				<Prefix>
+					<TerminalRef id="minus"/>
+				</Prefix>
+			</Terminal>
+			
+			<Terminal id="id">
+				<Regex>
+					<Concatenation>
+						<CharacterSet>
+							<CharacterRange lower="A" upper="Z"/>
+							<CharacterRange lower="a" upper="z"/>
+							<SingleCharacter char="_"/>
+						</CharacterSet>
+						<KleeneStar>
+							<CharacterSet>
+								<CharacterRange lower="A" upper="Z"/>
+								<CharacterRange lower="a" upper="z"/>
+								<CharacterRange lower="0" upper="9"/>
+								<SingleCharacter char="_"/>
+							</CharacterSet>
+						</KleeneStar>
+					</Concatenation>
+				</Regex>
+				<Type>Float</Type>
+				<Code><![CDATA[ RESULT = new Float(0.0); ]]></Code>
+			</Terminal>
+			
+			<Nonterminal id="E">
+				<Type>Float</Type>
+			</Nonterminal>
+
+			<Nonterminal id="M">
+				<Type>Float</Type>
+			</Nonterminal>
+
+			<DisambiguationFunction id="digits">
+				<Members>
+					<TerminalRef id="digit"/>
+					<TerminalRef id="ndigit"/>
+				</Members>
+				<DisambiguateTo><TerminalRef id="digit"/></DisambiguateTo>
+			</DisambiguationFunction>
+			
+			<Production id="p1">
+				<Code><![CDATA[ RESULT = left + right; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<NonterminalRef id="E" name="left"/>
+					<TerminalRef id="plus"/>
+					<NonterminalRef id="E" name="right"/>
+				</RHS>
+			</Production>
+
+			<Production id="p2">
+				<Code><![CDATA[ RESULT = left - right; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<NonterminalRef id="E" name="left"/>
+					<TerminalRef id="minus"/>
+					<NonterminalRef id="E" name="right"/>
+				</RHS>
+			</Production>
+
+			<Production id="p3">
+				<Code><![CDATA[ RESULT = left * right; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<NonterminalRef id="E" name="left"/>
+					<TerminalRef id="times"/>
+					<NonterminalRef id="E" name="right"/>
+				</RHS>
+			</Production>
+
+			<Production id="p4">
+				<Code><![CDATA[ RESULT = left / right; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<NonterminalRef id="E" name="left"/>
+					<TerminalRef id="slash"/>
+					<NonterminalRef id="E" name="right"/>
+				</RHS>
+			</Production>
+
+			<Production id="p5">
+				<Code><![CDATA[ RESULT = inner; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<TerminalRef id="lp"/>
+					<NonterminalRef id="E" name="inner"/>
+					<TerminalRef id="rp"/>
+				</RHS>
+			</Production>
+
+			<Production id="p6">
+				<Code><![CDATA[ RESULT = inner; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<TerminalRef id="lb"/>
+					<NonterminalRef id="M" name="inner"/>
+					<TerminalRef id="rb"/>
+				</RHS>
+				<Layout/>
+			</Production>
+
+			<Production id="p7">
+				<Code><![CDATA[ RESULT = dig; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<TerminalRef id="digit" name="dig"/>
+				</RHS>
+			</Production>
+
+			<Production id="p8">
+				<Code><![CDATA[ RESULT = dig; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<TerminalRef id="ndigit" name="dig"/>
+				</RHS>
+			</Production>
+
+			<Production id="p9">
+				<Code><![CDATA[ RESULT = id; ]]></Code>
+				<LHS><NonterminalRef id="E"/></LHS>
+				<RHS>
+					<TerminalRef id="id" name="id"/>
+				</RHS>
+			</Production>
+			
+			<Production id="p10">
+				<Code><![CDATA[ RESULT = Math.min(left,right); ]]></Code>
+				<LHS><NonterminalRef id="M"/></LHS>
+				<RHS>
+					<NonterminalRef id="M" name="left"/>
+					<TerminalRef id="min"/>
+					<NonterminalRef id="M" name="right"/>
+				</RHS>
+				<Layout/>
+			</Production>
+
+			<Production id="p11">
+				<Code><![CDATA[ RESULT = Math.max(left,right); ]]></Code>
+				<LHS><NonterminalRef id="M"/></LHS>
+				<RHS>
+					<NonterminalRef id="M" name="left"/>
+					<TerminalRef id="max"/>
+					<NonterminalRef id="M" name="right"/>
+				</RHS>
+				<Layout/>
+			</Production>
+			
+			<Production id="p12">
+				<Code><![CDATA[ RESULT = dig; ]]></Code>
+				<LHS><NonterminalRef id="M"/></LHS>
+				<RHS>
+					<TerminalRef id="digit" name="dig"/>
+				</RHS>
+			</Production>
+		</Declarations>
+	</Grammar>
+</CopperSpec>
