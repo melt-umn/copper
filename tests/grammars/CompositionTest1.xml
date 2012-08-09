@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+    <ExtendedParser id="CompositionTest">
+        <HostGrammar>
+            <GrammarRef id="host"/>
+        </HostGrammar>
+        <ExtensionGrammars>
+            <GrammarRef id="ext1"/>
+        </ExtensionGrammars>
+        <StartSymbol><NonterminalRef grammar="host" id="E"/></StartSymbol>
+    </ExtendedParser>
+    
+    <ExtensionGrammar id="ext1">
+        <Layout>
+            <TerminalRef grammar="host" id="spaces"/>
+            <TerminalRef grammar="host" id="tabs"/>
+            <TerminalRef grammar="host" id="newlines"/>
+        </Layout>
+        <MarkingTerminals>
+            <TerminalRef id="e1_marking"/>
+        </MarkingTerminals>
+        <BridgeProductions>
+            <ProductionRef id="EtoMem"/>
+        </BridgeProductions>
+        <Declarations>
+            <Terminal id="e1_marking">
+                <PP>e1_marking</PP>
+                <Regex> 
+                    <Concatenation>
+                        <CharacterSet>
+                            <SingleCharacter char="m"/>
+                        </CharacterSet>
+                        <CharacterSet>
+                            <SingleCharacter char="e"/>
+                        </CharacterSet>
+                        <CharacterSet>
+                            <SingleCharacter char="m"/>
+                        </CharacterSet>
+                        <CharacterSet>
+                            <SingleCharacter char=":"/>
+                        </CharacterSet>
+                    </Concatenation>
+                </Regex>
+                <Dominates>
+      	            <TerminalRef grammar="host" id="id"/>
+                </Dominates>       
+            </Terminal>
+            <Production id="EtoMem">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef grammar="host" id="E"/></LHS>
+                <RHS>
+	                <TerminalRef id="e1_marking"/>
+	                <NonterminalRef id="ME"/>
+                </RHS>
+            </Production>
+            
+            <Nonterminal id="ME">
+                    <PP>ME</PP>
+                </Nonterminal>
+            <Production id="MEtoEParen">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="ME"/></LHS>
+                <RHS>
+                    <TerminalRef grammar="host" id="lparen"/>
+	                <NonterminalRef grammar="host" id="E"/>
+	                <TerminalRef grammar="host" id="rparen"/>
+                </RHS>
+            </Production>
+        </Declarations>
+    </ExtensionGrammar>
+ 
+    <Grammar id="host">
+        <Layout>
+            <TerminalRef id="spaces"/>
+            <TerminalRef id="tabs"/>
+            <TerminalRef id="newlines"/>
+        </Layout>
+        <Declarations>
+            <Terminal id="spaces">
+                <Regex> 
+                    <Concatenation>
+                        <CharacterSet>
+                            <SingleCharacter char=" "/>
+                        </CharacterSet>
+                        <KleeneStar>
+                            <CharacterSet>
+                                <SingleCharacter char=" "/>
+                            </CharacterSet>
+                        </KleeneStar>
+                    </Concatenation>
+                </Regex>
+                <Dominates>
+                    <TerminalRef id="tabs"/>
+                    <TerminalRef id="newlines"/>
+                </Dominates>
+            </Terminal>
+            <Terminal id="tabs">
+                <Regex> 
+                    <Concatenation>
+                        <CharacterSet>
+                            <SingleCharacter char="&#9;"/>
+                        </CharacterSet>
+                        <KleeneStar>
+                            <CharacterSet>
+                                <SingleCharacter char="&#9;"/>
+                            </CharacterSet>
+                        </KleeneStar>
+                    </Concatenation>
+                </Regex>
+            </Terminal>
+            <Terminal id="newlines">
+                <Regex> 
+                    <Concatenation>
+                        <CharacterSet>
+                            <SingleCharacter char="&#10;"/>
+                        </CharacterSet>
+                        <KleeneStar>
+                            <CharacterSet>
+                                <SingleCharacter char="&#10;"/>
+                            </CharacterSet>
+                        </KleeneStar>
+                    </Concatenation>
+                </Regex>
+            </Terminal>
+            <Terminal id="plus">
+                <PP>+</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char="+"/>
+                    </CharacterSet>
+                </Regex>
+                <Operator>
+                  <Precedence>0</Precedence>
+                  <LeftAssociative/>
+                </Operator>
+            </Terminal>
+            <Terminal id="minus">
+                <PP>-</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char="-"/>
+                    </CharacterSet>
+                </Regex>
+                <Operator>
+                  <Precedence>0</Precedence>
+                  <LeftAssociative/>
+                </Operator>
+            </Terminal>
+            <Terminal id="times">
+                <PP>*</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char="*"/>
+                    </CharacterSet>
+                </Regex>
+                <Operator>
+                  <Precedence>1</Precedence>
+                  <LeftAssociative/>
+                </Operator>
+            </Terminal>
+            <Terminal id="div">
+                <PP>/</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char="/"/>
+                    </CharacterSet>
+                </Regex>
+                <Operator>
+                  <Precedence>1</Precedence>
+                  <LeftAssociative/>
+                </Operator>
+            </Terminal>
+            <Terminal id="lparen">
+                <PP>(</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char="("/>
+                    </CharacterSet>
+                </Regex>
+            </Terminal>
+            <Terminal id="rparen">
+                <PP>)</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char=")"/>
+                    </CharacterSet>
+                </Regex>
+            </Terminal>
+            <Terminal id="digit">
+                <PP>digit</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char="0"/>
+                    </CharacterSet>
+                </Regex>
+            </Terminal>
+            <Terminal id="id">
+                <PP>id</PP>
+                <Regex> 
+                    <CharacterSet>
+                        <SingleCharacter char="a"/>
+                    </CharacterSet>
+                </Regex>
+            </Terminal>
+
+            <Nonterminal id="E">
+                <PP>E</PP>
+            </Nonterminal>
+
+            <Production id="EplusE">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="E"/></LHS>
+                <RHS>
+                    <NonterminalRef id="E"/>
+                    <TerminalRef id="plus"/>
+                    <NonterminalRef id="E"/>
+                </RHS>
+                <Layout><TerminalRef id="spaces"/></Layout>
+            </Production>
+            <Production id="EminusE">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="E"/></LHS>
+                <RHS>
+                    <NonterminalRef id="E"/>
+                    <TerminalRef id="minus"/>
+                    <NonterminalRef id="E"/>
+                </RHS>
+                <Layout><TerminalRef id="spaces"/></Layout>
+            </Production>
+            <Production id="EtimesE">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="E"/></LHS>
+                <RHS>
+                    <NonterminalRef id="E"/>
+                    <TerminalRef id="times"/>
+                    <NonterminalRef id="E"/>
+                </RHS>
+                <Layout><TerminalRef id="spaces"/></Layout>
+            </Production>
+            <Production id="EdivE">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="E"/></LHS>
+                <RHS>
+                    <NonterminalRef id="E"/>
+                    <TerminalRef id="div"/>
+                    <NonterminalRef id="E"/>
+                </RHS>
+                <Layout><TerminalRef id="spaces"/></Layout>
+            </Production>
+            <Production id="parenE">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="E"/></LHS>
+                <RHS>
+                    <TerminalRef id="lparen"/>
+                    <NonterminalRef id="E"/>
+                    <TerminalRef id="rparen"/>
+                </RHS>
+                <Layout><TerminalRef id="spaces"/></Layout>
+            </Production>
+            <Production id="Edigit">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="E"/></LHS>
+                <RHS>
+                    <TerminalRef id="digit"/>
+                </RHS>
+                <Layout><TerminalRef id="spaces"/></Layout>
+            </Production>
+            <Production id="Eid">
+                <Precedence>1</Precedence>
+                <LHS><NonterminalRef id="E"/></LHS>
+                <RHS>
+                    <TerminalRef id="id"/>
+                </RHS>
+                <Layout><TerminalRef id="spaces"/></Layout>
+            </Production>
+        </Declarations>
+    </Grammar>
+</CopperSpec>
