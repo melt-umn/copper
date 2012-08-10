@@ -196,25 +196,14 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 		{
 			if(lastMatched != null && !functionalDisambiguationUsed)
 			{
-				if(lastMatched.terms.get(getEOF_SYMNUM()) || lastMatched.isEmpty())
+				boolean partiallyDisjoint = false;
+				BitSet diff = new BitSet();
+				diff.or(lastMatched.terms);
+				diff.andNot(shiftable);
+				partiallyDisjoint = !diff.isEmpty();
+				if(!partiallyDisjoint)
 				{
-					boolean partiallyDisjoint = false;
-					for(int i = lastMatched.terms.nextSetBit(0);i >= 0;i = lastMatched.terms.nextSetBit(i + 1))
-					{
-						if(!shiftable.get(i))
-						{
-							partiallyDisjoint = true;
-							break;
-						}
-					}
-					if(!partiallyDisjoint)
-					{
-						lastShiftable = shiftable;
-						return lastMatched;
-					}
-				}
-				else
-				{
+					lastShiftable = shiftable;
 					return lastMatched;
 				}
 			}
