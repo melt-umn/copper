@@ -8,9 +8,9 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogMessageType;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTableConflict;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTablePrinter;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTablePrinter;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
 
 public class ParseTableConflictMessage implements CompilerLogMessage

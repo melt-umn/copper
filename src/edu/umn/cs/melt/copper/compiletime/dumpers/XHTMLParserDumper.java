@@ -29,8 +29,8 @@ import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0ItemSet;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.logging.FatalCompileErrorException;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTableConflict;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 
 public class XHTMLParserDumper extends FullParserDumper

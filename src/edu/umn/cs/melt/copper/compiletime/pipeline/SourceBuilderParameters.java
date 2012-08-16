@@ -3,7 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.pipeline;
 import java.io.File;
 import java.io.PrintStream;
 
-import edu.umn.cs.melt.copper.main.CopperOutputType;
+import edu.umn.cs.melt.copper.main.CopperIOType;
 
 /**
  * Copper input arguments relevant to the source-code conversion task.
@@ -16,5 +16,5 @@ public interface SourceBuilderParameters extends UniversalProcessParameters
 	public String getRuntimeQuietLevel();
 	public PrintStream getOutputStream();
 	public File getOutputFile();
-	public CopperOutputType getOutputType();
+	public CopperIOType getOutputType();
 }

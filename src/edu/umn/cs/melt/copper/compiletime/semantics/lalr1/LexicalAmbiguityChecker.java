@@ -9,7 +9,7 @@ import edu.umn.cs.melt.copper.compiletime.engines.lalr.QScannerStateInfo;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.LexicalConflictResolution;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 

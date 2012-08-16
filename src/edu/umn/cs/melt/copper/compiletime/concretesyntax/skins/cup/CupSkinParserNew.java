@@ -29,6 +29,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalCl
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecProcessor;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.PrintCompilerLogHandler;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericLocatedMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GrammarSyntaxError;
@@ -384,9 +385,8 @@ public class CupSkinParserNew extends edu.umn.cs.melt.copper.runtime.engines.sin
         public void runPostParseCode(java.lang.Object __root)
         {
             ParserBean root = (ParserBean) __root;
-             edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger thisLogger = new edu.umn.cs.melt.copper.compiletime.logging.StringBasedCompilerLogger();
-			thisLogger.setOut(System.err);
-			try { ParserSpecProcessor.normalizeParser(root,thisLogger); thisLogger.flushMessages(); } catch(CopperException ex) { ex.printStackTrace(); }
+             CompilerLogger thisLogger = new CompilerLogger(new PrintCompilerLogHandler(System.err));
+			try { ParserSpecProcessor.normalizeParser(root,thisLogger); thisLogger.flush(); } catch(CopperException ex) { ex.printStackTrace(); }
 			System.out.println(edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecPlaintextPrinter.specToString(root)); 
         }
         public java.lang.Object runSemanticAction_93()
@@ -2436,7 +2436,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
 				this.logger = logger;
 			}
 			
-			public static ParserBean parseGrammar(ArrayList< Pair<String,Reader> > files,edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger oldStyleLogger,CompilerLogger logger)
+			public static ParserBean parseGrammar(ArrayList< Pair<String,Reader> > files,CompilerLogger logger)
     		throws IOException,CopperException
     		{
     			if(files.size() != 1)
@@ -2448,14 +2448,13 @@ throws java.io.IOException,java.lang.ClassNotFoundException
 				{
 					CupSkinParserNew engine = new CupSkinParserNew(logger);
 					spec = engine.parse(files.get(0).second(),files.get(0).first());
-					ParserSpecProcessor.normalizeParser(spec,oldStyleLogger);
+					ParserSpecProcessor.normalizeParser(spec,logger);
 				}
 				catch(CopperSyntaxError ex)
 				{
 					logger.log(new GrammarSyntaxError(ex));
 					spec = null;
 				}
-        		oldStyleLogger.flushMessages();
         		logger.flush();
         		return spec;
     		}

@@ -9,7 +9,7 @@ import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.LexicalAmbiguitie
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 
 /**
  * Builds an object containing information about the lexical ambiguities in a compiled parser specification. 

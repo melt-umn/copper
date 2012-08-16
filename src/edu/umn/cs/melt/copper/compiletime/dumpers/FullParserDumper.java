@@ -5,7 +5,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 
 public abstract class FullParserDumper implements Dumper
 {

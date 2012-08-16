@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.parsetable;
+package edu.umn.cs.melt.copper.compiletime.parsetable.old;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal;

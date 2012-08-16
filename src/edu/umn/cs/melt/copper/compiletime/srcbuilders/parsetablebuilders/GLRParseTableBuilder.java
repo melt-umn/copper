@@ -15,13 +15,13 @@ import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1StateItem;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.parsetable.AcceptAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.GLRParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseActionVisitor;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ReadOnlyParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.AcceptAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.GLRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseActionVisitor;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ReadOnlyParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 public class GLRParseTableBuilder extends ParseTableBuilder implements ParseActionVisitor<String,CopperException>

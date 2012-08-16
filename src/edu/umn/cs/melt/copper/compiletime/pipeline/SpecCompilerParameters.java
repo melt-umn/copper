@@ -1,6 +1,10 @@
 package edu.umn.cs.melt.copper.compiletime.pipeline;
 
+import java.io.File;
+import java.io.PrintStream;
+
 import edu.umn.cs.melt.copper.main.CopperDumpType;
+import edu.umn.cs.melt.copper.main.CopperIOType;
 
 /**
  * Copper input arguments relevant to the parser compilation task.
@@ -13,6 +17,8 @@ public interface SpecCompilerParameters extends UniversalProcessParameters
 	public boolean isComposition();
 	public boolean isDumpReport();
 	public boolean isDumpOnlyOnError();
-	public CopperDumpType getDumpType();
-	public String getDumpFile();
+	public CopperDumpType getDumpFormat();
+	public CopperIOType getDumpType();
+	public File getDumpFile();
+	public PrintStream getDumpStream();
 }

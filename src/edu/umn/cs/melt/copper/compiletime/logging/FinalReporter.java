@@ -3,7 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.logging;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSource;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Production;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ReadOnlyParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ReadOnlyParseTable;
 
 /**
  * Contains a method for producing the parser compiler's "final report."

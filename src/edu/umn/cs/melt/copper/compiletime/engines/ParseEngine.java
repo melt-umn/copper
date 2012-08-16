@@ -3,7 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.engines;
 
 import java.io.IOException;
 
-import edu.umn.cs.melt.copper.compiletime.parsetable.ReadOnlyParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ReadOnlyParseTable;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 

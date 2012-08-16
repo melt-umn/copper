@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.parsetable;
+package edu.umn.cs.melt.copper.compiletime.parsetable.old;
 
 
 import java.util.Collection;
@@ -15,7 +15,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  *
  */
-public abstract class LazyGLRParseTable implements ParseTable
+public class GLRParseTable implements ParseTable
 {
 	private Hashtable< Integer,Hashtable<Terminal,TreeSet<ParseAction> > > parseActions;
 	private Hashtable< Integer,Hashtable<NonTerminal,ShiftAction> > gotoActions;
@@ -23,20 +23,9 @@ public abstract class LazyGLRParseTable implements ParseTable
 	private Hashtable< Integer,Hashtable< Terminal,HashSet<Terminal> > > layoutsPerTerminal;
 	private Hashtable< Integer,Hashtable< Terminal,HashSet< Terminal > > > prefixes;
 	private Hashtable< Integer,Hashtable< Terminal,HashSet< Terminal > > > prefixesPerTerminal;
-	protected HashSet<Terminal> shiftableUnion;
-	private TreeSet<Integer> states;
-	private int stateCount;
+	private HashSet<Terminal> shiftableUnion;
 	
-	protected abstract void initState(int statenum);
-	
-	protected abstract void initShiftableUnion();
-	
-	private void initStatesSet()
-	{
-		for(int i = 0;i < stateCount;i++) states.add(i); 
-	}
-	
-	protected LazyGLRParseTable(int stateCount)
+	public GLRParseTable()
 	{
 		parseActions = new Hashtable< Integer,Hashtable< Terminal,TreeSet<ParseAction> > >();
 		gotoActions = new Hashtable< Integer,Hashtable<NonTerminal,ShiftAction> >();
@@ -44,23 +33,22 @@ public abstract class LazyGLRParseTable implements ParseTable
 		layoutsPerTerminal = new Hashtable< Integer,Hashtable<Terminal,HashSet<Terminal> > >();
 		prefixes = new Hashtable< Integer,Hashtable<Terminal,HashSet<Terminal> > >();
 		prefixesPerTerminal = new Hashtable< Integer,Hashtable<Terminal,HashSet<Terminal> > >();
-		shiftableUnion = null;
-		states = null;
-		this.stateCount = stateCount;
+		shiftableUnion = new HashSet<Terminal>();
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#addAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.parsetable.ParseAction)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#addAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseAction)
 	 */
 	public void addAction(int statenum,Terminal symbol,ParseAction action)
 	{
 		if(!parseActions.containsKey(statenum)) parseActions.put(statenum,new Hashtable< Terminal,TreeSet<ParseAction> >());
 		if(!parseActions.get(statenum).containsKey(symbol)) parseActions.get(statenum).put(symbol,new TreeSet<ParseAction>());
 		parseActions.get(statenum).get(symbol).add(action);
+		shiftableUnion.add(symbol);
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#addGotoAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal, edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#addGotoAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal, edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction)
 	 */
 	public void addGotoAction(int statenum,NonTerminal symbol,ShiftAction action)
 	{
@@ -69,7 +57,7 @@ public abstract class LazyGLRParseTable implements ParseTable
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#addLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#addLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public void addLayout(int statenum,Terminal layout,Terminal token)
 	{
@@ -82,7 +70,7 @@ public abstract class LazyGLRParseTable implements ParseTable
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#addPrefix(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#addPrefix(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public void addPrefix(int statenum,Terminal prefix,Terminal token)
 	{
@@ -95,7 +83,7 @@ public abstract class LazyGLRParseTable implements ParseTable
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#clearCell(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#clearCell(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public void clearCell(int statenum,Terminal symbol)
 	{
@@ -105,213 +93,197 @@ public abstract class LazyGLRParseTable implements ParseTable
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasShiftable(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasShiftable(int)
 	 */
 	public boolean hasShiftable(int statenum)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		return(parseActions.containsKey(statenum));
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasGotoable(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasGotoable(int)
 	 */
 	public boolean hasGotoable(int statenum)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		return(gotoActions.containsKey(statenum));
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public boolean hasAction(int statenum,Terminal symbol)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!parseActions.containsKey(statenum)) return false;
 		else if(!parseActions.get(statenum).containsKey(symbol)) return false;
 		else return true;
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasGotoAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasGotoAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal)
 	 */
 	public boolean hasGotoAction(int statenum,NonTerminal symbol)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!gotoActions.containsKey(statenum)) return false;
 		else if(!gotoActions.get(statenum).containsKey(symbol)) return false;
 		else return true;
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasLayout(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasLayout(int)
 	 */
 	public boolean hasLayout(int statenum)
 	{
-		 if(!parseActions.containsKey(statenum)) initState(statenum);
 		 return layouts.containsKey(statenum);
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasPrefixes(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasPrefixes(int)
 	 */
 	public boolean hasPrefixes(int statenum)
 	{
-		 if(!parseActions.containsKey(statenum)) initState(statenum);
 		 return prefixes.containsKey(statenum);
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasShiftableAfterLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasShiftableAfterLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public boolean hasShiftableAfterLayout(int statenum,Terminal layout)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasLayout(statenum)) return false;
 		else return layouts.get(statenum).containsKey(layout);
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasShiftableAfterLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasShiftableAfterLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public boolean hasShiftableAfterLayout(int statenum, Terminal layout, Terminal afterLayout)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasLayout(statenum) || !layouts.get(statenum).containsKey(layout)) return false;
 		else return layouts.get(statenum).get(layout).contains(afterLayout);
 	}
 
 	public boolean hasShiftableAfterPrefix(int statenum, Terminal prefix, Terminal afterPrefix)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasPrefixes(statenum) || !prefixes.get(statenum).containsKey(prefix)) return false;
 		else return prefixes.get(statenum).get(prefix).contains(afterPrefix);
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getParseActions(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getParseActions(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public Collection<ParseAction> getParseActions(int statenum,Terminal symbol)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasAction(statenum,symbol)) return null;
 		else return parseActions.get(statenum).get(symbol);
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getParseAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getParseAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public ParseAction getParseAction(int statenum, Terminal symbol)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasAction(statenum,symbol)) return null;
 		else return parseActions.get(statenum).get(symbol).iterator().next();
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#countParseActions(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#countParseActions(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public int countParseActions(int statenum,Terminal symbol)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasAction(statenum,symbol)) return 0;
 		else return parseActions.get(statenum).get(symbol).size();
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getShiftable(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getShiftable(int)
 	 */
 	public Collection<Terminal> getShiftable(int statenum)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasShiftable(statenum)) return null;
 		else return parseActions.get(statenum).keySet();
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getShiftableUnion()
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getShiftableUnion()
 	 */
 	public Collection<Terminal> getShiftableUnion()
 	{
-		if(shiftableUnion == null) initShiftableUnion();
 		return shiftableUnion;
 	}
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getGotoable(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getGotoable(int)
 	 */
 	public Collection<NonTerminal> getGotoable(int statenum)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasGotoable(statenum)) return null;
 		else return gotoActions.get(statenum).keySet();
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getLayout(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getLayout(int)
 	 */
 	public Collection<Terminal> getLayout(int statenum)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasLayout(statenum)) return null;
 		else return layouts.get(statenum).keySet();
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getShiftableFollowingLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getShiftableFollowingLayout(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public Collection<Terminal> getShiftableFollowingLayout(int statenum,Terminal layout)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasLayout(statenum) || !layouts.get(statenum).containsKey(layout)) return null;
 		else return layouts.get(statenum).get(layout);
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getPrefixes(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getPrefixes(int)
 	 */
 	public Collection<Terminal> getPrefixes(int statenum)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasPrefixes(statenum)) return null;
 		else return prefixes.get(statenum).keySet();
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getShiftableFollowingPrefix(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getShiftableFollowingPrefix(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public Collection<Terminal> getShiftableFollowingPrefix(int statenum,Terminal prefix)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasPrefixes(statenum) || !prefixes.get(statenum).containsKey(prefix)) return null;
 		else return prefixes.get(statenum).get(prefix);
 	}
 
 	public Collection<Integer> getStates()
 	{
-		if(states == null) initStatesSet();
-
-		return states;
+		HashSet<Integer> mergedStateSet = new HashSet<Integer>();
+		mergedStateSet.addAll(parseActions.keySet());
+		mergedStateSet.addAll(gotoActions.keySet());
+		return mergedStateSet;
 	}
 	
 	public int getLastState()
 	{
-		return stateCount - 1;
+		TreeSet<Integer> mergedStateSet = new TreeSet<Integer>();
+		mergedStateSet.addAll(parseActions.keySet());
+		mergedStateSet.addAll(gotoActions.keySet());
+		return mergedStateSet.last();
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getGotoAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getGotoAction(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal)
 	 */
 	public ShiftAction getGotoAction(int statenum,NonTerminal symbol)
 	{
-		if(!parseActions.containsKey(statenum)) initState(statenum);
 		if(!hasGotoAction(statenum,symbol)) return null;
 		else return gotoActions.get(statenum).get(symbol);
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#toString()
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#toString()
 	 */
 	public String toString()
 	{
@@ -319,7 +291,7 @@ public abstract class LazyGLRParseTable implements ParseTable
 	}
 	
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#prettyPrint()
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#prettyPrint()
 	 */
 	public String prettyPrint()
 	{

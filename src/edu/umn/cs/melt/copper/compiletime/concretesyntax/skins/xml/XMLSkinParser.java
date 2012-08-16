@@ -48,8 +48,10 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.RegexBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalClassBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecProcessor;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericLocatedMessage;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
@@ -125,14 +127,14 @@ public class XMLSkinParser extends DefaultHandler
     	Schema schema = null;
     	SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		InputStream schemaFile = this.getClass().getClassLoader().getResourceAsStream("etc/XMLSkinSchema.xsd");
-		if(schemaFile == null) if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logErrorMessage(CompilerLogMessageSort.FATAL_ERROR,null,"Cannot load XML skin schema. This generally means Copper was improperly built.");
+		if(schemaFile == null) if(logger.isLoggable(CompilerLevel.QUIET)) logger.logError(new GenericMessage(CompilerLevel.QUIET,"Cannot load XML skin schema. This generally means Copper was improperly built.",true,true));
     	try
     	{
     		schema = schemaFactory.newSchema(new StreamSource(new InputStreamReader(schemaFile)));
     	}
 		catch(SAXException ex)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,"Schema parse error: " + ex.getMessage());
+			if(logger.isLoggable(CompilerLevel.QUIET)) logger.logError(new GenericMessage(CompilerLevel.QUIET,"Schema parse error: " + ex.getMessage(),true,true));
 		}
 
     	SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -147,11 +149,11 @@ public class XMLSkinParser extends DefaultHandler
 		}
 		catch(SAXException ex)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,ex.getMessage());
+			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericMessage(CompilerLevel.QUIET,ex.getMessage(),true,false));
 		}
 		catch(ParserConfigurationException ex)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,ex.getMessage());
+			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericMessage(CompilerLevel.QUIET,ex.getMessage(),true,false));
 		}
 
 
@@ -165,19 +167,19 @@ public class XMLSkinParser extends DefaultHandler
 			}
 			catch (IOException ex)
 			{
-				if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,loc,ex.getMessage());
+				if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericLocatedMessage(CompilerLevel.QUIET,loc,ex.getMessage(),true,false));
 			}
 			catch (SAXException ex)
 			{
-				if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,loc,ex.getMessage());
+				if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericLocatedMessage(CompilerLevel.QUIET,loc,ex.getMessage(),true,false));
 			}
 		}
 		
 		if(foundMoreThanOneParser)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,(InputPosition) currentParser.getLocation(),"Superfluous parser " + currentParser.getDisplayName() +": spec must contain exactly one parser element");			
+			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericLocatedMessage(CompilerLevel.QUIET,(InputPosition) currentParser.getLocation(),"Superfluous parser " + currentParser.getDisplayName() +": spec must contain exactly one parser element",true,false));			
 		}
-		logger.flushMessages();
+		logger.flush();
 		ParserSpecProcessor.normalizeParser(currentParser,logger);
 		return currentParser;
 	}
@@ -538,7 +540,7 @@ public class XMLSkinParser extends DefaultHandler
 			(refList != null ? refList : refSet).add(CopperElementReference.ref(CopperElementName.newName(attributes.getValue("id")),peek().startLocation));
 			break;
 		default:
-			logger.logErrorMessage(CompilerLogMessageSort.FATAL_ERROR,peek().startLocation,"Unrecognized XML tag '" + localName + "'. There is a bug in Copper's XML schema.");
+			logger.logError(new GenericLocatedMessage(CompilerLevel.QUIET,peek().startLocation,"Unrecognized XML tag '" + localName + "'. There is a bug in Copper's XML schema.",true,true));
 		}
 	}
 	
@@ -589,7 +591,7 @@ public class XMLSkinParser extends DefaultHandler
 			{
 				if(ref.isFQ() && !ref.getGrammarName().equals(currentExtensionGrammar.getName()))
 				{
-					logger.logErrorMessage(CompilerLogMessageSort.ERROR,element.startLocation,"Only local references are allowed in <" + element.type.getName() + "> elements");
+					logger.logError(new GenericLocatedMessage(CompilerLevel.QUIET,element.startLocation,"Only local references are allowed in <" + element.type.getName() + "> elements",true,false));
 				}
 				else currentExtensionGrammar.addBridgeProduction(ref.getName());
 			}
@@ -763,7 +765,7 @@ public class XMLSkinParser extends DefaultHandler
 			{
 				if(ref1.isFQ() && !ref1.getGrammarName().equals(currentExtensionGrammar.getName()))
 				{
-					logger.logErrorMessage(CompilerLogMessageSort.ERROR,element.startLocation,"Only local references are allowed in <" + element.type.getName() + "> elements");
+					logger.logError(new GenericLocatedMessage(CompilerLevel.QUIET,element.startLocation,"Only local references are allowed in <" + element.type.getName() + "> elements",true,false));
 				}
 				currentExtensionGrammar.addMarkingTerminal(ref1.getName());
 			}
@@ -932,7 +934,7 @@ public class XMLSkinParser extends DefaultHandler
 			}
 			break;
 		default:
-			logger.logErrorMessage(CompilerLogMessageSort.FATAL_ERROR,peek().startLocation,"Unrecognized XML tag '" + localName + "'. There is a bug in Copper's XML schema.");
+			logger.logError(new GenericLocatedMessage(CompilerLevel.QUIET,peek().startLocation,"Unrecognized XML tag '" + localName + "'. There is a bug in Copper's XML schema.",true,true));
 		}
 	}
 }

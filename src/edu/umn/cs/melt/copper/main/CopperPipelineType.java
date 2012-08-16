@@ -1,5 +1,9 @@
 package edu.umn.cs.melt.copper.main;
 
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.TreeSet;
+
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
@@ -25,8 +29,57 @@ public enum CopperPipelineType
 		{
 			return new StandardPipeline<ParserBean, StandardSpecCompilerReturnData>(args.getUseSkin().getStandardSpecParser(args),new StandardSpecCompiler(),args.getUseEngine().getStandardSourceBuilder(args));
 		}
+
+		@Override
+		String usageMessage()
+		{
+			return "The default pipeline.";
+		}
+	},
+	// TODO: Rip this out when GrammarSource is gone. 
+	/** This pipeline uses Copper 0.5/0.6's parser compilation classes and methods. */
+	LEGACY
+	{
+		@Override
+		edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.LegacyPipeline getPipeline(ParserCompilerParameters args)
+		{
+			return new edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.LegacyPipeline();
+		}
+
+		@Override
+		String usageMessage()
+		{
+			return "The pipeline used in Copper 0.5 and 0.6.";
+		}
 	};
 	
+	private static Hashtable<String,CopperPipelineType> fromStringTable = null;
+	
+	static void initTable()
+	{
+		if(fromStringTable != null) return;
+		fromStringTable = new Hashtable<String,CopperPipelineType>();
+		fromStringTable.put("default",GRAMMARBEANS);
+		fromStringTable.put("legacy",LEGACY);
+	}
+	
+	static boolean contains(String s)
+	{
+		return fromStringTable.containsKey(s);
+	}
+	
+	static Set<String> strings()
+	{
+		initTable();
+		return new TreeSet<String>(fromStringTable.keySet());
+	}
+
+	static CopperPipelineType fromString(String s)
+	{
+		return fromStringTable.get(s);
+	}
+
+	abstract String usageMessage();
 	
 	abstract Pipeline getPipeline(ParserCompilerParameters args);
 }

@@ -4,8 +4,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParser;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
@@ -29,14 +29,12 @@ public class XMLParsingProcess implements SpecParser<ParserBean>
 		}
 		catch(CopperException ex)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
 			return null;
 		}
 		catch(Exception ex)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
 			else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
 			return null;
 		}

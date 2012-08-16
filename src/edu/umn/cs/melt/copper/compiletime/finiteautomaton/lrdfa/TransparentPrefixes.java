@@ -6,7 +6,7 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTB
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 
 /**
  * Holds maps of valid transparent prefixes for each state in a parse table. 

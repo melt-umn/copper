@@ -7,7 +7,7 @@ import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 
 /**
  * This is a container class for all the data returned by {@link StandardSpecCompiler}.

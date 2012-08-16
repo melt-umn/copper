@@ -43,17 +43,17 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
         return edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Production.production(edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Symbol.symbol(name),lhs,rhs);
     }
     /** Create various parse actions. */
-    protected static edu.umn.cs.melt.copper.compiletime.parsetable.AcceptAction a()
+    protected static edu.umn.cs.melt.copper.compiletime.parsetable.old.AcceptAction a()
     {
-        return new edu.umn.cs.melt.copper.compiletime.parsetable.AcceptAction();
+        return new edu.umn.cs.melt.copper.compiletime.parsetable.old.AcceptAction();
     }
-    protected static edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction fr(edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Production p)
+    protected static edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction fr(edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Production p)
     {
-        return new edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction(p);
+        return new edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction(p);
     }
-    protected static edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction sh(int dest)
+    protected static edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction sh(int dest)
     {
-        return new edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction(dest);
+        return new edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction(dest);
     }
 
     private Semantics semantics;
@@ -91,7 +91,7 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
 
     public static ThisParseTable parseTable;
 
-    private static class ThisParseTable extends edu.umn.cs.melt.copper.compiletime.parsetable.LazyGLRParseTable
+    private static class ThisParseTable extends edu.umn.cs.melt.copper.compiletime.parsetable.old.LazyGLRParseTable
     {
         public ThisParseTable()
         {
@@ -295,7 +295,7 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
         }
     }
 
-    public edu.umn.cs.melt.copper.compiletime.parsetable.ReadOnlyParseTable getParseTable()
+    public edu.umn.cs.melt.copper.compiletime.parsetable.old.ReadOnlyParseTable getParseTable()
     {
         return parseTable;
     }
@@ -307,12 +307,12 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.compiletime.engines.la
         return rv;
     }
     /** Add a parse action. */
-    protected static void addA(int statenum,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal sym,edu.umn.cs.melt.copper.compiletime.parsetable.ParseAction action)
+    protected static void addA(int statenum,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal sym,edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseAction action)
     {
         parseTable.addAction(statenum,sym,action);
     }
     /** Add a goto action. */
-    protected static void addG(int statenum,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal sym,edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction action)
+    protected static void addG(int statenum,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.NonTerminal sym,edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction action)
     {
         parseTable.addGotoAction(statenum,sym,action);
     }

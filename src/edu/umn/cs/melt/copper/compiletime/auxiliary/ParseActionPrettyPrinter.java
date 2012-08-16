@@ -5,11 +5,11 @@ import java.util.HashSet;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSource;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSymbol;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Production;
-import edu.umn.cs.melt.copper.compiletime.parsetable.AcceptAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseActionVisitor;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.AcceptAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseActionVisitor;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
 
 public class ParseActionPrettyPrinter implements ParseActionVisitor<String,RuntimeException>

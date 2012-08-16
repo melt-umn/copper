@@ -26,10 +26,10 @@ import edu.umn.cs.melt.copper.compiletime.engines.lalr.semantics.SemanticActionC
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1DFA;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.parsetable.AcceptAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.GLRParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.AcceptAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.GLRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction;
 import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.GenericLexicalAmbiguityChecker;
 import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.LexicalAmbiguityChecker;
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.EngineBuilder;

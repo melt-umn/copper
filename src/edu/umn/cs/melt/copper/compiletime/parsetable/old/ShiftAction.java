@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.parsetable;
+package edu.umn.cs.melt.copper.compiletime.parsetable.old;
 
 /**
  * Represents a shift or goto action.
