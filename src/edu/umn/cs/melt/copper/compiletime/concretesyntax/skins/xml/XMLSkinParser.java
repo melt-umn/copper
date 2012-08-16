@@ -180,7 +180,8 @@ public class XMLSkinParser extends DefaultHandler
 			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericLocatedMessage(CompilerLevel.QUIET,(InputPosition) currentParser.getLocation(),"Superfluous parser " + currentParser.getDisplayName() +": spec must contain exactly one parser element",true,false));			
 		}
 		logger.flush();
-		ParserSpecProcessor.normalizeParser(currentParser,logger);
+		boolean hasError = ParserSpecProcessor.normalizeParser(currentParser,logger);
+		if(hasError) return null;
 		return currentParser;
 	}
 	
