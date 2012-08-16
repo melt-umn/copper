@@ -40,14 +40,14 @@ import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRDFAPrinter;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericLocatedMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.TimingMessage;
 import edu.umn.cs.melt.copper.compiletime.mda.MDAResults;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTablePrinter;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTablePrinter;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSpecCompilerReturnData>
@@ -58,8 +58,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 	{
 		if(spec == null) return null;
 		boolean succeeded = true;
-		CompilerLogger oldStyleLogger = AuxiliaryMethods.getOrMakeLogger(args);
-		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = AuxiliaryMethods.getNewStyleLogger(oldStyleLogger,args);
+		CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
 
 		
 		String packageDecl = 
@@ -220,7 +219,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 			PrintStream dumpStream = null;
 			Dumper dumper = null;
 			
-			switch(args.getDumpType())
+			switch(args.getDumpFormat())
 			{
 			case HTML:
 			case XML:
@@ -249,7 +248,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 				{
 					try
 					{
-						dumper.dump(args.getDumpType(),dumpStream);
+						dumper.dump(args.getDumpFormat(),dumpStream);
 					}
 					catch (UnsupportedOperationException e)
 					{

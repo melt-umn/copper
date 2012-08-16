@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.FinalReportMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.TimingMessage;
@@ -29,9 +29,7 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 	public int buildSource(StandardSpecCompilerReturnData c,SourceBuilderParameters args)
 	throws CopperException
 	{
-		CompilerLogger oldStyleLogger;
-		oldStyleLogger = AuxiliaryMethods.getOrMakeLogger(args);
-		edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger logger = AuxiliaryMethods.getNewStyleLogger(oldStyleLogger,args);
+		CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
 		
 		
 		PrintStream out;
@@ -48,7 +46,7 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 				}
 				catch(FileNotFoundException ex)
 				{
-					logger.logError(new GenericMessage(CompilerLevel.MUTE,"Output file " + args.getOutputFile() + " could not be opened for writing"));
+					logger.logError(new GenericMessage(CompilerLevel.QUIET,"Output file " + args.getOutputFile() + " could not be opened for writing",true,false));
 					c.succeeded = false;
 					c.errorlevel = 2;
 					return 2;

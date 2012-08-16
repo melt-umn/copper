@@ -12,8 +12,17 @@ public class DumperFactory
 	throws FileNotFoundException
 	{
 		PrintStream dumpStream = null;
-		if(!args.isDumpReport() || args.getDumpFile().equals("") || args.getDumpFile().equals(args.getLogFile())) dumpStream = args.getLogger().getOut();
-		else dumpStream = new PrintStream(new FileOutputStream(args.getDumpFile()));
+		if(!args.isDumpReport() || args.getDumpType() == null) dumpStream = args.getLogStream();
+		else switch(args.getDumpType())
+		{
+		case FILE:
+			if(args.getDumpFile().equals(args.getLogFile())) dumpStream = args.getLogStream();
+			else dumpStream = new PrintStream(new FileOutputStream(args.getDumpFile()));
+			break;
+		case STREAM:
+			dumpStream = args.getDumpStream();
+			break;
+		}
 		return dumpStream;
 	}
 }

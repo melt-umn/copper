@@ -10,9 +10,10 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 import edu.umn.cs.melt.copper.main.CopperEngineType;
-import edu.umn.cs.melt.copper.main.CopperOutputType;
+import edu.umn.cs.melt.copper.main.CopperIOType;
 import edu.umn.cs.melt.copper.main.CopperSkinType;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
@@ -36,7 +37,7 @@ public class CopperAntTask extends Task
 	private CopperSkinType skin = ParserCompiler.getDefaultSkin();
 	private Reader input = null;
 	private File outputFile = null;
-	private CompilerLogMessageSort compileVerbosity = CompilerLogMessageSort.getDefaultSort();
+	private CompilerLevel quietLevel = ParserCompiler.getDefaultQuietLevel();
 	private boolean isWarnUselessNTs = true;
 	private boolean isRunVerbose = false;
 	private boolean isDump = false;
@@ -66,12 +67,12 @@ public class CopperAntTask extends Task
 		params.setDumpOnlyOnError(isDumpOnlyOnError);
 		if(logFile != null)
 		{
-			params.setLogFile(logFile);
-			if(dumpFile == null) params.setDumpFile(logFile);
+			params.setLogFile(new File(logFile));
+			if(dumpFile == null) params.setDumpFile(new File(logFile));
 		}
-		if(dumpType != null) params.setDumpType(dumpType); 
-		if(dumpFile != null) params.setDumpFile(dumpFile);
-		params.setQuietLevel(compileVerbosity);
+		if(dumpType != null) params.setDumpFormat(dumpType); 
+		if(dumpFile != null) params.setDumpFile(new File(dumpFile));
+		params.setQuietLevel(quietLevel);
 		if(isRunVerbose) params.setRuntimeQuietLevel("INFO");
 		if(engine != null) params.setUseEngine(engine);
 		if(!skin.equals("")) params.setUseSkin(skin);
@@ -89,12 +90,12 @@ public class CopperAntTask extends Task
 		//System.setOut(output);
 		if(outputFile != null)
 		{
-			params.setOutputType(CopperOutputType.FILE);
+			params.setOutputType(CopperIOType.FILE);
 			params.setOutputFile(outputFile);
 		}
 		else
 		{
-			params.setOutputType(CopperOutputType.STREAM);
+			params.setOutputType(CopperIOType.STREAM);
 			params.setOutputStream(System.out);
 		}
 		
@@ -250,7 +251,7 @@ public class CopperAntTask extends Task
 	 */
 	public boolean isCompileQuiet()
 	{
-		return compileVerbosity.equals(CompilerLogMessageSort.getQuietSort());
+		return quietLevel.equals(CompilerLogMessageSort.getQuietSort());
 	}
 
 	/**
@@ -258,7 +259,7 @@ public class CopperAntTask extends Task
 	 */
 	public boolean isCompileVerbose()
 	{
-		return compileVerbosity.equals(CompilerLogMessageSort.getVerboseSort());
+		return quietLevel.equals(CompilerLogMessageSort.getVerboseSort());
 	}
 
 	/**
@@ -266,7 +267,7 @@ public class CopperAntTask extends Task
 	 */
 	public boolean isCompileVeryVerbose()
 	{
-		return compileVerbosity.equals(CompilerLogMessageSort.getVeryVerboseSort());
+		return quietLevel.equals(CompilerLogMessageSort.getVeryVerboseSort());
 	}
 
 	/**
@@ -355,7 +356,7 @@ public class CopperAntTask extends Task
 	 */
 	public void setCompileQuiet(boolean isCompileQuiet)
 	{
-		this.compileVerbosity = isCompileQuiet? CompilerLogMessageSort.getQuietSort() : CompilerLogMessageSort.getDefaultSort();
+		this.quietLevel = isCompileQuiet ? CompilerLevel.QUIET : CompilerLevel.REGULAR;
 	}
 
 	/**
@@ -363,7 +364,7 @@ public class CopperAntTask extends Task
 	 */
 	public void setCompileVerbose(boolean isCompileVerbose)
 	{
-		this.compileVerbosity = isCompileVerbose ? CompilerLogMessageSort.getVerboseSort() : CompilerLogMessageSort.getDefaultSort();
+		this.quietLevel = isCompileVerbose ? CompilerLevel.VERBOSE : CompilerLevel.REGULAR;
 	}
 
 	/**
@@ -371,7 +372,7 @@ public class CopperAntTask extends Task
 	 */
 	public void setCompileVeryVerbose(boolean isCompileVerbose)
 	{
-		this.compileVerbosity = isCompileVerbose ? CompilerLogMessageSort.getVeryVerboseSort() : CompilerLogMessageSort.getDefaultSort();
+		this.quietLevel = isCompileVerbose ? CompilerLevel.VERY_VERBOSE : CompilerLevel.REGULAR;
 	}
 
 	/**

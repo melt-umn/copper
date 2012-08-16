@@ -4,8 +4,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParser;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
@@ -24,12 +24,11 @@ public class CUPParsingProcess implements SpecParser<ParserBean>
 		
 		try
 		{
-			edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger newStyleLogger = AuxiliaryMethods.getNewStyleLogger(logger,args);
-			spec = edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParserNew.parseGrammar(files,logger,newStyleLogger);
+			spec = edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParserNew.parseGrammar(files,logger);
 		}
 		catch(Exception ex)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
+			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
 			return null;
 		}
 		if(args.getPackageDecl() != null) spec.setPackageDecl(args.getPackageDecl());

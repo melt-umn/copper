@@ -3,44 +3,19 @@ package edu.umn.cs.melt.copper.main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashSet;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.FringeSymbols;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarName;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSource;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecProcessor;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.GrammarParser;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.oldxml.XMLGrammarParser;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CupSkinParser;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.XMLSkinParser;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1DFABuilder;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.logging.FinalReporter;
-import edu.umn.cs.melt.copper.compiletime.logging.GrammarDumper;
-import edu.umn.cs.melt.copper.compiletime.logging.PlainTextGrammarDumper;
-import edu.umn.cs.melt.copper.compiletime.logging.XMLGrammarDumper;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardPipeline;
-import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.ComposabilityChecker;
-import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.WellFormedGrammarChecker;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.EngineBuilder;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.lalr.LALREngineBuilder;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.moded.ModedEngineBuilder;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.SingleDFAEngineBuilder;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.split.SplitEngineBuilder;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
-import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
 
 /**
@@ -55,7 +30,7 @@ public class ParserCompiler
 	private static String usageMessage()
 	{
 		String rv = "";
-		rv += "Usage: ParserCompiler [switches] grammar-file1 grammar-file2 ... grammar-filen > package/class.java\n";
+		rv += "Usage: ParserCompiler [switches] grammar-file1 grammar-file2 ... grammar-filen\n";
 		rv += "Switches (all optional) are:\n";
 		rv += "\t-?\t\tDisplay this usage information.\n";
 		rv += "\t-package [package]\tThe package of the generated parser.\n\t\tDefaults to the default package or what is set in\n\t\tthe parser specification.\n";
@@ -90,6 +65,11 @@ public class ParserCompiler
 		for(String et : CopperEngineType.strings())
 		{
 			rv += "\t\t" + et + ": " + CopperEngineType.fromString(et).usageMessage() + "\n";
+		}
+		rv += "\t-pipeline [pipe]\tGenerate a parser using the specified\n\t\t\t\tcompilation \"pipeline\":\n";
+		for(String pt : CopperPipelineType.strings())
+		{
+			rv += "\t\t" + pt + ": " + CopperPipelineType.fromString(pt).usageMessage() + "\n";
 		}
 		return rv;
 	}
@@ -138,394 +118,19 @@ public class ParserCompiler
 	{
 		return CopperDumpType.PLAIN;
 	}
-		
-
 	
-	
-	
-	
-	
-	
-	
-	@SuppressWarnings("deprecation")
-	private static GrammarSource parseInputGrammarLegacy(ParserCompilerParameters args)
+	/**
+	 * Returns the default verbosity level, which is currently {@link CompilerLevel#REGULAR}.
+	 */
+	public static CompilerLevel getDefaultQuietLevel()
 	{
-		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
-		boolean isComposition = args.isComposition();
-		CopperSkinType useSkin = args.getUseSkin();
-		CompilerLogger logger;
-
-		if(isComposition &&
-		   ((useSkin != CopperSkinType.XML && files.size() != 2) ||
-		    (useSkin == CopperSkinType.XML && files.size() != 1)))
-		{
-			System.err.println("Switch -compose requires exactly two input grammars");
-			usageMessageError();
-		}
-		logger = AuxiliaryMethods.getOrMakeLogger(args);
-
-		WellFormedGrammarChecker wfcheck = new WellFormedGrammarChecker(logger);
-		
-		GrammarSource grammar = null;
-		if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"Reading grammar");
-		switch(useSkin)
-		{
-		case NATIVE:
-			try { grammar = GrammarParser.parseGrammar(files,logger); }
-			catch(Exception ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				return null;
-			}
-			grammar.getParserSources().setPackageName(args.getPackageDecl());
-			grammar.getParserSources().setParserName(args.getParserName());
-			break;
-		case OLD_XML:
-			try { grammar = XMLGrammarParser.parseGrammar(files,logger); }
-			catch(CopperException ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				return null;
-			}
-			catch(Exception ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
-				return null;
-			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
-			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
-			break;
-		case XML:
-			try
-			{
-				ParserBean parser = new XMLSkinParser(files,logger).parse();
-				grammar = ParserSpecProcessor.buildGrammarSource(parser,logger);
-			}
-			catch(CopperException ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				return null;
-			}
-			catch(Exception ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
-				return null;
-			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
-			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
-			break;
-		case CUP:
-		default:
-			try { grammar = CupSkinParser.parseGrammar(files,logger); }
-			catch(Exception ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				return null;
-			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
-			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
-		}
-		if(grammar != null)
-		{
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) logger.logMessage(CompilerLogMessageSort.DEBUG,null,grammar.toString());
-			if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nChecking grammar well-formedness");
-
-			try
-			{
-				wfcheck.checkWellFormedness(grammar,args.isWarnUselessNTs());
-			}
-			catch(CopperException ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.TICK)) System.err.println();
-				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				grammar = null;
-			}
-		}
-		return grammar;
+		return CompilerLevel.REGULAR;
 	}
-		
-	@SuppressWarnings("deprecation")
-	private static int compileParserLegacy(ParserCompilerParameters args,GrammarSource grammar)
-	throws CopperException
+	
+	/** Returns the default pipeline, which is currently {@link CopperPipelineType#GRAMMARBEANS}. */
+	public static CopperPipelineType getDefaultPipeline()
 	{
-		boolean isPretty = args.isPretty();
-		boolean isComposition = args.isComposition();
-		boolean gatherStatistics = args.isGatherStatistics();
-		CopperEngineType useEngine = args.getUseEngine();
-		CompilerLogger logger = args.getLogger();
-		String packageDecl = 
-				(args.getPackageDecl() != null && !args.getPackageDecl().equals("")) ?
-						args.getPackageDecl() :
-						(grammar.getParserSources().getPackageName() != null && !grammar.getParserSources().getPackageName().equals("") ?
-								grammar.getParserSources().getPackageName() : 
-						        "");
-		String parserName =
-			(args.getParserName() != null && !args.getParserName().equals("")) ?
-					args.getParserName() :
-					(grammar.getParserSources().getParserName() != null && !grammar.getParserSources().getParserName().equals("") ?
-							grammar.getParserSources().getParserName() : 
-					        "Parser");
-		String runtimeQuietLevel = args.getRuntimeQuietLevel();
-
-		if(useEngine != CopperEngineType.OLD_AND_SLOW && gatherStatistics)
-		{
-			System.err.println("Error: No facilities for gathering statistics in newer parse engines.\nUse -oldnslow in addition to -gatherstats.");
-			return 1;
-		}
-		HashSet<GrammarName> containedGrammars = new HashSet<GrammarName>();
-		containedGrammars.add(new GrammarName(FringeSymbols.STARTPRIME.getId()));
-		for(GrammarName gn : grammar.getContainedGrammars()) containedGrammars.add(gn);
-		LALR1DFABuilder builder = new LALR1DFABuilder(grammar,containedGrammars,logger);
-		LALR1DFABuilder hostBuilder = null;
-		GrammarSource hostGrammar = null;
-		HashSet<GrammarName> hostOnly = new HashSet<GrammarName>();
-		hostOnly.add(new GrammarName(FringeSymbols.STARTPRIME.getId()));
-		if(isComposition)
-		{
-			hostOnly.add(grammar.getHostGrammarName());
-			hostGrammar = ComposabilityChecker.extractWantedGrammars(grammar,hostOnly);
-			// DEBUG-X-BEGIN
-			//System.err.println(hostGrammar + "\n=========\n" + grammar);
-			// DEBUG-X-END
-			hostBuilder = new LALR1DFABuilder(grammar,hostOnly,logger);
-		}
-		if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nComputing context sets");
-		try
-		{
-			grammar.getContextSets().compute(grammar,containedGrammars,logger);
-			if(isComposition)
-			{
-				hostGrammar.getContextSets().compute(hostGrammar,hostOnly,logger);
-			}
-		}
-		catch(CopperException ex)
-		{
-			return 1;
-		}
-		if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nBuilding LR DFA");
-		try
-		{
-			builder.buildDFA();
-			if(isComposition) hostBuilder.buildDFA();
-		}
-		catch(CopperException ex)
-		{
-			return 1;
-		}
-		if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nLALRizing DFA");
-		try
-		{
-			builder.LALRize();
-			if(isComposition) hostBuilder.LALRize();
-		}
-		catch(CopperException ex)
-		{
-			return 1;
-		}
-		if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nBuilding parse table");
-		try
-		{
-			builder.buildLALR1Table();
-			if(isComposition) hostBuilder.buildLALR1Table();
-		}
-		catch(CopperException ex)
-		{
-			return 1;
-		}
-		if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nCulling parse table conflicts");
-		try
-		{
-			builder.cullConflictsLALR1();
-			if(isComposition) hostBuilder.cullConflictsLALR1();
-		}
-		catch(CopperException ex)
-		{
-			return 1;
-		}
-		if(isComposition)
-		{
-			if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nChecking grammar composability");
-
-			ComposabilityChecker cchecker = new ComposabilityChecker(logger);
-			boolean passed = false;
-			try { passed = cchecker.checkComposability(hostGrammar,grammar,hostBuilder.getLALR1DFA(),builder.getLALR1DFA()); }
-			catch(CopperException ex) { System.exit(1); }
-			if(!passed)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.ERROR)) logger.logMessage(CompilerLogMessageSort.ERROR,null,"Grammars " + containedGrammars + " not composable");
-			}
-		}
-
-		if(logger.isLoggable(CompilerLogMessageSort.TICK)) logger.logTick(1,"\nGenerating parser source code...\n");
-
-		PrintStream out;
-		if(args.getOutputFile() != null)
-		{
-			try
-			{
-				out = new PrintStream(args.getOutputFile());
-			}
-			catch(FileNotFoundException ex)
-			{
-				if(logger.isLoggable(CompilerLogMessageSort.ERROR)) logger.logErrorMessage(CompilerLogMessageSort.ERROR,null,"Output file " + args.getOutputFile() + " could not be opened for writing");
-				out = System.out;
-			}
-		}
-		else out = args.getOutputStream();
-		
-		EngineBuilder engineBuilder;
-		String ancillaries;
-		String rootType = grammar.getNTAttributes(grammar.getStartSym()).getType();
-		String errorType = CopperParserException.class.getName();
-
-		switch(useEngine)
-		{
-		case SINGLE:
-			engineBuilder = new SingleDFAEngineBuilder(builder.getGrammar(),builder.getLALR1DFA(),builder.getParseTable(),logger);
-			ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel) + 
-			              edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserMainFunction(packageDecl,parserName,rootType,errorType,gatherStatistics,isPretty,runtimeQuietLevel);
-			break;
-		case MODED:
-			engineBuilder = new ModedEngineBuilder(builder.getGrammar(),builder.getLALR1DFA(),builder.getParseTable(),logger);
-			ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.moded.MainFunctionBuilders.buildModedParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel) +
-			              edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.moded.MainFunctionBuilders.buildModedParserMainFunction(packageDecl,parserName,rootType,errorType,gatherStatistics,isPretty,runtimeQuietLevel);
-			break;
-		case SPLIT:
-			engineBuilder = new SplitEngineBuilder(builder.getGrammar(),builder.getLALR1DFA(),builder.getParseTable(),logger);
-			ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.split.MainFunctionBuilders.buildSplitParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel) +
-			              edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.split.MainFunctionBuilders.buildSplitParserMainFunction(packageDecl,parserName,rootType,errorType,gatherStatistics,isPretty,runtimeQuietLevel);
-			break;
-		case OLD_AND_SLOW:
-		default:
-			engineBuilder = new LALREngineBuilder(builder.getGrammar(),builder.getLALR1DFA(),builder.getParseTable(),logger);
-			ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.lalr.MainFunctionBuilders.buildGeneralParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel);
-		}
-		try
-		{
-			engineBuilder.buildLALREngine(out,
-					       ((packageDecl == null || packageDecl.equals("")) ? "" : "package " + packageDecl + ";"),
-				           "",
-				           parserName,parserName + "Scanner",
-				           ancillaries,
-				           "");
-		}
-		catch(IOException ex)
-		{
-			System.err.println("I/O error in code generation");
-			ex.printStackTrace(System.err);
-			return 1;
-		}
-		catch(CopperException ex)
-		{
-			if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-			return 1;
-		}
-		catch(Exception ex)
-		{
-			System.err.println("Unexpected error in code generation");
-			ex.printStackTrace(System.err);
-			return 1;
-		}
-		if(args.isDumpReport() && (!args.isDumpOnlyOnError() || logger.hasErrors()))
-		{
-			PrintStream dumpStream = null;
-			if(!args.isDumpReport() || args.getDumpFile().equals("") || args.getDumpFile().equals(args.getLogFile())) dumpStream = logger.getOut();
-			else
-			{
-				try { dumpStream = new PrintStream(new FileOutputStream(args.getDumpFile())); }
-				catch(FileNotFoundException ex)
-				{
-					ex.printStackTrace();
-				}
-			}
-			GrammarDumper dumper = null;
-			switch(args.getDumpType())
-			{
-			case HTML:
-			case XML:
-				try
-				{
-					dumper = new XMLGrammarDumper(dumpStream,grammar,builder.getLALR1DFA(),builder.getParseTable());
-				}
-				catch(ParserConfigurationException ex)
-				{
-					ex.printStackTrace();
-				}
-				break;
-			case PLAIN:
-				dumper = new PlainTextGrammarDumper(dumpStream,grammar,builder.getLALR1DFA(),builder.getParseTable());
-				break;
-			default:
-				System.err.println("Invalid dump type -- bug in CLI.");
-				System.exit(1);
-			}
-			dumper.completeDump();
-			switch(args.getDumpType())
-			{
-			case HTML:
-				dumper.logHTML();
-				break;
-			case XML:
-				dumper.logXML();
-				break;
-			case PLAIN:
-				dumper.logPlain();
-				break;
-			default:
-				// Blank
-			}
-		}
-		FinalReporter finalReporter = new FinalReporter(logger,grammar,builder.getParseTable(),engineBuilder.getScannerStateCount());
-		if(logger.isLoggable(CompilerLogMessageSort.FINAL_REPORT))
-		{
-			finalReporter.logFinalReport();
-		}
-		logger.flushMessages();
-		return 0;
-	}
-
-	public static int compileLegacy(ParserBean spec,ParserCompilerParameters args)
-	throws CopperException
-	{
-		CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
-		if(args.getFiles() != null)
-		{
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,"Input files cannot be specified when compiling a parser from Java objects");
-			return 1;
-		}
-		ParserSpecProcessor.normalizeParser(spec,logger);
-		GrammarSource grammar = ParserSpecProcessor.buildGrammarSource(spec,logger);
-
-		return compileParserLegacy(args,grammar);
-	}
-
-	public static int compileLegacy(ParserCompilerParameters args)
-	{
-		GrammarSource grammar = parseInputGrammarLegacy(args);
-		int errorlevel;
-		if(grammar == null) errorlevel = 1;
-		else
-		{
-			try
-			{
-				errorlevel = compileParserLegacy(args,grammar);
-			}
-			catch(CopperException ex)
-			{
-				if(args.getLogger().isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
-				//else System.err.println(ex.getMessage());
-				errorlevel = 1;
-			}
-		}
-		return errorlevel;
+		return CopperPipelineType.GRAMMARBEANS;
 	}
 	
 	
@@ -534,10 +139,10 @@ public class ParserCompiler
 	
 	
 	
-//	private static ParserBean parseInputGrammar(ParserCompilerParameters args)
-//	{
-//		return CopperPipelineType.GRAMMARBEANS.getPipeline(args).parseSpec(args);
-//	}
+
+
+	
+	
 	
 	/**
 	 * Compiles a parser from a Java-object-based parser specification.
@@ -552,7 +157,7 @@ public class ParserCompiler
 		CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
 		if(args.getFiles() != null)
 		{
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,"Input files cannot be specified when compiling a parser from Java objects");
+			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericMessage(CompilerLevel.QUIET,"Input files cannot be specified when compiling a parser from Java objects"));
 			return 1;
 		}
 		ParserSpecProcessor.normalizeParser(spec,logger);
@@ -563,12 +168,13 @@ public class ParserCompiler
 	private static int compileParser(ParserCompilerParameters args,ParserBean spec)
 	throws CopperException
 	{
+		if(args.getUsePipeline() != CopperPipelineType.GRAMMARBEANS) return 1;
 		return ((StandardPipeline<ParserBean,?>) CopperPipelineType.GRAMMARBEANS.getPipeline(args)).execute(spec,args);
 	}
 
 	public static int compile(ParserCompilerParameters args)
 	{
-		return CopperPipelineType.GRAMMARBEANS.getPipeline(args).execute(args);
+		return args.getUsePipeline().getPipeline(args).execute(args);
 	}
 
 
@@ -593,31 +199,30 @@ public class ParserCompiler
 		{
 			usageMessageNoError();
 		}
-		CompilerLogMessageSort quietLevel = CompilerLogMessageSort.getDefaultSort();
+		CompilerLevel quietLevel = getDefaultQuietLevel();
 		boolean isPretty = false;
 		boolean isComposition = false;
 		boolean gatherStatistics = false;
 		boolean dumpReport = false;
 		boolean dumpOnlyOnError = false;
 		CopperDumpType.initTable();
-		CopperDumpType dumpType = getDefaultDumpType();
+		CopperDumpType dumpFormat = getDefaultDumpType();
 		CopperEngineType.initTable();
 		CopperEngineType useEngine = getDefaultEngine();
 		CopperSkinType.initTable();
 		CopperSkinType useSkin = getDefaultSkin();
-		String logFile = "";
+		CopperPipelineType.initTable();
+		CopperPipelineType usePipeline = getDefaultPipeline();
+		String logFile = null;
 		String dumpFile = "";
 		String runtimeQuietLevel = "ERROR";
 		String packageDecl = null;
 		String parserName = null;
 		String output = null;
-		// TODO: Rip this out when GrammarSource is gone. 
-		boolean useOldPipeline = false;
 		int i;
 		for(i = 0;i < args.length;i++)
 		{
 			if(args[i].charAt(0) != '-') break;
-			else if(args[i].equals("-legacy")) useOldPipeline = true;
 			else if(args[i].equals("-o"))
 			{
 				if(++i == args.length) usageMessageError();
@@ -625,15 +230,15 @@ public class ParserCompiler
 			}
 			else if(args[i].equals("-q"))
 			{
-				quietLevel = CompilerLogMessageSort.getQuietSort();
+				quietLevel = CompilerLevel.QUIET;
 			}
 			else if(args[i].equals("-v"))
 			{
-				quietLevel = CompilerLogMessageSort.getVerboseSort();
+				quietLevel = CompilerLevel.VERBOSE;
 			}
 			else if(args[i].equals("-vv"))
 			{
-				quietLevel = CompilerLogMessageSort.getVeryVerboseSort();
+				quietLevel = CompilerLevel.VERY_VERBOSE;
 			}
 			else if(args[i].equals("-gatherstats"))
 			{
@@ -668,6 +273,11 @@ public class ParserCompiler
 				if(++i == args.length || !CopperEngineType.contains(args[i])) usageMessageError();
 				else useEngine = CopperEngineType.fromString(args[i]);
 			}
+			else if(args[i].equals("-pipeline"))
+			{
+				if(++i == args.length || !CopperPipelineType.contains(args[i])) usageMessageError();
+				else usePipeline = CopperPipelineType.fromString(args[i]);
+			}
 			else if(args[i].equals("-compose"))
 			{
 				isComposition = true;
@@ -687,7 +297,7 @@ public class ParserCompiler
 				if(++i == args.length || !CopperDumpType.contains(args[i])) usageMessageError();
 				else
 				{
-					dumpType = CopperDumpType.fromString(args[i]);
+					dumpFormat = CopperDumpType.fromString(args[i]);
 				}
 			}
 			else if(args[i].equals("-package"))
@@ -734,9 +344,8 @@ public class ParserCompiler
 		argTable.setGatherStatistics(gatherStatistics);
 		argTable.setUseEngine(useEngine);
 		argTable.setUseSkin(useSkin);
-		argTable.setLogFile(logFile);
-		argTable.setDumpFile(dumpFile);
-		argTable.setDumpType(dumpType);
+		argTable.setUsePipeline(usePipeline);
+		argTable.setDumpFormat(dumpFormat);
 		argTable.setRuntimeQuietLevel(runtimeQuietLevel);
 		argTable.setPackageDecl(packageDecl);
 		argTable.setParserName(parserName);
@@ -746,19 +355,47 @@ public class ParserCompiler
 		}
 		else if(!output.equals("-"))
 		{
-			argTable.setOutputType(CopperOutputType.FILE);
+			argTable.setOutputType(CopperIOType.FILE);
 			argTable.setOutputFile(new File(output));
 		}
 		else
 		{
-			argTable.setOutputType(CopperOutputType.STREAM);
+			argTable.setOutputType(CopperIOType.STREAM);
 			argTable.setOutputStream(System.out);
 		}
+		
+		if(logFile == null || logFile.equals("-"))
+		{
+			argTable.setLogType(CopperIOType.STREAM);
+			argTable.setLogStream(System.err);
+		}
+		else
+		{
+			argTable.setLogType(CopperIOType.FILE);
+			argTable.setLogFile(new File(logFile));			
+		}
+
+		if(dumpFile == null || dumpFile.equals(""))
+		{
+			argTable.setDumpType(argTable.getLogType());
+			argTable.setDumpStream(argTable.getLogStream());
+			argTable.setDumpFile(argTable.getLogFile());
+		}
+		else if(dumpFile.equals("-"))
+		{
+			argTable.setDumpType(CopperIOType.STREAM);
+			argTable.setDumpStream(System.err);			
+		}
+		else
+		{
+			argTable.setDumpType(CopperIOType.FILE);
+			argTable.setDumpFile(new File(dumpFile));			
+		}
+
 				
 		int errorlevel;
 		
-		if(useOldPipeline) errorlevel = compileLegacy(argTable);
-		else errorlevel = compile(argTable);
+		errorlevel = compile(argTable);
 		
 		System.exit(errorlevel);
 	}

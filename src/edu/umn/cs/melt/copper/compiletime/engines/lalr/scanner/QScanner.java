@@ -15,7 +15,7 @@ import edu.umn.cs.melt.copper.compiletime.engines.ParserState;
 import edu.umn.cs.melt.copper.compiletime.engines.lalr.QScannerStateInfo;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ReadOnlyParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ReadOnlyParseTable;
 import edu.umn.cs.melt.copper.compiletime.statistics.ScannerStatistics;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;

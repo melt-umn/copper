@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.parsetable;
+package edu.umn.cs.melt.copper.compiletime.parsetable.old;
 
 /**
  * Superclass for all types of parse actions.

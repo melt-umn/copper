@@ -2,8 +2,8 @@ package edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.GrammarSource;
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.GrammarSemanticErrorMessage;
+import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
@@ -28,16 +28,21 @@ public class ParserSpecProcessor
 		GrammarConsistencyChecker checker = new GrammarConsistencyChecker();
 		if(spec != null) hasError |= spec.acceptVisitor(checker);
 		else hasError = true;
-		if(hasError)
+		if(hasError && logger.isLoggable(GrammarSemanticErrorMessage.getGrammarSemanticErrorMessageLevel()))
 		{
-			StringBuffer sb = new StringBuffer();
-			sb.append("Parser specification").append(spec == null ? "" : " " + spec.getDisplayName()).append(" is not well-formed; the following errors occurred:\n");
 			for(GrammarError e : checker.getErrors())
 			{
-				sb.append("    ").append(e.toString()).append("\n");
+				logger.log(new GrammarSemanticErrorMessage(e));
 			}
-			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,sb.toString());
-			logger.flushMessages();
+//			StringBuffer sb = new StringBuffer();
+//			sb.append("Parser specification").append(spec == null ? "" : " " + spec.getDisplayName()).append(" is not well-formed; the following errors occurred:\n");
+//			for(GrammarError e : checker.getErrors())
+//			{
+//				sb.append("    ").append(e.toString()).append("\n");
+//			}
+//			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,sb.toString());
+//			logger.flushMessages();
+			logger.flush();
 			return;
 		}
 		GrammarNormalizer normalizer = new GrammarNormalizer();

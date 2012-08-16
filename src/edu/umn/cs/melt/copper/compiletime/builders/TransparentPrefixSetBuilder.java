@@ -2,7 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 
 import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 
 /**
  * Builds maps of valid transparent prefixes for a parse table. 

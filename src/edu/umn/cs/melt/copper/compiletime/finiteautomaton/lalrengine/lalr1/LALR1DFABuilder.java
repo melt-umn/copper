@@ -18,11 +18,11 @@ import edu.umn.cs.melt.copper.compiletime.abstractsyntax.intermediate.syntaxtran
 import edu.umn.cs.melt.copper.compiletime.auxiliary.ParseActionPrettyPrinter;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.parsetable.AcceptAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.GLRParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.AcceptAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.GLRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction;
 import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.ComposabilityChecker;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;

@@ -7,6 +7,11 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
 
 public class GrammarSemanticErrorMessage implements CompilerLocatedLogMessage<Location>
 {
+	public static CompilerLevel getGrammarSemanticErrorMessageLevel()
+	{
+		return CompilerLevel.QUIET;
+	}
+	
 	private GrammarError errorMessage;
 	
 	public GrammarSemanticErrorMessage(GrammarError errorMessage)

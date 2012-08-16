@@ -14,9 +14,9 @@ import edu.umn.cs.melt.copper.compiletime.engines.lalr.QScannerStateInfo;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.LexicalConflictResolution;
-import edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable;
 import edu.umn.cs.melt.copper.compiletime.semantics.lalr1.LexicalAmbiguityChecker;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 

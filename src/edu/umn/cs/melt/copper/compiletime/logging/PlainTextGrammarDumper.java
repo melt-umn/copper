@@ -12,12 +12,12 @@ import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1State;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1StateItem;
 import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lalrengine.lalr1.LALR1Transition;
-import edu.umn.cs.melt.copper.compiletime.parsetable.AcceptAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.FullReduceAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseAction;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ParseActionVisitor;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ReadOnlyParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetable.ShiftAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.AcceptAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.FullReduceAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseAction;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseActionVisitor;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ReadOnlyParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.old.ShiftAction;
 
 public class PlainTextGrammarDumper extends GrammarDumper implements ParseActionVisitor<String,RuntimeException>
 {

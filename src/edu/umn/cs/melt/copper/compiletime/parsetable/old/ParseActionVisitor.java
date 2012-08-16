@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.parsetable;
+package edu.umn.cs.melt.copper.compiletime.parsetable.old;
 
 /**
  * Interface for visitors to a parse action.

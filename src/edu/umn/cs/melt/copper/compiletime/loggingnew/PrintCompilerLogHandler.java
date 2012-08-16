@@ -18,6 +18,12 @@ public class PrintCompilerLogHandler implements CompilerLogHandler
 		marker = 0;
 	}
 	
+	// TODO: Remove when the old logging system is gone.
+	public PrintStream getOut()
+	{
+		return out;
+	}
+	
 	@Override
 	public void handleMessage(CompilerLogMessage message)
 	{

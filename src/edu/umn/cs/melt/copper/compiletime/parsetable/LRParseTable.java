@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.parsetablenew;
+package edu.umn.cs.melt.copper.compiletime.parsetable;
 
 import java.util.BitSet;
 

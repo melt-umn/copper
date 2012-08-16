@@ -7,8 +7,8 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.ParseTableConflictMessage;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTable;
-import edu.umn.cs.melt.copper.compiletime.parsetablenew.LRParseTableConflict;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 
 /**
  * Counts the parse table conflicts in a compiled parser specification, and checks if they have all been resolved.

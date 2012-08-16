@@ -6,6 +6,11 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 
 public class GrammarSyntaxError extends GenericMessage
 {
+	public static CompilerLevel getGrammarSyntaxErrorMessageLevel()
+	{
+		return CompilerLevel.QUIET;
+	}
+
 	private CopperSyntaxError ex;
 	
 	public GrammarSyntaxError(CopperSyntaxError ex)

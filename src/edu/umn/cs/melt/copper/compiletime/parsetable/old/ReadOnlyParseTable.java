@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.parsetable;
+package edu.umn.cs.melt.copper.compiletime.parsetable.old;
 
 import java.util.Collection;
 
@@ -145,17 +145,17 @@ public interface ReadOnlyParseTable
 	public ShiftAction getGotoAction(int statenum, NonTerminal symbol);
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#hasPrefixes(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#hasPrefixes(int)
 	 */
 	public boolean hasPrefixes(int statenum);
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getPrefixes(int)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getPrefixes(int)
 	 */
     public Collection<Terminal> getPrefixes(int statenum);
 
 	/**
-	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.ParseTable#getShiftableFollowingPrefix(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
+	 * @see edu.umn.cs.melt.copper.compiletime.parsetable.old.ParseTable#getShiftableFollowingPrefix(int, edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal)
 	 */
 	public Collection<Terminal> getShiftableFollowingPrefix(int statenum,
 			Terminal prefix);
