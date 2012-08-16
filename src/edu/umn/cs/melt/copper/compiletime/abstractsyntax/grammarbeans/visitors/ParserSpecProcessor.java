@@ -21,7 +21,7 @@ public class ParserSpecProcessor
 	 * @param logger The logger to which to report errors.
 	 * @throws CopperException If any consistency errors occurred.
 	 */
-	public static void normalizeParser(ParserBean spec,CompilerLogger logger)
+	public static boolean normalizeParser(ParserBean spec,CompilerLogger logger)
 	throws CopperException
 	{
 		boolean hasError = false;
@@ -43,10 +43,11 @@ public class ParserSpecProcessor
 //			if(logger.isLoggable(CompilerLogMessageSort.PARSING_ERROR)) logger.logMessage(CompilerLogMessageSort.PARSING_ERROR,null,sb.toString());
 //			logger.flushMessages();
 			logger.flush();
-			return;
+			return true;
 		}
 		GrammarNormalizer normalizer = new GrammarNormalizer();
 		if(spec != null) spec.acceptVisitor(normalizer);
+		return hasError;
 	}
 	
 	// TODO: Remove this when the other skins can produce ParserBeans instead of GrammarSource objects.
