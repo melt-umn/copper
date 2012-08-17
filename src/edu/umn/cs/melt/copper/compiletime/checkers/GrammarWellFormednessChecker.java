@@ -2,13 +2,13 @@ package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.GrammarStatistics;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.NonterminalNonterminalMessage;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.UselessNonterminalMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.NonterminalNonterminalMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.UselessNonterminalMessage;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**

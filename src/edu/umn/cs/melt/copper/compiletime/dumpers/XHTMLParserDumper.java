@@ -21,16 +21,15 @@ import javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0ItemSet;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
-import edu.umn.cs.melt.copper.compiletime.logging.FatalCompileErrorException;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 
 public class XHTMLParserDumper extends FullParserDumper
@@ -65,7 +64,7 @@ public class XHTMLParserDumper extends FullParserDumper
 		}
 		catch (TransformerConfigurationException e)
 		{
-			throw new FatalCompileErrorException(e);
+			throw new IOException(e);
 		}
 
 		generateXMLDump();
@@ -79,11 +78,11 @@ public class XHTMLParserDumper extends FullParserDumper
 			TransformerFactory fact = TransformerFactory.newInstance();
 			Transformer tr = null;
 			try { tr = fact.newTransformer(xslt); }
-			catch(TransformerException ex) { throw new FatalCompileErrorException(ex.getMessage()); }
+			catch(TransformerException ex) { throw new IOException(ex); }
 			StringWriter wr = new StringWriter();
 			StreamResult output = new StreamResult(wr);
 			try { tr.transform(source,output); }
-			catch(TransformerException ex) { throw new FatalCompileErrorException(ex.getMessage()); }
+			catch(TransformerException ex) { throw new IOException(ex); }
 			out.print(wr.toString());
 			break;
 		case XML:
@@ -94,7 +93,7 @@ public class XHTMLParserDumper extends FullParserDumper
 			}
 			catch (TransformerException e)
 			{
-				throw new FatalCompileErrorException(e);
+				throw new IOException(e);
 			}		
 		}
 

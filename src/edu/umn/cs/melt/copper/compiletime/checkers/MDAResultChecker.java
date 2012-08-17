@@ -2,17 +2,17 @@ package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.GrammarStatistics;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.FollowSpillageMessage;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.LookaheadSpillageMessage;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.NonILSubsetMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.FollowSpillageMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.LookaheadSpillageMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.NonILSubsetMessage;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.mda.MDAResults;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 public class MDAResultChecker
 {

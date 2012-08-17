@@ -1,9 +1,9 @@
 package edu.umn.cs.melt.copper.compiletime.parsetable;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.PSSymbolTable;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 public class LRParseTablePrinter
 {

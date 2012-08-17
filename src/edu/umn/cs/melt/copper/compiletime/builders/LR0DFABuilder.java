@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 /**
  * Builds an LR(0) DFA (without any lookahead sets on items). 

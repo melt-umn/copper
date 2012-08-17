@@ -4,17 +4,18 @@ import java.util.Stack;
 
 import org.xml.sax.SAXException;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CharacterSetRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ChoiceRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ConcatenationRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.EmptyStringRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.KleeneStarRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.RegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.RegexSimplifier;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.ParserSpecXMLPrinter;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageSort;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.logging.StringBasedCompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.PrintCompilerLogHandler;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
+import edu.umn.cs.melt.copper.compiletime.skins.xml.ParserSpecXMLPrinter;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CharacterSetRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ChoiceRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ConcatenationRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.EmptyStringRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.KleeneStarRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexSimplifier;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
@@ -24,11 +25,10 @@ public class RegexXMLConverter
 	public static void main(String[] args)
 	throws CopperException
 	{
-		CompilerLogger logger = new StringBasedCompilerLogger();
-		logger.setOut(System.err);
+		CompilerLogger logger = new CompilerLogger(new PrintCompilerLogHandler(System.err));
 		RegexXMLConverter parser = new RegexXMLConverter(logger);
 		parser.setToParse(args[0]);
-		RegexBean regex = parser.parse();
+		Regex regex = parser.parse();
 
 		RegexSimplifier simplifier = new RegexSimplifier();
 		regex = regex.acceptVisitor(simplifier);
@@ -76,7 +76,7 @@ public class RegexXMLConverter
 	
 	private String toParse;
 	private int position;
-	private Stack< Pair<Integer,Pair<String,RegexBean> > > parseStack; 
+	private Stack< Pair<Integer,Pair<String,Regex> > > parseStack; 
 	private CompilerLogger logger;
 	
 	public RegexXMLConverter(CompilerLogger logger)
@@ -162,7 +162,7 @@ public class RegexXMLConverter
 			newPosition++;
 			if(newPosition >= toParse.length())
 			{
-				logger.logErrorMessage(CompilerLogMessageSort.ERROR,null,"Syntax error in regex '" + "Regex '" + toParse + "'");
+				logger.logError(new GenericMessage(CompilerLevel.QUIET,"Syntax error in regex '" + "Regex '" + toParse + "'",true,true));
 			}
 			newPosition++;
 		    char escapedChar = QuotedStringFormatter.getRepresentedCharacter(toParse.substring(position,newPosition));
@@ -218,29 +218,29 @@ public class RegexXMLConverter
 	public void shift(int state,Pair< Pair<RegexTerminals,String>,Integer > token)
 	{
 		consume(token);
-		parseStack.push(Pair.cons(state,Pair.cons(token.first().second(),(RegexBean) null)));
+		parseStack.push(Pair.cons(state,Pair.cons(token.first().second(),(Regex) null)));
 	}
 	
-	public void goTo(int state,Pair<RegexNonTerminals,RegexBean> toPush)
+	public void goTo(int state,Pair<RegexNonTerminals,Regex> toPush)
 	{
 		parseStack.push(Pair.cons(state,Pair.cons((String) null,toPush.second())));
 	}
 	
-	private RegexBean getWildcardRegex()
+	private Regex getWildcardRegex()
 	{
-		return new CharacterSetRegexBean().addLooseChar('\n').invert();
+		return new CharacterSetRegex().addLooseChar('\n').invert();
 	}
 
-	private RegexBean getCharactersRegex(String lexeme)
+	private Regex getCharactersRegex(String lexeme)
 	{
 		if(lexeme.length() == 1)
 		{
-			return new CharacterSetRegexBean().addLooseChar(lexeme.charAt(0));
+			return new CharacterSetRegex().addLooseChar(lexeme.charAt(0));
 		}
 		else
 		{
-			ConcatenationRegexBean rv = new ConcatenationRegexBean();
-			for(int i = 0;i < lexeme.length();i++) rv.addSubexp(new CharacterSetRegexBean().addLooseChar(lexeme.charAt(i)));
+			ConcatenationRegex rv = new ConcatenationRegex();
+			for(int i = 0;i < lexeme.length();i++) rv.addSubexp(new CharacterSetRegex().addLooseChar(lexeme.charAt(i)));
 			return rv;
 		}
 	}
@@ -248,21 +248,21 @@ public class RegexXMLConverter
 	private void syntaxError()
 	throws CopperException
 	{
-		logger.logErrorMessage(CompilerLogMessageSort.ERROR,null,"Syntax error parsing regex '" + toParse + "'");
+		logger.logError(new GenericMessage(CompilerLevel.QUIET,"Syntax error parsing regex '" + toParse + "'",true,true));
 	}
 	
-	public RegexBean parse()
+	public Regex parse()
 	throws CopperException
 	{
 		boolean finished = false;
-		RegexBean pr;
-		Pair<RegexNonTerminals,RegexBean> toGoto;
+		Regex pr;
+		Pair<RegexNonTerminals,Regex> toGoto;
 		Pair< Pair<RegexTerminals,String>,Integer > token;
-		parseStack = new Stack< Pair<Integer,Pair<String,RegexBean> > >();
-		parseStack.push(Pair.cons(0,Pair.cons("",(RegexBean) null)));
+		parseStack = new Stack< Pair<Integer,Pair<String,Regex> > >();
+		parseStack.push(Pair.cons(0,Pair.cons("",(Regex) null)));
 		position = 0;
 		
-		if(toParse.length() == 0) return new EmptyStringRegexBean();
+		if(toParse.length() == 0) return new EmptyStringRegex();
 		
 		while(!finished)
 		{
@@ -319,7 +319,7 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					toGoto = Pair.cons(RegexNonTerminals.RR,(RegexBean) new EmptyStringRegexBean());
+					toGoto = Pair.cons(RegexNonTerminals.RR,(Regex) new EmptyStringRegex());
 					break;
 				default:
 					syntaxError();
@@ -455,7 +455,7 @@ public class RegexXMLConverter
 				switch(token.first().first())
 				{
 				case RBRACK:
-					toGoto = Pair.cons(RegexNonTerminals.RG,(RegexBean) new EmptyStringRegexBean());
+					toGoto = Pair.cons(RegexNonTerminals.RG,(Regex) new EmptyStringRegex());
 					break;
 				case CHARACTER:
 					shift(8,token);
@@ -523,9 +523,9 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					RegexBean right = parseStack.pop().second().second();
-					RegexBean left = parseStack.pop().second().second();
-					toGoto = Pair.cons(RegexNonTerminals.DR,(RegexBean) new ConcatenationRegexBean().addSubexps(left,right));
+					Regex right = parseStack.pop().second().second();
+					Regex left = parseStack.pop().second().second();
+					toGoto = Pair.cons(RegexNonTerminals.DR,(Regex) new ConcatenationRegex().addSubexps(left,right));
 					break;
 				default:
 					syntaxError();
@@ -549,7 +549,7 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					toGoto = Pair.cons(RegexNonTerminals.RR,(RegexBean) new EmptyStringRegexBean());
+					toGoto = Pair.cons(RegexNonTerminals.RR,(Regex) new EmptyStringRegex());
 					break;
 				default:
 					syntaxError();
@@ -585,7 +585,7 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					toGoto = Pair.cons(RegexNonTerminals.RR,(RegexBean) new EmptyStringRegexBean());
+					toGoto = Pair.cons(RegexNonTerminals.RR,(Regex) new EmptyStringRegex());
 					break;
 				default:
 					syntaxError();
@@ -609,7 +609,7 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					toGoto = Pair.cons(RegexNonTerminals.RR,(RegexBean) new EmptyStringRegexBean());
+					toGoto = Pair.cons(RegexNonTerminals.RR,(Regex) new EmptyStringRegex());
 					break;
 				default:
 					syntaxError();
@@ -629,7 +629,7 @@ public class RegexXMLConverter
 				case LBRACK:
 				case CHARACTER:
 					parseStack.pop();
-					RegexBean middle = parseStack.pop().second().second();
+					Regex middle = parseStack.pop().second().second();
 					parseStack.pop();
 					toGoto = Pair.cons(RegexNonTerminals.UR,middle);
 					break;
@@ -653,10 +653,10 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					RegexBean right = parseStack.pop().second().second();
+					Regex right = parseStack.pop().second().second();
 					parseStack.pop();
-					RegexBean left = parseStack.pop().second().second();
-				    toGoto = Pair.cons(RegexNonTerminals.DR,(RegexBean) new ConcatenationRegexBean().addSubexps(new KleeneStarRegexBean(left),right));
+					Regex left = parseStack.pop().second().second();
+				    toGoto = Pair.cons(RegexNonTerminals.DR,(Regex) new ConcatenationRegex().addSubexps(new KleeneStarRegex(left),right));
 				    break;
 				default:
 					syntaxError();
@@ -676,7 +676,7 @@ public class RegexXMLConverter
 				case LBRACK:
 				case CHARACTER:
 					parseStack.pop();
-					RegexBean middle = parseStack.pop().second().second();
+					Regex middle = parseStack.pop().second().second();
 					parseStack.pop();
 					toGoto = Pair.cons(RegexNonTerminals.UR,middle);
 					break;
@@ -689,10 +689,10 @@ public class RegexXMLConverter
 				{
 				case ENDOFSTRING:
 				case RPAREN:
-					RegexBean right = parseStack.pop().second().second();
+					Regex right = parseStack.pop().second().second();
 					parseStack.pop();
-					RegexBean left = parseStack.pop().second().second();
-					toGoto = Pair.cons(RegexNonTerminals.R,(RegexBean) new ChoiceRegexBean().addSubexps(left,right));
+					Regex left = parseStack.pop().second().second();
+					toGoto = Pair.cons(RegexNonTerminals.R,(Regex) new ChoiceRegex().addSubexps(left,right));
 					break;
 				default:
 					syntaxError();
@@ -704,10 +704,10 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					RegexBean right = parseStack.pop().second().second();
+					Regex right = parseStack.pop().second().second();
 					parseStack.pop();
-					RegexBean left = parseStack.pop().second().second();
-				    toGoto = Pair.cons(RegexNonTerminals.DR,(RegexBean) new ConcatenationRegexBean().addSubexps(left,new KleeneStarRegexBean(left),right));
+					Regex left = parseStack.pop().second().second();
+				    toGoto = Pair.cons(RegexNonTerminals.DR,(Regex) new ConcatenationRegex().addSubexps(left,new KleeneStarRegex(left),right));
 				    break;
 				default:
 					syntaxError();
@@ -737,16 +737,16 @@ public class RegexXMLConverter
 				switch(token.first().first())
 				{
 				case RBRACK:
-					RegexBean RGNode = parseStack.pop().second().second();
-					RegexBean UGNode = parseStack.pop().second().second();
+					Regex RGNode = parseStack.pop().second().second();
+					Regex UGNode = parseStack.pop().second().second();
 					
-					if(UGNode instanceof CharacterSetRegexBean && (RGNode == null || RGNode instanceof EmptyStringRegexBean))
+					if(UGNode instanceof CharacterSetRegex && (RGNode == null || RGNode instanceof EmptyStringRegex))
 					{
 						toGoto = Pair.cons(RegexNonTerminals.G,UGNode);
 					}
-					else if(UGNode instanceof CharacterSetRegexBean && RGNode instanceof CharacterSetRegexBean)
+					else if(UGNode instanceof CharacterSetRegex && RGNode instanceof CharacterSetRegex)
 					{
-						toGoto = Pair.cons(RegexNonTerminals.G,(RegexBean) CharacterSetRegexBean.union((CharacterSetRegexBean) UGNode,(CharacterSetRegexBean) RGNode));
+						toGoto = Pair.cons(RegexNonTerminals.G,(Regex) CharacterSetRegex.union((CharacterSetRegex) UGNode,(CharacterSetRegex) RGNode));
 					}
 					else
 					{
@@ -765,10 +765,10 @@ public class RegexXMLConverter
 				case ENDOFSTRING:
 				case BAR:
 				case RPAREN:
-					RegexBean right = parseStack.pop().second().second();
+					Regex right = parseStack.pop().second().second();
 					parseStack.pop();
-					RegexBean left = parseStack.pop().second().second();
-				    toGoto = Pair.cons(RegexNonTerminals.DR,(RegexBean) new ConcatenationRegexBean().addSubexps(new ChoiceRegexBean().addSubexps(new EmptyStringRegexBean(),left),right));
+					Regex left = parseStack.pop().second().second();
+				    toGoto = Pair.cons(RegexNonTerminals.DR,(Regex) new ConcatenationRegex().addSubexps(new ChoiceRegex().addSubexps(new EmptyStringRegex(),left),right));
 				    break;
 				default:
 					syntaxError();
@@ -779,16 +779,16 @@ public class RegexXMLConverter
 				{
 				case RBRACK:
 				case CHARACTER:
-					RegexBean characterNode2 = parseStack.pop().second().second();
+					Regex characterNode2 = parseStack.pop().second().second();
 					parseStack.pop();
-					RegexBean characterNode1 = parseStack.pop().second().second();
+					Regex characterNode1 = parseStack.pop().second().second();
 					
-					if(characterNode1 instanceof CharacterSetRegexBean &&
-					   characterNode2 instanceof CharacterSetRegexBean)
+					if(characterNode1 instanceof CharacterSetRegex &&
+					   characterNode2 instanceof CharacterSetRegex)
 					{
-						char lowerBound = ((CharacterSetRegexBean) characterNode1).getOnlyChar();
-						char upperBound = ((CharacterSetRegexBean) characterNode2).getOnlyChar();
-						toGoto = Pair.cons(RegexNonTerminals.UG,(RegexBean) new CharacterSetRegexBean().addRange(lowerBound, upperBound));
+						char lowerBound = ((CharacterSetRegex) characterNode1).getOnlyChar();
+						char upperBound = ((CharacterSetRegex) characterNode2).getOnlyChar();
+						toGoto = Pair.cons(RegexNonTerminals.UG,(Regex) new CharacterSetRegex().addRange(lowerBound, upperBound));
 					}
 					else
 					{
@@ -815,12 +815,12 @@ public class RegexXMLConverter
 				case LBRACK:
 				case CHARACTER:
 					parseStack.pop();
-					RegexBean middle = parseStack.pop().second().second();
+					Regex middle = parseStack.pop().second().second();
 					parseStack.pop();
 					parseStack.pop();
-				    if(middle instanceof CharacterSetRegexBean)
+				    if(middle instanceof CharacterSetRegex)
 					{
-						toGoto = Pair.cons(RegexNonTerminals.UR,(RegexBean) ((CharacterSetRegexBean) middle).invert());
+						toGoto = Pair.cons(RegexNonTerminals.UR,(Regex) ((CharacterSetRegex) middle).invert());
 					}
 					else
 					{

@@ -2,8 +2,8 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ContextSets;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 /**
  * A method for computing the "context sets," {@code first}, {@code follow}, and {@code nullable},

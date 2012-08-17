@@ -2,13 +2,13 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0ItemSet;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadSets;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadSets;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.parsetable.MutableLRParseTable;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 /**
  * Builds an LR parse table from an LR DFA and lookahead sets. 

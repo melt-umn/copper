@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilder;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.enginebuilders.newbuilders.SingleDFACompilationProcess;
+import edu.umn.cs.melt.copper.compiletime.srcbuilders.single.SingleDFACompilationProcess;
 
 /**
  * Represents the parse-engine targets available in the Copper parser generator.

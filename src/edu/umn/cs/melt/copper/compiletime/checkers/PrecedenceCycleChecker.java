@@ -2,12 +2,12 @@ package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.CyclicPrecedenceRelationMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.CyclicPrecedenceRelationMessage;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**

@@ -4,11 +4,11 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardPipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompiler;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 
 /**
  * Represents the parser compilation pipelines available in the Copper parser generator.
@@ -41,9 +41,9 @@ public enum CopperPipelineType
 	LEGACY
 	{
 		@Override
-		edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.LegacyPipeline getPipeline(ParserCompilerParameters args)
+		edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.LegacyPipeline getPipeline(ParserCompilerParameters args)
 		{
-			return new edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.LegacyPipeline();
+			return new edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.LegacyPipeline();
 		}
 
 		@Override

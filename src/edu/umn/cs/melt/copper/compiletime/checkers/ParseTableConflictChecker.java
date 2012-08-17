@@ -1,14 +1,14 @@
 package edu.umn.cs.melt.copper.compiletime.checkers;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperASTBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.GrammarStatistics;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.ParseTableConflictMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.ParseTableConflictMessage;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 /**
  * Counts the parse table conflicts in a compiled parser specification, and checks if they have all been resolved.

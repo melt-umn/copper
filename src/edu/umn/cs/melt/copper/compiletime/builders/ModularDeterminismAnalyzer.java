@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.TreeMap;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ContextSets;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0DFA;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LR0ItemSet;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.mda.MDAResults;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 public class ModularDeterminismAnalyzer
 {
