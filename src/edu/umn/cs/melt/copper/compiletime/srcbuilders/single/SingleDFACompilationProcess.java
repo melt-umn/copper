@@ -14,7 +14,6 @@ import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnDat
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilder;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
-import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
 public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCompilerReturnData>
 {
@@ -51,9 +50,12 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 					c.errorlevel = 2;
 					return 2;
 				}
+				c.stats.codeOutputTo = args.getOutputFile().toString();
 				break;
 			case STREAM:
 				out = args.getOutputStream();
+				if(out == System.out) c.stats.codeOutputTo = "<standard output>";
+				else c.stats.codeOutputTo = "<stream " + Integer.toHexString(out.hashCode()) + ">";
 				break;
 			default:
 				out = null;
@@ -67,13 +69,13 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 			
 			//boolean isPretty = args.isPretty();
 			//boolean gatherStatistics = args.isGatherStatistics();
-			String runtimeQuietLevel = args.getRuntimeQuietLevel();
+			//String runtimeQuietLevel = args.getRuntimeQuietLevel();
 	
 			String rootType = c.symbolTable.getNonTerminal(c.fullSpec.pr.getRHSSym(c.fullSpec.getStartProduction(),0)).getReturnType();
 			if(rootType == null) rootType = Object.class.getName();
-			String errorType = CopperParserException.class.getName();
-			String ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.single.MainFunctionBuilders.buildSingleDFAParserAncillaries(c.packageDecl,c.parserName,false,false,runtimeQuietLevel) + 
-		              edu.umn.cs.melt.copper.compiletime.srcbuilders.single.MainFunctionBuilders.buildSingleDFAParserMainFunction(c.packageDecl,c.parserName,rootType,errorType,false,false,runtimeQuietLevel);
+			//String errorType = CopperParserException.class.getName();
+			//String ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.single.MainFunctionBuilders.buildSingleDFAParserAncillaries(c.packageDecl,c.parserName,false,false,runtimeQuietLevel) + 
+		    //          edu.umn.cs.melt.copper.compiletime.srcbuilders.single.MainFunctionBuilders.buildSingleDFAParserMainFunction(c.packageDecl,c.parserName,rootType,errorType,false,false,runtimeQuietLevel);
 			SingleDFAEngineBuilder engineBuilder = new SingleDFAEngineBuilder(c.symbolTable, c.fullSpec, c.lookaheadSets, c.parseTable, c.prefixes, c.scannerDFA, c.scannerDFAAnnotations);
 				
 			try
@@ -83,10 +85,11 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 					       ((c.packageDecl == null || c.packageDecl.equals("")) ? "" : "package " + c.packageDecl + ";"),
 				           "",
 				           c.parserName,c.parserName + "Scanner",
-				           ancillaries,
+				           "public " + c.parserName + "() {}\n\n",
 				           "");
 				if(logger.isLoggable(TimingMessage.TIMING_LEVEL)) logger.log(new TimingMessage("Generating parser code",System.currentTimeMillis() - timeBefore));
 				logger.flush();
+				c.stats.codeOutput = true;
 			}
 			catch(IOException ex)
 			{
@@ -106,7 +109,7 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 				return 1;
 			}
 		}
-
+		
 		logger.log(new FinalReportMessage(c.stats));
 		
 		logger.flush();

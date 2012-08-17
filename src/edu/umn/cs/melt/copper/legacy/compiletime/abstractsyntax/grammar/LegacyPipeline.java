@@ -325,8 +325,8 @@ public class LegacyPipeline implements Pipeline
 		{
 		case SINGLE:
 			engineBuilder = new SingleDFAEngineBuilder(builder.getGrammar(),builder.getLALR1DFA(),builder.getParseTable(),logger);
-			ancillaries = edu.umn.cs.melt.copper.compiletime.srcbuilders.single.MainFunctionBuilders.buildSingleDFAParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel) + 
-			              edu.umn.cs.melt.copper.compiletime.srcbuilders.single.MainFunctionBuilders.buildSingleDFAParserMainFunction(packageDecl,parserName,rootType,errorType,gatherStatistics,isPretty,runtimeQuietLevel);
+			ancillaries = edu.umn.cs.melt.copper.legacy.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserAncillaries(packageDecl,parserName,gatherStatistics,isPretty,runtimeQuietLevel) + 
+			              edu.umn.cs.melt.copper.legacy.compiletime.srcbuilders.enginebuilders.single.MainFunctionBuilders.buildSingleDFAParserMainFunction(packageDecl,parserName,rootType,errorType,gatherStatistics,isPretty,runtimeQuietLevel);
 			break;
 		case MODED:
 			engineBuilder = new ModedEngineBuilder(builder.getGrammar(),builder.getLALR1DFA(),builder.getParseTable(),logger);

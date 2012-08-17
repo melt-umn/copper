@@ -24,7 +24,7 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 		
 		try
 		{
-			spec = edu.umn.cs.melt.copper.compiletime.skins.cup.CupSkinParserNew.parseGrammar(files,logger);
+			spec = edu.umn.cs.melt.copper.compiletime.skins.cup.CupSkinParser.parseGrammar(files,logger);
 		}
 		catch(Exception ex)
 		{
