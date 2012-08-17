@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.LexicalAmbiguities;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.SingleScannerDFAAnnotations;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.LRLookaheadAndLayoutSets;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.lrdfa.TransparentPrefixes;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.LexicalAmbiguities;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 /**
  * Builds an object containing information about the lexical ambiguities in a compiled parser specification. 

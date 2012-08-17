@@ -3,18 +3,18 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 import java.util.BitSet;
 import java.util.HashSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CharacterSetRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ChoiceRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ConcatenationRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.EmptyStringRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.KleeneStarRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.MacroHoleRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.RegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.RegexBeanVisitor;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarnew.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedDFA;
-import edu.umn.cs.melt.copper.compiletime.finiteautomaton.gdfa.GeneralizedNFA;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedNFA;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CharacterSetRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ChoiceRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ConcatenationRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.EmptyStringRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.KleeneStarRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.MacroHoleRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVisitor;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 public class SingleScannerDFABuilder
@@ -83,39 +83,39 @@ public class SingleScannerDFABuilder
 	private class TransitionLabelCalculator implements RegexBeanVisitor<HashSet<SetOfCharsSyntax>, RuntimeException>
 	{
 		@Override
-		public HashSet<SetOfCharsSyntax> visitChoiceRegex(ChoiceRegexBean bean)
+		public HashSet<SetOfCharsSyntax> visitChoiceRegex(ChoiceRegex bean)
 		throws RuntimeException
 		{
 			HashSet<SetOfCharsSyntax> rv = new HashSet<SetOfCharsSyntax>();
-			for(RegexBean sexp : bean.getSubexps()) rv.addAll(sexp.acceptVisitor(this));
+			for(Regex sexp : bean.getSubexps()) rv.addAll(sexp.acceptVisitor(this));
 			return rv;
 		}
 
 		@Override
-		public HashSet<SetOfCharsSyntax> visitConcatenationRegex(ConcatenationRegexBean bean)
+		public HashSet<SetOfCharsSyntax> visitConcatenationRegex(ConcatenationRegex bean)
 		throws RuntimeException
 		{
 			HashSet<SetOfCharsSyntax> rv = new HashSet<SetOfCharsSyntax>();
-			for(RegexBean sexp : bean.getSubexps()) rv.addAll(sexp.acceptVisitor(this));
+			for(Regex sexp : bean.getSubexps()) rv.addAll(sexp.acceptVisitor(this));
 			return rv;
 		}
 
 		@Override
-		public HashSet<SetOfCharsSyntax> visitKleeneStarRegex(KleeneStarRegexBean bean)
+		public HashSet<SetOfCharsSyntax> visitKleeneStarRegex(KleeneStarRegex bean)
 		throws RuntimeException
 		{
 			return bean.getSubexp().acceptVisitor(this);
 		}
 
 		@Override
-		public HashSet<SetOfCharsSyntax> visitEmptyStringRegex(EmptyStringRegexBean bean)
+		public HashSet<SetOfCharsSyntax> visitEmptyStringRegex(EmptyStringRegex bean)
 		throws RuntimeException
 		{
 			return new HashSet<SetOfCharsSyntax>();
 		}
 
 		@Override
-		public HashSet<SetOfCharsSyntax> visitCharacterSetRegex(CharacterSetRegexBean bean,SetOfCharsSyntax chars)
+		public HashSet<SetOfCharsSyntax> visitCharacterSetRegex(CharacterSetRegex bean,SetOfCharsSyntax chars)
 		throws RuntimeException
 		{
 			HashSet<SetOfCharsSyntax> rv = new HashSet<SetOfCharsSyntax>();
@@ -124,7 +124,7 @@ public class SingleScannerDFABuilder
 		}
 
 		@Override
-		public HashSet<SetOfCharsSyntax> visitMacroHoleRegex(MacroHoleRegexBean bean)
+		public HashSet<SetOfCharsSyntax> visitMacroHoleRegex(MacroHoleRegex bean)
 		throws RuntimeException
 		{
 			throw new UnsupportedOperationException("Undefined macro '" + bean.getMacroName() + "'");		
@@ -134,7 +134,7 @@ public class SingleScannerDFABuilder
 	private class AutomatonGenerator implements RegexBeanVisitor<Pair<Integer,BitSet>, RuntimeException>
 	{
 		@Override
-		public Pair<Integer, BitSet> visitChoiceRegex(ChoiceRegexBean bean)
+		public Pair<Integer, BitSet> visitChoiceRegex(ChoiceRegex bean)
 		throws RuntimeException
 		{
 			// Add a new start state.
@@ -142,7 +142,7 @@ public class SingleScannerDFABuilder
 			BitSet accepts = new BitSet();
 			Pair<Integer,BitSet> subs;
 			// For each constituent of the choice:
-			for(RegexBean sexp : bean.getSubexps())
+			for(Regex sexp : bean.getSubexps())
 			{
 				// Generate its states.
 				subs = sexp.acceptVisitor(this);
@@ -157,13 +157,13 @@ public class SingleScannerDFABuilder
 		}
 
 		@Override
-		public Pair<Integer, BitSet> visitConcatenationRegex(ConcatenationRegexBean bean)
+		public Pair<Integer, BitSet> visitConcatenationRegex(ConcatenationRegex bean)
 		throws RuntimeException
 		{
 			int newStartState = -1;
 			Pair<Integer,BitSet> currentSub = null,prevSub = null;
 			// For each constituent of the concatenation:
-			for(RegexBean subexp : bean.getSubexps())
+			for(Regex subexp : bean.getSubexps())
 			{
 				// Generate its states.
 				currentSub = subexp.acceptVisitor(this);
@@ -185,7 +185,7 @@ public class SingleScannerDFABuilder
 		}
 
 		@Override
-		public Pair<Integer, BitSet> visitKleeneStarRegex(KleeneStarRegexBean bean)
+		public Pair<Integer, BitSet> visitKleeneStarRegex(KleeneStarRegex bean)
 		throws RuntimeException
 		{
 			int newStartState = nfa.addState();
@@ -201,7 +201,7 @@ public class SingleScannerDFABuilder
 		}
 
 		@Override
-		public Pair<Integer, BitSet> visitEmptyStringRegex(EmptyStringRegexBean bean)
+		public Pair<Integer, BitSet> visitEmptyStringRegex(EmptyStringRegex bean)
 		throws RuntimeException
 		{
 			// Add exactly one new state, which is both the start and accept state.
@@ -212,7 +212,7 @@ public class SingleScannerDFABuilder
 		}
 
 		@Override
-		public Pair<Integer, BitSet> visitCharacterSetRegex(CharacterSetRegexBean bean, SetOfCharsSyntax chars)
+		public Pair<Integer, BitSet> visitCharacterSetRegex(CharacterSetRegex bean, SetOfCharsSyntax chars)
 		throws RuntimeException
 		{
 			int startState = nfa.addState();
@@ -224,7 +224,7 @@ public class SingleScannerDFABuilder
 		}
 
 		@Override
-		public Pair<Integer, BitSet> visitMacroHoleRegex(MacroHoleRegexBean bean)
+		public Pair<Integer, BitSet> visitMacroHoleRegex(MacroHoleRegex bean)
 		throws RuntimeException
 		{
 			throw new UnsupportedOperationException("Undefined macro '" + bean.getMacroName() + "'");		

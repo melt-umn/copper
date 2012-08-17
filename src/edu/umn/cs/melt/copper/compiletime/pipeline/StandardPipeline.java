@@ -1,6 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.pipeline;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 

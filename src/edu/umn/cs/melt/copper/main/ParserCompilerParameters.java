@@ -5,8 +5,8 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecCompilerParameters;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;

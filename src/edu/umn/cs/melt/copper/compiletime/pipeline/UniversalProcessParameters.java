@@ -3,8 +3,8 @@ package edu.umn.cs.melt.copper.compiletime.pipeline;
 import java.io.File;
 import java.io.PrintStream;
 
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.main.CopperIOType;
 
 /**

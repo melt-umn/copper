@@ -1,219 +1,84 @@
+
 package edu.umn.cs.melt.copper.compiletime.logging;
 
-import java.io.PrintStream;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammar.Terminal;
-import edu.umn.cs.melt.copper.runtime.engines.semantics.VirtualLocation;
-import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
-public abstract class CompilerLogger
+/**
+ * A class for handling logging in parser compilation.
+ * 
+ * A {@code CompilerLogger} has two constituent objects: a <em>handler</em> (of type {@link CompilerLogHandler})
+ * and a <em>level</em> (of type {@link CompilerLevel}).
+ * When the logger is sent a message (<em>e.g.</em>, via the {@link #log(CompilerLogMessage)} method),
+ * if the message has a level at or above the logger's level (see {@link CompilerLogMessage#getLevel()}
+ * the logger will send it on to the handler.
+ * 
+ * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ *
+ */
+public class CompilerLogger
 {
-	protected Logger logger;
-	protected CompilerLogHandler handler;
-	protected PrintStream out;
-	private int tickCounter;
-	private int parseTableConflictCounter,resolvedParseTableConflictCounter;
-	private int lexicalConflictCounter,resolvedLexicalConflictByContextCounter,resolvedLexicalConflictByGroupCounter;
-	private boolean hasErrors;
+	private CompilerLevel level;
+	private CompilerLogHandler handler;
 	
-	protected CompilerLogger()
+	/**
+	 * Initializes a CompilerLogger with the given handler and the level {@link CompilerLevel#REGULAR}.
+	 */
+	public CompilerLogger(CompilerLogHandler handler)
 	{
-		tickCounter = -1;
-		parseTableConflictCounter = 0;
-		resolvedParseTableConflictCounter = 0;
-		lexicalConflictCounter = 0;
-		resolvedLexicalConflictByContextCounter = 0;
-		resolvedLexicalConflictByGroupCounter = 0;
-		hasErrors = false;
+		this(handler,CompilerLevel.REGULAR);
 	}
 	
-	public void logMessage(CompilerLogMessageSort sort,InputPosition location,String message)
+	public CompilerLogger(CompilerLogHandler handler,CompilerLevel level)
 	{
-		Object[] parameters = new Object[3];
-		parameters[0] = sort;
-		parameters[1] = location;
-		parameters[2] = false;
-		hasErrors |= sort.isErrorLevel();
-		logger.log(sort.getLevel(),message,parameters);
-	}
-	
-	public void logTick(int modulo,String message)
-	{
-		tickCounter = (tickCounter + 1) % modulo;
-		if(tickCounter != 0) return;
-		Object[] parameters = new Object[3];
-		parameters[0] = CompilerLogMessageSort.TICK;
-		parameters[1] = null;
-		parameters[2] = false;
-		logger.log(CompilerLogMessageSort.TICK.getLevel(),message,parameters);
-		flushTicks();
-	}
-	
-	public void logErrorMessage(CompilerLogMessageSort sort,InputPosition location,String message)
-	throws CopperException
-	{
-		Object[] parameters = new Object[3];
-		parameters[0] = sort;
-		parameters[1] = location;
-		parameters[2] = true;
-		hasErrors |= sort.isErrorLevel();
-		logger.log(sort.getLevel(),message,parameters);
-		flushMessages();
-	}
-	
-	public void logParseTableConflict(CompilerLogMessageSort sort,boolean resolved,int statenum,String cell,String message)
-	{
-		parseTableConflictCounter++;
-		if(resolved) resolvedParseTableConflictCounter++;
-		Object[] parameters = new Object[4];
-		parameters[0] = sort;
-		parameters[1] = statenum;
-		parameters[2] = false;
-		parameters[3] = cell;
-		hasErrors |= sort.isErrorLevel();
-		logger.log(sort.getLevel(),message,parameters);
-	}
-	
-	public void logLexicalConflict(CompilerLogMessageSort sort,LexicalConflictResolution howResolved,TreeSet<Integer> states,HashSet<Terminal> ambiguity,String message)
-	{
-		lexicalConflictCounter++;
-		if(howResolved != null)
-		{
-			switch(howResolved)
-			{
-			case CONTEXT:
-				resolvedLexicalConflictByContextCounter++;
-				break;
-			case DISAMBIGUATION_FUNCTION:
-				resolvedLexicalConflictByGroupCounter++;
-				break;
-			default:
-			}
-		}
-
-		Object[] parameters = new Object[4];
-		parameters[0] = sort;
-		parameters[1] = states;
-		parameters[2] = (howResolved == null);
-		parameters[3] = ambiguity;
-		hasErrors |= sort.isErrorLevel();
-		logger.log(sort.getLevel(),message,parameters);
-	}
-
-	public void logParsingErrorMessage(VirtualLocation virtualLocation,
-			                           int statenum,
-			                           long realCharIndex,
-			                           String message)
-	throws CopperException
-	{
-		Object[] parameters = new Object[5];
-		parameters[0] = CompilerLogMessageSort.PARSING_ERROR;
-		parameters[1] = virtualLocation;
-		parameters[2] = true;
-		parameters[3] = statenum;
-		parameters[4] = realCharIndex;
-		logger.log(CompilerLogMessageSort.PARSING_ERROR.getLevel(),message,parameters);
-		flushMessages();
-	}
-	
-	public abstract void flushMessages()
-	throws CopperException;
-	
-	public boolean hasErrors() { return hasErrors; }
-	
-	public abstract void flushTicks();
-
-	public Logger getLogger()
-	{
-		return logger;
-	}
-
-	public void setLogger(Logger logger)
-	{
-		this.logger = logger;
-	}
-
-	public CompilerLogHandler getHandler()
-	{
-		return handler;
-	}
-
-	public void setHandler(CompilerLogHandler handler)
-	{
+		this.level = CompilerLevel.REGULAR;
 		this.handler = handler;
 	}
 
-	public PrintStream getOut()
+	/**
+	 * Sends the given message through to the logger's handler.
+	 */
+	public void log(CompilerLogMessage message)
 	{
-		return out;
-	}
-
-	public void setOut(PrintStream out)
-	{
-		this.out = out;
+		if(isLoggable(message.getLevel())) handler.handleMessage(message);
 	}
 	
-	public int getParseTableConflictCounter()
+	/**
+	 * Sends the given message, which is understood to be an error message,
+	 * through to the logger's handler.
+	 * @throws CopperException If a fatal error is among the messages flushed.
+	 */
+	public void logError(CompilerLogMessage message)
+	throws CopperException
 	{
-		return parseTableConflictCounter;
-	}
-
-	public void setParseTableConflictCounter(int conflictCounter)
-	{
-		this.parseTableConflictCounter = conflictCounter;
-	}
-
-	public int getResolvedParseTableConflictCounter() {
-		return resolvedParseTableConflictCounter;
-	}
-
-	public void setResolvedParseTableConflictCounter(int resolvedConflictCounter) {
-		this.resolvedParseTableConflictCounter = resolvedConflictCounter;
-	}
-
-	public int getLexicalConflictCounter() {
-		return lexicalConflictCounter;
-	}
-
-	public void setLexicalConflictCounter(int lexicalConflictCounter) {
-		this.lexicalConflictCounter = lexicalConflictCounter;
-	}
-
-	public int getResolvedLexicalConflictByContextCounter() {
-		return resolvedLexicalConflictByContextCounter;
-	}
-
-	public void setResolvedLexicalConflictByContextCounter(
-			int resolvedLexicalConflictByContextCounter) {
-		this.resolvedLexicalConflictByContextCounter = resolvedLexicalConflictByContextCounter;
-	}
-
-	public int getResolvedLexicalConflictByGroupCounter() {
-		return resolvedLexicalConflictByGroupCounter;
-	}
-
-	public void setResolvedLexicalConflictByGroupCounter(
-			int resolvedLexicalConflictByGroupCounter) {
-		this.resolvedLexicalConflictByGroupCounter = resolvedLexicalConflictByGroupCounter;
-	}
-
-	public Level getLevel()
-	{
-		return logger.getLevel();
+		if(isLoggable(message.getLevel()))
+		{
+			handler.handleErrorMessage(message);
+		}
 	}
 	
-	public void setLevel(Level level)
+	public CompilerLevel getLevel() { return level; }
+	public void setLevel(CompilerLevel level) { this.level = level; }
+	public CompilerLogHandler getHandler() { return handler; }
+	public void setHandler(CompilerLogHandler handler) { this.handler = handler; }
+	
+	/**
+	 * Determines if a message of the given level will be passed through to the
+	 * handler (i.e., if the given level is at or greater than the level of the
+	 * logger).
+	 */
+	public boolean isLoggable(CompilerLevel level)
 	{
-		logger.setLevel(level);
+		return (level.ordinal() >= this.level.ordinal());
 	}
 	
-	public boolean isLoggable(CompilerLogMessageSort sort)
+	/**
+	 * Tells the logger's handler to "flush" itself (e.g., print out any
+	 * messages it has stored).
+	 * @throws CopperException If a fatal error is among the messages flushed.
+	 */
+	public void flush()
+	throws CopperException
 	{
-		return logger.isLoggable(sort.getLevel());
+		handler.flush();
 	}
 }

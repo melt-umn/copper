@@ -5,8 +5,8 @@ import java.io.PrintStream;
 
 import org.xml.sax.SAXException;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.ParserSpecXMLPrinter;
+import edu.umn.cs.melt.copper.compiletime.skins.xml.ParserSpecXMLPrinter;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 
 public class XMLSpecDumper implements Dumper

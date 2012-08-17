@@ -4,10 +4,10 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup.CUPParsingProcess;
-import edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.xml.XMLParsingProcess;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParser;
+import edu.umn.cs.melt.copper.compiletime.skins.cup.CupParsingProcess;
+import edu.umn.cs.melt.copper.compiletime.skins.xml.XMLParsingProcess;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 
 /**
  * Represents the "skins" (input formats) available in Copper.
@@ -68,9 +68,9 @@ public enum CopperSkinType
 	CUP
 	{
 		@Override
-		CUPParsingProcess getStandardSpecParser(ParserCompilerParameters args)
+		CupParsingProcess getStandardSpecParser(ParserCompilerParameters args)
 		{
-			return new CUPParsingProcess();
+			return new CupParsingProcess();
 		}
 		
 		@Override
