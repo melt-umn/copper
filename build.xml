@@ -19,7 +19,7 @@
 	</target>
 	
 	<target name='build' depends='init'>
-		<javac source='1.5' target='1.5' debug='true' srcdir='${src}' destdir='${build}' includes='edu/umn/cs/melt/copper/**/*.java' excludes='edu/umn/cs/melt/copper/compiletime/concretesyntax/skins/**/*.java'>
+		<javac source='1.5' target='1.5' includeantruntime='true' debug='true' srcdir='${src}' destdir='${build}' includes='edu/umn/cs/melt/copper/**/*.java' excludes='edu/umn/cs/melt/copper/compiletime/concretesyntax/skins/**/*.java'>
 			<!--<compilerarg value='-Xlint:unchecked'/>-->
 		</javac>
 	</target>
@@ -35,7 +35,7 @@
         		 noindex='false'
         		 nonavbar='false'
         	     notree='false'
-        		 packagenames='edu.umn.cs.melt.copper.ant,edu.umn.cs.melt.copper.main,edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans,edu.umn.cs.melt.copper.runtime.io,edu.umn.cs.melt.copper.runtime.auxiliary,edu.umn.cs.melt.copper.runtime.engines,edu.umn.cs.melt.copper.runtime.engines.semantics,edu.umn.cs.melt.copper.compiletime.logging,edu.umn.cs.melt.copper.runtime.logging'
+        		 packagenames='edu.umn.cs.melt.copper.ant,edu.umn.cs.melt.copper.main,edu.umn.cs.melt.copper.compiletime.spec.grammarbeans,edu.umn.cs.melt.copper.runtime.io,edu.umn.cs.melt.copper.runtime.auxiliary,edu.umn.cs.melt.copper.runtime.engines,edu.umn.cs.melt.copper.runtime.engines.semantics,edu.umn.cs.melt.copper.compiletime.logging,edu.umn.cs.melt.copper.runtime.logging'
         	     source='1.5'
         	     sourcepath='tests:src'
         	     splitindex='true'
@@ -46,7 +46,7 @@
 	    	</group>
 	    	<group title='Copper compiler API'>
 	    		<package name='edu.umn.cs.melt.copper.main'/>
-	    		<package name='edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans'/>
+	    		<package name='edu.umn.cs.melt.copper.compiletime.spec.grammarbeans'/>
 	    	</group>
 	    	<group title='Copper parser API'>
 	    		<package name='edu.umn.cs.melt.copper.runtime.engines'/>
@@ -89,7 +89,7 @@
 				<attribute name='Bundle-Name' value='Copper Compile and Runtime'/>
 				<attribute name='Bundle-Version' value='${version}'/>
 				<attribute name='Bundle-SymbolicName' value='edu.umn.cs.melt.copper'/>
-				<attribute name='Export-Package' value='edu.umn.cs.melt.copper;version="${version}", edu.umn.cs.melt.copper.runtime;version="${version}", edu.umn.cs.melt.copper.runtime.auxiliary;version="${version}", edu.umn.cs.melt.copper.runtime.engines;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.split;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.logging;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree.stripped;version="${version}"'/>
+				<attribute name='Export-Package' value='edu.umn.cs.melt.copper;version="${version}", edu.umn.cs.melt.copper.runtime;version="${version}", edu.umn.cs.melt.copper.runtime.auxiliary;version="${version}", edu.umn.cs.melt.copper.runtime.engines;version="${version}", edu.umn.cs.melt.copper.runtime.engines.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.single;version="${version}", edu.umn.cs.melt.copper.runtime.engines.single.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.single.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.logging;version="${version}"'/>
 				<section name='version'>
 					<!--<attribute name='Version' value=''/>-->
 					<attribute name='Build' value='${TIMESTAMP}'/>
@@ -109,7 +109,7 @@
 				<attribute name='Bundle-Name' value='Copper Runtime'/>
 				<attribute name='Bundle-Version' value='${version}'/>
 				<attribute name='Bundle-SymbolicName' value='edu.umn.cs.melt.copper.runtime'/>
-				<attribute name='Export-Package' value='edu.umn.cs.melt.copper;version="${version}", edu.umn.cs.melt.copper.runtime;version="${version}", edu.umn.cs.melt.copper.runtime.auxiliary;version="${version}", edu.umn.cs.melt.copper.runtime.engines;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.moded.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.split;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.stripped.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.logging;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree;version="${version}", edu.umn.cs.melt.copper.runtime.parsetree.stripped;version="${version}"'/>
+				<attribute name='Export-Package' value='edu.umn.cs.melt.copper;version="${version}", edu.umn.cs.melt.copper.runtime;version="${version}", edu.umn.cs.melt.copper.runtime.auxiliary;version="${version}", edu.umn.cs.melt.copper.runtime.engines;version="${version}", edu.umn.cs.melt.copper.runtime.engines.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.engines.single;version="${version}", edu.umn.cs.melt.copper.runtime.engines.single.scanner;version="${version}", edu.umn.cs.melt.copper.runtime.engines.single.semantics;version="${version}", edu.umn.cs.melt.copper.runtime.logging;version="${version}"'/>
 				<section name='version'>
 					<!--<attribute name='Version' value=''/>-->
 					<attribute name='Build' value='${TIMESTAMP}'/>

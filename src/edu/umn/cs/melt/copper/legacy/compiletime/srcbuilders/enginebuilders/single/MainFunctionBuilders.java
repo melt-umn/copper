@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
+package edu.umn.cs.melt.copper.legacy.compiletime.srcbuilders.enginebuilders.single;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

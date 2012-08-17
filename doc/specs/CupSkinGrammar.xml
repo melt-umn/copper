@@ -10,8 +10,8 @@
         <StartSymbol>
             <NonterminalRef grammar="CupSkinGrammar" id="GrammarFile"/>
         </StartSymbol>
-        <Package>edu.umn.cs.melt.copper.compiletime.concretesyntax.skins.cup</Package>
-        <ClassName>CupSkinParserNew</ClassName>
+        <Package>edu.umn.cs.melt.copper.compiletime.skins.cup</Package>
+        <ClassName>CupSkinParser</ClassName>
 		<ClassAuxiliaryCode>
 			<Code><![CDATA[ public CompilerLogger logger; 
 			private ParserBean currentParser;
@@ -150,38 +150,39 @@ import java.io.Reader;
 import java.text.ParseException;
 import java.util.TreeSet;
 
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CharacterSetRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ChoiceRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ConcatenationRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementName;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementReference;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.CopperElementType;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.DisambiguationFunctionBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.EmptyStringRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.GrammarBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.KleeneStarRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.MacroHoleRegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.NonTerminalBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.OperatorAssociativity;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserAttributeBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.ProductionBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.RegexBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.TerminalClassBean;
-import edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecProcessor;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLevel;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.PrintCompilerLogHandler;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericLocatedMessage;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GenericMessage;
-import edu.umn.cs.melt.copper.compiletime.loggingnew.messages.GrammarSyntaxError;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.PrintCompilerLogHandler;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericLocatedMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.GrammarSyntaxError;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CharacterSetRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ChoiceRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ConcatenationRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperElementName;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperElementReference;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperElementType;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.DisambiguationFunction;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.EmptyStringRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Grammar;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.KleeneStarRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.MacroHoleRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.NonTerminal;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.OperatorAssociativity;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserAttribute;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Production;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.TerminalClass;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.ParserSpecProcessor;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
 import edu.umn.cs.melt.copper.runtime.io.Location;
 import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
-import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;]]></Code>
+import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
+]]></Code>
         </Preamble>
     </Parser>
 

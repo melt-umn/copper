@@ -12,6 +12,8 @@ public class GrammarStatistics
 		disambiguationFunctionCount = spec.disambiguationFunctions.cardinality();
 		mdaRun = false;
 		mdaPassed = true;
+		codeOutput = false;
+		codeOutputTo = null;
 	}
 	
 	public int terminalCount;
@@ -36,4 +38,7 @@ public class GrammarStatistics
 	public int extStateCount;
 	public int newHostStateCount;
 	public int unpartitionableStateCount;
+	
+	public boolean codeOutput;
+	public String codeOutputTo;
 }

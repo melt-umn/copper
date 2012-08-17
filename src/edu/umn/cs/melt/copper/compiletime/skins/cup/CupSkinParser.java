@@ -40,7 +40,7 @@ import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 
-public class CupSkinParserNew extends edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine<ParserBean,edu.umn.cs.melt.copper.runtime.logging.CopperParserException>
+public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine<ParserBean,edu.umn.cs.melt.copper.runtime.logging.CopperParserException>
 {
     protected String formatError(String error)
     {
@@ -2173,7 +2173,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
     cmap = (int[]) edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder.readHash(cMapHash);
     delta = (int[][]) edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder.readHash(deltaHash);
     }
-    public CupSkinParserNew() {}
+    public CupSkinParser() {}
     
     public static void main(String[] args)
     {
@@ -2207,7 +2207,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
               	  throw new edu.umn.cs.melt.copper.runtime.logging.CopperParserException("File not found: '" + filename + "'");
             	}
         	}
-            edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine<ParserBean,edu.umn.cs.melt.copper.runtime.logging.CopperParserException> engine = new edu.umn.cs.melt.copper.compiletime.skins.cup.CupSkinParserNew();
+            edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine<ParserBean,edu.umn.cs.melt.copper.runtime.logging.CopperParserException> engine = new edu.umn.cs.melt.copper.compiletime.skins.cup.CupSkinParser();
             Object parseTree = engine.parse(reader,filename);
             engine.runPostParseCode(parseTree);
         }
@@ -2431,7 +2431,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
 			    logger.log(new GenericLocatedMessage(CompilerLevel.QUIET,location,message,true,false));
 			}
 			
-			public CupSkinParserNew(CompilerLogger logger)
+			public CupSkinParser(CompilerLogger logger)
 			{
 				this.logger = logger;
 			}
@@ -2446,7 +2446,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
         		ParserBean spec;
 				try
 				{
-					CupSkinParserNew engine = new CupSkinParserNew(logger);
+					CupSkinParser engine = new CupSkinParser(logger);
 					spec = engine.parse(files.get(0).second(),files.get(0).first());
 					ParserSpecProcessor.normalizeParser(spec,logger);
 				}
