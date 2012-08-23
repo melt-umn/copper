@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  - This spec represents a host and extension grammar that fail Copper's
+  - modular determinism analysis. It shares a common host grammar with
+  - 'MDAFailing.xml'.
+  -->
 <CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
     <ExtendedParser id="CompositionTest">
         <HostGrammar>
             <GrammarRef id="host"/>
         </HostGrammar>
         <ExtensionGrammars>
-            <GrammarRef id="ext1"/>
+            <GrammarRef id="ext2"/>
         </ExtensionGrammars>
         <StartSymbol><NonterminalRef grammar="host" id="E"/></StartSymbol>
     </ExtendedParser>
     
-    <ExtensionGrammar id="ext1">
+    <ExtensionGrammar id="ext2">
         <Layout>
             <TerminalRef grammar="host" id="spaces"/>
             <TerminalRef grammar="host" id="tabs"/>
             <TerminalRef grammar="host" id="newlines"/>
         </Layout>
         <MarkingTerminals>
-            <TerminalRef id="e1_marking"/>
+        	<TerminalRef id="e2_marking"/>
         </MarkingTerminals>
         <BridgeProductions>
-            <ProductionRef id="EtoMem"/>
+        	<ProductionRef id="EtoRcl"/>
         </BridgeProductions>
         <Declarations>
-            <Terminal id="e1_marking">
-                <PP>e1_marking</PP>
+            <Terminal id="e2_marking">
+                <PP>e2_marking</PP>
                 <Regex> 
                     <Concatenation>
                         <CharacterSet>
-                            <SingleCharacter char="m"/>
+                            <SingleCharacter char="r"/>
                         </CharacterSet>
                         <CharacterSet>
-                            <SingleCharacter char="e"/>
+                            <SingleCharacter char="c"/>
                         </CharacterSet>
                         <CharacterSet>
-                            <SingleCharacter char="m"/>
+                            <SingleCharacter char="l"/>
                         </CharacterSet>
                         <CharacterSet>
                             <SingleCharacter char=":"/>
@@ -46,26 +51,39 @@
       	            <TerminalRef grammar="host" id="id"/>
                 </Dominates>       
             </Terminal>
-            <Production id="EtoMem">
+            <Production id="EtoRcl">
                 <Precedence>1</Precedence>
                 <LHS><NonterminalRef grammar="host" id="E"/></LHS>
                 <RHS>
-	                <TerminalRef id="e1_marking"/>
-	                <NonterminalRef id="ME"/>
+	                <TerminalRef id="e2_marking"/>
+	                <NonterminalRef id="RE"/>
                 </RHS>
+                <Layout><TerminalRef grammar="host" id="spaces"/></Layout>
             </Production>
-            
-            <Nonterminal id="ME">
-                    <PP>ME</PP>
-                </Nonterminal>
-            <Production id="MEtoEParen">
+            <Terminal id="e2end">
+                <PP>e2end</PP>
+                <Regex> 
+                    <Concatenation>
+                        <CharacterSet>
+                            <SingleCharacter char="'"/>
+                        </CharacterSet>
+                        <CharacterSet>
+                            <SingleCharacter char="'"/>
+                        </CharacterSet>
+                    </Concatenation>
+                </Regex>
+            </Terminal>
+        	<Nonterminal id="RE">
+                    <PP>RE</PP>
+            </Nonterminal>
+            <Production id="REtoE">
                 <Precedence>1</Precedence>
-                <LHS><NonterminalRef id="ME"/></LHS>
+                <LHS><NonterminalRef id="RE"/></LHS>
                 <RHS>
-                    <TerminalRef grammar="host" id="lparen"/>
 	                <NonterminalRef grammar="host" id="E"/>
-	                <TerminalRef grammar="host" id="rparen"/>
+	                <TerminalRef id="e2end"/>
                 </RHS>
+                <Layout><TerminalRef grammar="host" id="spaces"/></Layout>
             </Production>
         </Declarations>
     </ExtensionGrammar>

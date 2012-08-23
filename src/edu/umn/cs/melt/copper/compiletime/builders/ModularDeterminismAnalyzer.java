@@ -113,7 +113,7 @@ public class ModularDeterminismAnalyzer
 				{
 					if(!fullSpec.bridgeConstructs.get(fullItems.getProduction(fullItemCounter)))
 					{
-						System.err.println("Non-bridge-production syntax addition in a host state -- bug in MDA");
+						System.err.println("Non-bridge-production syntax addition in host state " + statenum + ", item " + fullItemCounter + " -- bug in MDA");
 					}
 					fullItemCounter++;
 				}
@@ -138,9 +138,13 @@ public class ModularDeterminismAnalyzer
 				fullItemCounter++;
 			}
 			
-			if(fullItemCounter < fullItems.size())
+			while(fullItemCounter < fullItems.size())
 			{
-				System.err.println("Non-bridge-production syntax addition in a host state -- bug in MDA");
+				if(!fullSpec.bridgeConstructs.get(fullItems.getProduction(fullItemCounter)))
+				{
+					System.err.println("Non-bridge-production syntax addition in host state " + statenum + ", item " + fullItemCounter + " -- bug in MDA");
+				}
+				fullItemCounter++;
 			}
 		}
 		

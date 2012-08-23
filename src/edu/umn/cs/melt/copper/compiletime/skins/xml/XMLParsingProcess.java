@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.skins.xml;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 
@@ -16,7 +17,7 @@ public class XMLParsingProcess implements SpecParser<ParserBean>
 {
 	@Override
 	public ParserBean parseSpec(SpecParserParameters args)
-	throws UnsupportedOperationException
+	throws IOException,UnsupportedOperationException
 	{
 		ParserBean spec;
 		CompilerLogger logger;
@@ -30,12 +31,6 @@ public class XMLParsingProcess implements SpecParser<ParserBean>
 		catch(CopperException ex)
 		{
 			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
-			return null;
-		}
-		catch(Exception ex)
-		{
-			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
-			else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
 			return null;
 		}
 		if(args.getPackageDecl() != null) spec.setPackageDecl(args.getPackageDecl());

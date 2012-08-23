@@ -24,6 +24,7 @@ import edu.umn.cs.melt.copper.compiletime.dumpers.Dumper;
 import edu.umn.cs.melt.copper.compiletime.dumpers.DumperFactory;
 import edu.umn.cs.melt.copper.compiletime.dumpers.PlainTextParserDumper;
 import edu.umn.cs.melt.copper.compiletime.dumpers.XHTMLParserDumper;
+import edu.umn.cs.melt.copper.compiletime.dumpers.XMLSpecDumper;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericLocatedMessage;
@@ -61,6 +62,21 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 		CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
 
 		
+		if(args.isDumpReport() &&
+				   (!args.isDumpOnlyOnError() || !succeeded))
+		{
+			Dumper dumper = null;
+			
+			switch(args.getDumpFormat())
+			{
+			case XML_SPEC:
+				dumper = new XMLSpecDumper(spec);
+				break;
+			}
+
+			dumpIfNecessary(args, succeeded, dumper);
+		}
+
 		String packageDecl = 
 				(args.getPackageDecl() != null && !args.getPackageDecl().equals("")) ?
 						args.getPackageDecl() :
@@ -114,7 +130,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 			logger.flush();
 			
 			timeBefore = System.currentTimeMillis();
-		
+					
 		ContextSets hostContextSets = (hostSpec != null) ? ContextSetBuilder.build(hostSpec) : null;
 		ContextSets contextSets = ContextSetBuilder.build(fullSpec);
 		
@@ -216,7 +232,6 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 		if(args.isDumpReport() &&
 		   (!args.isDumpOnlyOnError() || !succeeded))
 		{
-			PrintStream dumpStream = null;
 			Dumper dumper = null;
 			
 			switch(args.getDumpFormat())
@@ -232,34 +247,8 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 			case XML_SPEC:
 				break;
 			}
-			
-			if(dumper != null)
-			{
-				try
-				{
-					dumpStream = DumperFactory.getDumpStream(args);
-				}
-				catch(FileNotFoundException ex)
-				{
-					ex.printStackTrace();
-				}
-				
-				if(dumpStream != null)
-				{
-					try
-					{
-						dumper.dump(args.getDumpFormat(),dumpStream);
-					}
-					catch (UnsupportedOperationException e)
-					{
-						e.printStackTrace();
-					}
-					catch (IOException e)
-					{
-						e.printStackTrace();
-					}
-				}
-			}
+
+			dumpIfNecessary(args, succeeded, dumper);
 		}
 		
 		
@@ -282,6 +271,39 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 		rv.scannerDFAAnnotations = scannerDFAAnnotations;		
 
 		return rv;
+	}
+	
+	private void dumpIfNecessary(SpecCompilerParameters args,boolean succeeded,Dumper dumper)
+	{
+		PrintStream dumpStream = null;
+		
+		if(dumper != null)
+		{
+			try
+			{
+				dumpStream = DumperFactory.getDumpStream(args);
+			}
+			catch(FileNotFoundException ex)
+			{
+				ex.printStackTrace();
+			}
+			
+			if(dumpStream != null)
+			{
+				try
+				{
+					dumper.dump(args.getDumpFormat(),dumpStream);
+				}
+				catch (UnsupportedOperationException e)
+				{
+					e.printStackTrace();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }

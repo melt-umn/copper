@@ -90,24 +90,30 @@ class GrammarError implements Comparable<GrammarError>
 	
 	public String toString()
 	{
+		boolean displayParser = (currentParser != null);
+		boolean displayGrammar = (currentGrammar != null && (currentParser == null || !currentParser.isUnitary()));
+		
 		StringBuffer rv = new StringBuffer();
-		if(location != null)        rv.append("[").append(location).append("]");
-		if(location != null && (currentParser != null || currentGrammar != null)) rv.append(" ");
-		if(currentParser != null)   rv.append("[parser ").append(currentParser.getName()).append("]");
-		if((location != null || currentParser != null) && currentGrammar != null) rv.append(" ");
-		if(currentGrammar != null)  rv.append("[grammar ").append(currentGrammar.getName()).append("]");
-		if(location != null || currentParser != null || currentGrammar != null) rv.append(": ");
+		if(location != null)        rv.append(location);
+		if(location != null && (displayParser || displayGrammar)) rv.append(" ");
+		if(displayParser)   rv.append("[parser ").append(currentParser.getName()).append("]");
+		if((location != null || displayParser) && displayGrammar) rv.append(" ");
+		if(displayGrammar)  rv.append("[grammar ").append(currentGrammar.getName()).append("]");
+		if(location != null || displayParser || displayGrammar) rv.append(": ");
 		rv.append(message);
 		return rv.toString();
 	}
 	
 	public String toErrorMessage()
 	{
+		boolean displayParser = (currentParser != null);
+		boolean displayGrammar = (currentGrammar != null && (currentParser == null || !currentParser.isUnitary()));
+
 		StringBuffer rv = new StringBuffer();
-		if(currentParser != null)   rv.append("[parser ").append(currentParser.getName()).append("]");
-		if(currentParser != null && currentGrammar != null) rv.append(" ");
-		if(currentGrammar != null)  rv.append("[grammar ").append(currentGrammar.getName()).append("]");
-		if(currentParser != null || currentGrammar != null) rv.append(": ");
+		if(displayParser)   rv.append("[parser ").append(currentParser.getName()).append("]");
+		if(displayParser && displayGrammar) rv.append(" ");
+		if(displayGrammar)  rv.append("[grammar ").append(currentGrammar.getName()).append("]");
+		if(displayParser || displayGrammar) rv.append(": ");
 		rv.append(message);
 		return rv.toString();
 	}

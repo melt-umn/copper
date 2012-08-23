@@ -40,6 +40,7 @@ import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 
+
 public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine<ParserBean,edu.umn.cs.melt.copper.runtime.logging.CopperParserException>
 {
     protected String formatError(String error)
@@ -2173,50 +2174,8 @@ throws java.io.IOException,java.lang.ClassNotFoundException
     cmap = (int[]) edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder.readHash(cMapHash);
     delta = (int[][]) edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder.readHash(deltaHash);
     }
-    public CupSkinParser() {}
-    
-    public static void main(String[] args)
-    {
-        boolean useFile = false;
-        String filename = "<stdin>";
-        java.io.Reader reader = null;
-        try
-        {
-	        int i;
-    	    for(i = 0;i < args.length;i++)
-        	{
-        		if(args[i].charAt(0) != '-') break;
-	        	else if(args[i].equals("-f"))
-    	    	{
-        			i++;
-            	    if(i >= args.length) throw new edu.umn.cs.melt.copper.runtime.logging.CopperParserException("A filename must be provided with switch '-f'");
-                    useFile = true;
-                	filename = args[i];
- 	               continue;
-    	        }
-        	}
-            if(!useFile) reader = new java.io.InputStreamReader(System.in);
-            else
-    		{
-    	        try
-        	    {
-                	reader = new java.io.FileReader(filename);
-            	}
-            	catch(java.io.FileNotFoundException ex)
-            	{
-              	  throw new edu.umn.cs.melt.copper.runtime.logging.CopperParserException("File not found: '" + filename + "'");
-            	}
-        	}
-            edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine<ParserBean,edu.umn.cs.melt.copper.runtime.logging.CopperParserException> engine = new edu.umn.cs.melt.copper.compiletime.skins.cup.CupSkinParser();
-            Object parseTree = engine.parse(reader,filename);
-            engine.runPostParseCode(parseTree);
-        }
-        catch(java.lang.Exception ex)
-        {
-            System.err.println(ex.getMessage());
-            System.exit(1);
-        }
-    }
+public CupSkinParser() {}
+
 		private static int TERMINAL_COUNT;
 		private static int GRAMMAR_SYMBOL_COUNT;
 		private static int SYMBOL_COUNT;
@@ -2439,6 +2398,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
 			public static ParserBean parseGrammar(ArrayList< Pair<String,Reader> > files,CompilerLogger logger)
     		throws IOException,CopperException
     		{
+    			boolean hasError = true;
     			if(files.size() != 1)
     			{
     				logger.logError(new GenericMessage(CompilerLevel.QUIET,"CUP skin requires exactly one input file",true,true));
@@ -2448,7 +2408,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
 				{
 					CupSkinParser engine = new CupSkinParser(logger);
 					spec = engine.parse(files.get(0).second(),files.get(0).first());
-					ParserSpecProcessor.normalizeParser(spec,logger);
+					hasError = ParserSpecProcessor.normalizeParser(spec,logger);
 				}
 				catch(CopperSyntaxError ex)
 				{
@@ -2456,6 +2416,7 @@ throws java.io.IOException,java.lang.ClassNotFoundException
 					spec = null;
 				}
         		logger.flush();
+        		if(hasError) return null;
         		return spec;
     		}
 			
@@ -2473,8 +2434,8 @@ throws java.io.IOException,java.lang.ClassNotFoundException
         EOF_SYMNUM = 0;
         EPS_SYMNUM = -1;
         try { initArrays(); }
-        catch(java.io.IOException ex) { System.err.println("IO Exception"); }
-        catch(java.lang.ClassNotFoundException ex) { System.err.println("Class Not Found Exception"); }
+        catch(java.io.IOException ex) { ex.printStackTrace(); System.exit(1); }
+        catch(java.lang.ClassNotFoundException ex) { ex.printStackTrace(); System.exit(1); }
         disambiguationGroups = new java.util.BitSet[18];
         disambiguationGroups[0] = newBitVec(56,9,31);
         disambiguationGroups[1] = newBitVec(56,9,35);

@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  - This spec represents a host and extension grammar that pass Copper's
+  - modular determinism analysis. It shares a common host grammar with
+  - 'MDAFailing.xml'.
+  -->
 <CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
-    <ExtendedParser id="CompositionTest">
+    <ExtendedParser id="MDAPassing">
         <HostGrammar>
-            <GrammarRef id="host"/>
+            <GrammarRef id="Host"/>
         </HostGrammar>
         <ExtensionGrammars>
-            <GrammarRef id="ext2"/>
+            <GrammarRef id="Ext1"/>
         </ExtensionGrammars>
-        <StartSymbol><NonterminalRef grammar="host" id="E"/></StartSymbol>
+        <StartSymbol><NonterminalRef grammar="Host" id="E"/></StartSymbol>
     </ExtendedParser>
     
-    <ExtensionGrammar id="ext2">
+    <ExtensionGrammar id="Ext1">
         <Layout>
-            <TerminalRef grammar="host" id="spaces"/>
-            <TerminalRef grammar="host" id="tabs"/>
-            <TerminalRef grammar="host" id="newlines"/>
+            <TerminalRef grammar="Host" id="spaces"/>
+            <TerminalRef grammar="Host" id="tabs"/>
+            <TerminalRef grammar="Host" id="newlines"/>
         </Layout>
         <MarkingTerminals>
-        	<TerminalRef id="e2_marking"/>
+            <TerminalRef id="e1_marking"/>
         </MarkingTerminals>
         <BridgeProductions>
-        	<ProductionRef id="EtoRcl"/>
+            <ProductionRef id="EtoMem"/>
         </BridgeProductions>
         <Declarations>
-            <Terminal id="e2_marking">
-                <PP>e2_marking</PP>
+            <Terminal id="e1_marking">
+                <PP>e1_marking</PP>
                 <Regex> 
                     <Concatenation>
                         <CharacterSet>
-                            <SingleCharacter char="r"/>
+                            <SingleCharacter char="m"/>
                         </CharacterSet>
                         <CharacterSet>
-                            <SingleCharacter char="c"/>
+                            <SingleCharacter char="e"/>
                         </CharacterSet>
                         <CharacterSet>
-                            <SingleCharacter char="l"/>
+                            <SingleCharacter char="m"/>
                         </CharacterSet>
                         <CharacterSet>
                             <SingleCharacter char=":"/>
@@ -43,47 +48,34 @@
                     </Concatenation>
                 </Regex>
                 <Dominates>
-      	            <TerminalRef grammar="host" id="id"/>
+      	            <TerminalRef grammar="Host" id="id"/>
                 </Dominates>       
             </Terminal>
-            <Production id="EtoRcl">
+            <Production id="EtoMem">
                 <Precedence>1</Precedence>
-                <LHS><NonterminalRef grammar="host" id="E"/></LHS>
+                <LHS><NonterminalRef grammar="Host" id="E"/></LHS>
                 <RHS>
-	                <TerminalRef id="e2_marking"/>
-	                <NonterminalRef id="RE"/>
+	                <TerminalRef id="e1_marking"/>
+	                <NonterminalRef id="ME"/>
                 </RHS>
-                <Layout><TerminalRef grammar="host" id="spaces"/></Layout>
             </Production>
-            <Terminal id="e2end">
-                <PP>e2end</PP>
-                <Regex> 
-                    <Concatenation>
-                        <CharacterSet>
-                            <SingleCharacter char="'"/>
-                        </CharacterSet>
-                        <CharacterSet>
-                            <SingleCharacter char="'"/>
-                        </CharacterSet>
-                    </Concatenation>
-                </Regex>
-            </Terminal>
-        	<Nonterminal id="RE">
-                    <PP>RE</PP>
-            </Nonterminal>
-            <Production id="REtoE">
+            
+            <Nonterminal id="ME">
+                    <PP>ME</PP>
+                </Nonterminal>
+            <Production id="MEtoEParen">
                 <Precedence>1</Precedence>
-                <LHS><NonterminalRef id="RE"/></LHS>
+                <LHS><NonterminalRef id="ME"/></LHS>
                 <RHS>
-	                <NonterminalRef grammar="host" id="E"/>
-	                <TerminalRef id="e2end"/>
+                    <TerminalRef grammar="Host" id="lparen"/>
+	                <NonterminalRef grammar="Host" id="E"/>
+	                <TerminalRef grammar="Host" id="rparen"/>
                 </RHS>
-                <Layout><TerminalRef grammar="host" id="spaces"/></Layout>
             </Production>
         </Declarations>
     </ExtensionGrammar>
  
-    <Grammar id="host">
+    <Grammar id="Host">
         <Layout>
             <TerminalRef id="spaces"/>
             <TerminalRef id="tabs"/>

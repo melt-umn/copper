@@ -34,6 +34,7 @@ public class GrammarStatistics
 	
 	public boolean mdaRun;
 	public boolean mdaPassed;
+	public int followSpilledNTCount;
 	public int hostStateCount;
 	public int extStateCount;
 	public int newHostStateCount;

@@ -75,6 +75,7 @@ public class FinalReportMessage implements CompilerLogMessage
 		if(stats.mdaRun)
 		{
 			rv.append("\n----------\nModular determinism analysis " + (stats.mdaPassed ? "passed" : "failed") + ".\n");
+			rv.append(stats.followSpilledNTCount + " nonterminal" + (stats.followSpilledNTCount == 1 ? "" : "s") + " with follow spillage.\n");
 			rv.append("Composed parser has " + stats.hostStateCount + " host state" + (stats.hostStateCount == 1 ? "" : "s") + ", " + stats.extStateCount + " extension state" + (stats.extStateCount == 1 ? "" : "s") + ",\n");
 			rv.append(stats.newHostStateCount + " new-host state" + (stats.newHostStateCount == 1 ? "" : "s") + ", and " + stats.unpartitionableStateCount + " unpartitionable state" + (stats.unpartitionableStateCount == 1 ? "" : "s") + ".");
 		}

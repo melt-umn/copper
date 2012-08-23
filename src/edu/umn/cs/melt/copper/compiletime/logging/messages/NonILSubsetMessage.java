@@ -46,7 +46,7 @@ public class NonILSubsetMessage implements CompilerLogMessage
 
 	public String toString()
 	{
-		if(iSubsetOf == -1) return "DFA state " + state + " is a new-host state and not an IL-subset";
-		else return "DFA state " + state + " is a new-host state and is an I-subset but not an IL-subset of state " + iSubsetOf;
+		if(iSubsetOf == -1) return "DFA state " + state + " is of new-host form, but is not an IL-subset of any host state";
+		else return "DFA state " + state + " is of new-host form, but is an I-subset and not an IL-subset of host state " + iSubsetOf;
 	}
 }

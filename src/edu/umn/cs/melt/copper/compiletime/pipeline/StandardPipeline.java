@@ -1,11 +1,13 @@
 package edu.umn.cs.melt.copper.compiletime.pipeline;
 
+import java.io.IOException;
+
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
- * The template for a "standard" pipeline divided into three tasks:
+ * The template for a "standard" pipeline that is divided into three tasks:
  * <ol>
  * <li>Parsing the input specification from a text or other specification into a structured form.</li>
  * <li>Compiling the parsed specification into an LR DFA, parse table, etc.</li>
@@ -39,25 +41,19 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 
 	@Override
 	public int execute(ParserCompilerParameters args)
+	throws IOException,CopperException
 	{
 		SCIN spec = null;
 		SCOUT constructs = null;
 		int errorlevel = 1;
-		try
+		spec = specParser.parseSpec(args);			
+		if(spec != null)
 		{
-			spec = specParser.parseSpec(args);			
-			if(spec != null)
-			{
-				constructs = specCompiler.compileParser(spec, args);
-				if(constructs != null)
-				{
-					errorlevel = sourceBuilder.buildSource(constructs, args); 
-				}
-			}
+			constructs = specCompiler.compileParser(spec, args);
 		}
-		catch(CopperException ex)
+		if(constructs != null)
 		{
-			// Intentionally blank
+			errorlevel = sourceBuilder.buildSource(constructs, args); 
 		}
 		
 		return errorlevel;
@@ -71,20 +67,14 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 	 * @return Return code: 0 if successful, non-zero if unsuccessful.
 	 */
 	public int execute(SCIN spec,ParserCompilerParameters args)
+	throws CopperException
 	{
 		SCOUT constructs = null;
 		int errorlevel = 1;
-		try
+		constructs = specCompiler.compileParser(spec, args);
+		if(constructs != null)
 		{
-			constructs = specCompiler.compileParser(spec, args);
-			if(constructs != null)
-			{
-				errorlevel = sourceBuilder.buildSource(constructs, args); 
-			}
-		}
-		catch(CopperException ex)
-		{
-			// Intentionally blank
+			errorlevel = sourceBuilder.buildSource(constructs, args); 
 		}
 		
 		return errorlevel;		
@@ -106,7 +96,7 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 
 	@Override
 	public SCIN parseSpec(SpecParserParameters args)
-	throws CopperException
+	throws IOException,CopperException
 	{
 		return specParser.parseSpec(args);
 	}

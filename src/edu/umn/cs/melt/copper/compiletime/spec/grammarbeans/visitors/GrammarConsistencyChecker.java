@@ -723,7 +723,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 			}
 			else if(!currentParser.getGrammar(symbol.getGrammarName()).getGrammarElements().contains(symbol.getName()))
 			{
-				reportError(symbol.getLocation(),"Undefined reference to " + symbol);
+				reportError(symbol.getLocation(),"Undefined reference to " + (currentParser.isUnitary() ? symbol.getName() : symbol));
 				return false;
 			}
 			else return true;
@@ -770,7 +770,9 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	
 	private String getDisplayName(CopperElementReference symbol)
 	{
-		return dereference(symbol).getDisplayName();
+		GrammarElement dereferencedSymbol = dereference(symbol);
+		if(dereferencedSymbol == null) return symbol.toString();
+		else return dereferencedSymbol.getDisplayName();
 	}
 	
 	private void reportError(Location location,ParserBean parser,Grammar grammar,String message)

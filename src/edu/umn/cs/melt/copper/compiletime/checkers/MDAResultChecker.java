@@ -44,6 +44,7 @@ public class MDAResultChecker
 	{
 		BitSet diff;
 		
+		BitSet followSpilledNTs = new BitSet();
 		BitSet hostPartition = new BitSet();
 		hostPartition.or(results.getHostPartition());
 		BitSet extPartition = new BitSet();
@@ -60,6 +61,7 @@ public class MDAResultChecker
 				diff = new BitSet();
 				diff.or(results.getFullFollowSet(i));
 				diff.andNot(results.getHostFollowSet(i));
+				followSpilledNTs.set(results.getNonterminal(i));
 				logger.log(new FollowSpillageMessage(symbolTable,results.getNonterminal(i),diff));
 				break;
 			case MDAResults.LOOKAHEAD_SPILLAGE:
@@ -87,6 +89,7 @@ public class MDAResultChecker
 
 		stats.mdaRun = true;
 		stats.mdaPassed = (results.size() == 0);
+		stats.followSpilledNTCount = followSpilledNTs.cardinality();
 		stats.hostStateCount = hostPartition.cardinality();
 		stats.extStateCount  = extPartition.cardinality();
 		stats.newHostStateCount = newHostPartition.cardinality();
@@ -94,6 +97,7 @@ public class MDAResultChecker
 
 		if(logger.isLoggable(CompilerLevel.VERBOSE))
 		{
+			logger.log(new GenericMessage(CompilerLevel.VERBOSE,stats.followSpilledNTCount + " nonterminals with follow spillage: " + PSSymbolTable.bitSetPrettyPrint(followSpilledNTs,symbolTable,"   ",80)));
 			logger.log(new GenericMessage(CompilerLevel.VERBOSE,stats.hostStateCount + " host states: " + hostPartition));
 			logger.log(new GenericMessage(CompilerLevel.VERBOSE,stats.extStateCount + " extension states: " + extPartition));
 			logger.log(new GenericMessage(CompilerLevel.VERBOSE,stats.newHostStateCount + " new-host states: " + newHostPartition));
