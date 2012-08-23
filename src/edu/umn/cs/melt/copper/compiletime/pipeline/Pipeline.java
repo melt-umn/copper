@@ -1,6 +1,9 @@
 package edu.umn.cs.melt.copper.compiletime.pipeline;
 
+import java.io.IOException;
+
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
+import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
  * Encapsulates a "pipeline": a process that takes a set of input arguments, processes it
@@ -16,5 +19,6 @@ public interface Pipeline
 	 * @param args Input arguments.
 	 * @return Return code: 0 if successful, non-zero if unsuccessful.
 	 */
-	public int execute(ParserCompilerParameters args);
+	public int execute(ParserCompilerParameters args)
+	throws IOException,CopperException;
 }

@@ -93,19 +93,8 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 			}
 			catch(IOException ex)
 			{
-				System.err.println("I/O error in code generation");
-				ex.printStackTrace(System.err);
-				return 1;
-			}
-			catch(CopperException ex)
-			{
 				if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
-				return 1;
-			}
-			catch(Exception ex)
-			{
-				System.err.println("Unexpected error in code generation");
-				ex.printStackTrace(System.err);
+				logger.logError(new GenericMessage(CompilerLevel.QUIET,"I/O error in code generation: " + ex.getMessage(),true,true));
 				return 1;
 			}
 		}

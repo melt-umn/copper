@@ -15,7 +15,7 @@
 		<ClassAuxiliaryCode>
 			<Code><![CDATA[ public CompilerLogger logger; 
 			private ParserBean currentParser;
-			private GrammarBean currentGrammar;
+			private Grammar currentGrammar;
 			private TreeSet<CopperElementReference> ignoreTerminals;
 			
 			private int nextPrecedence = 0;
@@ -100,7 +100,7 @@
 			    logger.log(new GenericLocatedMessage(CompilerLevel.QUIET,location,message,true,false));
 			}
 			
-			public CupSkinParserNew(CompilerLogger logger)
+			public CupSkinParser(CompilerLogger logger)
 			{
 				this.logger = logger;
 			}
@@ -108,6 +108,7 @@
 			public static ParserBean parseGrammar(ArrayList< Pair<String,Reader> > files,CompilerLogger logger)
     		throws IOException,CopperException
     		{
+    			boolean hasError = true;
     			if(files.size() != 1)
     			{
     				logger.logError(new GenericMessage(CompilerLevel.QUIET,"CUP skin requires exactly one input file",true,true));
@@ -115,9 +116,9 @@
         		ParserBean spec;
 				try
 				{
-					CupSkinParserNew engine = new CupSkinParserNew(logger);
+					CupSkinParser engine = new CupSkinParser(logger);
 					spec = engine.parse(files.get(0).second(),files.get(0).first());
-					ParserSpecProcessor.normalizeParser(spec,logger);
+					hasError = ParserSpecProcessor.normalizeParser(spec,logger);
 				}
 				catch(CopperSyntaxError ex)
 				{
@@ -125,6 +126,7 @@
 					spec = null;
 				}
         		logger.flush();
+        		if(hasError) return null;
         		return spec;
     		}
 			]]></Code>
@@ -132,7 +134,7 @@
 		<ParserInitCode>
 			<Code><![CDATA[ 
 			currentParser = new ParserBean();
-			currentGrammar = new GrammarBean();
+			currentGrammar = new Grammar();
 			ignoreTerminals = new TreeSet<CopperElementReference>();
 			currentGrammar.setGrammarLayout(ignoreTerminals); 
 			 ]]></Code>
@@ -140,7 +142,7 @@
 		<PostParseCode>
 			<Code><![CDATA[ CompilerLogger thisLogger = new CompilerLogger(new PrintCompilerLogHandler(System.err));
 			try { ParserSpecProcessor.normalizeParser(root,thisLogger); thisLogger.flush(); } catch(CopperException ex) { ex.printStackTrace(); }
-			System.out.println(edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans.visitors.ParserSpecPlaintextPrinter.specToString(root)); ]]></Code>
+			System.out.println(edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.ParserSpecPlaintextPrinter.specToString(root)); ]]></Code>
 		</PostParseCode>
         <Preamble>
             <Code><![CDATA[import java.util.ArrayList;
@@ -1398,10 +1400,10 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             	<Type>TerminalFlags</Type>
             </Nonterminal>
             <Nonterminal id="SuperRegexRoot">
-            	<Type>RegexBean</Type>
+            	<Type>Regex</Type>
             </Nonterminal>
             <Nonterminal id="RegexRoot">
-            	<Type>RegexBean</Type>
+            	<Type>Regex</Type>
             </Nonterminal>
             <Nonterminal id="CommaOrSymSeq">
             	<Type>LinkedList&lt;CopperElementReference&gt;</Type>
@@ -1428,10 +1430,10 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             	<Type>LinkedList&lt;LabeledName&gt;</Type>
             </Nonterminal>
             <Nonterminal id="RHS">
-            	<Type>ProductionBean</Type>
+            	<Type>Production</Type>
             </Nonterminal>
             <Nonterminal id="RHSSeq">
-            	<Type>LinkedList&lt;ProductionBean&gt;</Type>
+            	<Type>LinkedList&lt;Production&gt;</Type>
             </Nonterminal>
             <Nonterminal id="RHSFlags">
             	<Type>ProductionRHSFlags</Type>
@@ -1441,25 +1443,25 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Nonterminal>
 
             <Nonterminal id="Regex_R">
-            	<Type>RegexBean</Type>
+            	<Type>Regex</Type>
             </Nonterminal>
             <Nonterminal id="Regex_DR">
-            	<Type>RegexBean</Type>
+            	<Type>Regex</Type>
             </Nonterminal>
             <Nonterminal id="Regex_UR">
-            	<Type>RegexBean</Type>
+            	<Type>Regex</Type>
             </Nonterminal>
             <Nonterminal id="Regex_RR">
-            	<Type>RegexBean</Type>
+            	<Type>Regex</Type>
             </Nonterminal>
             <Nonterminal id="Regex_G">
-            	<Type>CharacterSetRegexBean</Type>
+            	<Type>CharacterSetRegex</Type>
             </Nonterminal>
             <Nonterminal id="Regex_RG">
-            	<Type>CharacterSetRegexBean</Type>
+            	<Type>CharacterSetRegex</Type>
             </Nonterminal>
             <Nonterminal id="Regex_UG">
-            	<Type>CharacterSetRegexBean</Type>
+            	<Type>CharacterSetRegex</Type>
             </Nonterminal>
             <Nonterminal id="Regex_CHAR">
             	<Type>Character</Type>
@@ -1514,7 +1516,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Production>
 
             <Production id="AttrDeclBlock">
-                <Code><![CDATA[ ParserAttributeBean attr = new ParserAttributeBean();
+                <Code><![CDATA[ ParserAttribute attr = new ParserAttribute();
                 attr.setName(newName(name));
                 attr.setLocation(name.location);
                 attr.setAttributeType(type.lexeme);
@@ -1613,7 +1615,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 	}
 	else
 	{
-		TerminalClassBean bean = new TerminalClassBean();
+		TerminalClass bean = new TerminalClass();
 		bean.setName(termClass.getName());
 		bean.setLocation(termClass.getLocation());
 		try { currentGrammar.addGrammarElement(bean); }
@@ -1630,7 +1632,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Production>
 
             <Production id="TermDecl">
-                <Code><![CDATA[ TerminalBean terminal = null;
+                <Code><![CDATA[ Terminal terminal = null;
                 CopperElementName newTerminalName = newName(name);
                 if(currentGrammar.getGrammarElements().contains(newTerminalName))
                 {
@@ -1641,13 +1643,13 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 	}
                 	else
                     {
-                        terminal = (TerminalBean) currentGrammar.getGrammarElement(newTerminalName);
+                        terminal = (Terminal) currentGrammar.getGrammarElement(newTerminalName);
                         terminal.setLocation(name.location);
                     }
                 }
                 else
                 {
-                     terminal = new TerminalBean();
+                     terminal = new Terminal();
                      terminal.setName(newTerminalName);
                      terminal.setLocation(name.location);
                      try { currentGrammar.addGrammarElement(terminal); }
@@ -1713,7 +1715,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Production>
 
             <Production id="TypedTermDecl">
-                <Code><![CDATA[ TerminalBean terminal = null;
+                <Code><![CDATA[ Terminal terminal = null;
                 CopperElementName newTerminalName = newName(name);
                 if(currentGrammar.getGrammarElements().contains(newTerminalName))
                 {
@@ -1724,13 +1726,13 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 	}
                 	else
                     {
-                        terminal = (TerminalBean) currentGrammar.getGrammarElement(newTerminalName);
+                        terminal = (Terminal) currentGrammar.getGrammarElement(newTerminalName);
                         terminal.setLocation(name.location);
                     }
                 }
                 else
                 {
-                     terminal = new TerminalBean();
+                     terminal = new Terminal();
                      terminal.setName(newTerminalName);
                      terminal.setLocation(name.location);
                      try { currentGrammar.addGrammarElement(terminal); }
@@ -1893,7 +1895,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Production>
 
             <Production id="GroupDecl">
-                <Code><![CDATA[ DisambiguationFunctionBean df = new DisambiguationFunctionBean();
+                <Code><![CDATA[ DisambiguationFunction df = new DisambiguationFunction();
                 df.setName(newName(name));
                 df.setLocation(name.location);
                 TreeSet<CopperElementReference> newMembers = new TreeSet<CopperElementReference>(members);
@@ -1919,7 +1921,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Production>
 
             <Production id="GroupDeclSimple">
-                <Code><![CDATA[ DisambiguationFunctionBean df = new DisambiguationFunctionBean();
+                <Code><![CDATA[ DisambiguationFunction df = new DisambiguationFunction();
                 df.setName(newName(name));
                 df.setLocation(name.location);
                 TreeSet<CopperElementReference> newMembers = new TreeSet<CopperElementReference>(members);
@@ -1977,7 +1979,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Code><![CDATA[
                     for(CopperElementReference name : terminals)
                     {
-						TerminalBean terminal = null;
+						Terminal terminal = null;
 	                	CopperElementName newTerminalName = name.getName();
 	                	if(currentGrammar.getGrammarElements().contains(newTerminalName))
 	                	{
@@ -1987,7 +1989,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 	                		}
 	                		else
 	                		{
-	                			terminal = (TerminalBean) currentGrammar.getGrammarElement(newTerminalName);
+	                			terminal = (Terminal) currentGrammar.getGrammarElement(newTerminalName);
 	                			if(terminal.getOperatorPrecedence() != null || terminal.getOperatorAssociativity() != null)
 	                			{
 	                				logError("Precedence declared twice on terminal '" + newTerminalName + "'",name.getLocation());
@@ -1996,7 +1998,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 	                	}
 	                	else
 	                	{
-        	             	terminal = new TerminalBean();
+        	             	terminal = new Terminal();
 		                    terminal.setName(newTerminalName);
 	                     	try { currentGrammar.addGrammarElement(terminal); }
 	                     	catch(CopperException ex) { logError(ex.getMessage(),getVirtualLocation()); }
@@ -2044,7 +2046,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Code><![CDATA[
                             for(CopperElementReference ref : names)
                             {
-	        	             	NonTerminalBean nonterminal = new NonTerminalBean();
+	        	             	NonTerminal nonterminal = new NonTerminal();
 			                    nonterminal.setName(ref.getName());
 			                    nonterminal.setLocation(ref.getLocation());
 			                    nonterminal.setReturnType(type.lexeme);
@@ -2066,7 +2068,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Code><![CDATA[
                             for(CopperElementReference ref : names)
                             {
-	        	             	NonTerminalBean nonterminal = new NonTerminalBean();
+	        	             	NonTerminal nonterminal = new NonTerminal();
 			                    nonterminal.setName(ref.getName());
 			                    nonterminal.setLocation(ref.getLocation());
 		                     	try { currentGrammar.addGrammarElement(nonterminal); }
@@ -2169,7 +2171,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Production>
 
             <Production id="ProdDecl">
-                <Code><![CDATA[ for(ProductionBean rhs : rhss)
+                <Code><![CDATA[ for(Production rhs : rhss)
                 {
                 	rhs.setLhs(newReference(lhs));
                    	try { currentGrammar.addGrammarElement(rhs); }
@@ -2186,7 +2188,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 
             <Production id="RHSMain">
                 <Code><![CDATA[
-                ProductionBean bean = new ProductionBean();
+                Production bean = new Production();
                 bean.setName(newName(new Token("_p" + (nextProduction++),getVirtualLocation())));
                 bean.setLocation(getVirtualLocation());
                 ArrayList<CopperElementReference> rhsSyms = new ArrayList<CopperElementReference>();
@@ -2224,7 +2226,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
             </Production>
 
             <Production id="RHSSeqOne">
-                <Code><![CDATA[ LinkedList<ProductionBean> rv = new LinkedList<ProductionBean>();
+                <Code><![CDATA[ LinkedList<Production> rv = new LinkedList<Production>();
                                 rv.add(rhs);
                                 RESULT = rv; ]]></Code>
                 <LHS><NonterminalRef id="RHSSeq"/></LHS>
@@ -2357,7 +2359,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="Roottoeps">
-                <Code><![CDATA[ RESULT = new EmptyStringRegexBean(); ]]></Code>
+                <Code><![CDATA[ RESULT = new EmptyStringRegex(); ]]></Code>
                 <LHS><NonterminalRef id="RegexRoot"/></LHS>
                 <RHS>
                     <TerminalRef id="slash_kwd"/>
@@ -2375,7 +2377,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="RtoDR_bar_R">
-                <Code><![CDATA[ RESULT = new ChoiceRegexBean().addSubexps(lhs,rhs); ]]></Code>
+                <Code><![CDATA[ RESULT = new ChoiceRegex().addSubexps(lhs,rhs); ]]></Code>
                 <LHS><NonterminalRef id="Regex_R"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_DR" name="lhs"/>
@@ -2385,7 +2387,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="DRtoUR_RR">
-                <Code><![CDATA[ RESULT = new ConcatenationRegexBean().addSubexps(lhs,rhs); ]]></Code>
+                <Code><![CDATA[ RESULT = new ConcatenationRegex().addSubexps(lhs,rhs); ]]></Code>
                 <LHS><NonterminalRef id="Regex_DR"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_UR" name="lhs"/>
@@ -2394,7 +2396,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="DRtoUR_star_RR">
-                <Code><![CDATA[ RESULT = new ConcatenationRegexBean().addSubexps(new KleeneStarRegexBean(starred),rest); ]]></Code>
+                <Code><![CDATA[ RESULT = new ConcatenationRegex().addSubexps(new KleeneStarRegex(starred),rest); ]]></Code>
                 <LHS><NonterminalRef id="Regex_DR"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_UR" name="starred"/>
@@ -2404,7 +2406,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="DRtoUR_plus_RR">
-                <Code><![CDATA[ RESULT = new ConcatenationRegexBean().addSubexps(plussed,new KleeneStarRegexBean(plussed),rest); ]]></Code>
+                <Code><![CDATA[ RESULT = new ConcatenationRegex().addSubexps(plussed,new KleeneStarRegex(plussed),rest); ]]></Code>
                 <LHS><NonterminalRef id="Regex_DR"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_UR" name="plussed"/>
@@ -2414,7 +2416,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="DRtoUR_question_RR">
-                <Code><![CDATA[ RESULT = new ConcatenationRegexBean().addSubexps(new ChoiceRegexBean().addSubexps(opt,new EmptyStringRegexBean()),rest); ]]></Code>
+                <Code><![CDATA[ RESULT = new ConcatenationRegex().addSubexps(new ChoiceRegex().addSubexps(opt,new EmptyStringRegex()),rest); ]]></Code>
                 <LHS><NonterminalRef id="Regex_DR"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_UR" name="opt"/>
@@ -2432,7 +2434,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="RRtoeps">
-                <Code><![CDATA[ RESULT = new EmptyStringRegexBean(); ]]></Code>
+                <Code><![CDATA[ RESULT = new EmptyStringRegex(); ]]></Code>
                 <LHS><NonterminalRef id="Regex_RR"/></LHS>
                 <RHS/>
                 <Layout/>
@@ -2440,7 +2442,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 
 
             <Production id="URtoCHAR">
-                <Code><![CDATA[ RESULT = new CharacterSetRegexBean().addLooseChar(character); ]]></Code>
+                <Code><![CDATA[ RESULT = new CharacterSetRegex().addLooseChar(character); ]]></Code>
                 <LHS><NonterminalRef id="Regex_UR"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_CHAR" name="character"/>
@@ -2448,7 +2450,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="URtowildcard">
-                <Code><![CDATA[ RESULT = new CharacterSetRegexBean().addLooseChar('\n').invert(); ]]></Code>
+                <Code><![CDATA[ RESULT = new CharacterSetRegex().addLooseChar('\n').invert(); ]]></Code>
                 <LHS><NonterminalRef id="Regex_UR"/></LHS>
                 <RHS>
                     <TerminalRef id="wildcard"/>
@@ -2477,7 +2479,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="URtomacro">
-                <Code><![CDATA[ RESULT = new MacroHoleRegexBean(newReference(term)); ]]></Code>
+                <Code><![CDATA[ RESULT = new MacroHoleRegex(newReference(term)); ]]></Code>
                 <LHS><NonterminalRef id="Regex_UR"/></LHS>
                 <RHS>
                     <TerminalRef id="lbrack"/>
@@ -2499,7 +2501,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="GtoUG_RG">
-                <Code><![CDATA[ RESULT = CharacterSetRegexBean.union(lhs,rhs); ]]></Code>
+                <Code><![CDATA[ RESULT = CharacterSetRegex.union(lhs,rhs); ]]></Code>
                 <LHS><NonterminalRef id="Regex_G"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_UG" name="lhs"/>
@@ -2508,7 +2510,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="UGtoCHAR">
-                <Code><![CDATA[ RESULT = new CharacterSetRegexBean().addLooseChar(character); ]]></Code>
+                <Code><![CDATA[ RESULT = new CharacterSetRegex().addLooseChar(character); ]]></Code>
                 <LHS><NonterminalRef id="Regex_UG"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_CHAR" name="character"/>
@@ -2516,7 +2518,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="UGtoCHAR_dash_CHAR">
-                <Code><![CDATA[ RESULT = new CharacterSetRegexBean().addRange(lower,upper); ]]></Code>
+                <Code><![CDATA[ RESULT = new CharacterSetRegex().addRange(lower,upper); ]]></Code>
                 <LHS><NonterminalRef id="Regex_UG"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_CHAR" name="lower"/>
@@ -2534,7 +2536,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="RGtoeps">
-                <Code><![CDATA[ RESULT = new CharacterSetRegexBean(); ]]></Code>
+                <Code><![CDATA[ RESULT = new CharacterSetRegex(); ]]></Code>
                 <LHS><NonterminalRef id="Regex_RG"/></LHS>
                 <RHS/>
                 <Layout/>

@@ -4,6 +4,7 @@ package edu.umn.cs.melt.copper.main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 
@@ -173,6 +174,7 @@ public class ParserCompiler
 	}
 
 	public static int compile(ParserCompilerParameters args)
+	throws IOException,CopperException
 	{
 		return args.getUsePipeline().getPipeline(args).execute(args);
 	}
@@ -393,9 +395,22 @@ public class ParserCompiler
 		}
 
 				
-		int errorlevel;
+		int errorlevel = 1;
 		
-		errorlevel = compile(argTable);
+		try
+		{
+			errorlevel = compile(argTable);
+		}
+		catch(IOException ex)
+		{
+			if(quietLevel == CompilerLevel.VERY_VERBOSE) ex.printStackTrace();
+			System.err.println("I/O error: " + ex.getMessage());
+		}
+		catch(Exception ex)
+		{
+			if(quietLevel == CompilerLevel.VERY_VERBOSE) ex.printStackTrace();
+			else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
+		}
 		
 		System.exit(errorlevel);
 	}

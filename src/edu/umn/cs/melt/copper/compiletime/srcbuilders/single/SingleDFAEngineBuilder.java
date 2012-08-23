@@ -791,8 +791,8 @@ public class SingleDFAEngineBuilder
 		out.print("        EOF_SYMNUM = " + EOF_SYMNUM + ";\n");
 		out.print("        EPS_SYMNUM = " + EPS_SYMNUM + ";\n");
 		out.print("        try { initArrays(); }\n");
-		out.print("        catch(" + IOException.class.getName() + " ex) { System.err.println(\"IO Exception\"); }\n");
-		out.print("        catch(" + ClassNotFoundException.class.getName() + " ex) { System.err.println(\"Class Not Found Exception\"); }\n");
+		out.print("        catch(" + IOException.class.getName() + " ex) { ex.printStackTrace(); System.exit(1); }\n");
+		out.print("        catch(" + ClassNotFoundException.class.getName() + " ex) { ex.printStackTrace(); System.exit(1); }\n");
 		out.print("        disambiguationGroups = new " + BitSet.class.getName() + "[" + DISAMBIG_GROUP_COUNT + "];\n");
 	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
 		{

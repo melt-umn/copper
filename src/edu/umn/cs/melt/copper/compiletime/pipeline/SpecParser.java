@@ -1,5 +1,7 @@
 package edu.umn.cs.melt.copper.compiletime.pipeline;
 
+import java.io.IOException;
+
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
@@ -10,5 +12,5 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 public interface SpecParser<OUT>
 {
 	public OUT parseSpec(SpecParserParameters args)
-	throws CopperException;
+	throws IOException,CopperException;
 }
