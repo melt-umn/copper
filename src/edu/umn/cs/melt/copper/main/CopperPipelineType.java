@@ -35,6 +35,12 @@ public enum CopperPipelineType
 		{
 			return "The default pipeline.";
 		}
+		
+		@Override
+		String stringName()
+		{
+			return "default";
+		}
 	},
 	// TODO: Rip this out when GrammarSource is gone. 
 	/** This pipeline uses Copper 0.5/0.6's parser compilation classes and methods. */
@@ -51,6 +57,12 @@ public enum CopperPipelineType
 		{
 			return "The pipeline used in Copper 0.5 and 0.6.";
 		}
+
+		@Override
+		String stringName()
+		{
+			return "legacy";
+		}
 	};
 	
 	private static Hashtable<String,CopperPipelineType> fromStringTable = null;
@@ -59,8 +71,10 @@ public enum CopperPipelineType
 	{
 		if(fromStringTable != null) return;
 		fromStringTable = new Hashtable<String,CopperPipelineType>();
-		fromStringTable.put("default",GRAMMARBEANS);
-		fromStringTable.put("legacy",LEGACY);
+		for(CopperPipelineType pt : CopperPipelineType.values())
+		{
+			fromStringTable.put(pt.stringName(),pt);
+		}
 	}
 	
 	static boolean contains(String s)
@@ -79,6 +93,7 @@ public enum CopperPipelineType
 		return fromStringTable.get(s);
 	}
 
+	abstract String stringName();
 	abstract String usageMessage();
 	
 	abstract Pipeline getPipeline(ParserCompilerParameters args);

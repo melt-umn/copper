@@ -12,6 +12,7 @@ import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
+import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardPipeline;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.ParserSpecProcessor;
@@ -28,26 +29,19 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public class ParserCompiler
 {
-	private static String usageMessage()
+	private static String usageMessage(ParserCompilerParameters args)
 	{
 		String rv = "";
-		rv += "Usage: ParserCompiler [switches] grammar-file1 grammar-file2 ... grammar-filen\n";
-		rv += "Switches (all optional) are:\n";
-		rv += "\t-?\t\tDisplay this usage information.\n";
+		rv += "Usage: ParserCompiler [built-in-switches] [custom-switches] grammar-file1 grammar-file2 ... grammar-filen\n";
+		rv += "Built-in switches (all optional) are:\n";
+		rv += "\t-?\tDisplay this usage information.\n\t\tUse ParserCompiler -pipeline [pipeline] -? to list\n\t\toptions specific to a given pipeline.\n";
 		rv += "\t-package [package]\tThe package of the generated parser.\n\t\tDefaults to the default package or what is set in\n\t\tthe parser specification.\n";
 		rv += "\t-parser [class]\tThe class name of the generated parser.\n\t\tDefaults to 'Parser' or what is set in\n\t\tthe parser specification.\n";
 		rv += "\t-o [out]\tOutput the generated parser to the file 'out'.\n\t\tUse '-' to redirect to standard output, or no parameter\n\t\tto suppress output altogether.\n";
 		rv += "\t-q\t\tRun the compiler quietly.\n";
 		rv += "\t-v\t\tRun the compiler with extra verbosity.\n";
 		rv += "\t-vv\t\tRun the compiler with even more extra verbosity.\n";
-		rv += "\t-gatherstats\tSet the output parser to print parsing statistics\n";
-		rv += "\t\t\tinstead of a parse tree. DEPRECATED.\n";
-		rv += "\t-runv\t\tSet the output parser to run with extra verbosity.\n";
-		rv += "\t-pretty\t\tSet the output parser to \"pretty-print\" its output in\n";
-		rv += "\t\t\thuman-readable form. DEPRECATED.\n";
-		rv += "\t-compose\tUse with exactly two input files, the first the host\n";
-		rv += "\t\t\tgrammar and the second an extension, to test the\n";
-		rv += "\t\t\textension's composability. EXPERIMENTAL.\n";
+		rv += "\t-compose\tRun Copper's modular determinism analysis on the input.\n\t\t\tIf this switch is used, the input must comprise exactly\n\t\t\ttwo grammars: the host and an extension to test.\n";
 		rv += "\t-logfile [lout]\tPipe all log output to the file 'lout'\n\t\t\t(default standard error).\n";
 		rv += "\t-dump\tProduce a detailed report of the grammar and generated parser.\n";
 		rv += "\t-errordump\tProduce a detailed report, but only if the parser\n\t\t\tcompiler has generated an error.\n";
@@ -72,19 +66,28 @@ public class ParserCompiler
 		{
 			rv += "\t\t" + pt + ": " + CopperPipelineType.fromString(pt).usageMessage() + "\n";
 		}
+		if(args != null && args.getPipeline() != null)
+		{
+			String customs = args.getPipeline().customParameterUsage();
+			if(!customs.equals(""))
+			{
+				rv += "\nCustom switches specific to the given pipeline configuration are:\n";
+				rv += customs;
+			}
+		}
 		return rv;
 	}
 	
 
-	private static void usageMessageNoError()
+	private static void usageMessageNoError(ParserCompilerParameters args)
 	{
-		System.err.println(usageMessage());
+		System.err.println(usageMessage(args));
 		System.exit(0);
 	}
 	
-	private static void usageMessageError()
+	private static void usageMessageError(ParserCompilerParameters args)
 	{
-		System.err.println(usageMessage());
+		System.err.println(usageMessage(args));
 		System.exit(1);
 	}
 	
@@ -176,7 +179,7 @@ public class ParserCompiler
 	public static int compile(ParserCompilerParameters args)
 	throws IOException,CopperException
 	{
-		return args.getUsePipeline().getPipeline(args).execute(args);
+		return args.getPipeline().execute(args);
 	}
 
 
@@ -195,16 +198,15 @@ public class ParserCompiler
 	{
 		if(args.length < 1)
 		{
-			usageMessageError();
+			usageMessageError(null);
 		}
 		else if(args.length == 1 && args[0].equals("-?"))
 		{
-			usageMessageNoError();
+			usageMessageNoError(null);
 		}
 		CompilerLevel quietLevel = getDefaultQuietLevel();
-		boolean isPretty = false;
+		boolean displayHelp = false;
 		boolean isComposition = false;
-		boolean gatherStatistics = false;
 		boolean dumpReport = false;
 		boolean dumpOnlyOnError = false;
 		CopperDumpType.initTable();
@@ -215,9 +217,9 @@ public class ParserCompiler
 		CopperSkinType useSkin = getDefaultSkin();
 		CopperPipelineType.initTable();
 		CopperPipelineType usePipeline = getDefaultPipeline();
+		Pipeline pipeline;
 		String logFile = null;
 		String dumpFile = "";
-		String runtimeQuietLevel = "ERROR";
 		String packageDecl = null;
 		String parserName = null;
 		String output = null;
@@ -225,9 +227,13 @@ public class ParserCompiler
 		for(i = 0;i < args.length;i++)
 		{
 			if(args[i].charAt(0) != '-') break;
+			else if(args[i].equals("-?"))
+			{
+				displayHelp = true;
+			}
 			else if(args[i].equals("-o"))
 			{
-				if(++i == args.length) usageMessageError();
+				if(++i == args.length) usageMessageError(null);
 				else output = args[i];
 			}
 			else if(args[i].equals("-q"))
@@ -242,11 +248,6 @@ public class ParserCompiler
 			{
 				quietLevel = CompilerLevel.VERY_VERBOSE;
 			}
-			else if(args[i].equals("-gatherstats"))
-			{
-				if(runtimeQuietLevel.equals("ERROR")) runtimeQuietLevel = "NOTA_BENE";
-				gatherStatistics = true;
-			}
 			else if(args[i].equals("-dump"))
 			{
 				dumpReport = true;
@@ -257,27 +258,19 @@ public class ParserCompiler
 				dumpReport = true;
 				dumpOnlyOnError = true;
 			}
-			else if(args[i].equals("-runv"))
-			{
-				runtimeQuietLevel = "INFO";
-			}
-			else if(args[i].equals("-pretty"))
-			{
-				isPretty = true;
-			}
 			else if(args[i].equals("-skin"))
 			{
-				if(++i == args.length || !CopperSkinType.contains(args[i])) usageMessageError();
+				if(++i == args.length || !CopperSkinType.contains(args[i])) usageMessageError(null);
 				else useSkin = CopperSkinType.fromString(args[i]);
 			}
 			else if(args[i].equals("-engine"))
 			{
-				if(++i == args.length || !CopperEngineType.contains(args[i])) usageMessageError();
+				if(++i == args.length || !CopperEngineType.contains(args[i])) usageMessageError(null);
 				else useEngine = CopperEngineType.fromString(args[i]);
 			}
 			else if(args[i].equals("-pipeline"))
 			{
-				if(++i == args.length || !CopperPipelineType.contains(args[i])) usageMessageError();
+				if(++i == args.length || !CopperPipelineType.contains(args[i])) usageMessageError(null);
 				else usePipeline = CopperPipelineType.fromString(args[i]);
 			}
 			else if(args[i].equals("-compose"))
@@ -286,17 +279,17 @@ public class ParserCompiler
 			}
 			else if(args[i].equals("-logfile"))
 			{
-				if(++i == args.length) usageMessageError();
+				if(++i == args.length) usageMessageError(null);
 				else logFile = args[i];
 			}
 			else if(args[i].equals("-dumpfile"))
 			{
-				if(++i == args.length) usageMessageError();
+				if(++i == args.length) usageMessageError(null);
 				else dumpFile = args[i];
 			}
 			else if(args[i].equals("-dumptype"))
 			{
-				if(++i == args.length || !CopperDumpType.contains(args[i])) usageMessageError();
+				if(++i == args.length || !CopperDumpType.contains(args[i])) usageMessageError(null);
 				else
 				{
 					dumpFormat = CopperDumpType.fromString(args[i]);
@@ -304,51 +297,29 @@ public class ParserCompiler
 			}
 			else if(args[i].equals("-package"))
 			{
-				if(++i == args.length) usageMessageError();
+				if(++i == args.length) usageMessageError(null);
 				else packageDecl = args[i]; 
 			}
 			else if(args[i].equals("-parser"))
 			{
-				if(++i == args.length) usageMessageError();
+				if(++i == args.length) usageMessageError(null);
 				else parserName = args[i]; 
 			}
-			else usageMessageError();
-		}
-		if(i >= args.length) usageMessageError();
-
-		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
-		
-		boolean failed = false;
-		for(;i < args.length;i++)
-		{
-			FileReader file = null;
-			try
+			else
 			{
-				file = new FileReader(args[i]);
+				break;
 			}
-			catch(FileNotFoundException ex)
-			{
-				System.err.println("Grammar file not found: '" + args[i] + "'");
-				failed = true;
-			}
-			if(file != null) files.add(Pair.cons(args[i],(Reader) file));
 		}
-		if(failed) System.exit(1);
 		
 		ParserCompilerParameters argTable = new ParserCompilerParameters();
-
-		argTable.setFiles(files);
 		argTable.setQuietLevel(quietLevel);
-		argTable.setPretty(isPretty);
 		argTable.setComposition(isComposition);
 		argTable.setDumpReport(dumpReport);
 		argTable.setDumpOnlyOnError(dumpOnlyOnError);
-		argTable.setGatherStatistics(gatherStatistics);
 		argTable.setUseEngine(useEngine);
 		argTable.setUseSkin(useSkin);
 		argTable.setUsePipeline(usePipeline);
 		argTable.setDumpFormat(dumpFormat);
-		argTable.setRuntimeQuietLevel(runtimeQuietLevel);
 		argTable.setPackageDecl(packageDecl);
 		argTable.setParserName(parserName);
 		if(output == null)
@@ -394,6 +365,42 @@ public class ParserCompiler
 			argTable.setDumpFile(new File(dumpFile));			
 		}
 
+		pipeline = argTable.getPipeline();
+		
+		if(displayHelp) usageMessageNoError(argTable);
+		else if(i >= args.length) usageMessageError(null);
+				
+		if(args[i].startsWith("-"))
+		{
+			while(i >= 0 && i < args.length)
+			{
+				if(args[i].charAt(0) != '-') break;
+				i = pipeline.processCustomParameter(argTable,args,i);
+			}
+		}
+		
+		if(i == -1 || i >= args.length) usageMessageError(argTable);
+
+		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
+		
+		boolean failed = false;
+		for(;i < args.length;i++)
+		{
+			FileReader file = null;
+			try
+			{
+				file = new FileReader(args[i]);
+			}
+			catch(FileNotFoundException ex)
+			{
+				System.err.println("Grammar file not found: '" + args[i] + "'");
+				failed = true;
+			}
+			if(file != null) files.add(Pair.cons(args[i],(Reader) file));
+		}
+		if(failed) System.exit(1);
+		
+		argTable.setFiles(files);
 				
 		int errorlevel = 1;
 		

@@ -1,6 +1,8 @@
 package edu.umn.cs.melt.copper.compiletime.pipeline;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
@@ -25,6 +27,8 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,SpecCompiler<SCIN,SCOUT>,SourceBuilder<SCOUT>
 {
+	private HashSet<String> customParameters;
+	
 	private SpecParser<SCIN> specParser;
 	private SpecCompiler<SCIN,SCOUT> specCompiler;
 	private SourceBuilder<SCOUT> sourceBuilder;
@@ -37,6 +41,15 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 		this.specParser = specParser;
 		this.specCompiler = specCompiler;
 		this.sourceBuilder = sourceBuilder;
+		
+		customParameters = new HashSet<String>();
+		Set<String> buf;
+		buf = specParser.getCustomParameters(); 
+		if(buf != null) customParameters.addAll(buf);
+		buf = specCompiler.getCustomParameters();
+		if(buf != null) customParameters.addAll(buf);
+		buf = sourceBuilder.getCustomParameters();
+		if(buf != null) customParameters.addAll(buf);
 	}
 
 	@Override
@@ -99,5 +112,35 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 	throws IOException,CopperException
 	{
 		return specParser.parseSpec(args);
+	}
+
+	@Override
+	public Set<String> getCustomParameters()
+	{
+		return customParameters;
+	}
+
+	@Override
+	public String customParameterUsage()
+	{
+		String rv = "";
+		if(specParser != null) rv += specParser.customParameterUsage();
+		if(specCompiler != null) rv += specCompiler.customParameterUsage();
+		if(sourceBuilder != null) rv += sourceBuilder.customParameterUsage();
+		return rv;
+	}
+
+	@Override
+	public int processCustomParameter(ParserCompilerParameters args,
+			String[] cmdline, int index)
+	{
+		int rv;
+		rv = specParser.processCustomParameter(args,cmdline,index);
+		if(rv != -1) return rv;
+		rv = specCompiler.processCustomParameter(args,cmdline,index);
+		if(rv != -1) return rv;
+		rv = sourceBuilder.processCustomParameter(args,cmdline,index);
+		if(rv != -1) return rv;
+		return -1;
 	}
 }

@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecCompilerParameters;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
@@ -18,9 +20,13 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
  */
 public class ParserCompilerParameters implements SpecParserParameters,SpecCompilerParameters,SourceBuilderParameters
 {
+	private Hashtable<String,Object> customParameters;
 	private ArrayList< Pair<String,Reader> > files;
-	private boolean isPretty,isComposition,gatherStatistics,dumpReport,dumpOnlyOnError;
-	private String runtimeQuietLevel,packageDecl,parserName;
+	private boolean isComposition;
+	private boolean dumpReport;
+	private boolean dumpOnlyOnError;
+	private String packageDecl;
+	private String parserName;
 	private CopperDumpType dumpFormat;
 	private CopperEngineType useEngine;
 	private CopperSkinType useSkin;
@@ -36,6 +42,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	private File dumpFile;
 	private CopperIOType dumpType;
 	private CopperPipelineType usePipeline;
+	private Pipeline pipeline;
 	
 	private boolean isWarnUselessNTs;
 	
@@ -45,12 +52,9 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	public ParserCompilerParameters()
 	{
 		files = null;
-		isPretty = false;
 		isComposition = false;
-		gatherStatistics = false;
 		dumpReport = false;
 		dumpOnlyOnError = false;
-		runtimeQuietLevel = "ERROR";
 		dumpFormat = ParserCompiler.getDefaultDumpType();
 		useEngine = ParserCompiler.getDefaultEngine();
 		useSkin = ParserCompiler.getDefaultSkin();
@@ -69,6 +73,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		dumpType = null;
 		
 		isWarnUselessNTs = true;
+		pipeline = null;
 	}
 
 	public void setSingleFileName(String singleFileName)
@@ -101,16 +106,6 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		this.files = files;
 	}
 
-	public boolean isPretty()
-	{
-		return isPretty;
-	}
-
-	public void setPretty(boolean isPretty)
-	{
-		this.isPretty = isPretty;
-	}
-
 	public boolean isComposition()
 	{
 		return isComposition;
@@ -119,16 +114,6 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	public void setComposition(boolean isComposition)
 	{
 		this.isComposition = isComposition;
-	}
-
-	public boolean isGatherStatistics()
-	{
-		return gatherStatistics;
-	}
-
-	public void setGatherStatistics(boolean gatherStatistics)
-	{
-		this.gatherStatistics = gatherStatistics;
 	}
 
 	public boolean isDumpReport()
@@ -149,16 +134,6 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	public void setDumpOnlyOnError(boolean dumpOnlyOnError)
 	{
 		this.dumpOnlyOnError = dumpOnlyOnError;
-	}
-
-	public String getRuntimeQuietLevel()
-	{
-		return runtimeQuietLevel;
-	}
-
-	public void setRuntimeQuietLevel(String runtimeQuietLevel)
-	{
-		this.runtimeQuietLevel = runtimeQuietLevel;
 	}
 
 	public String getPackageDecl()
@@ -349,6 +324,44 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	public Reader getSingleFileStream()
 	{
 		return singleFileStream;
+	}
+	
+	@Override
+	public boolean hasCustomParameter(String key)
+	{
+		return customParameters.containsKey(key);
+	}
+
+	@Override
+	public Object getCustomParameter(String key)
+	{
+		return customParameters.get(key);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getCustomParameter(String key,Class<T> mustBeType,T defaultValue)
+	{
+		if(!hasCustomParameter(key)) return defaultValue;
+		Object value = customParameters.get(key);
+		if(!mustBeType.isAssignableFrom(value.getClass())) return defaultValue;
+		return (T) value;
+	}
+	
+	public Object setCustomParameter(String key,Object value)
+	{
+		return customParameters.put(key,value);
+	}
+	
+	public Pipeline getPipeline()
+	{
+		if(pipeline == null && usePipeline != null) pipeline = usePipeline.getPipeline(this);
+		return pipeline;
+	}
+
+	public void setPipeline(Pipeline pipeline)
+	{
+		this.pipeline = pipeline;
 	}
 
 }

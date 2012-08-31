@@ -3,6 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.pipeline;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -49,6 +50,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
+import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSpecCompilerReturnData>
@@ -306,4 +308,22 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 		}
 	}
 
+	@Override
+	public Set<String> getCustomParameters()
+	{
+		return null;
+	}
+
+	@Override
+	public String customParameterUsage()
+	{
+		return "";
+	}
+
+	@Override
+	public int processCustomParameter(ParserCompilerParameters args,
+			String[] cmdline, int index)
+	{
+		return -1;
+	}
 }

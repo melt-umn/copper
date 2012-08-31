@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -46,6 +47,16 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
 public class LegacyPipeline implements Pipeline
 {
+	private HashSet<String> customParameters;
+	
+	public LegacyPipeline()
+	{
+		customParameters = new HashSet<String>();
+		customParameters.add("isPretty");
+		customParameters.add("gatherStatistics");
+		customParameters.add("runtimeQuietLevel");
+	}
+	
 	private edu.umn.cs.melt.copper.legacy.compiletime.logging.CompilerLogger getOldStyleLogger(CompilerLogger newStyleLogger,UniversalProcessParameters args)
 	{
 		edu.umn.cs.melt.copper.legacy.compiletime.logging.CompilerLogger logger = new StringBasedCompilerLogger();
@@ -184,9 +195,10 @@ public class LegacyPipeline implements Pipeline
 	private int compileParserLegacy(ParserCompilerParameters args,GrammarSource grammar)
 	throws CopperException
 	{
-		boolean isPretty = args.isPretty();
+		boolean isPretty = args.getCustomParameter("isPretty", Boolean.class, Boolean.FALSE);
+		if(args.hasCustomParameter("isPretty") && args.getCustomParameter("isPretty") instanceof Boolean) isPretty = (Boolean) args.getCustomParameter("isPretty");
 		boolean isComposition = args.isComposition();
-		boolean gatherStatistics = args.isGatherStatistics();
+		boolean gatherStatistics = args.getCustomParameter("gatherStatistics", Boolean.class, Boolean.FALSE);
 		CopperEngineType useEngine = args.getUseEngine();
 		CompilerLogger newStyleLogger = args.getLogger();
 		edu.umn.cs.melt.copper.legacy.compiletime.logging.CompilerLogger logger = getOldStyleLogger(newStyleLogger,args);
@@ -202,7 +214,7 @@ public class LegacyPipeline implements Pipeline
 					(grammar.getParserSources().getParserName() != null && !grammar.getParserSources().getParserName().equals("") ?
 							grammar.getParserSources().getParserName() : 
 					        "Parser");
-		String runtimeQuietLevel = args.getRuntimeQuietLevel();
+		String runtimeQuietLevel = args.getCustomParameter("runtimeQuietLevel",String.class,"ERROR");
 
 		if(useEngine != CopperEngineType.OLD_AND_SLOW && gatherStatistics)
 		{
@@ -447,5 +459,46 @@ public class LegacyPipeline implements Pipeline
 			}
 		}
 		return errorlevel;
+	}
+
+
+	@Override
+	public Set<String> getCustomParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int processCustomParameter(ParserCompilerParameters args, String[] cmdline, int index)
+	{
+		if(cmdline[index].equals("-pretty"))
+		{
+			args.setCustomParameter("isPretty",true);
+			return index+1;
+		}
+		else if(cmdline[index].equals("-gatherstats"))
+		{
+			if(args.getCustomParameter("gatherStatistics",String.class,"ERROR").equals("ERROR")) args.setCustomParameter("runtimeQuietLevel","NOTA_BENE");
+			args.setCustomParameter("gatherStatistics",true);
+			return index+1;
+		}
+		else if(cmdline[index].equals("-runv"))
+		{
+			args.setCustomParameter("runtimeQuietLevel","INFO");
+			return index+1;
+		}
+		else return -1;		
+	}
+
+	@Override
+	public String customParameterUsage()
+	{
+		String rv = "";
+		rv += "\t-gatherstats\tSet the output parser to print parsing statistics\n";
+		rv += "\t\t\tinstead of a parse tree.\n";
+		rv += "\t-pretty\t\tSet the output parser to \"pretty-print\" its output in\n";
+		rv += "\t\t\thuman-readable form.\n";
+		rv += "\t-runv\t\tSet the output parser to run with extra verbosity.\n";
+		return rv;
 	}
 }

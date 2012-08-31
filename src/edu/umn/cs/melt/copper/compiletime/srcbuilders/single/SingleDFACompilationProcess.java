@@ -3,6 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
@@ -13,6 +14,7 @@ import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilder;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
+import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCompilerReturnData>
@@ -104,5 +106,24 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 		logger.flush();
 		
 		return c.errorlevel;
+	}
+
+	@Override
+	public Set<String> getCustomParameters()
+	{
+		return null;
+	}
+
+	@Override
+	public String customParameterUsage()
+	{
+		return "";
+	}
+
+	@Override
+	public int processCustomParameter(ParserCompilerParameters args,
+			String[] cmdline, int index)
+	{
+		return -1;
 	}
 }
