@@ -15,6 +15,9 @@ import edu.umn.cs.melt.copper.main.CopperIOType;
  */
 public interface UniversalProcessParameters
 {
+	public boolean hasCustomParameter(String key);
+	public Object getCustomParameter(String key);
+	public <T> T getCustomParameter(String key,Class<T> mustBeType,T defaultValue);
 	public CompilerLogger getLogger();
 	public CopperIOType getLogType();
 	public File getLogFile();

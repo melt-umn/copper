@@ -39,7 +39,6 @@ public class CopperAntTask extends Task
 	private File outputFile = null;
 	private CompilerLevel quietLevel = ParserCompiler.getDefaultQuietLevel();
 	private boolean isWarnUselessNTs = true;
-	private boolean isRunVerbose = false;
 	private boolean isDump = false;
 	private ParserCompilerParameters params = null;
 	
@@ -73,7 +72,6 @@ public class CopperAntTask extends Task
 		if(dumpType != null) params.setDumpFormat(dumpType); 
 		if(dumpFile != null) params.setDumpFile(new File(dumpFile));
 		params.setQuietLevel(quietLevel);
-		if(isRunVerbose) params.setRuntimeQuietLevel("INFO");
 		if(engine != null) params.setUseEngine(engine);
 		if(!skin.equals("")) params.setUseSkin(skin);
 		
@@ -271,14 +269,6 @@ public class CopperAntTask extends Task
 	}
 
 	/**
-	 * Returns <code>true</code> if the generated parser is to print extra logging information.
-	 */
-	public boolean isRunVerbose()
-	{
-		return isRunVerbose;
-	}
-
-	/**
 	 * Returns <code>true</code> if the compiler is to print a "parser report" describing the parser.
 	 */
 	public boolean isDump()
@@ -373,14 +363,6 @@ public class CopperAntTask extends Task
 	public void setCompileVeryVerbose(boolean isCompileVerbose)
 	{
 		this.quietLevel = isCompileVerbose ? CompilerLevel.VERY_VERBOSE : CompilerLevel.REGULAR;
-	}
-
-	/**
-	 * @param isRunVerbose <code>true</code> if the generated parser is to print extra logging information.
-	 */
-	public void setRunVerbose(boolean isRunVerbose)
-	{
-		this.isRunVerbose = isRunVerbose;
 	}
 	
 	/**

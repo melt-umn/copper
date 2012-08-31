@@ -13,7 +13,6 @@ import edu.umn.cs.melt.copper.main.CopperIOType;
  */
 public interface SourceBuilderParameters extends UniversalProcessParameters
 {
-	public String getRuntimeQuietLevel();
 	public PrintStream getOutputStream();
 	public File getOutputFile();
 	public CopperIOType getOutputType();
