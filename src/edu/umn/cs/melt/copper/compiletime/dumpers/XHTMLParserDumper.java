@@ -94,7 +94,9 @@ public class XHTMLParserDumper extends FullParserDumper
 			catch (TransformerException e)
 			{
 				throw new IOException(e);
-			}		
+			}
+		default:
+			break;		
 		}
 
 	}

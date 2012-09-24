@@ -182,6 +182,8 @@ public class SymGatherer
 					}
 				}
 				break;
+			default:
+				break;
 			}
 		}
 		
@@ -467,6 +469,8 @@ public class SymGatherer
 				grammar.addParserAttribute(new ParserAttribute(sym.name,type,code));
 				break;
 			case DIRECTIVE:
+				break;
+			default:
 				break;
 			}
 		}
