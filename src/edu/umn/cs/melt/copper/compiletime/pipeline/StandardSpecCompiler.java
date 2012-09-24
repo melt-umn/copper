@@ -74,6 +74,8 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 			case XML_SPEC:
 				dumper = new XMLSpecDumper(spec);
 				break;
+			default:
+				break;
 			}
 
 			dumpIfNecessary(args, succeeded, dumper);

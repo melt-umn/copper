@@ -35,9 +35,16 @@ public class RunParser
         {
             Class<?> className;
             if(args.length < 1) throw new CopperParserException("The first argument to RunParser must be a parser class name");
-            className = Class.forName(args[0]);
+            try
+            {
+            	className = Class.forName(args[0]);
+            }
+            catch(ClassNotFoundException ex)
+            {
+            	throw new CopperParserException("No such class: " + args[0]);
+            }
             
-	        int i;
+	    	int i;
     	    for(i = 1;i < args.length;i++)
         	{
         		if(args[i].charAt(0) != '-') break;
@@ -78,7 +85,7 @@ public class RunParser
         catch(Exception ex)
         {
             if(runVerbose) ex.printStackTrace();
-            else System.err.println(ex.getMessage());
+            else System.err.println(ex.getClass().getSimpleName() + ": " + ex.getMessage());
             System.exit(1);
         }
     }

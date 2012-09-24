@@ -410,6 +410,8 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 				case RIGHT:
 					writeFullElement(XMLSkinElements.Type.RIGHT_ASSOCIATIVE_ELEMENT);
 					break;
+				default:
+					break;
 				}
 			}
 			endElement(XMLSkinElements.Type.OPERATOR_ELEMENT);

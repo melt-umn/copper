@@ -635,6 +635,8 @@ public class XMLSkinParser extends DefaultHandler
 				}
 				refList = null;
 				break;
+			default:
+				break;
 			}
 			break;
 		case CLASS_NAME_ELEMENT:
@@ -654,6 +656,8 @@ public class XMLSkinParser extends DefaultHandler
 				break;
 			case TERMINAL_ELEMENT:
 				currentTerminal.setCode(nodeText);
+				break;
+			default:
 				break;
 			}
 			break;
@@ -749,6 +753,8 @@ public class XMLSkinParser extends DefaultHandler
 				currentProduction.setLayout(refSet);
 				refSet = null;
 				break;
+			default:
+				break;
 			}
 			break;
 		case LEFT_ASSOCIATIVE_ELEMENT:
@@ -780,6 +786,8 @@ public class XMLSkinParser extends DefaultHandler
 				break;
 			case TERMINAL_CLASS_ELEMENT:
 				currentTerminalClass.setMembers(refSet);
+				break;
+			default:
 				break;
 			}
 			refSet = null;
@@ -852,6 +860,8 @@ public class XMLSkinParser extends DefaultHandler
 			case TERMINAL_CLASS_ELEMENT:
 				currentTerminalClass.setDisplayName(nodeText);
 				break;
+			default:
+				break;
 			}
 			break;
 		case PREAMBLE_ELEMENT:
@@ -865,6 +875,8 @@ public class XMLSkinParser extends DefaultHandler
 				break;
 			case PRODUCTION_ELEMENT:
 				currentProduction.setPrecedence(Integer.valueOf(nodeText));
+				break;
+			default:
 				break;
 			}
 			break;
@@ -931,6 +943,8 @@ public class XMLSkinParser extends DefaultHandler
 				break;
 			case TERMINAL_ELEMENT:
 				currentTerminal.setReturnType(nodeText);
+				break;
+			default:
 				break;
 			}
 			break;

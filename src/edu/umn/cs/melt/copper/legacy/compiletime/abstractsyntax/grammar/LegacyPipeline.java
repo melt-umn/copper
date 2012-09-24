@@ -327,7 +327,7 @@ public class LegacyPipeline implements Pipeline
 			out = args.getOutputStream();
 			break;
 		}
-		
+				
 		EngineBuilder engineBuilder;
 		String ancillaries;
 		String rootType = grammar.getNTAttributes(grammar.getStartSym()).getType();
