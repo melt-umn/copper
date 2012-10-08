@@ -28,7 +28,7 @@ public class ExtensionGrammar extends Grammar
 	/** The start productions of the grammar, which must be of the form
 	 * <code>H ::= m E</code>, where:
 	 * <ul><li><code>H</code> is the name of a nonterminal
-	 * in the "host" language;</li><li><code>m</code> is the name of
+	 * in the "host" grammar;</li><li><code>m</code> is the name of
 	 * <code>markingTerminal</code>; and </li><li><code>E</code> is this
 	 * grammar's start symbol.</li></ul>
 	 * The start production should not be placed in the

@@ -141,7 +141,10 @@ public class GrammarWellFormednessChecker
 		for(int nt = fringe.nextSetBit(0);nt >= 0;nt = fringe.nextSetBit(nt+1))
 		{
 			passed = false;
-			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new NonterminalNonterminalMessage(symbolTable.getNonTerminal(nt)));
+			if(nt != spec.getStartNonterminal())
+			{
+				if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new NonterminalNonterminalMessage(symbolTable.getNonTerminal(nt)));
+			}
 		}
 		
 		return passed;		
