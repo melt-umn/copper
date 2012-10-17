@@ -74,6 +74,8 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		
 		isWarnUselessNTs = true;
 		pipeline = null;
+		
+		customParameters = new Hashtable<String,Object>();
 	}
 
 	public void setSingleFileName(String singleFileName)
