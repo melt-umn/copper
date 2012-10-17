@@ -18,7 +18,7 @@ public abstract class ScannerBuffer
 	 */
 	public static ScannerBuffer instantiate(Reader reader)
 	{
-		return new QScannerBuffer(reader);
+		return new SlidingWindowScannerBuffer(reader);
 	}
 
 	/** The character used to indicate "end of file." */
