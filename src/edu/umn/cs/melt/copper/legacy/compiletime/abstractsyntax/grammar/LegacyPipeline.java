@@ -89,7 +89,7 @@ public class LegacyPipeline implements Pipeline
 	private GrammarSource parseInputGrammarLegacy(ParserCompilerParameters args)
 	{
 		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
-		boolean isComposition = args.isComposition();
+		boolean isComposition = args.isRunMDA();
 		CopperSkinType useSkin = args.getUseSkin();
 		CompilerLogger newStyleLogger;
 
@@ -197,7 +197,7 @@ public class LegacyPipeline implements Pipeline
 	{
 		boolean isPretty = args.getCustomParameter("isPretty", Boolean.class, Boolean.FALSE);
 		if(args.hasCustomParameter("isPretty") && args.getCustomParameter("isPretty") instanceof Boolean) isPretty = (Boolean) args.getCustomParameter("isPretty");
-		boolean isComposition = args.isComposition();
+		boolean isComposition = args.isRunMDA();
 		boolean gatherStatistics = args.getCustomParameter("gatherStatistics", Boolean.class, Boolean.FALSE);
 		CopperEngineType useEngine = args.getUseEngine();
 		CompilerLogger newStyleLogger = args.getLogger();

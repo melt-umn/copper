@@ -14,7 +14,7 @@ import edu.umn.cs.melt.copper.main.CopperIOType;
  */
 public interface SpecCompilerParameters extends UniversalProcessParameters
 {
-	public boolean isComposition();
+	public boolean isRunMDA();
 	public boolean isDumpReport();
 	public boolean isDumpOnlyOnError();
 	public CopperDumpType getDumpFormat();

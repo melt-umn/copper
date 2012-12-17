@@ -19,7 +19,7 @@ public enum CopperPipelineType
 {
 	/**
 	 * This pipeline first converts a parser specification into the class of objects in the
-	 * {@link edu.umn.cs.melt.copper.compiletime.abstractsyntax.grammarbeans} package,
+	 * {@link edu.umn.cs.melt.copper.compiletime.spec.grammarbeans} package,
 	 * from which a parser is compiled.
 	 */
 	GRAMMARBEANS

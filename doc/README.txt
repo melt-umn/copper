@@ -15,7 +15,7 @@ The parser generator is invoked from the command line via its executable JAR:
 
 The most basic use
 
-% java -jar CopperCompiler.jar parser-spec > parser-class.java
+% java -jar CopperCompiler.jar -o parser-class.java parser-spec
 
 This will take in a parser specification in a single file, parser-spec, and
 output the result to parser-class.java.

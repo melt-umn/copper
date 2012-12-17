@@ -39,6 +39,11 @@
 		<copper fullClassName='${build_package}.${grammarName}Parser' inputFile='${grammars}/${grammarName}.xml' outputFile='${build_package}/${grammarName}Parser.java' compileVerbose='${compileVerbose}' engine='${engine}' skin='${skin}' dump='${dump}'/>
 		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
 	</target>
+	
+	<target name='TestMDA' depends=''>
+		<property name='skin' value='XML'/>
+		<copper inputFile='${grammars}/mda/${grammarName}.xml' outputFile='/dev/null' compileVerbose='${compileVerbose}' engine='${engine}' skin='${skin}' dump='${dump}' runMDA='true'/>
+	</target>
 
 	
 	<!-- Test grammar targets; to be run directly -->
@@ -84,6 +89,36 @@
 		<property name='runVerbose' value='true'/>
 		<property name='engine' value='SINGLE'/>
 		<ant target='TestCupGrammar'/>
+	</target>
+	
+	<target name='MDAPassing' depends=''>
+		<property name='grammarName' value='MDAPassing'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestMDA'/>
+	</target>
+
+	<target name='MDAFailing' depends=''>
+		<property name='grammarName' value='MDAFailing'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestMDA'/>
+	</target>
+
+	<target name='MDALookaheadSpillageOnly' depends=''>
+		<property name='grammarName' value='MDALookaheadSpillageOnly'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestMDA'/>
+	</target>
+	
+	<target name='MDAFollowSpillageOnly' depends=''>
+		<property name='grammarName' value='MDAFollowSpillageOnly'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestMDA'/>
+	</target>
+
+	<target name='MDANonILSubsetOnly' depends=''>
+		<property name='grammarName' value='MDANonILSubsetOnly'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestMDA'/>
 	</target>
 
 	<target name='clean' depends=''>

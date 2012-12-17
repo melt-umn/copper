@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
@@ -29,19 +32,56 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public class ParserCompiler
 {
+	/** Copper's current version number. */
+	public static final String VERSION;
+	/** The Mercurial revision from which this version of Copper was built (if available). */
+	public static final String REVISION;
+	/** If running from a JAR, the timestamp recording when the JAR was built. */
+	public static final String BUILD;
+	
+	static
+	{
+		Properties p = new Properties();
+		try
+		{
+			InputStream manifest = ParserCompiler.class.getClassLoader().getResourceAsStream("etc/Copper.properties");
+			if(manifest != null)
+			{
+				InputStreamReader propertiesReader = new InputStreamReader(manifest);
+				p.load(propertiesReader);
+			}
+		}
+		catch(IOException ex)
+		{
+		}
+		String version = p.getProperty("Version");
+		String revision = p.getProperty("Revision");
+		String build = p.getProperty("Build");
+		VERSION = (version == null || !version.matches("[0-9\\.]+")) ? "unknown" : version; 
+		REVISION = (revision == null || !revision.matches("[0-9a-f]{40}\\+?")) ? "unknown" : revision; 
+		BUILD = (build == null || !build.matches("[0-9]{8}-[0-9]{4}")) ? "unknown" : build; 
+	}
+	private static void versionMessage(ParserCompilerParameters args)
+	{
+		System.err.println("Copper version " + VERSION);
+		System.err.println("Revision " + (args.getQuietLevel().compareTo(CompilerLevel.VERBOSE) <= 0 ? REVISION : REVISION.substring(0,8) + REVISION.substring(REVISION.indexOf("+"))) + ", build " + BUILD);
+		System.exit(0);
+	}
+	
 	private static String usageMessage(ParserCompilerParameters args)
 	{
 		String rv = "";
-		rv += "Usage: ParserCompiler [built-in-switches] [custom-switches] grammar-file1 grammar-file2 ... grammar-filen\n";
+		rv += "Usage: ParserCompiler [built-in-switches] [custom-switches] spec-file1 spec-file2 ... spec-filen\n";
 		rv += "Built-in switches (all optional) are:\n";
 		rv += "\t-?\tDisplay this usage information.\n\t\tUse ParserCompiler -pipeline [pipeline] -? to list\n\t\toptions specific to a given pipeline.\n";
+		rv += "\t-version\tDisplay version information.\n";
 		rv += "\t-package [package]\tThe package of the generated parser.\n\t\tDefaults to the default package or what is set in\n\t\tthe parser specification.\n";
 		rv += "\t-parser [class]\tThe class name of the generated parser.\n\t\tDefaults to 'Parser' or what is set in\n\t\tthe parser specification.\n";
 		rv += "\t-o [out]\tOutput the generated parser to the file 'out'.\n\t\tUse '-' to redirect to standard output, or no parameter\n\t\tto suppress output altogether.\n";
 		rv += "\t-q\t\tRun the compiler quietly.\n";
 		rv += "\t-v\t\tRun the compiler with extra verbosity.\n";
 		rv += "\t-vv\t\tRun the compiler with even more extra verbosity.\n";
-		rv += "\t-compose\tRun Copper's modular determinism analysis on the input.\n\t\t\tIf this switch is used, the input must comprise exactly\n\t\t\ttwo grammars: the host and an extension to test.\n";
+		rv += "\t-mda\tRun Copper's modular determinism analysis on the input.\n\t\t\tIf this switch is used, the input must comprise exactly\n\t\t\ttwo grammars: the host and an extension to test.\n";
 		rv += "\t-logfile [lout]\tPipe all log output to the file 'lout'\n\t\t\t(default standard error).\n";
 		rv += "\t-dump\tProduce a detailed report of the grammar and generated parser.\n";
 		rv += "\t-errordump\tProduce a detailed report, but only if the parser\n\t\t\tcompiler has generated an error.\n";
@@ -206,7 +246,8 @@ public class ParserCompiler
 		}
 		CompilerLevel quietLevel = getDefaultQuietLevel();
 		boolean displayHelp = false;
-		boolean isComposition = false;
+		boolean displayVersion = false;
+		boolean runMDA = false;
 		boolean dumpReport = false;
 		boolean dumpOnlyOnError = false;
 		CopperDumpType.initTable();
@@ -230,6 +271,10 @@ public class ParserCompiler
 			else if(args[i].equals("-?"))
 			{
 				displayHelp = true;
+			}
+			else if(args[i].equals("-version"))
+			{
+				displayVersion = true;
 			}
 			else if(args[i].equals("-o"))
 			{
@@ -273,9 +318,9 @@ public class ParserCompiler
 				if(++i == args.length || !CopperPipelineType.contains(args[i])) usageMessageError(null);
 				else usePipeline = CopperPipelineType.fromString(args[i]);
 			}
-			else if(args[i].equals("-compose"))
+			else if(args[i].equals("-mda"))
 			{
-				isComposition = true;
+				runMDA = true;
 			}
 			else if(args[i].equals("-logfile"))
 			{
@@ -313,7 +358,7 @@ public class ParserCompiler
 		
 		ParserCompilerParameters argTable = new ParserCompilerParameters();
 		argTable.setQuietLevel(quietLevel);
-		argTable.setComposition(isComposition);
+		argTable.setRunMDA(runMDA);
 		argTable.setDumpReport(dumpReport);
 		argTable.setDumpOnlyOnError(dumpOnlyOnError);
 		argTable.setUseEngine(useEngine);
@@ -368,6 +413,7 @@ public class ParserCompiler
 		pipeline = argTable.getPipeline();
 		
 		if(displayHelp) usageMessageNoError(argTable);
+		else if(displayVersion) versionMessage(argTable);
 		else if(i >= args.length) usageMessageError(null);
 				
 		if(args[i].startsWith("-"))
