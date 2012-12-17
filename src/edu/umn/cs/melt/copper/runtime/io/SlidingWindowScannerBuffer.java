@@ -3,7 +3,7 @@ package edu.umn.cs.melt.copper.runtime.io;
 import java.io.IOException;
 import java.io.Reader;
 
-public class SlidingWindowScannerBuffer extends ScannerBuffer
+class SlidingWindowScannerBuffer extends ScannerBuffer
 {
 	// TODO: Gather statistics on how this is used to try and make it more efficient.
 	// TODO: Find out why a new string is being built at every character position in the input. 

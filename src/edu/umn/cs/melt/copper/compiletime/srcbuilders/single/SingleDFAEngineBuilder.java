@@ -18,6 +18,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserAttribute;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
+import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
 import edu.umn.cs.melt.copper.runtime.engines.semantics.SpecialParserAttributes;
@@ -245,6 +246,11 @@ public class SingleDFAEngineBuilder
 	    parserAncillaries += "\n";
 		if(parser.getParserClassAuxCode() != null) parserAncillaries += parser.getParserClassAuxCode();
 
+		out.print("/*\n * Built at " + new java.util.Date(System.currentTimeMillis()) + "\n");
+		out.print(" * by Copper version " + ParserCompiler.VERSION + ",\n");
+		out.print(" *      revision " + ParserCompiler.REVISION + ",\n");
+		out.print(" *      build " + ParserCompiler.BUILD + "\n */\n");
+		
 		out.print(packageDecl + "\n");
 		out.print(importDecls + "\n");
 

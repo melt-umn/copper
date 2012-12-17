@@ -4,6 +4,10 @@ import org.xml.sax.Locator;
 
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
+/**
+ * Represents the position of a parser in its input.
+ * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ */
 public abstract class InputPosition implements Location
 {
 	/** 

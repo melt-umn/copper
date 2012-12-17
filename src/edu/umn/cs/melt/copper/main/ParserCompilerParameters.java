@@ -22,7 +22,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 {
 	private Hashtable<String,Object> customParameters;
 	private ArrayList< Pair<String,Reader> > files;
-	private boolean isComposition;
+	private boolean runMDA;
 	private boolean dumpReport;
 	private boolean dumpOnlyOnError;
 	private String packageDecl;
@@ -52,7 +52,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	public ParserCompilerParameters()
 	{
 		files = null;
-		isComposition = false;
+		runMDA = false;
 		dumpReport = false;
 		dumpOnlyOnError = false;
 		dumpFormat = ParserCompiler.getDefaultDumpType();
@@ -108,14 +108,14 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		this.files = files;
 	}
 
-	public boolean isComposition()
+	public boolean isRunMDA()
 	{
-		return isComposition;
+		return runMDA;
 	}
 
-	public void setComposition(boolean isComposition)
+	public void setRunMDA(boolean isComposition)
 	{
-		this.isComposition = isComposition;
+		this.runMDA = isComposition;
 	}
 
 	public boolean isDumpReport()

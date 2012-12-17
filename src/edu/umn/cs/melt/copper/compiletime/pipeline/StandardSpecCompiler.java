@@ -94,7 +94,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 							spec.getClassName() : 
 					        "Parser");
 					
-		if(args.isComposition() && spec.getType() != CopperElementType.EXTENDED_PARSER)
+		if(args.isRunMDA() && spec.getType() != CopperElementType.EXTENDED_PARSER)
 		{
 			logger.log(new GenericLocatedMessage(CompilerLevel.QUIET, spec.getLocation(), "Cannot run the modular determinism analysis on a non-extended parser",true,false));
 			logger.flush();
@@ -115,7 +115,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 		
 		ParserSpec hostSpec = null;
 		
-		if(args.isComposition() && spec.getType() == CopperElementType.EXTENDED_PARSER)
+		if(args.isRunMDA() && spec.getType() == CopperElementType.EXTENDED_PARSER)
 		{
 			hostSpec = NumericParserSpecBuilder.buildExt((ExtendedParserBean) spec,symbolTable,true);
 		}

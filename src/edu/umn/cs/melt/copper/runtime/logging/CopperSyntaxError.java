@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 
 /**
  * A subclass of Copper parser exception containing structured data
- * for a syntax error.
+ * about a syntax error.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  *
  */

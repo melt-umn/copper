@@ -1,3 +1,5 @@
 bin
 jar
 doc/javadoc
+syntax: regexp
+^etc/Copper\.properties$

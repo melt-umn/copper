@@ -41,6 +41,7 @@ public class CopperAntTask extends Task
 	private boolean isWarnUselessNTs = true;
 	private boolean isDump = false;
 	private ParserCompilerParameters params = null;
+	private boolean runMDA = false;
 	
 	@Override
 	public void execute()
@@ -76,6 +77,7 @@ public class CopperAntTask extends Task
 		if(!skin.equals("")) params.setUseSkin(skin);
 		
 		params.setWarnUselessNTs(isWarnUselessNTs);
+		params.setRunMDA(runMDA);
 
 		System.out.println("Compiling: " + inputLabel);
 		
@@ -449,4 +451,19 @@ public class CopperAntTask extends Task
 		this.isDumpOnlyOnError = isDumpOnlyOnError;
 	}
 
+	/**
+	 * @return <code>true</code> if the parser generator is set to run the modular determinism analysis.
+	 */
+	public boolean isRunMDA()
+	{
+		return runMDA;
+	}
+
+	/**
+	 * @param runMDA <code>true</code> if the parser generator is set to run the modular determinism analysis.
+	 */
+	public void setRunMDA(boolean runMDA)
+	{
+		this.runMDA = runMDA;
+	}
 }
