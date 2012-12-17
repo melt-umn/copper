@@ -142,7 +142,7 @@ public class LegacyPipeline implements Pipeline
 			try
 			{
 				ParserBean parser = new XMLSkinParser(files,newStyleLogger).parse();
-				grammar = ParserSpecProcessor.buildGrammarSource(parser,newStyleLogger);
+				if(parser != null) grammar = ParserSpecProcessor.buildGrammarSource(parser,newStyleLogger);
 			}
 			catch(CopperException ex)
 			{
