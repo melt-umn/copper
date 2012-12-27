@@ -50,6 +50,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
+import edu.umn.cs.melt.copper.main.CopperDumpControl;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
@@ -64,8 +65,8 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 		CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
 
 		
-		if(args.isDumpReport() &&
-				   (!args.isDumpOnlyOnError() || !succeeded))
+		if(args.getDump() == CopperDumpControl.ON ||
+				   (args.getDump() == CopperDumpControl.ERROR_ONLY && !succeeded))
 		{
 			Dumper dumper = null;
 			
@@ -128,7 +129,7 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 			GrammarStatistics stats = new GrammarStatistics(fullSpec);
 			timeBefore = System.currentTimeMillis();
 		
-		succeeded &= GrammarWellFormednessChecker.check(logger, stats, symbolTable, fullSpec, true);
+		succeeded &= GrammarWellFormednessChecker.check(logger, stats, symbolTable, fullSpec, args.isWarnUselessNTs());
 		
 			if(logger.isLoggable(TimingMessage.TIMING_LEVEL)) logger.log(new TimingMessage("Checking grammar well-formedness",System.currentTimeMillis() - timeBefore));
 			logger.flush();
@@ -233,8 +234,8 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 			if(logger.isLoggable(TimingMessage.TIMING_LEVEL)) logger.log(new TimingMessage("Reporting lexical ambiguities",System.currentTimeMillis() - timeBefore));
 			logger.flush();
 
-		if(args.isDumpReport() &&
-		   (!args.isDumpOnlyOnError() || !succeeded))
+		if(args.getDump() == CopperDumpControl.ON ||
+		   (args.getDump() == CopperDumpControl.ERROR_ONLY && !succeeded))
 		{
 			Dumper dumper = null;
 			
@@ -311,19 +312,19 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 	}
 
 	@Override
-	public Set<String> getCustomParameters()
+	public Set<String> getCustomSwitches()
 	{
 		return null;
 	}
 
 	@Override
-	public String customParameterUsage()
+	public String customSwitchUsage()
 	{
 		return "";
 	}
 
 	@Override
-	public int processCustomParameter(ParserCompilerParameters args,
+	public int processCustomSwitch(ParserCompilerParameters args,
 			String[] cmdline, int index)
 	{
 		return -1;

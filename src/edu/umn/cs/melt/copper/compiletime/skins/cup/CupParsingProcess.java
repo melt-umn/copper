@@ -1,11 +1,14 @@
 package edu.umn.cs.melt.copper.compiletime.skins.cup;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.InterfaceErrorMessage;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParser;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
@@ -22,8 +25,32 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 		ParserBean spec;
 		CompilerLogger logger;
 		logger = AuxiliaryMethods.getOrMakeLogger(args);
-		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
+		ArrayList< Pair<String,Object> > inputs = args.getInputs(); 
+
+		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
+
+		boolean failed = false;
 		
+		for(Pair<String,Object> i : inputs)
+		{
+			Reader second = null;
+			if(i.second() instanceof Reader) second = (Reader) i.second();
+			else
+			{
+				try
+				{
+					second = new FileReader(i.second().toString());
+				}
+				catch(FileNotFoundException ex)
+				{
+					logger.log(new InterfaceErrorMessage("Grammar file not found: '" + i.second() + "'"));
+					failed = true;
+				}
+			}
+			files.add(Pair.cons(i.first(),second));
+		}
+		if(failed) return null;
+
 		try
 		{
 			spec = edu.umn.cs.melt.copper.compiletime.skins.cup.CupSkinParser.parseGrammar(files,logger);
@@ -39,19 +66,19 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 	}
 
 	@Override
-	public Set<String> getCustomParameters()
+	public Set<String> getCustomSwitches()
 	{
 		return null;
 	}
 
 	@Override
-	public String customParameterUsage()
+	public String customSwitchUsage()
 	{
 		return "";
 	}
 
 	@Override
-	public int processCustomParameter(ParserCompilerParameters args,
+	public int processCustomSwitch(ParserCompilerParameters args,
 			String[] cmdline, int index)
 	{
 		return -1;

@@ -1,7 +1,9 @@
 package edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -38,6 +40,7 @@ import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.UniversalProcessParameters;
 import edu.umn.cs.melt.copper.compiletime.skins.xml.XMLSkinParser;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.main.CopperDumpControl;
 import edu.umn.cs.melt.copper.main.CopperEngineType;
 import edu.umn.cs.melt.copper.main.CopperSkinType;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
@@ -47,14 +50,14 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
 public class LegacyPipeline implements Pipeline
 {
-	private HashSet<String> customParameters;
+	private HashSet<String> customSwitches;
 	
 	public LegacyPipeline()
 	{
-		customParameters = new HashSet<String>();
-		customParameters.add("isPretty");
-		customParameters.add("gatherStatistics");
-		customParameters.add("runtimeQuietLevel");
+		customSwitches = new HashSet<String>();
+		customSwitches.add("isPretty");
+		customSwitches.add("gatherStatistics");
+		customSwitches.add("runtimeQuietLevel");
 	}
 	
 	private edu.umn.cs.melt.copper.legacy.compiletime.logging.CompilerLogger getOldStyleLogger(CompilerLogger newStyleLogger,UniversalProcessParameters args)
@@ -88,7 +91,42 @@ public class LegacyPipeline implements Pipeline
 	@SuppressWarnings("deprecation")
 	private GrammarSource parseInputGrammarLegacy(ParserCompilerParameters args)
 	{
-		ArrayList< Pair<String,Reader> > files = args.getFiles(); 
+		ArrayList< Pair<String,Object> > inputs = args.getInputs();
+		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >();
+		
+		boolean fileError = false;
+		for(Pair<String,Object> i : inputs)
+		{
+			Reader second = null;
+			if(i.second() instanceof Reader) second = (Reader) i.second();
+			else if(i.second() instanceof File)
+			{
+				try { second = new FileReader((File) i.second()); }
+				catch(FileNotFoundException ex)
+				{
+					System.err.println("File not found: " + i.second());
+					fileError = true;
+				}
+			}
+			else if(i.second() instanceof String)
+			{
+				try { second = new FileReader((String) i.second()); }
+				catch(FileNotFoundException ex)
+				{
+					System.err.println("File not found: " + i.second());
+					fileError = true;
+				}
+			}
+			else
+			{
+				System.err.println("Inputs to the legacy pipeline must be open streams or filenames");
+				fileError = true;
+			}
+			files.add(Pair.cons(i.first(),second));
+		}
+		
+		if(fileError) return null;
+		
 		boolean isComposition = args.isRunMDA();
 		CopperSkinType useSkin = args.getUseSkin();
 		CompilerLogger newStyleLogger;
@@ -195,10 +233,10 @@ public class LegacyPipeline implements Pipeline
 	private int compileParserLegacy(ParserCompilerParameters args,GrammarSource grammar)
 	throws CopperException
 	{
-		boolean isPretty = args.getCustomParameter("isPretty", Boolean.class, Boolean.FALSE);
-		if(args.hasCustomParameter("isPretty") && args.getCustomParameter("isPretty") instanceof Boolean) isPretty = (Boolean) args.getCustomParameter("isPretty");
+		boolean isPretty = args.getCustomSwitch("isPretty", Boolean.class, Boolean.FALSE);
+		if(args.hasCustomSwitch("isPretty") && args.getCustomSwitch("isPretty") instanceof Boolean) isPretty = (Boolean) args.getCustomSwitch("isPretty");
 		boolean isComposition = args.isRunMDA();
-		boolean gatherStatistics = args.getCustomParameter("gatherStatistics", Boolean.class, Boolean.FALSE);
+		boolean gatherStatistics = args.getCustomSwitch("gatherStatistics", Boolean.class, Boolean.FALSE);
 		CopperEngineType useEngine = args.getUseEngine();
 		CompilerLogger newStyleLogger = args.getLogger();
 		edu.umn.cs.melt.copper.legacy.compiletime.logging.CompilerLogger logger = getOldStyleLogger(newStyleLogger,args);
@@ -214,7 +252,7 @@ public class LegacyPipeline implements Pipeline
 					(grammar.getParserSources().getParserName() != null && !grammar.getParserSources().getParserName().equals("") ?
 							grammar.getParserSources().getParserName() : 
 					        "Parser");
-		String runtimeQuietLevel = args.getCustomParameter("runtimeQuietLevel",String.class,"ERROR");
+		String runtimeQuietLevel = args.getCustomSwitch("runtimeQuietLevel",String.class,"ERROR");
 
 		if(useEngine != CopperEngineType.OLD_AND_SLOW && gatherStatistics)
 		{
@@ -381,10 +419,10 @@ public class LegacyPipeline implements Pipeline
 			ex.printStackTrace(System.err);
 			return 1;
 		}
-		if(args.isDumpReport() && (!args.isDumpOnlyOnError() || logger.hasErrors()))
+		if(args.getDump() == CopperDumpControl.ON || (args.getDump() == CopperDumpControl.ERROR_ONLY && logger.hasErrors()))
 		{
 			PrintStream dumpStream = null;
-			if(!args.isDumpReport() || args.getDumpFile().equals("") || args.getDumpFile().equals(args.getLogFile())) dumpStream = logger.getOut();
+			if(args.getDump() == CopperDumpControl.OFF || args.getDumpFile().equals("") || args.getDumpFile().equals(args.getLogFile())) dumpStream = logger.getOut();
 			else
 			{
 				try { dumpStream = new PrintStream(new FileOutputStream(args.getDumpFile())); }
@@ -463,35 +501,35 @@ public class LegacyPipeline implements Pipeline
 
 
 	@Override
-	public Set<String> getCustomParameters() {
+	public Set<String> getCustomSwitches() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public int processCustomParameter(ParserCompilerParameters args, String[] cmdline, int index)
+	public int processCustomSwitch(ParserCompilerParameters args, String[] cmdline, int index)
 	{
 		if(cmdline[index].equals("-pretty"))
 		{
-			args.setCustomParameter("isPretty",true);
+			args.setCustomSwitch("isPretty",true);
 			return index+1;
 		}
 		else if(cmdline[index].equals("-gatherstats"))
 		{
-			if(args.getCustomParameter("gatherStatistics",String.class,"ERROR").equals("ERROR")) args.setCustomParameter("runtimeQuietLevel","NOTA_BENE");
-			args.setCustomParameter("gatherStatistics",true);
+			if(args.getCustomSwitch("gatherStatistics",String.class,"ERROR").equals("ERROR")) args.setCustomSwitch("runtimeQuietLevel","NOTA_BENE");
+			args.setCustomSwitch("gatherStatistics",true);
 			return index+1;
 		}
 		else if(cmdline[index].equals("-runv"))
 		{
-			args.setCustomParameter("runtimeQuietLevel","INFO");
+			args.setCustomSwitch("runtimeQuietLevel","INFO");
 			return index+1;
 		}
 		else return -1;		
 	}
 
 	@Override
-	public String customParameterUsage()
+	public String customSwitchUsage()
 	{
 		String rv = "";
 		rv += "\t-gatherstats\tSet the output parser to print parsing statistics\n";
