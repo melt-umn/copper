@@ -3,6 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.pipeline;
 import java.io.File;
 import java.io.PrintStream;
 
+import edu.umn.cs.melt.copper.main.CopperDumpControl;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 import edu.umn.cs.melt.copper.main.CopperIOType;
 
@@ -15,10 +16,10 @@ import edu.umn.cs.melt.copper.main.CopperIOType;
 public interface SpecCompilerParameters extends UniversalProcessParameters
 {
 	public boolean isRunMDA();
-	public boolean isDumpReport();
-	public boolean isDumpOnlyOnError();
+	public boolean isWarnUselessNTs();
+	public CopperDumpControl getDump();
 	public CopperDumpType getDumpFormat();
-	public CopperIOType getDumpType();
+	public CopperIOType getDumpOutputType();
 	public File getDumpFile();
 	public PrintStream getDumpStream();
 }

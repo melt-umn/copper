@@ -20,7 +20,7 @@
 	<!-- Uncomment this line and comment the one below to run Copper from JARs rather than unpackaged class files. -->
 	<!--<taskdef name='copper' classpath='${dist}/CopperCompiler.jar' classname='edu.umn.cs.melt.copper.ant.CopperAntTask'/>-->
 	<taskdef name='copper' classpathref='tests_and_src' classname='edu.umn.cs.melt.copper.ant.CopperAntTask'/>
-	
+		
 
 	<!-- Auxiliary targets; not to be run directly -->
 	<target name='TestNativeGrammar' depends=''>
@@ -30,19 +30,25 @@
 	
 	<target name='TestCupGrammar' depends=''>
 		<property name='skin' value='CUP'/>
-		<copper inputFile='${grammars}/${grammarName}.x' outputFile='${build_package}/${grammarName}Parser.java' compileVerbose='${compileVerbose}' engine='${engine}' skin='${skin}' dump='${dump}'/>
+		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}'>
+		    <inputs dir='${grammars}' includes='${grammarName}.x'/>
+		</copper>
 		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
 	</target>
 
 	<target name='TestXMLGrammar' depends=''>
 		<property name='skin' value='XML'/>
-		<copper fullClassName='${build_package}.${grammarName}Parser' inputFile='${grammars}/${grammarName}.xml' outputFile='${build_package}/${grammarName}Parser.java' compileVerbose='${compileVerbose}' engine='${engine}' skin='${skin}' dump='${dump}'/>
+		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}'>
+		    <inputs dir='${grammars}' includes='${grammarName}.xml'/>
+		</copper>
 		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
 	</target>
 	
 	<target name='TestMDA' depends=''>
 		<property name='skin' value='XML'/>
-		<copper inputFile='${grammars}/mda/${grammarName}.xml' outputFile='/dev/null' compileVerbose='${compileVerbose}' engine='${engine}' skin='${skin}' dump='${dump}' runMDA='true'/>
+		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}' runMDA='true'>
+		    <inputs dir='${grammars}/mda' includes='${grammarName}.xml'/>
+		</copper>
 	</target>
 
 	

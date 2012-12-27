@@ -27,7 +27,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,SpecCompiler<SCIN,SCOUT>,SourceBuilder<SCOUT>
 {
-	private HashSet<String> customParameters;
+	private HashSet<String> customSwitches;
 	
 	private SpecParser<SCIN> specParser;
 	private SpecCompiler<SCIN,SCOUT> specCompiler;
@@ -42,14 +42,14 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 		this.specCompiler = specCompiler;
 		this.sourceBuilder = sourceBuilder;
 		
-		customParameters = new HashSet<String>();
+		customSwitches = new HashSet<String>();
 		Set<String> buf;
-		buf = specParser.getCustomParameters(); 
-		if(buf != null) customParameters.addAll(buf);
-		buf = specCompiler.getCustomParameters();
-		if(buf != null) customParameters.addAll(buf);
-		buf = sourceBuilder.getCustomParameters();
-		if(buf != null) customParameters.addAll(buf);
+		buf = specParser.getCustomSwitches(); 
+		if(buf != null) customSwitches.addAll(buf);
+		buf = specCompiler.getCustomSwitches();
+		if(buf != null) customSwitches.addAll(buf);
+		buf = sourceBuilder.getCustomSwitches();
+		if(buf != null) customSwitches.addAll(buf);
 	}
 
 	@Override
@@ -115,31 +115,31 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 	}
 
 	@Override
-	public Set<String> getCustomParameters()
+	public Set<String> getCustomSwitches()
 	{
-		return customParameters;
+		return customSwitches;
 	}
 
 	@Override
-	public String customParameterUsage()
+	public String customSwitchUsage()
 	{
 		String rv = "";
-		if(specParser != null) rv += specParser.customParameterUsage();
-		if(specCompiler != null) rv += specCompiler.customParameterUsage();
-		if(sourceBuilder != null) rv += sourceBuilder.customParameterUsage();
+		if(specParser != null) rv += specParser.customSwitchUsage();
+		if(specCompiler != null) rv += specCompiler.customSwitchUsage();
+		if(sourceBuilder != null) rv += sourceBuilder.customSwitchUsage();
 		return rv;
 	}
 
 	@Override
-	public int processCustomParameter(ParserCompilerParameters args,
+	public int processCustomSwitch(ParserCompilerParameters args,
 			String[] cmdline, int index)
 	{
 		int rv;
-		rv = specParser.processCustomParameter(args,cmdline,index);
+		rv = specParser.processCustomSwitch(args,cmdline,index);
 		if(rv != -1) return rv;
-		rv = specCompiler.processCustomParameter(args,cmdline,index);
+		rv = specCompiler.processCustomSwitch(args,cmdline,index);
 		if(rv != -1) return rv;
-		rv = sourceBuilder.processCustomParameter(args,cmdline,index);
+		rv = sourceBuilder.processCustomSwitch(args,cmdline,index);
 		if(rv != -1) return rv;
 		return -1;
 	}

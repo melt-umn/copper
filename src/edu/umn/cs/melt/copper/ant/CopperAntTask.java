@@ -1,104 +1,218 @@
 package edu.umn.cs.melt.copper.ant;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.resources.FileResource;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
-import edu.umn.cs.melt.copper.legacy.compiletime.logging.CompilerLogMessageSort;
+import edu.umn.cs.melt.copper.main.CopperDumpControl;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 import edu.umn.cs.melt.copper.main.CopperEngineType;
 import edu.umn.cs.melt.copper.main.CopperIOType;
+import edu.umn.cs.melt.copper.main.CopperPipelineType;
 import edu.umn.cs.melt.copper.main.CopperSkinType;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
- * This bean allows Copper to be run via Ant.
+ * This bean allows Copper to be run via ANT. It matches, as closely
+ * as possible, the parameters used in {@link ParserCompilerParameters}.
+ * {@code inputs} is represented as a nested file-set element, <em>e.g.</em>
+ * <br/>
+ * {@code <copper ...><inputs dir='dir' includes='specfile'/></copper>}.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  *
  */
 public class CopperAntTask extends Task
 {
-	private String inputLabel = "<stdin>";
-	private String outputLabel = "<stdout>";
-	private String fullClassName = "";
-	private String logFile = null;
-	private String dumpFile = null;
-	private boolean isDumpOnlyOnError = false;
-	private CopperDumpType dumpType = ParserCompiler.getDefaultDumpType();
-	private CopperEngineType engine = ParserCompiler.getDefaultEngine();
-	private CopperSkinType skin = ParserCompiler.getDefaultSkin();
-	private Reader input = null;
-	private File outputFile = null;
-	private CompilerLevel quietLevel = ParserCompiler.getDefaultQuietLevel();
-	private boolean isWarnUselessNTs = true;
-	private boolean isDump = false;
-	private ParserCompilerParameters params = null;
-	private boolean runMDA = false;
+	/**
+	 * Holds any custom/pipeline-specific switches to be passed on to the pipeline.
+	 * @see #usePipeline
+	 */
+	private Hashtable<String,Object> customSwitches;
+	/**
+	 * A file to which the dump will be output.
+	 * @see #dump
+	 */
+	protected File dumpFile;
+	/**
+	 * The format of any parser dump generated during this compiler run.
+	 * Defaults to {@link ParserCompiler#getDefaultDumpType()}.
+	 */
+	protected CopperDumpType dumpFormat;
+	/** 
+	 * Controls generation of a parser dump: off, on, or only in the event of an error.
+	 * @see CopperDumpControl
+	 */
+	protected CopperDumpControl dump;
+	/**
+	 * A stream to which any dump generated during this compiler run will be output.
+	 * @see #dump
+	 */
+	protected PrintStream dumpStream;
+	/**
+	 * Controls whether to output any dump generated during this compiler run to a file or a stream.
+	 * @see #dumpFile
+	 * @see #dumpStream
+	 */
+	private CopperIOType dumpOutputType;
 	
-	@Override
+	private ArrayList<Pair<String,Object>> inputs;
+
+	/**
+	 * The set of input arguments to the parser compiler. Each entry
+	 * in the list comprises a {@code String} "label" and an
+	 * object of nonspecific type. Tighter type restrictions may
+	 * be enforced by each pipeline.
+	 */
+	@SuppressWarnings("unchecked")
+	public void addConfiguredInputs(FileSet files)
+	{
+		Iterator<FileResource> it = files.iterator();
+		while(it.hasNext())
+		{
+			FileResource fr = it.next();
+			inputs.add(Pair.cons(fr.getFile().toString(),(Object) fr.getFile()));
+		}
+	}
+	
+	/** Turns on or off warnings on useless nonterminals. Defaults to {@code true}. */
+	protected boolean isWarnUselessNTs;
+	/** 
+	 * A file to which Copper's log output (error/warning/info messages) will be sent.
+	 * It is permissible for loggers or log handlers to ignore this parameter.
+	 */
+	protected File logFile;
+	/**
+	 * A stream to which Copper's log output (error/warning/info messages) will be sent.
+	 * It is permissible for loggers or log handlers to ignore this parameter,
+	 * in which case it will simply be the default value for {@link #dumpStream}.
+	 * Defaults to {@code System.err}.
+	 */
+	protected PrintStream logStream;
+	/**
+	 * Controls whether to send Copper's log output (error/warning/info messages) to a file or a stream.
+	 * Defaults to {@link CopperIOType#STREAM}.
+	 * @see #logFile
+	 * @see #logStream
+	 */
+	private CopperIOType logType;
+	/** A file to which Copper's output parser class will be sent. */
+	protected File outputFile;
+	/** A stream to which Copper's output parser class will be sent. */
+	protected PrintStream outputStream;
+	/**
+	 * Controls whether to send Copper's output parser class to a file or a stream.
+	 * Defaults to {@code null}, which suppresses output altogether.
+	 * @see #outputFile
+	 * @see #outputStream
+	 */
+	private CopperIOType outputType;
+	/**
+	 * The name of the package in which to declare the output parser.
+	 * Defaults to {@code null}, indicating no package declaration
+	 * (if, e.g., it is provided in a code block). 
+	 */
+	protected String packageDecl;
+	/** The name of the output parser class. */
+	protected String parserName;
+	/**
+	 * Sets the level of verbosity for the logs.
+	 * Defaults to {@link ParserCompiler#getDefaultQuietLevel()}.
+	 */
+	protected CompilerLevel quietLevel;
+	/**
+	 * Controls whether the modular determinism analysis should be run
+	 * on this input. Defaults to {@code false}.
+	 */
+	protected boolean runMDA;
+	
+	/**
+	 * The parsing "engine" on which the output parser class will be based.
+	 * Defaults to {@link ParserCompiler#getDefaultEngine()}.
+	 */
+	private CopperEngineType useEngine;
+	/**
+	 * The "pipeline" to which this input will be passed.
+	 * Defaults to {@link ParserCompiler#getDefaultPipeline()}.
+	 */
+	private CopperPipelineType usePipeline;
+	/**
+	 * The "skin" with which this input will be parsed.
+	 * Defaults to {@link ParserCompiler#getDefaultSkin()}.
+	 */
+	private CopperSkinType useSkin;
+	
+	public CopperAntTask()
+	{
+		inputs = new ArrayList<Pair<String,Object>>();
+		runMDA = false;
+		dump = CopperDumpControl.OFF;
+		dumpFormat = ParserCompiler.getDefaultDumpType();
+		useEngine = ParserCompiler.getDefaultEngine();
+		useSkin = ParserCompiler.getDefaultSkin();
+		quietLevel = ParserCompiler.getDefaultQuietLevel();
+		usePipeline = ParserCompiler.getDefaultPipeline();
+		packageDecl = null;
+		parserName = null;
+		outputStream = null;
+		outputFile = null;
+		outputType = null;
+		logStream = null;
+		logFile = null;
+		logType = null;
+		dumpStream = null;
+		dumpFile = null;
+		dumpOutputType = null;
+		
+		isWarnUselessNTs = true;
+		
+		customSwitches = new Hashtable<String,Object>();
+	}
+	
 	public void execute()
 	throws BuildException
 	{
-		params = new ParserCompilerParameters();
+		ParserCompilerParameters params = new ParserCompilerParameters();
 		
-		int i = fullClassName.lastIndexOf('.');
-		if(i != -1)
-		{
-			params.setPackageDecl(fullClassName.substring(0,i));
-			params.setParserName(fullClassName.substring(i+1));
-		}
-		else if(fullClassName.length() != 0)
-		{
-			params.setParserName(fullClassName);
-		}
-		else
-		{
-			params.setParserName("");
-		}
-		params.setDumpReport(isDump);
-		params.setDumpOnlyOnError(isDumpOnlyOnError);
-		if(logFile != null)
-		{
-			params.setLogFile(new File(logFile));
-			if(dumpFile == null) params.setDumpFile(new File(logFile));
-		}
-		if(dumpType != null) params.setDumpFormat(dumpType); 
-		if(dumpFile != null) params.setDumpFile(new File(dumpFile));
+		
+		params.setInputs(inputs);
+		params.setRunMDA(runMDA);
+		params.setDump(dump);
+		params.setDumpFormat(dumpFormat);
+		params.setUseEngine(useEngine);
+		params.setUseSkin(useSkin);
 		params.setQuietLevel(quietLevel);
-		if(engine != null) params.setUseEngine(engine);
-		if(!skin.equals("")) params.setUseSkin(skin);
+		params.setUsePipeline(usePipeline);
+		params.setPackageDecl(packageDecl);
+		params.setParserName(parserName);
+		params.setOutputStream(outputStream);
+		params.setOutputFile(outputFile);
+		params.setOutputType(outputType);
+		params.setLogStream(logStream);
+		params.setLogFile(logFile);
+		params.setLogType(logType);
+		params.setDumpStream(dumpStream);
+		params.setDumpFile(dumpFile);
+		params.setDumpOutputType(dumpOutputType);
 		
 		params.setWarnUselessNTs(isWarnUselessNTs);
-		params.setRunMDA(runMDA);
-
-		System.out.println("Compiling: " + inputLabel);
 		
-		//PrintStream oldout = System.out;
-		
-		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >();
-		files.add(Pair.cons(inputLabel,input));
-		params.setFiles(files);
-		
-		//System.setOut(output);
-		if(outputFile != null)
+		for(String customSwitch : customSwitches.keySet())
 		{
-			params.setOutputType(CopperIOType.FILE);
-			params.setOutputFile(outputFile);
-		}
-		else
-		{
-			params.setOutputType(CopperIOType.STREAM);
-			params.setOutputStream(System.out);
+			params.setCustomSwitch(customSwitch,customSwitches.get(customSwitch));
 		}
 		
+		System.out.println("Compiling " + inputs.size() + " input file" + (inputs.size() == 1 ? "" : "s") + ":");
+		for(Pair<String,Object> input : inputs) System.out.println("\t" + input.first());
 		
 		int errorlevel = 1;
 		try
@@ -109,361 +223,211 @@ public class CopperAntTask extends Task
 		{
 			ex.printStackTrace();
 		}
-
-		//System.setOut(oldout);
 		
 		if(errorlevel != 0) throw new BuildException("Error " + errorlevel);
 	}
-	
-	/**
-	 * Returns the name of the file that will be given to Copper as input.
-	 * @see #getInputLabel()
-	 */
-	public String getInputFile()
-	{
-		return getInputLabel();
-	}
 
-	/**
-	 * Sets the name of the file that will be given to Copper as input.
-	 * A combination of <code>setInput()</code> and <code>setInputLabel()</code>.
-	 * @param fileName The filename.
-	 * @throws IOException If there is an error opening the file.
-	 */
-	public void setInputFile(String fileName)
-	throws IOException
-	{
-		setInputLabel(fileName);
-		setInput(new FileReader(fileName));
-	}
-	
-	/**
-	 * Returns the name of the file where Copper will place the source code of the finished parser.
-	 * @see #getOutputLabel()
-	 */
-	public String getOutputFile()
-	{
-		return getOutputLabel();
-	}
-	
-	/**
-	 * Sets the name of the file where Copper will place the source code of the finished parser.
-	 * A combination of <code>setOutputFile()</code> and <code>setOutputLabel()</code>.
-	 * @param fileName The filename.
-	 * @throws IOException If there is an error opening the file.
-	 */
-	public void setOutputFile(String fileName)
-	throws IOException
-	{
-		setOutputLabel(fileName);
-		outputFile = new File(fileName);
-	}
-	
-	/**
-	 * Returns the name of the file where Copper's log messages will be placed.
-	 */
-	public String getLogFile()
-	{
-		return logFile;
-	}
-	
-	/**
-	 * Sets the name of the file where Copper's log messages will be placed.
-	 * @param logFile The filename.
-	 */
-	public void setLogFile(String logFile)
-	{
-		this.logFile = logFile;
-	}
 
-	/**
-	 * Returns the name of the file where the detailed parser report will be placed, if enabled.
-	 * @see #isDump()
-	 */
-	public String getDumpFile()
+	public File getDumpFile()
 	{
 		return dumpFile;
 	}
 
-	/**
-	 * Sets the name of the file where the detailed parser report will be placed, if enabled.
-	 * @param dumpFile The filename.
-	 * @see #setDump(boolean)
-	 */
-	public void setDumpFile(String dumpFile)
+	public CopperDumpType getDumpFormat()
 	{
-		setDump(true);
-		this.dumpFile = dumpFile;
+		return dumpFormat;
 	}
 
-	/**
-	 * Returns the fully qualified name of the output parser class.
-	 */
-	public String getFullClassName()
+	public PrintStream getDumpStream()
 	{
-		return fullClassName;
+		return dumpStream;
 	}
 
-	/**
-	 * Returns the <code>Reader</code> object that will be given to Copper as input.
-	 */
-	public Reader getInput()
+	public CopperIOType getDumpOutputType()
 	{
-		return input;
+		return dumpOutputType;
 	}
 
-	/**
-	 * Returns the name of the <code>Reader</code> object (filename, stream ID, etc.) that will be given to Copper as input.
-	 * @see #getInputFile()
-	 */
-	public String getInputLabel()
+	public File getLogFile()
 	{
-		return inputLabel;
+		return logFile;
 	}
 
-	/*
-	 * Returns the <code>PrintStream</code> object to which Copper will write the source code of the finished parser.
-	 */
-//	public PrintStream getOutput()
-//	{
-//		return output;
-//	}
-
-	/**
-	 * Returns the name of the <code>PrintStream</code> object (filename, stream ID, etc.) to which Copper will write the source code of the finished parser.
-	 * @see #getOutputLabel()
-	 */
-	public String getOutputLabel()
+	public PrintStream getLogStream()
 	{
-		return outputLabel;
+		return logStream;
 	}
 
-	/**
-	 * Returns the full set of arguments to Copper as generated by the <code>execute()</code> method. 
-	 */
-	protected ParserCompilerParameters getParams()
+	public CopperIOType getLogType()
 	{
-		return params;
+		return logType;
 	}
 
-	/**
-	 * Returns <code>true</code> if the compiler is to print no logging information.
-	 */
-	public boolean isCompileQuiet()
+	public File getOutputFile()
 	{
-		return quietLevel.equals(CompilerLogMessageSort.getQuietSort());
+		return outputFile;
 	}
 
-	/**
-	 * Returns <code>true</code> if the compiler is to print extra logging information.
-	 */
-	public boolean isCompileVerbose()
+	public PrintStream getOutputStream()
 	{
-		return quietLevel.equals(CompilerLogMessageSort.getVerboseSort());
+		return outputStream;
 	}
 
-	/**
-	 * Returns <code>true</code> if the compiler is to print very much extra logging information.
-	 */
-	public boolean isCompileVeryVerbose()
+	public CopperIOType getOutputType()
 	{
-		return quietLevel.equals(CompilerLogMessageSort.getVeryVerboseSort());
+		return outputType;
 	}
 
-	/**
-	 * Returns <code>true</code> if the compiler is to print a "parser report" describing the parser.
-	 */
-	public boolean isDump()
+	public String getPackageDecl()
 	{
-		return isDump;
+		return packageDecl;
 	}
 
-	/**
-	 * Returns the name of the parse engine around which the parser will be built.
-	 */
-	public CopperEngineType getEngine()
+	public String getParserName()
 	{
-		return engine;
-	}
-	
-	/**
-	 * Returns the name of the "skin" to use when interpreting the input.
-	 */
-	public CopperSkinType getSkin()
-	{
-		return skin;
+		return parserName;
 	}
 
-	/**
-	 * Sets the fully qualified name of the output parser class.
-	 */
-	public void setFullClassName(String fullClassName)
+	public CompilerLevel getQuietLevel()
 	{
-		this.fullClassName = fullClassName;
+		return quietLevel;
 	}
 
-	/**
-	 * Sets the <code>Reader</code> object that will be given to Copper as input.
-	 */
-	public void setInput(Reader input)
+	public CopperEngineType getUseEngine()
 	{
-		this.input = input;
+		return useEngine;
 	}
 
-	/**
-	 * Sets the name of the <code>Reader</code> object (filename, stream ID, etc.) that will be given to Copper as input.
-	 * @param inputLabel
-	 */
-	public void setInputLabel(String inputLabel)
+	public CopperPipelineType getUsePipeline()
 	{
-		this.inputLabel = inputLabel;
+		return usePipeline;
 	}
 
-	/*
-	 * Sets the <code>PrintStream</code> object to which Copper will write the source code of the finished parser.
-	 */
-//	public void setOutput(PrintStream output)
-//	{
-//		this.output = output;
-//	}
-
-	/**
-	 * Sets the name of the <code>PrintStream</code> object (filename, stream ID, etc.) to which Copper will write the source code of the finished parser.
-	 */
-	public void setOutputLabel(String outputLabel)
+	public CopperSkinType getUseSkin()
 	{
-		this.outputLabel = outputLabel;
+		return useSkin;
 	}
 
-	/**
-	 * Provides a full set of arguments to Copper. Will be overwritten by a call to <code>execute()</code>.
-	 */
-	protected void setParams(ParserCompilerParameters params)
+	public boolean hasCustomSwitch(String key)
 	{
-		this.params = params;
+		return customSwitches.containsKey(key);
 	}
 
-	/**
-	 * @param isCompileQuiet <code>true</code> if the compiler is to print no logging information.
-	 */
-	public void setCompileQuiet(boolean isCompileQuiet)
-	{
-		this.quietLevel = isCompileQuiet ? CompilerLevel.QUIET : CompilerLevel.REGULAR;
-	}
-
-	/**
-	 * @param isCompileVerbose <code>true</code> if the compiler is to print extra logging information.
-	 */
-	public void setCompileVerbose(boolean isCompileVerbose)
-	{
-		this.quietLevel = isCompileVerbose ? CompilerLevel.VERBOSE : CompilerLevel.REGULAR;
-	}
-
-	/**
-	 * @param isCompileVerbose <code>true</code> if the compiler is to print very much extra logging information.
-	 */
-	public void setCompileVeryVerbose(boolean isCompileVerbose)
-	{
-		this.quietLevel = isCompileVerbose ? CompilerLevel.VERY_VERBOSE : CompilerLevel.REGULAR;
-	}
-	
-	/**
-	 * @param isDump <code>true</code> if the generated parser is to print a "parser report" describing the parser.
-	 */
-	public void setDump(boolean isDump)
-	{
-		this.isDump = isDump;
-	}
-
-	/**
-	 * @param engine The name of the parse engine around which the parser will be built.
-	 * @see CopperEngineType
-	 */
-	public void setEngine(CopperEngineType engine)
-	{
-		this.engine = engine;
-	}
-
-	/**
-	 * @param skin The name of the "skin" to use when interpreting the input.
-	 * @see CopperSkinType
-	 */
-	public void setSkin(CopperSkinType skin)
-	{
-		this.skin = skin;
-	}
-
-	/**
-	 * Returns <code>true</code> if the compiler is to print warnings for "useless nonterminals" --
-	 * nonterminals that are specified but do not appear in the generated LR DFA.
-	 */
-	public boolean isWarnUselessNTs()
-	{
-		return isWarnUselessNTs;
-	}
-
-	/**
-	 * @param isWarnUselessNTs <code>true</code> if the compiler is to print warnings for "useless nonterminals" --
-	 * nonterminals that are specified but do not appear in the generated LR DFA.
-	 */
-	public void setWarnUselessNTs(boolean isWarnUselessNTs)
-	{
-		this.isWarnUselessNTs = isWarnUselessNTs;
-	}
-
-	/**
-	 * Returns the type of parser report that the compiler will produce, if it produces one.
-	 * @see CopperDumpType 
-	 */
-	public CopperDumpType getDumpType()
-	{
-		return dumpType;
-	}
-
-	/**
-	 * Returns the type of parser report that the compiler will produce, if it produces one.
-	 * @see CopperDumpType 
-	 */
-	public void setDumpType(CopperDumpType dumpType)
-	{
-		this.dumpType = dumpType;
-	}
-
-	/**
-	 * Returns <code>true</code> if the parser generator is set to produce a report only in the event
-	 * of a parser compilation error. N.B.: Regardless of how this parameter is set, a report
-	 * will only be generated if {@link #setDump(boolean)} is called with parameter
-	 * <code>true</code>.
-	 */
-	public boolean isDumpOnlyOnError()
-	{
-		return isDumpOnlyOnError;
-	}
-
-	/**
-	 * @param isDumpOnlyOnError <code>true</code> if the parser generator is set to produce a report
-	 * only in the event of a parser compilation error. N.B.: Regardless of how this parameter is
-	 * set, a report will only be generated if {@link #setDump(boolean)} is called with parameter
-	 * <code>true</code>.
-	 */
-	public void setDumpOnlyOnError(boolean isDumpOnlyOnError)
-	{
-		this.isDumpOnlyOnError = isDumpOnlyOnError;
-	}
-
-	/**
-	 * @return <code>true</code> if the parser generator is set to run the modular determinism analysis.
-	 */
 	public boolean isRunMDA()
 	{
 		return runMDA;
 	}
 
-	/**
-	 * @param runMDA <code>true</code> if the parser generator is set to run the modular determinism analysis.
-	 */
-	public void setRunMDA(boolean runMDA)
+	public boolean isWarnUselessNTs()
 	{
-		this.runMDA = runMDA;
+		return isWarnUselessNTs;
+	}
+
+	public void setDumpFile(File dumpFile)
+	{
+		if(this.dumpOutputType == null) this.dumpOutputType = CopperIOType.FILE;
+		if(this.dump == null)    this.dump = CopperDumpControl.ON;
+		this.dumpFile = dumpFile;
+	}
+
+	public void setDumpFormat(CopperDumpType dumpFormat)
+	{
+		this.dumpFormat = dumpFormat;
+	}
+
+	public void setDumpStream(PrintStream dumpStream)
+	{
+		if(this.dumpOutputType == null) this.dumpOutputType = CopperIOType.STREAM;
+		if(this.dump == null)    this.dump = CopperDumpControl.ON;
+		this.dumpStream = dumpStream;
+	}
+
+	public void setDumpOutputType(CopperIOType dumpOutputType)
+	{
+		this.dumpOutputType = dumpOutputType;
+	}
+
+	public void setLogFile(File logFile)
+	{
+		if(this.logType == null) this.logType = CopperIOType.FILE;
+		this.logFile = logFile;
+	}
+
+	public void setLogStream(PrintStream logStream)
+	{
+		if(this.logType == null) this.logType = CopperIOType.STREAM;
+		this.logStream = logStream;
+	}
+
+	public void setLogType(CopperIOType logType)
+	{
+		this.logType = logType;
+	}
+
+	public void setOutputFile(File outputFile)
+	{
+		if(this.outputType == null) this.outputType = CopperIOType.FILE;
+		this.outputFile = outputFile;
+	}
+
+	public void setOutputStream(PrintStream outputStream)
+	{
+		if(this.outputType == null) this.outputType = CopperIOType.STREAM;
+		this.outputStream = outputStream;
+	}
+
+	public void setOutputType(CopperIOType outputType)
+	{
+		this.outputType = outputType;
+	}
+
+	public void setPackageDecl(String packageDecl)
+	{
+		this.packageDecl = packageDecl;
+	}
+
+	public void setParserName(String parserName)
+	{
+		this.parserName = parserName;
+	}
+
+	public void setQuietLevel(CompilerLevel quietLevel)
+	{
+		this.quietLevel = quietLevel;
+	}
+
+	public void setRunMDA(boolean isComposition)
+	{
+		this.runMDA = isComposition;
+	}
+	
+	public void setUseEngine(CopperEngineType useEngine)
+	{
+		this.useEngine = useEngine;
+	}
+	
+	public void setUsePipeline(CopperPipelineType usePipeline)
+	{
+		this.usePipeline = usePipeline;
+	}
+	
+	public void setUseSkin(CopperSkinType useSkin)
+	{
+		this.useSkin = useSkin;
+	}
+
+	public void setWarnUselessNTs(boolean isWarnUselessNTs)
+	{
+		this.isWarnUselessNTs = isWarnUselessNTs;
+	}
+
+	public CopperDumpControl getDump()
+	{
+		return dump;
+	}
+
+	public void setDump(CopperDumpControl dump)
+	{
+		this.dump = dump;
 	}
 }

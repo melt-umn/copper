@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecCompilerParameters;
+import edu.umn.cs.melt.copper.main.CopperDumpControl;
 
 public class DumperFactory
 {
@@ -12,8 +13,8 @@ public class DumperFactory
 	throws FileNotFoundException
 	{
 		PrintStream dumpStream = null;
-		if(!args.isDumpReport() || args.getDumpType() == null) dumpStream = args.getLogStream();
-		else switch(args.getDumpType())
+		if(args.getDump() == CopperDumpControl.OFF || args.getDumpOutputType() == null) dumpStream = args.getLogStream();
+		else switch(args.getDumpOutputType())
 		{
 		case FILE:
 			if(args.getDumpFile().equals(args.getLogFile())) dumpStream = args.getLogStream();

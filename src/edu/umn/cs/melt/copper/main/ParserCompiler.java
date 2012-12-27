@@ -2,12 +2,9 @@ package edu.umn.cs.melt.copper.main;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -45,6 +42,8 @@ public class ParserCompiler
 		try
 		{
 			InputStream manifest = ParserCompiler.class.getClassLoader().getResourceAsStream("etc/Copper.properties");
+			if(manifest == null) manifest = ParserCompiler.class.getClassLoader().getResourceAsStream("Build.properties");
+			
 			if(manifest != null)
 			{
 				InputStreamReader propertiesReader = new InputStreamReader(manifest);
@@ -64,7 +63,10 @@ public class ParserCompiler
 	private static void versionMessage(ParserCompilerParameters args)
 	{
 		System.err.println("Copper version " + VERSION);
-		System.err.println("Revision " + (args.getQuietLevel().compareTo(CompilerLevel.VERBOSE) <= 0 ? REVISION : REVISION.substring(0,8) + REVISION.substring(REVISION.indexOf("+"))) + ", build " + BUILD);
+		if(!REVISION.equals("unknown") && !BUILD.equals("unknown"))
+		{
+			System.err.println("Revision " + (args.getQuietLevel().compareTo(CompilerLevel.VERBOSE) <= 0 ? REVISION : REVISION.substring(0,8) + REVISION.substring(REVISION.indexOf("+"))) + ", build " + BUILD);
+		}
 		System.exit(0);
 	}
 	
@@ -108,7 +110,7 @@ public class ParserCompiler
 		}
 		if(args != null && args.getPipeline() != null)
 		{
-			String customs = args.getPipeline().customParameterUsage();
+			String customs = args.getPipeline().customSwitchUsage();
 			if(!customs.equals(""))
 			{
 				rv += "\nCustom switches specific to the given pipeline configuration are:\n";
@@ -199,7 +201,7 @@ public class ParserCompiler
 	throws CopperException
 	{
 		CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
-		if(args.getFiles() != null)
+		if(args.getInputs() != null)
 		{
 			if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new GenericMessage(CompilerLevel.QUIET,"Input files cannot be specified when compiling a parser from Java objects"));
 			return 1;
@@ -248,8 +250,7 @@ public class ParserCompiler
 		boolean displayHelp = false;
 		boolean displayVersion = false;
 		boolean runMDA = false;
-		boolean dumpReport = false;
-		boolean dumpOnlyOnError = false;
+		CopperDumpControl dumpControl = CopperDumpControl.OFF;
 		CopperDumpType.initTable();
 		CopperDumpType dumpFormat = getDefaultDumpType();
 		CopperEngineType.initTable();
@@ -295,13 +296,11 @@ public class ParserCompiler
 			}
 			else if(args[i].equals("-dump"))
 			{
-				dumpReport = true;
-				dumpOnlyOnError = false;
+				dumpControl = CopperDumpControl.ON;
 			}
 			else if(args[i].equals("-errordump"))
 			{
-				dumpReport = true;
-				dumpOnlyOnError = true;
+				dumpControl = CopperDumpControl.ERROR_ONLY;
 			}
 			else if(args[i].equals("-skin"))
 			{
@@ -359,8 +358,7 @@ public class ParserCompiler
 		ParserCompilerParameters argTable = new ParserCompilerParameters();
 		argTable.setQuietLevel(quietLevel);
 		argTable.setRunMDA(runMDA);
-		argTable.setDumpReport(dumpReport);
-		argTable.setDumpOnlyOnError(dumpOnlyOnError);
+		argTable.setDump(dumpControl);
 		argTable.setUseEngine(useEngine);
 		argTable.setUseSkin(useSkin);
 		argTable.setUsePipeline(usePipeline);
@@ -395,18 +393,18 @@ public class ParserCompiler
 
 		if(dumpFile == null || dumpFile.equals(""))
 		{
-			argTable.setDumpType(argTable.getLogType());
+			argTable.setDumpOutputType(argTable.getLogType());
 			argTable.setDumpStream(argTable.getLogStream());
 			argTable.setDumpFile(argTable.getLogFile());
 		}
 		else if(dumpFile.equals("-"))
 		{
-			argTable.setDumpType(CopperIOType.STREAM);
+			argTable.setDumpOutputType(CopperIOType.STREAM);
 			argTable.setDumpStream(System.err);			
 		}
 		else
 		{
-			argTable.setDumpType(CopperIOType.FILE);
+			argTable.setDumpOutputType(CopperIOType.FILE);
 			argTable.setDumpFile(new File(dumpFile));			
 		}
 
@@ -421,32 +419,36 @@ public class ParserCompiler
 			while(i >= 0 && i < args.length)
 			{
 				if(args[i].charAt(0) != '-') break;
-				i = pipeline.processCustomParameter(argTable,args,i);
+				i = pipeline.processCustomSwitch(argTable,args,i);
 			}
 		}
 		
 		if(i == -1 || i >= args.length) usageMessageError(argTable);
 
-		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
+//		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
 		
-		boolean failed = false;
-		for(;i < args.length;i++)
-		{
-			FileReader file = null;
-			try
-			{
-				file = new FileReader(args[i]);
-			}
-			catch(FileNotFoundException ex)
-			{
-				System.err.println("Grammar file not found: '" + args[i] + "'");
-				failed = true;
-			}
-			if(file != null) files.add(Pair.cons(args[i],(Reader) file));
-		}
-		if(failed) System.exit(1);
+//		boolean failed = false;
+//		for(;i < args.length;i++)
+//		{
+//			FileReader file = null;
+//			try
+//			{
+//				file = new FileReader(args[i]);
+//			}
+//			catch(FileNotFoundException ex)
+//			{
+//				System.err.println("Grammar file not found: '" + args[i] + "'");
+//				failed = true;
+//			}
+//			if(file != null) files.add(Pair.cons(args[i],(Reader) file));
+//		}
+//		if(failed) System.exit(1);
 		
-		argTable.setFiles(files);
+		ArrayList< Pair<String,Object> > files = new ArrayList< Pair<String,Object> >();
+		
+		for(;i < args.length;i++) files.add(Pair.cons(args[i],(Object) args[i]));
+		
+		argTable.setInputs(files);
 				
 		int errorlevel = 1;
 		

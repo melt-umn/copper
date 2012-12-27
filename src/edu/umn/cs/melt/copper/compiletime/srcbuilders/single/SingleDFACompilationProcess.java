@@ -109,19 +109,19 @@ public class SingleDFACompilationProcess implements SourceBuilder<StandardSpecCo
 	}
 
 	@Override
-	public Set<String> getCustomParameters()
+	public Set<String> getCustomSwitches()
 	{
 		return null;
 	}
 
 	@Override
-	public String customParameterUsage()
+	public String customSwitchUsage()
 	{
 		return "";
 	}
 
 	@Override
-	public int processCustomParameter(ParserCompilerParameters args,
+	public int processCustomSwitch(ParserCompilerParameters args,
 			String[] cmdline, int index)
 	{
 		return -1;
