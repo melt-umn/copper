@@ -39,7 +39,7 @@
 	</xs:simpleType>
 	
 	<!-- This type has been designated as "mixed" and the sub-element "OperatorClassRef"
-	     made optional for backward compatibility with Copper 0.6.1. For Copper 0.7 it
+	     made optional for backward compatibility with Copper 0.6.1. For Copper 0.7+ it
 	     should not be mixed and the "OperatorClassRef" should be mandatory. -->
 	<xs:complexType name="PrecedenceClass" mixed="true">
 		<xs:annotation>
