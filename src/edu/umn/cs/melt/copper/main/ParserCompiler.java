@@ -363,7 +363,7 @@ public class ParserCompiler
 		argTable.setUseSkin(useSkin);
 		argTable.setUsePipeline(usePipeline);
 		argTable.setDumpFormat(dumpFormat);
-		argTable.setPackageDecl(packageDecl);
+		argTable.setPackageName(packageDecl);
 		argTable.setParserName(parserName);
 		if(output == null)
 		{

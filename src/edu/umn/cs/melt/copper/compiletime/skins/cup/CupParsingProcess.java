@@ -60,7 +60,7 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
 			return null;
 		}
-		if(args.getPackageDecl() != null) spec.setPackageDecl(args.getPackageDecl());
+		if(args.getPackageName() != null) spec.setPackageDecl(args.getPackageName());
 		if(args.getParserName() != null && !args.getParserName().equals("")) spec.setClassName(args.getParserName());
 		return spec;
 	}

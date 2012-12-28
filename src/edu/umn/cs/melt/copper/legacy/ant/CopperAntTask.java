@@ -53,7 +53,7 @@ public class CopperAntTask extends Task
 		int i = fullClassName.lastIndexOf('.');
 		if(i != -1)
 		{
-			params.setPackageDecl(fullClassName.substring(0,i));
+			params.setPackageName(fullClassName.substring(0,i));
 			params.setParserName(fullClassName.substring(i+1));
 		}
 		else if(fullClassName.length() != 0)

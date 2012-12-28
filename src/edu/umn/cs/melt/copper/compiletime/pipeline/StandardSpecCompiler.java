@@ -83,8 +83,8 @@ public class StandardSpecCompiler implements SpecCompiler<ParserBean, StandardSp
 		}
 
 		String packageDecl = 
-				(args.getPackageDecl() != null && !args.getPackageDecl().equals("")) ?
-						args.getPackageDecl() :
+				(args.getPackageName() != null && !args.getPackageName().equals("")) ?
+						args.getPackageName() :
 						(spec.getPackageDecl() != null && !spec.getPackageDecl().equals("") ?
 								spec.getPackageDecl() : 
 						        "");

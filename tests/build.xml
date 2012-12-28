@@ -23,11 +23,6 @@
 		
 
 	<!-- Auxiliary targets; not to be run directly -->
-	<target name='TestNativeGrammar' depends=''>
-		<copper fullClassName='${build_package}.${grammarName}Parser' inputFile='${grammars}/${grammarName}.native' outputFile='${build_package}/${grammarName}Parser.java' compileVerbose='${compileVerbose}' runVerbose='${runVerbose}' engine='${engine}' skin='${skin}' dump='${dump}'/>
-		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
-	</target>
-	
 	<target name='TestCupGrammar' depends=''>
 		<property name='skin' value='CUP'/>
 		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}'>
