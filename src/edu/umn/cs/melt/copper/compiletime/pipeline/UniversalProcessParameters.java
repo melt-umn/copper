@@ -24,6 +24,6 @@ public interface UniversalProcessParameters
 	public PrintStream getLogStream();
 	public CompilerLevel getQuietLevel();
 	public void setLogger(CompilerLogger logger);
-	public String getPackageDecl();
+	public String getPackageName();
 	public String getParserName();
 }

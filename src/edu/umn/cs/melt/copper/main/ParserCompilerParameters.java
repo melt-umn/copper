@@ -98,7 +98,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	 * Defaults to {@code null}, indicating no package declaration
 	 * (if, e.g., it is provided in a code block). 
 	 */
-	protected String packageDecl;
+	protected String packageName;
 	/** The name of the output parser class. */
 	protected String parserName;
 	/**
@@ -164,7 +164,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		useSkin = ParserCompiler.getDefaultSkin();
 		quietLevel = ParserCompiler.getDefaultQuietLevel();
 		usePipeline = ParserCompiler.getDefaultPipeline();
-		packageDecl = null;
+		packageName = null;
 		parserName = null;
 		outputStream = null;
 		outputFile = null;
@@ -254,9 +254,9 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	}
 
 	@Override
-	public String getPackageDecl()
+	public String getPackageName()
 	{
-		return packageDecl;
+		return packageName;
 	}
 
 	@Override
@@ -376,9 +376,9 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		this.outputType = outputType;
 	}
 
-	public void setPackageDecl(String packageDecl)
+	public void setPackageName(String packageName)
 	{
-		this.packageDecl = packageDecl;
+		this.packageName = packageName;
 	}
 
 	public void setParserName(String parserName)

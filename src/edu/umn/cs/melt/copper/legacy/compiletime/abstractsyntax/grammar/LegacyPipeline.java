@@ -155,7 +155,7 @@ public class LegacyPipeline implements Pipeline
 				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
 				return null;
 			}
-			grammar.getParserSources().setPackageName(args.getPackageDecl());
+			grammar.getParserSources().setPackageName(args.getPackageName());
 			grammar.getParserSources().setParserName(args.getParserName());
 			break;
 		case OLD_XML:
@@ -173,7 +173,7 @@ public class LegacyPipeline implements Pipeline
 				else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
 				return null;
 			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
+			if(args.getPackageName() != null) grammar.getParserSources().setPackageName(args.getPackageName());
 			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
 			break;
 		case XML:
@@ -195,7 +195,7 @@ public class LegacyPipeline implements Pipeline
 				else System.err.println("An unexpected fatal error has occurred. Run with -vv for debug information.");
 				return null;
 			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
+			if(args.getPackageName() != null) grammar.getParserSources().setPackageName(args.getPackageName());
 			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
 			break;
 		case CUP:
@@ -207,7 +207,7 @@ public class LegacyPipeline implements Pipeline
 				if(logger.isLoggable(CompilerLogMessageSort.DEBUG)) ex.printStackTrace(System.err);
 				return null;
 			}
-			if(args.getPackageDecl() != null) grammar.getParserSources().setPackageName(args.getPackageDecl());
+			if(args.getPackageName() != null) grammar.getParserSources().setPackageName(args.getPackageName());
 			if(args.getParserName() != null && !args.getParserName().equals("")) grammar.getParserSources().setParserName(args.getParserName());
 		}
 		if(grammar != null)
@@ -241,8 +241,8 @@ public class LegacyPipeline implements Pipeline
 		CompilerLogger newStyleLogger = args.getLogger();
 		edu.umn.cs.melt.copper.legacy.compiletime.logging.CompilerLogger logger = getOldStyleLogger(newStyleLogger,args);
 		String packageDecl = 
-				(args.getPackageDecl() != null && !args.getPackageDecl().equals("")) ?
-						args.getPackageDecl() :
+				(args.getPackageName() != null && !args.getPackageName().equals("")) ?
+						args.getPackageName() :
 						(grammar.getParserSources().getPackageName() != null && !grammar.getParserSources().getPackageName().equals("") ?
 								grammar.getParserSources().getPackageName() : 
 						        "");

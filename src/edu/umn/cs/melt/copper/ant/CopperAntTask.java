@@ -121,7 +121,7 @@ public class CopperAntTask extends Task
 	 * Defaults to {@code null}, indicating no package declaration
 	 * (if, e.g., it is provided in a code block). 
 	 */
-	protected String packageDecl;
+	protected String packageName;
 	/** The name of the output parser class. */
 	protected String parserName;
 	/**
@@ -161,7 +161,7 @@ public class CopperAntTask extends Task
 		useSkin = ParserCompiler.getDefaultSkin();
 		quietLevel = ParserCompiler.getDefaultQuietLevel();
 		usePipeline = ParserCompiler.getDefaultPipeline();
-		packageDecl = null;
+		packageName = null;
 		parserName = null;
 		outputStream = null;
 		outputFile = null;
@@ -192,7 +192,7 @@ public class CopperAntTask extends Task
 		params.setUseSkin(useSkin);
 		params.setQuietLevel(quietLevel);
 		params.setUsePipeline(usePipeline);
-		params.setPackageDecl(packageDecl);
+		params.setPackageName(packageName);
 		params.setParserName(parserName);
 		params.setOutputStream(outputStream);
 		params.setOutputFile(outputFile);
@@ -278,9 +278,9 @@ public class CopperAntTask extends Task
 		return outputType;
 	}
 
-	public String getPackageDecl()
+	public String getPackageName()
 	{
-		return packageDecl;
+		return packageName;
 	}
 
 	public String getParserName()
@@ -381,9 +381,9 @@ public class CopperAntTask extends Task
 		this.outputType = outputType;
 	}
 
-	public void setPackageDecl(String packageDecl)
+	public void setPackageName(String packageName)
 	{
-		this.packageDecl = packageDecl;
+		this.packageName = packageName;
 	}
 
 	public void setParserName(String parserName)
