@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  - This spec is an example of a corner case for
+  - Copper's modular determinism analysis: an extension
+  - that fails the analysis only on the basis of lookahead
+  - spillage (which usually occurs in tandem with
+  - follow spillage).
+  -->
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+	<ExtendedParser id="MDALookaheadSpillageOnly">
+		<HostGrammar><GrammarRef id="Host"/></HostGrammar>
+		<ExtensionGrammars>
+			<GrammarRef id="Ext"/>
+		</ExtensionGrammars>
+		<StartSymbol>
+			<NonterminalRef grammar="Host" id="S"/>
+		</StartSymbol>
+		<ClassName>MDALookaheadSpillageOnly</ClassName>
+		<Preamble>
+			<Code><![CDATA[package parsers;
+
+]]></Code>
+		</Preamble>
+	</ExtendedParser>
+	<Grammar id="Host">
+		<Declarations>
+			<Nonterminal id="A">
+				<PP>A</PP>
+			</Nonterminal>
+			<Nonterminal id="B">
+				<PP>B</PP>
+			</Nonterminal>
+			<Nonterminal id="S">
+				<PP>S</PP>
+			</Nonterminal>
+			<Production id="_p0">
+				<LHS>
+					<NonterminalRef id="S"/>
+				</LHS>
+				<RHS>
+					<NonterminalRef id="A"/>
+					<TerminalRef id="a"/>
+				</RHS>
+			</Production>
+			<Production id="_p1">
+				<LHS>
+					<NonterminalRef id="S"/>
+				</LHS>
+				<RHS>
+					<TerminalRef id="b"/>
+					<NonterminalRef id="B"/>
+				</RHS>
+			</Production>
+			<Production id="_p3">
+				<LHS>
+					<NonterminalRef id="A"/>
+				</LHS>
+				<RHS>
+					<TerminalRef id="c"/>
+				</RHS>
+			</Production>
+			<Production id="_p4">
+				<LHS>
+					<NonterminalRef id="B"/>
+				</LHS>
+				<RHS>
+					<NonterminalRef id="A"/>
+					<TerminalRef id="c"/>
+				</RHS>
+			</Production>
+			<Production id="_p5">
+				<LHS>
+					<NonterminalRef id="B"/>
+				</LHS>
+				<RHS>
+					<TerminalRef id="c"/>
+				</RHS>
+			</Production>
+			<Terminal id="a">
+				<PP>a</PP>
+				<Regex>
+					<CharacterSet>
+						<SingleCharacter char="a"/>
+					</CharacterSet>
+				</Regex>
+				<InClasses></InClasses>
+				<Submits></Submits>
+				<Dominates></Dominates>
+			</Terminal>
+			<Terminal id="b">
+				<PP>b</PP>
+				<Regex>
+					<CharacterSet>
+						<SingleCharacter char="b"/>
+					</CharacterSet>
+				</Regex>
+				<InClasses></InClasses>
+				<Submits></Submits>
+				<Dominates></Dominates>
+			</Terminal>
+			<Terminal id="c">
+				<PP>c</PP>
+				<Regex>
+					<CharacterSet>
+						<SingleCharacter char="c"/>
+					</CharacterSet>
+				</Regex>
+				<InClasses></InClasses>
+				<Submits></Submits>
+				<Dominates></Dominates>
+			</Terminal>
+		</Declarations>
+	</Grammar>
+	<ExtensionGrammar id="Ext">
+		<MarkingTerminals>
+			<TerminalRef id="m"/>
+		</MarkingTerminals>
+		<BridgeProductions>
+			<ProductionRef id="_p2"/>
+		</BridgeProductions>
+		<Declarations>
+			<Terminal id="m">
+				<PP>m</PP>
+				<Regex>
+					<CharacterSet>
+						<SingleCharacter char="m"/>
+					</CharacterSet>
+				</Regex>
+				<InClasses></InClasses>
+				<Submits></Submits>
+				<Dominates></Dominates>
+			</Terminal>
+			<Nonterminal id="E">
+				<PP>E</PP>
+			</Nonterminal>
+			<Production id="_p2">
+				<LHS>
+					<NonterminalRef grammar="Host" id="S"/>
+				</LHS>
+				<RHS>
+					<TerminalRef id="m"/>
+					<NonterminalRef id="E"/>
+				</RHS>
+			</Production>
+			<Production id="_p6">
+				<LHS>
+					<NonterminalRef id="E"/>
+				</LHS>
+				<RHS>
+					<NonterminalRef grammar="Host" id="A"/>
+					<TerminalRef grammar="Host" id="c"/>
+				</RHS>
+			</Production>
+		</Declarations>			
+	</ExtensionGrammar>
+</CopperSpec>

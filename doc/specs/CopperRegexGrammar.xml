@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+
+    <Parser id="CopperRegexParser" isUnitary="true">
+        <Grammars>
+            <GrammarRef id="CopperRegexGrammar"/>
+        </Grammars>
+        <StartSymbol>
+            <NonterminalRef grammar="CopperRegexGrammar" id="Regex_R"/>
+        </StartSymbol>
+    </Parser>
+
+    <Grammar id="CopperRegexGrammar">
+        <Declarations>
+            <Terminal id="plus">
+                <Regex><CharacterSet><SingleCharacter char="+"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="star">
+                <Regex><CharacterSet><SingleCharacter char="*"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="question">
+                <Regex><CharacterSet><SingleCharacter char="?"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="bar">
+                <Regex><CharacterSet><SingleCharacter char="|"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="dash">
+                <Regex><CharacterSet><SingleCharacter char="-"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="colon">
+                <Regex><CharacterSet><SingleCharacter char=":"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="not">
+                <Regex><CharacterSet><SingleCharacter char="^"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="lbrack">
+                <Regex><CharacterSet><SingleCharacter char="["/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="rbrack">
+                <Regex><CharacterSet><SingleCharacter char="]"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="lparen">
+                <Regex><CharacterSet><SingleCharacter char="("/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="rparen">
+                <Regex><CharacterSet><SingleCharacter char=")"/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="wildcard">
+                <Regex><CharacterSet><SingleCharacter char="."/></CharacterSet></Regex>
+                <Dominates><TerminalRef id="character"/></Dominates>
+            </Terminal>
+
+            <Terminal id="character">
+                <Regex><CharacterSet invert="true"><SingleCharacter char="&#10;"/><SingleCharacter char="&#13;"/></CharacterSet></Regex>
+            </Terminal>
+
+            <Nonterminal id="Regex_R"/>
+            <Nonterminal id="Regex_DR"/>
+            <Nonterminal id="Regex_UR"/>
+            <Nonterminal id="Regex_RR"/>
+            <Nonterminal id="Regex_G"/>
+            <Nonterminal id="Regex_RG"/>
+            <Nonterminal id="Regex_UG"/>
+            <Nonterminal id="Regex_CHAR"/>
+
+            <Production id="RtoDR">
+                <LHS><NonterminalRef id="Regex_R"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_DR"/>
+                </RHS>
+            </Production>
+            <Production id="RtoDR_bar_R">
+                <LHS><NonterminalRef id="Regex_R"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_DR"/>
+                    <TerminalRef id="bar"/>
+                    <NonterminalRef id="Regex_R"/>
+                </RHS>
+            </Production>
+            <Production id="DRtoUR_RR">
+                <LHS><NonterminalRef id="Regex_DR"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_UR"/>
+                    <NonterminalRef id="Regex_RR"/>
+                </RHS>
+            </Production>
+            <Production id="DRtoUR_star_RR">
+                <LHS><NonterminalRef id="Regex_DR"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_UR"/>
+                    <TerminalRef id="star"/>
+                    <NonterminalRef id="Regex_RR"/>
+                </RHS>
+            </Production>
+            <Production id="DRtoUR_plus_RR">
+                <LHS><NonterminalRef id="Regex_DR"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_UR"/>
+                    <TerminalRef id="plus"/>
+                    <NonterminalRef id="Regex_RR"/>
+                </RHS>
+            </Production>
+            <Production id="DRtoUR_question_RR">
+                <LHS><NonterminalRef id="Regex_DR"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_UR"/>
+                    <TerminalRef id="question"/>
+                    <NonterminalRef id="Regex_RR"/>
+                </RHS>
+            </Production>
+            <Production id="RRtoDR">
+                <LHS><NonterminalRef id="Regex_RR"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_DR"/>
+                </RHS>
+            </Production>
+            <Production id="RRtoeps">
+                <LHS><NonterminalRef id="Regex_RR"/></LHS>
+                <RHS/>
+            </Production>
+
+
+            <Production id="URtoCHAR">
+                <LHS><NonterminalRef id="Regex_UR"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_CHAR"/>
+                </RHS>
+            </Production>
+            <Production id="URtowildcard">
+                <LHS><NonterminalRef id="Regex_UR"/></LHS>
+                <RHS>
+                    <TerminalRef id="wildcard"/>
+                </RHS>
+            </Production>
+            <Production id="URtolb_G_rb">
+                <LHS><NonterminalRef id="Regex_UR"/></LHS>
+                <RHS>
+                    <TerminalRef id="lbrack"/>
+                    <NonterminalRef id="Regex_G"/>
+                    <TerminalRef id="rbrack"/>
+                </RHS>
+            </Production>
+            <Production id="URtolb_not_G_rb">
+                <LHS><NonterminalRef id="Regex_UR"/></LHS>
+                <RHS>
+                    <TerminalRef id="lbrack"/>
+                    <TerminalRef id="not"/>
+                    <NonterminalRef id="Regex_G"/>
+                    <TerminalRef id="rbrack"/>
+                </RHS>
+            </Production>
+            <Production id="URtolp_R_rp">
+                <LHS><NonterminalRef id="Regex_UR"/></LHS>
+                <RHS>
+                    <TerminalRef id="lparen"/>
+                    <NonterminalRef id="Regex_R"/>
+                    <TerminalRef id="rparen"/>
+                </RHS>
+            </Production>
+            <Production id="GtoUG_RG">
+                <LHS><NonterminalRef id="Regex_G"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_UG"/>
+                    <NonterminalRef id="Regex_RG"/>
+                </RHS>
+            </Production>
+            <Production id="UGtoCHAR">
+                <LHS><NonterminalRef id="Regex_UG"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_CHAR"/>
+                </RHS>
+            </Production>
+            <Production id="UGtoCHAR_dash_CHAR">
+                <LHS><NonterminalRef id="Regex_UG"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_CHAR"/>
+                    <TerminalRef id="dash"/>
+                    <NonterminalRef id="Regex_CHAR"/>
+                </RHS>
+            </Production>
+            <Production id="RGtoG">
+                <LHS><NonterminalRef id="Regex_RG"/></LHS>
+                <RHS>
+                    <NonterminalRef id="Regex_G"/>
+                </RHS>
+            </Production>
+            <Production id="RGtoeps">
+                <LHS><NonterminalRef id="Regex_RG"/></LHS>
+                <RHS/>
+            </Production>
+            <Production id="CHARtochar">
+                <LHS><NonterminalRef id="Regex_CHAR"/></LHS>
+                <RHS>
+                    <TerminalRef id="character"/>
+                </RHS>
+            </Production>
+        </Declarations>
+    </Grammar>
+</CopperSpec>
