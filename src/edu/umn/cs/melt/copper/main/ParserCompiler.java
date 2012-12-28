@@ -65,7 +65,7 @@ public class ParserCompiler
 		System.err.println("Copper version " + VERSION);
 		if(!REVISION.equals("unknown") && !BUILD.equals("unknown"))
 		{
-			System.err.println("Revision " + (args.getQuietLevel().compareTo(CompilerLevel.VERBOSE) <= 0 ? REVISION : REVISION.substring(0,8) + REVISION.substring(REVISION.indexOf("+"))) + ", build " + BUILD);
+			System.err.println("Revision " + (args.getQuietLevel().compareTo(CompilerLevel.VERBOSE) <= 0 ? REVISION : REVISION.substring(0,8) + (REVISION.indexOf("+") != -1 ? "+" : "")) + ", build " + BUILD);
 		}
 		System.exit(0);
 	}
