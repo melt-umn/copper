@@ -80,6 +80,6 @@ public class ParserAttribute extends GrammarElement
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
 	throws E
 	{
-		return visitor.visitParserAttributeBean(this);
+		return visitor.visitParserAttribute(this);
 	}
 }

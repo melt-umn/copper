@@ -30,7 +30,7 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
 
 		boolean failed = false;
-		
+				
 		for(Pair<String,Object> i : inputs)
 		{
 			Reader second = null;
@@ -49,7 +49,10 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 			}
 			files.add(Pair.cons(i.first(),second));
 		}
-		if(failed) return null;
+		if(failed)
+		{
+			return null;
+		}
 
 		try
 		{

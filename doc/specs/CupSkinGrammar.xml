@@ -20,6 +20,7 @@
 			
 			private int nextPrecedence = 0;
 			private int nextProduction = 0;
+			private int nextProductionPrecedence = Integer.MAX_VALUE;
 			
 			private CopperElementName newName(Token token)
 			{
@@ -2204,6 +2205,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 if(code != null) bean.setCode(code.lexeme);
                 if(flags.layout != null) bean.setLayout(new TreeSet<CopperElementReference>(flags.layout));
                 if(flags.operator != null) bean.setOperator(flags.operator);
+                bean.setPrecedence(nextProductionPrecedence--);
                 RESULT = bean;
                 ]]></Code>
                 <LHS><NonterminalRef id="RHS"/></LHS>

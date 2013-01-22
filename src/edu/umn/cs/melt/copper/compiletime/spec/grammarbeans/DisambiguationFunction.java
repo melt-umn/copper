@@ -110,6 +110,6 @@ public class DisambiguationFunction extends GrammarElement
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
 	throws E
 	{
-		return visitor.visitDisambiguationFunctionBean(this);
+		return visitor.visitDisambiguationFunction(this);
 	}
 }

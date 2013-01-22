@@ -60,7 +60,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+	public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 	throws SAXException
 	{
 		startElement(XMLSkinElements.Type.DISAMBIGUATION_FUNCTION_ELEMENT,"id",bean.getName().toString());
@@ -94,7 +94,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitGrammarBean(Grammar bean)
+	public Boolean visitGrammar(Grammar bean)
 	throws SAXException
 	{
 		currentGrammar = bean;
@@ -127,14 +127,14 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+	public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 	throws SAXException
 	{
 		throw new SAXException("Extension grammars not yet supported in XML");
 	}
 
 	@Override
-	public Boolean visitNonTerminalBean(NonTerminal bean)
+	public Boolean visitNonTerminal(NonTerminal bean)
 	throws SAXException
 	{
 		startElement(XMLSkinElements.Type.NONTERMINAL_ELEMENT,"id",bean.getName().toString());
@@ -155,7 +155,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitParserAttributeBean(ParserAttribute bean)
+	public Boolean visitParserAttribute(ParserAttribute bean)
 	throws SAXException
 	{
 		startElement(XMLSkinElements.Type.PARSER_ATTRIBUTE_ELEMENT,"id",bean.getName().toString());
@@ -302,7 +302,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitProductionBean(Production bean)
+	public Boolean visitProduction(Production bean)
 	throws SAXException
 	{
 		startElement(XMLSkinElements.Type.PRODUCTION_ELEMENT,"id",bean.getName().toString());
@@ -365,7 +365,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitTerminalBean(Terminal bean)
+	public Boolean visitTerminal(Terminal bean)
 			throws SAXException
 	{
 		startElement(XMLSkinElements.Type.TERMINAL_ELEMENT,"id",bean.getName().toString());
@@ -475,7 +475,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitTerminalClassBean(TerminalClass bean)
+	public Boolean visitTerminalClass(TerminalClass bean)
 	throws SAXException
 	{
 		startElement(XMLSkinElements.Type.TERMINAL_CLASS_ELEMENT,"id",bean.getName().toString());
@@ -500,7 +500,7 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	}
 
 	@Override
-	public Boolean visitOperatorClassBean(OperatorClass bean)
+	public Boolean visitOperatorClass(OperatorClass bean)
 	throws SAXException
 	{
 		startElement(XMLSkinElements.Type.OPERATOR_CLASS_ELEMENT,"id",bean.getName().toString());
@@ -634,7 +634,9 @@ public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXExc
 	private void writeGrammarElementRef(CopperElementReference ref,String name,boolean isMacro)
 	throws SAXException
 	{
-		boolean writeGrammarAttr = currentGrammar == null || !ref.getGrammarName().equals(currentGrammar.getName());
+		boolean writeGrammarAttr = currentGrammar == null || 
+				                     (ref.getGrammarName() != null &&
+				                      !ref.getGrammarName().equals(currentGrammar.getName()));
 		XMLSkinElements.Type refType;
 		if(isMacro) refType = XMLSkinElements.Type.MACRO_REF_ELEMENT;
 		else switch(dereference(ref).getType())

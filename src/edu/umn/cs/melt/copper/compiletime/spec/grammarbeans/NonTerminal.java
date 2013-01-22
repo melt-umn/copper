@@ -17,6 +17,6 @@ public class NonTerminal extends GrammarSymbol
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
 	throws E
 	{
-		return visitor.visitNonTerminalBean(this);
+		return visitor.visitNonTerminal(this);
 	}
 }

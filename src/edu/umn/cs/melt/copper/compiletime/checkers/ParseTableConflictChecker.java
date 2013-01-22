@@ -44,12 +44,17 @@ public class ParseTableConflictChecker
 		boolean passed = true;
 		
 		stats.parseTableConflictCount = parseTable.getConflictCount();
+		stats.shiftReduceParseTableConflictCount = 0;
+		stats.reduceReduceParseTableConflictCount = 0;
 		stats.unresolvedParseTableConflictCount = 0;
 		
 		for(int i = 0;i < parseTable.getConflictCount();i++)
 		{
 			boolean logConflict = logger.isLoggable(CompilerLevel.VERBOSE);
 			LRParseTableConflict conflict = parseTable.getConflict(i);
+		
+			if(conflict.shift != -1) stats.shiftReduceParseTableConflictCount++;
+			if(conflict.reduce.cardinality() > 1) stats.reduceReduceParseTableConflictCount++;
 			
 			if(parseTable.getActionType(conflict.getState(),conflict.getSymbol()) == LRParseTable.CONFLICT)
 			{

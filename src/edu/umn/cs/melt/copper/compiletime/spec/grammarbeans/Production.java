@@ -226,6 +226,6 @@ public class Production extends GrammarElement
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
 	throws E
 	{
-		return visitor.visitProductionBean(this);
+		return visitor.visitProduction(this);
 	}
 }

@@ -14,15 +14,15 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.TerminalClass;
 
 public interface CopperASTBeanVisitor<RT, E extends Exception>
 {
-	public RT visitDisambiguationFunctionBean(DisambiguationFunction bean) throws E;
-	public RT visitGrammarBean(Grammar bean) throws E;
-	public RT visitExtensionGrammarBean(ExtensionGrammar bean) throws E;
-	public RT visitNonTerminalBean(NonTerminal bean) throws E;
-	public RT visitParserAttributeBean(ParserAttribute bean) throws E;
+	public RT visitDisambiguationFunction(DisambiguationFunction bean) throws E;
+	public RT visitGrammar(Grammar bean) throws E;
+	public RT visitExtensionGrammar(ExtensionGrammar bean) throws E;
+	public RT visitNonTerminal(NonTerminal bean) throws E;
+	public RT visitParserAttribute(ParserAttribute bean) throws E;
 	public RT visitParserBean(ParserBean bean) throws E;
 	public RT visitExtendedParserBean(ExtendedParserBean bean) throws E;
-	public RT visitProductionBean(Production bean) throws E;
-	public RT visitTerminalBean(Terminal bean) throws E;
-	public RT visitTerminalClassBean(TerminalClass bean) throws E;
-	public RT visitOperatorClassBean(OperatorClass bean) throws E;
+	public RT visitProduction(Production bean) throws E;
+	public RT visitTerminal(Terminal bean) throws E;
+	public RT visitTerminalClass(TerminalClass bean) throws E;
+	public RT visitOperatorClass(OperatorClass bean) throws E;
 }
