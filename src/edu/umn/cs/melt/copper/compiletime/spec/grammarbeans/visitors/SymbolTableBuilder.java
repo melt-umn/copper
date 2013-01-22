@@ -46,7 +46,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 	
 	@Override
-	public PSSymbolTable visitDisambiguationFunctionBean(DisambiguationFunction bean)
+	public PSSymbolTable visitDisambiguationFunction(DisambiguationFunction bean)
 	throws RuntimeException
 	{
 		disambiguationFunctions.add(bean);
@@ -54,7 +54,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitGrammarBean(Grammar bean)
+	public PSSymbolTable visitGrammar(Grammar bean)
 	throws RuntimeException
 	{
 		for(CopperElementName n : bean.getGrammarElements())
@@ -66,10 +66,10 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitExtensionGrammarBean(ExtensionGrammar bean)
+	public PSSymbolTable visitExtensionGrammar(ExtensionGrammar bean)
 	throws RuntimeException
 	{
-		visitGrammarBean(bean);
+		visitGrammar(bean);
 		for(CopperElementName n : bean.getMarkingTerminals())
 		{
 			bean.getMarkingTerminal(n).acceptVisitor(this);
@@ -82,7 +82,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitNonTerminalBean(NonTerminal bean)
+	public PSSymbolTable visitNonTerminal(NonTerminal bean)
 	throws RuntimeException
 	{
 		nonterminals.add(bean);
@@ -90,7 +90,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitParserAttributeBean(ParserAttribute bean)
+	public PSSymbolTable visitParserAttribute(ParserAttribute bean)
 	throws RuntimeException
 	{
 		parserAttributes.add(bean);
@@ -139,7 +139,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitProductionBean(Production bean)
+	public PSSymbolTable visitProduction(Production bean)
 	throws RuntimeException
 	{
 		productions.add(bean);
@@ -147,7 +147,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitTerminalBean(Terminal bean)
+	public PSSymbolTable visitTerminal(Terminal bean)
 	throws RuntimeException
 	{
 		terminals.add(bean);
@@ -155,7 +155,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitTerminalClassBean(TerminalClass bean)
+	public PSSymbolTable visitTerminalClass(TerminalClass bean)
 	throws RuntimeException
 	{
 		terminalClasses.add(bean);
@@ -163,7 +163,7 @@ public class SymbolTableBuilder implements CopperASTBeanVisitor<PSSymbolTable, R
 	}
 
 	@Override
-	public PSSymbolTable visitOperatorClassBean(OperatorClass bean)
+	public PSSymbolTable visitOperatorClass(OperatorClass bean)
 	throws RuntimeException
 	{
 		operatorClasses.add(bean);

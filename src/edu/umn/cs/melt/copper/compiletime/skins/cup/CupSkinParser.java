@@ -1,3 +1,9 @@
+/*
+ * Built at Tue Jan 22 10:50:59 CST 2013
+ * by Copper version 0.7.0,
+ *      revision 6c9c69bc914338a451bd39f0aeae916e49e7da92,
+ *      build 20121228-1654
+ */
 package edu.umn.cs.melt.copper.compiletime.skins.cup;
 
 import java.util.ArrayList;
@@ -991,6 +997,7 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
                 if(code != null) bean.setCode(code.lexeme);
                 if(flags.layout != null) bean.setLayout(new TreeSet<CopperElementReference>(flags.layout));
                 if(flags.operator != null) bean.setOperator(flags.operator);
+                bean.setPrecedence(nextProductionPrecedence--);
                 RESULT = bean;
                 
             return RESULT;
@@ -2310,6 +2317,7 @@ public CupSkinParser() {}
 			
 			private int nextPrecedence = 0;
 			private int nextProduction = 0;
+			private int nextProductionPrecedence = Integer.MAX_VALUE;
 			
 			private CopperElementName newName(Token token)
 			{

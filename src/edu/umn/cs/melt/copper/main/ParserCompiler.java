@@ -425,25 +425,6 @@ public class ParserCompiler
 		
 		if(i == -1 || i >= args.length) usageMessageError(argTable);
 
-//		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
-		
-//		boolean failed = false;
-//		for(;i < args.length;i++)
-//		{
-//			FileReader file = null;
-//			try
-//			{
-//				file = new FileReader(args[i]);
-//			}
-//			catch(FileNotFoundException ex)
-//			{
-//				System.err.println("Grammar file not found: '" + args[i] + "'");
-//				failed = true;
-//			}
-//			if(file != null) files.add(Pair.cons(args[i],(Reader) file));
-//		}
-//		if(failed) System.exit(1);
-		
 		ArrayList< Pair<String,Object> > files = new ArrayList< Pair<String,Object> >();
 		
 		for(;i < args.length;i++) files.add(Pair.cons(args[i],(Object) args[i]));
@@ -455,6 +436,7 @@ public class ParserCompiler
 		try
 		{
 			errorlevel = compile(argTable);
+			AuxiliaryMethods.getOrMakeLogger(argTable).flush();
 		}
 		catch(IOException ex)
 		{

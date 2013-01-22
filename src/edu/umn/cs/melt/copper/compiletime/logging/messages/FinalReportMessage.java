@@ -53,7 +53,7 @@ public class FinalReportMessage implements CompilerLogMessage
 		}
 		else
 		{
-			rv.append(stats.parseTableConflictCount + " parse table conflict" + ((stats.parseTableConflictCount == 1) ? "" : "s") + " detected; " + (stats.parseTableConflictCount - stats.unresolvedParseTableConflictCount) + " resolved.\n");
+			rv.append(stats.parseTableConflictCount + " parse table conflict" + ((stats.parseTableConflictCount == 1) ? "" : "s") + " detected\n   (" + stats.shiftReduceParseTableConflictCount + " shift/reduce, " + stats.reduceReduceParseTableConflictCount + " reduce/reduce); " + (stats.parseTableConflictCount - stats.unresolvedParseTableConflictCount) + " resolved.\n");
 		}
 		if(stats.lexicalAmbiguityCount == 0)
 		{

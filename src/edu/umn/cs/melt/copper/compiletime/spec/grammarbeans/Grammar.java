@@ -132,6 +132,6 @@ public class Grammar extends CopperASTBean
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
 	throws E
 	{
-		return visitor.visitGrammarBean(this);
+		return visitor.visitGrammar(this);
 	}
 }
