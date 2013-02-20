@@ -1,0 +1,4089 @@
+<html version="-//W3C//DTD XHTML 2.0//EN" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Copper HTML dump</title>
+<style type="text/css">
+div.page      { width: 800px; }
+table.symtable,
+table.dfatable  { border: 1px solid #000000; border-collapse: collapse; }
+table.symtable tr.trodd  { background-color: #c0c0c0; }
+table.symtable td,th { border: 1px solid #000000; padding: 0.3em 0.3em; }
+td.fixedcell { text-align: left; font-family: monospace; }
+td.fixedfccell { text-align: center; font-family: monospace; }
+td.varcell   { text-align: center; }
+a[href] { color: #ff0000; text-decoration: none; }
+a[href]:hover { background: #000000; font-weight: bold; }
+a[href]:hover.toclink { background: #c0c0c0; font-weight: normal; }
+a[href].genlink { padding: 0.5em 0.5em; }
+a[href].tablelink { padding: 0.5em 1em; }
+table.dfatable td.dfacell   { border: 0px; padding: 0.5em; font-family: monospace; }
+</style>
+</head>
+<body>
+<div class="page">
+<a name="toc"></a>
+<h1>Table of contents</h1>
+<ul>
+<li>
+<a href="#terminals" class="toclink">Terminals</a>
+</li>
+<li>
+<a href="#nonterminals" class="toclink">Nonterminals</a>
+</li>
+<li>
+<a href="#productions" class="toclink">Productions</a>
+</li>
+<li>
+<a href="#disambig_groups" class="toclink">Disambiguation functions/groups</a>
+</li>
+<li>
+<a href="#lalr_dfa" class="toclink">LALR(1) DFA</a>
+</li>
+<li>
+<a href="#parsetable" class="toclink">Parse and goto tables</a>
+</li>
+</ul>
+<a name="terminals"></a>
+<h1>Terminals</h1>
+<table class="symtable">
+<tr>
+<th>ID</th><th>Name</th><th>Submits to<br>(&lt;)</th><th>Dominates<br>(&gt;)</th><th>In grammar</th>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t0"></a>t0</td><td class="fixedcell">star</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="t1"></a>t1</td><td class="fixedcell">plus</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t2"></a>t2</td><td class="fixedcell">colon</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="t3"></a>t3</td><td class="fixedcell">question</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t4"></a>t4</td><td class="fixedcell">$</td><td class="fixedcell"></td><td class="fixedcell"></td><td class="fixedcell"></td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="t5"></a>t5</td><td class="fixedcell">dash</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t6"></a>t6</td><td class="fixedcell">lparen</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="t7"></a>t7</td><td class="fixedcell">not</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t8"></a>t8</td><td class="fixedcell">bar</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="t9"></a>t9</td><td class="fixedcell">rbrack</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t10"></a>t10</td><td class="fixedcell">wildcard</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="t11"></a>t11</td><td class="fixedcell">rparen</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t12"></a>t12</td><td class="fixedcell">lbrack</td><td class="fixedcell"></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="t13"></a>t13</td><td class="fixedcell">character</td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t2" class="genlink">colon</a> <a href="#t3" class="genlink">question</a> <a href="#t5" class="genlink">dash</a> <a href="#t6" class="genlink">lparen</a> <a href="#t7" class="genlink">not</a> <a href="#t8" class="genlink">bar</a> <a href="#t9" class="genlink">rbrack</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td><td class="fixedcell"></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="t14"></a>t14</td><td class="fixedcell">empty</td><td class="fixedcell"></td><td class="fixedcell"></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+</table>
+<a name="nonterminals"></a>
+<h1>Nonterminals</h1>
+<table class="symtable">
+<tr>
+<th>ID</th><th>Name</th><th>In grammar</th>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="nt0"></a>nt0</td><td class="fixedcell">Regex_R</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="nt1"></a>nt1</td><td class="fixedcell">Regex_DR</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="nt2"></a>nt2</td><td class="fixedcell">Regex_RG</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="nt3"></a>nt3</td><td class="fixedcell">Regex_UG</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="nt4"></a>nt4</td><td class="fixedcell">^</td><td class="fixedcell"></td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="nt5"></a>nt5</td><td class="fixedcell">Regex_CHAR</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="nt6"></a>nt6</td><td class="fixedcell">Regex_G</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="nt7"></a>nt7</td><td class="fixedcell">Regex_RR</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="nt8"></a>nt8</td><td class="fixedcell">Regex_UR</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+</table>
+<a name="productions"></a>
+<h1>Productions</h1>
+<table class="symtable">
+<tr>
+<th>ID</th><th>Signature</th><th>In grammar</th>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p0"></a>p0</td><td class="fixedcell"><a href="#Regex_R" class="genlink">Regex_R</a>
+::=
+<a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p1"></a>p1</td><td class="fixedcell"><a href="#Regex_R" class="genlink">Regex_R</a>
+::=
+<a href="#nt1" class="genlink">Regex_DR</a><a href="#t8" class="genlink">bar</a><a href="#nt0" class="genlink">Regex_R</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p2"></a>p2</td><td class="fixedcell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+::=
+<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p3"></a>p3</td><td class="fixedcell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+::=
+<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p4"></a>p4</td><td class="fixedcell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+::=
+<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p5"></a>p5</td><td class="fixedcell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+::=
+<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p6"></a>p6</td><td class="fixedcell"><a href="#Regex_RG" class="genlink">Regex_RG</a>
+::=
+<a href="#nt6" class="genlink">Regex_G</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p7"></a>p7</td><td class="fixedcell"><a href="#Regex_RG" class="genlink">Regex_RG</a>
+::=
+</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p8"></a>p8</td><td class="fixedcell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+::=
+<a href="#nt5" class="genlink">Regex_CHAR</a><a href="#t5" class="genlink">dash</a><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p9"></a>p9</td><td class="fixedcell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+::=
+<a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p10"></a>p10</td><td class="fixedcell"><a href="#^" class="genlink">^</a>
+::=
+<a href="#nt0" class="genlink">Regex_R</a><a href="#t4" class="genlink">$</a></td><td class="fixedcell"></td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p11"></a>p11</td><td class="fixedcell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+::=
+<a href="#t13" class="genlink">character</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p12"></a>p12</td><td class="fixedcell"><a href="#Regex_G" class="genlink">Regex_G</a>
+::=
+<a href="#nt3" class="genlink">Regex_UG</a><a href="#nt2" class="genlink">Regex_RG</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p13"></a>p13</td><td class="fixedcell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+::=
+<a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p14"></a>p14</td><td class="fixedcell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+::=
+</td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p15"></a>p15</td><td class="fixedcell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+::=
+<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p16"></a>p16</td><td class="fixedcell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+::=
+<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p17"></a>p17</td><td class="fixedcell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+::=
+<a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="trodd">
+<td class="varcell"><a name="p18"></a>p18</td><td class="fixedcell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+::=
+<a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+<tr class="treven">
+<td class="varcell"><a name="p19"></a>p19</td><td class="fixedcell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+::=
+<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">CopperRegexGrammar</td>
+</tr>
+</table>
+<a name="disambig_groups"></a>
+<h1>Disambiguation functions/groups</h1>
+<p>No disambiguation groups.</p>
+<a name="precgraph"></a><a name="lalr_dfa"></a>
+<h1>LALR(1) DFA</h1>
+<h2>States index</h2>
+<a href="#ds0" class="tablelink">0</a><a href="#ds1" class="tablelink">1</a><a href="#ds2" class="tablelink">2</a><a href="#ds3" class="tablelink">3</a><a href="#ds4" class="tablelink">4</a><a href="#ds5" class="tablelink">5</a><a href="#ds6" class="tablelink">6</a><a href="#ds7" class="tablelink">7</a><a href="#ds8" class="tablelink">8</a><a href="#ds9" class="tablelink">9</a><a href="#ds10" class="tablelink">10</a><a href="#ds11" class="tablelink">11</a><a href="#ds12" class="tablelink">12</a><a href="#ds13" class="tablelink">13</a><a href="#ds14" class="tablelink">14</a><a href="#ds15" class="tablelink">15</a><a href="#ds16" class="tablelink">16</a><a href="#ds17" class="tablelink">17</a><a href="#ds18" class="tablelink">18</a><a href="#ds19" class="tablelink">19</a><a href="#ds20" class="tablelink">20</a><a href="#ds21" class="tablelink">21</a><a href="#ds22" class="tablelink">22</a><a href="#ds23" class="tablelink">23</a><a href="#ds24" class="tablelink">24</a><a href="#ds25" class="tablelink">25</a><a href="#ds26" class="tablelink">26</a><a href="#ds27" class="tablelink">27</a><a href="#ds28" class="tablelink">28</a><a href="#ds29" class="tablelink">29</a><a href="#ds30" class="tablelink">30</a><a href="#ds31" class="tablelink">31</a><a name="ds0"></a>
+<h2>State 0</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a>
+             , [
+             <a href="#t4" class="genlink">$</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a><a href="#t8" class="genlink">bar</a><a href="#nt0" class="genlink">Regex_R</a>
+             , [
+             <a href="#t4" class="genlink">$</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#^" class="genlink">^</a>
+             ::=
+             (*)<a href="#nt0" class="genlink">Regex_R</a><a href="#t4" class="genlink">$</a>
+             , [
+             
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t10" class="genlink">wildcard</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedfccell"><a href="#ds5" class="genlink">State
+                  5</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt0" class="genlink">Regex_R</a></td><td class="fixedfccell"><a href="#ds7" class="genlink">State
+                  7</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedfccell"><a href="#ds2" class="genlink">State
+                  2</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds6" class="genlink">State
+                  6</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedfccell"><a href="#ds1" class="genlink">State
+                  1</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedfccell"><a href="#ds4" class="genlink">State
+                  4</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedfccell"><a href="#ds3" class="genlink">State
+                  3</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds1"></a>
+<h2>State 1</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a>(*)<a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a>(*)<a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a>(*)<a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a>(*)<a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t10" class="genlink">wildcard</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedfccell"><a href="#ds19" class="genlink">State
+                  19</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedfccell"><a href="#ds18" class="genlink">State
+                  18</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedfccell"><a href="#ds16" class="genlink">State
+                  16</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedfccell"><a href="#ds5" class="genlink">State
+                  5</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedfccell"><a href="#ds17" class="genlink">State
+                  17</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds6" class="genlink">State
+                  6</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedfccell"><a href="#ds15" class="genlink">State
+                  15</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedfccell"><a href="#ds1" class="genlink">State
+                  1</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedfccell"><a href="#ds4" class="genlink">State
+                  4</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedfccell"><a href="#ds3" class="genlink">State
+                  3</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds2"></a>
+<h2>State 2</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             <a href="#nt1" class="genlink">Regex_DR</a>(*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             <a href="#nt1" class="genlink">Regex_DR</a>(*)<a href="#t8" class="genlink">bar</a><a href="#nt0" class="genlink">Regex_R</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedfccell"><a href="#ds14" class="genlink">State
+                  14</a></td>
+</tr>
+</table>
+<a name="ds3"></a>
+<h2>State 3</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a><a href="#t5" class="genlink">dash</a><a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t5" class="genlink">dash</a><a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_G" class="genlink">Regex_G</a>
+             ::=
+             (*)<a href="#nt3" class="genlink">Regex_UG</a><a href="#nt2" class="genlink">Regex_RG</a>
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t12" class="genlink">lbrack</a>(*)<a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t12" class="genlink">lbrack</a>(*)<a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t7" class="genlink">not</a></td><td class="fixedfccell"><a href="#ds13" class="genlink">State
+                  13</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt3" class="genlink">Regex_UG</a></td><td class="fixedfccell"><a href="#ds10" class="genlink">State
+                  10</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds12" class="genlink">State
+                  12</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt6" class="genlink">Regex_G</a></td><td class="fixedfccell"><a href="#ds11" class="genlink">State
+                  11</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds4"></a>
+<h2>State 4</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t10" class="genlink">wildcard</a>(*)
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds5"></a>
+<h2>State 5</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a>
+             , [
+             <a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a><a href="#t8" class="genlink">bar</a><a href="#nt0" class="genlink">Regex_R</a>
+             , [
+             <a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t6" class="genlink">lparen</a>(*)<a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t10" class="genlink">wildcard</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedfccell"><a href="#ds5" class="genlink">State
+                  5</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt0" class="genlink">Regex_R</a></td><td class="fixedfccell"><a href="#ds9" class="genlink">State
+                  9</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedfccell"><a href="#ds2" class="genlink">State
+                  2</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds6" class="genlink">State
+                  6</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedfccell"><a href="#ds1" class="genlink">State
+                  1</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedfccell"><a href="#ds4" class="genlink">State
+                  4</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedfccell"><a href="#ds3" class="genlink">State
+                  3</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds6"></a>
+<h2>State 6</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#nt5" class="genlink">Regex_CHAR</a>(*)
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds7"></a>
+<h2>State 7</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#^" class="genlink">^</a>
+             ::=
+             <a href="#nt0" class="genlink">Regex_R</a>(*)<a href="#t4" class="genlink">$</a>
+             , [
+             
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds8"></a>
+<h2>State 8</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             <a href="#t13" class="genlink">character</a>(*)
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t5" class="genlink">dash</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t9" class="genlink">rbrack</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds9"></a>
+<h2>State 9</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a>(*)<a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedfccell"><a href="#ds23" class="genlink">State
+                  23</a></td>
+</tr>
+</table>
+<a name="ds10"></a>
+<h2>State 10</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_RG" class="genlink">Regex_RG</a>
+             ::=
+             (*)<a href="#nt6" class="genlink">Regex_G</a>
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RG" class="genlink">Regex_RG</a>
+             ::=
+             (*)
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a><a href="#t5" class="genlink">dash</a><a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t5" class="genlink">dash</a><a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_G" class="genlink">Regex_G</a>
+             ::=
+             (*)<a href="#nt3" class="genlink">Regex_UG</a><a href="#nt2" class="genlink">Regex_RG</a>
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_G" class="genlink">Regex_G</a>
+             ::=
+             <a href="#nt3" class="genlink">Regex_UG</a>(*)<a href="#nt2" class="genlink">Regex_RG</a>
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt2" class="genlink">Regex_RG</a></td><td class="fixedfccell"><a href="#ds28" class="genlink">State
+                  28</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt3" class="genlink">Regex_UG</a></td><td class="fixedfccell"><a href="#ds10" class="genlink">State
+                  10</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds12" class="genlink">State
+                  12</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt6" class="genlink">Regex_G</a></td><td class="fixedfccell"><a href="#ds27" class="genlink">State
+                  27</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds11"></a>
+<h2>State 11</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a>(*)<a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedfccell"><a href="#ds20" class="genlink">State
+                  20</a></td>
+</tr>
+</table>
+<a name="ds12"></a>
+<h2>State 12</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             <a href="#nt5" class="genlink">Regex_CHAR</a>(*)<a href="#t5" class="genlink">dash</a><a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             <a href="#nt5" class="genlink">Regex_CHAR</a>(*)
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t5" class="genlink">dash</a></td><td class="fixedfccell"><a href="#ds21" class="genlink">State
+                  21</a></td>
+</tr>
+</table>
+<a name="ds13"></a>
+<h2>State 13</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a><a href="#t5" class="genlink">dash</a><a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t5" class="genlink">dash</a><a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_G" class="genlink">Regex_G</a>
+             ::=
+             (*)<a href="#nt3" class="genlink">Regex_UG</a><a href="#nt2" class="genlink">Regex_RG</a>
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a>(*)<a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt3" class="genlink">Regex_UG</a></td><td class="fixedfccell"><a href="#ds10" class="genlink">State
+                  10</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds12" class="genlink">State
+                  12</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt6" class="genlink">Regex_G</a></td><td class="fixedfccell"><a href="#ds26" class="genlink">State
+                  26</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds14"></a>
+<h2>State 14</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a><a href="#t8" class="genlink">bar</a><a href="#nt0" class="genlink">Regex_R</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             <a href="#nt1" class="genlink">Regex_DR</a><a href="#t8" class="genlink">bar</a>(*)<a href="#nt0" class="genlink">Regex_R</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t10" class="genlink">wildcard</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedfccell"><a href="#ds5" class="genlink">State
+                  5</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt0" class="genlink">Regex_R</a></td><td class="fixedfccell"><a href="#ds24" class="genlink">State
+                  24</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedfccell"><a href="#ds2" class="genlink">State
+                  2</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds6" class="genlink">State
+                  6</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedfccell"><a href="#ds1" class="genlink">State
+                  1</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedfccell"><a href="#ds4" class="genlink">State
+                  4</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedfccell"><a href="#ds3" class="genlink">State
+                  3</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds15"></a>
+<h2>State 15</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>(*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds16"></a>
+<h2>State 16</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a>(*)<a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t10" class="genlink">wildcard</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedfccell"><a href="#ds5" class="genlink">State
+                  5</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedfccell"><a href="#ds17" class="genlink">State
+                  17</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds6" class="genlink">State
+                  6</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedfccell"><a href="#ds29" class="genlink">State
+                  29</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedfccell"><a href="#ds1" class="genlink">State
+                  1</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedfccell"><a href="#ds4" class="genlink">State
+                  4</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedfccell"><a href="#ds3" class="genlink">State
+                  3</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds17"></a>
+<h2>State 17</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             <a href="#nt1" class="genlink">Regex_DR</a>(*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds18"></a>
+<h2>State 18</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a>(*)<a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t10" class="genlink">wildcard</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedfccell"><a href="#ds5" class="genlink">State
+                  5</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedfccell"><a href="#ds17" class="genlink">State
+                  17</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds6" class="genlink">State
+                  6</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedfccell"><a href="#ds25" class="genlink">State
+                  25</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedfccell"><a href="#ds1" class="genlink">State
+                  1</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedfccell"><a href="#ds4" class="genlink">State
+                  4</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedfccell"><a href="#ds3" class="genlink">State
+                  3</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds19"></a>
+<h2>State 19</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a>(*)<a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             (*)<a href="#nt8" class="genlink">Regex_UR</a><a href="#nt7" class="genlink">Regex_RR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)<a href="#nt1" class="genlink">Regex_DR</a>
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_RR" class="genlink">Regex_RR</a>
+             ::=
+             (*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t10" class="genlink">wildcard</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             (*)<a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedfccell"><a href="#ds5" class="genlink">State
+                  5</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedfccell"><a href="#ds17" class="genlink">State
+                  17</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds6" class="genlink">State
+                  6</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedfccell"><a href="#ds22" class="genlink">State
+                  22</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedfccell"><a href="#ds1" class="genlink">State
+                  1</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedfccell"><a href="#ds4" class="genlink">State
+                  4</a></td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedfccell"><a href="#ds3" class="genlink">State
+                  3</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds20"></a>
+<h2>State 20</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t12" class="genlink">lbrack</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>(*)
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds21"></a>
+<h2>State 21</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             <a href="#nt5" class="genlink">Regex_CHAR</a><a href="#t5" class="genlink">dash</a>(*)<a href="#nt5" class="genlink">Regex_CHAR</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+<tr>
+<td class="dfacell"><a href="#Regex_CHAR" class="genlink">Regex_CHAR</a>
+             ::=
+             (*)<a href="#t13" class="genlink">character</a>
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedfccell"><a href="#ds30" class="genlink">State
+                  30</a></td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedfccell"><a href="#ds8" class="genlink">State
+                  8</a></td>
+</tr>
+</table>
+<a name="ds22"></a>
+<h2>State 22</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a><a href="#t0" class="genlink">star</a><a href="#nt7" class="genlink">Regex_RR</a>(*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds23"></a>
+<h2>State 23</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t6" class="genlink">lparen</a><a href="#nt0" class="genlink">Regex_R</a><a href="#t11" class="genlink">rparen</a>(*)
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds24"></a>
+<h2>State 24</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_R" class="genlink">Regex_R</a>
+             ::=
+             <a href="#nt1" class="genlink">Regex_DR</a><a href="#t8" class="genlink">bar</a><a href="#nt0" class="genlink">Regex_R</a>(*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds25"></a>
+<h2>State 25</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a><a href="#t1" class="genlink">plus</a><a href="#nt7" class="genlink">Regex_RR</a>(*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds26"></a>
+<h2>State 26</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a>(*)<a href="#t9" class="genlink">rbrack</a>
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t4" class="genlink">$</a><a href="#t13" class="genlink">character</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<table class="symtable">
+<tr>
+<th>On symbol</th><th>Transition to</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedfccell"><a href="#ds31" class="genlink">State
+                  31</a></td>
+</tr>
+</table>
+<a name="ds27"></a>
+<h2>State 27</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_RG" class="genlink">Regex_RG</a>
+             ::=
+             <a href="#nt6" class="genlink">Regex_G</a>(*)
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds28"></a>
+<h2>State 28</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_G" class="genlink">Regex_G</a>
+             ::=
+             <a href="#nt3" class="genlink">Regex_UG</a><a href="#nt2" class="genlink">Regex_RG</a>(*)
+             , [
+             <a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds29"></a>
+<h2>State 29</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_DR" class="genlink">Regex_DR</a>
+             ::=
+             <a href="#nt8" class="genlink">Regex_UR</a><a href="#t3" class="genlink">question</a><a href="#nt7" class="genlink">Regex_RR</a>(*)
+             , [
+             <a href="#t4" class="genlink">$</a><a href="#t8" class="genlink">bar</a><a href="#t11" class="genlink">rparen</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds30"></a>
+<h2>State 30</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UG" class="genlink">Regex_UG</a>
+             ::=
+             <a href="#nt5" class="genlink">Regex_CHAR</a><a href="#t5" class="genlink">dash</a><a href="#nt5" class="genlink">Regex_CHAR</a>(*)
+             , [
+             <a href="#t13" class="genlink">character</a><a href="#t9" class="genlink">rbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="ds31"></a>
+<h2>State 31</h2>
+<table class="dfatable">
+<tr>
+<td class="dfacell"><a href="#Regex_UR" class="genlink">Regex_UR</a>
+             ::=
+             <a href="#t12" class="genlink">lbrack</a><a href="#t7" class="genlink">not</a><a href="#nt6" class="genlink">Regex_G</a><a href="#t9" class="genlink">rbrack</a>(*)
+             , [
+             <a href="#t0" class="genlink">star</a><a href="#t1" class="genlink">plus</a><a href="#t3" class="genlink">question</a><a href="#t13" class="genlink">character</a><a href="#t4" class="genlink">$</a><a href="#t6" class="genlink">lparen</a><a href="#t8" class="genlink">bar</a><a href="#t10" class="genlink">wildcard</a><a href="#t11" class="genlink">rparen</a><a href="#t12" class="genlink">lbrack</a>
+             ]
+             </td>
+</tr>
+</table>
+<a name="parsetable"></a>
+<h1>Parse and goto tables</h1>
+<h2>States index</h2>
+<a href="#tr0" class="tablelink">0</a><a href="#tr1" class="tablelink">1</a><a href="#tr2" class="tablelink">2</a><a href="#tr3" class="tablelink">3</a><a href="#tr4" class="tablelink">4</a><a href="#tr5" class="tablelink">5</a><a href="#tr6" class="tablelink">6</a><a href="#tr7" class="tablelink">7</a><a href="#tr8" class="tablelink">8</a><a href="#tr9" class="tablelink">9</a><a href="#tr10" class="tablelink">10</a><a href="#tr11" class="tablelink">11</a><a href="#tr12" class="tablelink">12</a><a href="#tr13" class="tablelink">13</a><a href="#tr14" class="tablelink">14</a><a href="#tr15" class="tablelink">15</a><a href="#tr16" class="tablelink">16</a><a href="#tr17" class="tablelink">17</a><a href="#tr18" class="tablelink">18</a><a href="#tr19" class="tablelink">19</a><a href="#tr20" class="tablelink">20</a><a href="#tr21" class="tablelink">21</a><a href="#tr22" class="tablelink">22</a><a href="#tr23" class="tablelink">23</a><a href="#tr24" class="tablelink">24</a><a href="#tr25" class="tablelink">25</a><a href="#tr26" class="tablelink">26</a><a href="#tr27" class="tablelink">27</a><a href="#tr28" class="tablelink">28</a><a href="#tr29" class="tablelink">29</a><a href="#tr30" class="tablelink">30</a><a href="#tr31" class="tablelink">31</a><a name="tr0"></a>
+<h2>State 0</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr5" class="genlink">state
+    5</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr4" class="genlink">state
+    4</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr3" class="genlink">state
+    3</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt0" class="genlink">Regex_R</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr7" class="genlink">state
+    7</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr2" class="genlink">state
+    2</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr6" class="genlink">state
+    6</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr1" class="genlink">state
+    1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr1"></a>
+<h2>State 1</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr19" class="genlink">state
+    19</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr18" class="genlink">state
+    18</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr16" class="genlink">state
+    16</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr5" class="genlink">state
+    5</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr4" class="genlink">state
+    4</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr3" class="genlink">state
+    3</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr17" class="genlink">state
+    17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr6" class="genlink">state
+    6</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr15" class="genlink">state
+    15</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr1" class="genlink">state
+    1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t3" class="genlink">question</a> <a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr2"></a>
+<h2>State 2</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p0" class="genlink">production
+    p0</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr14" class="genlink">state
+    14</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p0" class="genlink">production
+    p0</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t8" class="genlink">bar</a> <a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr3"></a>
+<h2>State 3</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t7" class="genlink">not</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr13" class="genlink">state
+    13</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt3" class="genlink">Regex_UG</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr10" class="genlink">state
+    10</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr12" class="genlink">state
+    12</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt6" class="genlink">Regex_G</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr11" class="genlink">state
+    11</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t7" class="genlink">not</a> </td>
+</tr>
+</table>
+<a name="tr4"></a>
+<h2>State 4</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p18" class="genlink">production
+    p18</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t3" class="genlink">question</a> <a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr5"></a>
+<h2>State 5</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr5" class="genlink">state
+    5</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr4" class="genlink">state
+    4</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr3" class="genlink">state
+    3</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt0" class="genlink">Regex_R</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr9" class="genlink">state
+    9</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr2" class="genlink">state
+    2</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr6" class="genlink">state
+    6</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr1" class="genlink">state
+    1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr6"></a>
+<h2>State 6</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p17" class="genlink">production
+    p17</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t3" class="genlink">question</a> <a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr7"></a>
+<h2>State 7</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Accept
+
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+</table>
+<a name="tr8"></a>
+<h2>State 8</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t5" class="genlink">dash</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p11" class="genlink">production
+    p11</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t3" class="genlink">question</a> <a href="#t13" class="genlink">character</a> <a href="#t5" class="genlink">dash</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t9" class="genlink">rbrack</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr9"></a>
+<h2>State 9</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr23" class="genlink">state
+    23</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr10"></a>
+<h2>State 10</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p7" class="genlink">production
+    p7</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt2" class="genlink">Regex_RG</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr28" class="genlink">state
+    28</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt3" class="genlink">Regex_UG</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr10" class="genlink">state
+    10</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr12" class="genlink">state
+    12</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt6" class="genlink">Regex_G</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr27" class="genlink">state
+    27</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t9" class="genlink">rbrack</a> </td>
+</tr>
+</table>
+<a name="tr11"></a>
+<h2>State 11</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr20" class="genlink">state
+    20</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t9" class="genlink">rbrack</a> </td>
+</tr>
+</table>
+<a name="tr12"></a>
+<h2>State 12</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t5" class="genlink">dash</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr21" class="genlink">state
+    21</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p9" class="genlink">production
+    p9</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p9" class="genlink">production
+    p9</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t5" class="genlink">dash</a> <a href="#t9" class="genlink">rbrack</a> </td>
+</tr>
+</table>
+<a name="tr13"></a>
+<h2>State 13</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt3" class="genlink">Regex_UG</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr10" class="genlink">state
+    10</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr12" class="genlink">state
+    12</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt6" class="genlink">Regex_G</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr26" class="genlink">state
+    26</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td>
+</tr>
+</table>
+<a name="tr14"></a>
+<h2>State 14</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr5" class="genlink">state
+    5</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr4" class="genlink">state
+    4</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr3" class="genlink">state
+    3</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt0" class="genlink">Regex_R</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr24" class="genlink">state
+    24</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr2" class="genlink">state
+    2</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr6" class="genlink">state
+    6</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr1" class="genlink">state
+    1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr15"></a>
+<h2>State 15</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p5" class="genlink">production
+    p5</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p5" class="genlink">production
+    p5</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p5" class="genlink">production
+    p5</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t8" class="genlink">bar</a> <a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr16"></a>
+<h2>State 16</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr5" class="genlink">state
+    5</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr4" class="genlink">state
+    4</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr3" class="genlink">state
+    3</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr17" class="genlink">state
+    17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr6" class="genlink">state
+    6</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr29" class="genlink">state
+    29</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr1" class="genlink">state
+    1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr17"></a>
+<h2>State 17</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p13" class="genlink">production
+    p13</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p13" class="genlink">production
+    p13</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p13" class="genlink">production
+    p13</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t8" class="genlink">bar</a> <a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr18"></a>
+<h2>State 18</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr5" class="genlink">state
+    5</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr4" class="genlink">state
+    4</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr3" class="genlink">state
+    3</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr17" class="genlink">state
+    17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr6" class="genlink">state
+    6</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr25" class="genlink">state
+    25</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr1" class="genlink">state
+    1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr19"></a>
+<h2>State 19</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr5" class="genlink">state
+    5</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr4" class="genlink">state
+    4</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p14" class="genlink">production
+    p14</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr3" class="genlink">state
+    3</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt1" class="genlink">Regex_DR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr17" class="genlink">state
+    17</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr6" class="genlink">state
+    6</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt7" class="genlink">Regex_RR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr22" class="genlink">state
+    22</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#nt8" class="genlink">Regex_UR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr1" class="genlink">state
+    1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr20"></a>
+<h2>State 20</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p19" class="genlink">production
+    p19</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t3" class="genlink">question</a> <a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr21"></a>
+<h2>State 21</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr8" class="genlink">state
+    8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Goto actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#nt5" class="genlink">Regex_CHAR</a></td><td class="fixedcell">
+                
+    Goto<a href="#tr30" class="genlink">state
+    30</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> </td>
+</tr>
+</table>
+<a name="tr22"></a>
+<h2>State 22</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p3" class="genlink">production
+    p3</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p3" class="genlink">production
+    p3</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p3" class="genlink">production
+    p3</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t8" class="genlink">bar</a> <a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr23"></a>
+<h2>State 23</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p15" class="genlink">production
+    p15</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t3" class="genlink">question</a> <a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+<a name="tr24"></a>
+<h2>State 24</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p1" class="genlink">production
+    p1</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p1" class="genlink">production
+    p1</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr25"></a>
+<h2>State 25</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p4" class="genlink">production
+    p4</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p4" class="genlink">production
+    p4</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p4" class="genlink">production
+    p4</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t8" class="genlink">bar</a> <a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr26"></a>
+<h2>State 26</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Shift to<a href="#tr31" class="genlink">state
+    31</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t9" class="genlink">rbrack</a> </td>
+</tr>
+</table>
+<a name="tr27"></a>
+<h2>State 27</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p6" class="genlink">production
+    p6</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t9" class="genlink">rbrack</a> </td>
+</tr>
+</table>
+<a name="tr28"></a>
+<h2>State 28</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p12" class="genlink">production
+    p12</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t9" class="genlink">rbrack</a> </td>
+</tr>
+</table>
+<a name="tr29"></a>
+<h2>State 29</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p2" class="genlink">production
+    p2</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p2" class="genlink">production
+    p2</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p2" class="genlink">production
+    p2</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t8" class="genlink">bar</a> <a href="#t11" class="genlink">rparen</a> </td>
+</tr>
+</table>
+<a name="tr30"></a>
+<h2>State 30</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t9" class="genlink">rbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p8" class="genlink">production
+    p8</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p8" class="genlink">production
+    p8</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t13" class="genlink">character</a> <a href="#t9" class="genlink">rbrack</a> </td>
+</tr>
+</table>
+<a name="tr31"></a>
+<h2>State 31</h2>
+<table class="symtable">
+<caption>
+<h4>Parse actions</h4>
+</caption>
+<tr>
+<th>Cell</th><th>Action</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t0" class="genlink">star</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t1" class="genlink">plus</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t3" class="genlink">question</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t4" class="genlink">$</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t6" class="genlink">lparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t8" class="genlink">bar</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t10" class="genlink">wildcard</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t11" class="genlink">rparen</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t12" class="genlink">lbrack</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#t13" class="genlink">character</a></td><td class="fixedcell">
+                
+    Reduce with<a href="#p16" class="genlink">production
+    p16</a>
+            </td>
+</tr>
+</table>
+<table class="symtable">
+<caption>
+<h4>Layout</h4>
+</caption>
+<tr>
+<th>Layout</th><th>Can come before</th>
+</tr>
+<tr class="trodd">
+<td class="fixedfccell"><a href="#t14" class="genlink">empty</a></td><td class="fixedcell"><a href="#t4" class="genlink">$</a> </td>
+</tr>
+<tr class="treven">
+<td class="fixedfccell"><a href="#" class="genlink"></a></td><td class="fixedcell"><a href="#t0" class="genlink">star</a> <a href="#t1" class="genlink">plus</a> <a href="#t3" class="genlink">question</a> <a href="#t13" class="genlink">character</a> <a href="#t6" class="genlink">lparen</a> <a href="#t8" class="genlink">bar</a> <a href="#t10" class="genlink">wildcard</a> <a href="#t11" class="genlink">rparen</a> <a href="#t12" class="genlink">lbrack</a> </td>
+</tr>
+</table>
+</div>
+</body>
+</html>
