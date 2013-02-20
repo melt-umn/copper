@@ -150,6 +150,12 @@ public class CopperAntTask extends Task
 	 * Defaults to {@link ParserCompiler#getDefaultSkin()}.
 	 */
 	private CopperSkinType useSkin;
+	/**
+	 * If true, the timestamps of the inputs and outputFile will be examined
+	 * to determine if this parser should be rebuilt.
+	 * Defaults to {@code false}, rebuilding the parser every time.
+	 */
+	private boolean avoidRecompile;
 	
 	public CopperAntTask()
 	{
@@ -174,6 +180,7 @@ public class CopperAntTask extends Task
 		dumpOutputType = null;
 		
 		isWarnUselessNTs = true;
+		avoidRecompile = false;
 		
 		customSwitches = new Hashtable<String,Object>();
 	}
@@ -209,6 +216,31 @@ public class CopperAntTask extends Task
 		for(String customSwitch : customSwitches.keySet())
 		{
 			params.setCustomSwitch(customSwitch,customSwitches.get(customSwitch));
+		}
+		
+		// One thing to note about this logic: changing what files are included
+		// in 'inputs' will not cause a recompile because we won't notice that
+		// happened.  Only changes to the files themselves will cause a rebuild
+		// of the parser. Generally, that should be enough. It's enough for Silver.
+		if(isAvoidRecompile() && inputs.size() > 0) {
+			File out = getOutputFile();
+			if(out == null) {
+				System.out.println("Use of avoidRecompile requires outputFile to be supplied! Ignoring...");
+			} else if(out.exists()) {
+				// The choice of 1 here makes this somewhat resilient to
+				// lastModified() returning 0 due to some IO error.
+				// In which case, we should not claim things are up to date.
+				long lastMod = 1;
+				for(Pair<String,Object> input : inputs) {
+					File f = (File) input.second();
+					lastMod = Math.max(f.lastModified(), lastMod);
+				}
+				if(lastMod < out.lastModified()) {
+					System.out.println(out.getName() + " is up to date.");
+					
+					return;
+				}
+			}
 		}
 		
 		System.out.println("Compiling " + inputs.size() + " input file" + (inputs.size() == 1 ? "" : "s") + ":");
@@ -429,5 +461,13 @@ public class CopperAntTask extends Task
 	public void setDump(CopperDumpControl dump)
 	{
 		this.dump = dump;
+	}
+
+	public boolean isAvoidRecompile() {
+		return avoidRecompile;
+	}
+
+	public void setAvoidRecompile(boolean avoidRecompile) {
+		this.avoidRecompile = avoidRecompile;
 	}
 }
