@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
 /**
  * Represents a production.
  *
- * Before a production is passed to the compier, fields
+ * Before a production is passed to the compiler, fields
  * <code>lhs</code> and <code>rhs</code> must be set to non-null values,
  * and field <code>rhsVarNames</code> must either be set to null or be equal
  * in length to <code>rhs</code>.
