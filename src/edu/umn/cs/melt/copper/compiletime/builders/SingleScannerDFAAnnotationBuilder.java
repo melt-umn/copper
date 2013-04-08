@@ -59,6 +59,10 @@ public class SingleScannerDFAAnnotationBuilder
 			acceptSets[state].or(accF);
 			acceptSets[state].andNot(rej);
 			rejectSets[state].or(rej);
+			
+			// DEBUG-X-BEGIN
+			//System.err.println("accF = " + accF + "; acc = " + acceptSets[state] + "; rej = " + rejectSets[state]);
+			// DEBUG-X-END
 		}
 		
 		boolean[][] transClosure = new boolean[SCANNER_STATE_COUNT][SCANNER_STATE_COUNT];
