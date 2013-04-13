@@ -51,6 +51,7 @@ public class ParserSpec
 		public final BitSet getTerminalClasses(int t) { return terminalClasses[t]; }
 		public final int getTransparentPrefix(int t) { return transparentPrefixes[t]; }
 		public final int getOperatorClass(int t) { return operatorClasses[t]; }
+		public final boolean hasOperatorPrecedence(int t) { return operatorPrecedences[t] != -1; }
 		public final int getOperatorPrecedence(int t) { return operatorPrecedences[t]; }
 		public final OperatorAssociativity getOperatorAssociativity(int t) { return operatorAssociativities[t]; }
 		
