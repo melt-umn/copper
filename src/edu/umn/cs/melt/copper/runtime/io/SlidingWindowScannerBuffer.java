@@ -71,16 +71,21 @@ class SlidingWindowScannerBuffer extends ScannerBuffer
 			circleBuffer = newCircleBuffer;
 		}
 		int readLength = 0;
+		int readLength2 = 0;
 		if(tail + additionLength > circleBuffer.length)
 		{
 			readLength = reader.read(circleBuffer,tail,circleBuffer.length - tail);
-			if(readLength == circleBuffer.length - tail) readLength += reader.read(circleBuffer,0,additionLength - (circleBuffer.length - tail));
+			if(readLength == circleBuffer.length - tail)
+			{
+				readLength2 = reader.read(circleBuffer,0,additionLength - (circleBuffer.length - tail));
+				if(readLength2 >= 0) readLength += readLength2;
+			}
 		}
 		else
 		{
 			readLength = reader.read(circleBuffer,tail,additionLength);
 		}
-		if(readLength < additionLength) eofReached = true;
+		if(readLength < additionLength || readLength2 == -1) eofReached = true;
 		if(readLength > 0)
 		{
 			bufferEnd += readLength;
