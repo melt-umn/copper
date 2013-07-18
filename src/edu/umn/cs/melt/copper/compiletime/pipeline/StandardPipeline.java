@@ -146,6 +146,10 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 			args.getLogger().log(new InterfaceErrorMessage("When the 'avoidRecompile' option is set, the output must be a file"));
 			return 1;
 		}
+		else if(!args.getOutputFile().exists())
+		{
+			return 0;
+		}
 		else if(args.getOutputFile().lastModified() == 0)
 		{
 			args.getLogger().log(new InterfaceErrorMessage("Error reading modification time for output file '" + args.getOutputFile() + "'"));
