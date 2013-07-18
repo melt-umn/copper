@@ -111,6 +111,22 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	 * on this input. Defaults to {@code false}.
 	 */
 	protected boolean runMDA;
+	/**
+	 * Controls whether a recompilation of a parser should take place.
+	 * 
+	 * If this flag is set, all members of {@link #inputs} must be files,
+	 * and {@link #outputFile} must be specified. It is assumed that if
+     * the given output file exists it has been compiled from the exact
+     * set of given input files.
+	 * 
+	 * With this assumption, if the given output file has a later
+	 * modification time than the given input files, it is regarded
+	 * as a recompilation and the parser compiler will not be run.
+	 * 
+	 * Defaults to {@code false}, rebuilding the parser every time.
+	 */
+	private boolean avoidRecompile;
+
 	private String singleFileName;
 	private Reader singleFileStream;
 	
@@ -175,6 +191,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		dumpStream = null;
 		dumpFile = null;
 		dumpOutputType = null;
+		avoidRecompile = false;
 		
 		isWarnUselessNTs = true;
 		
@@ -301,6 +318,11 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		return customSwitches.containsKey(key);
 	}
 
+	public boolean isAvoidRecompile()
+	{
+		return avoidRecompile;
+	}
+
 	public boolean isRunMDA()
 	{
 		return runMDA;
@@ -309,6 +331,11 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	public boolean isWarnUselessNTs()
 	{
 		return isWarnUselessNTs;
+	}
+
+	public void setAvoidRecompile(boolean avoidRecompile)
+	{
+		this.avoidRecompile = avoidRecompile;
 	}
 
 	public Object setCustomSwitch(String key,Object value)

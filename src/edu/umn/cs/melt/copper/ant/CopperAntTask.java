@@ -211,36 +211,13 @@ public class CopperAntTask extends Task
 		params.setDumpFile(dumpFile);
 		params.setDumpOutputType(dumpOutputType);
 		
+		params.setAvoidRecompile(avoidRecompile);
+
 		params.setWarnUselessNTs(isWarnUselessNTs);
 		
 		for(String customSwitch : customSwitches.keySet())
 		{
 			params.setCustomSwitch(customSwitch,customSwitches.get(customSwitch));
-		}
-		
-		// One thing to note about this logic: changing what files are included
-		// in 'inputs' will not cause a recompile because we won't notice that
-		// happened.  Only changes to the files themselves will cause a rebuild
-		// of the parser. Generally, that should be enough. It's enough for Silver.
-		if(isAvoidRecompile() && inputs.size() > 0) {
-			File out = getOutputFile();
-			if(out == null) {
-				System.out.println("Use of avoidRecompile requires outputFile to be supplied! Ignoring...");
-			} else if(out.exists()) {
-				// The choice of 1 here makes this somewhat resilient to
-				// lastModified() returning 0 due to some IO error.
-				// In which case, we should not claim things are up to date.
-				long lastMod = 1;
-				for(Pair<String,Object> input : inputs) {
-					File f = (File) input.second();
-					lastMod = Math.max(f.lastModified(), lastMod);
-				}
-				if(lastMod < out.lastModified()) {
-					System.out.println(out.getName() + " is up to date.");
-					
-					return;
-				}
-			}
 		}
 		
 		System.out.println("Compiling " + inputs.size() + " input file" + (inputs.size() == 1 ? "" : "s") + ":");
