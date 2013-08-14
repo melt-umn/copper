@@ -14,4 +14,9 @@ public class SingleDFAParseStackNode
 		this.pos = pos;
 		this.synthAttr = synthAttr;
 	}
+	
+	public String toString()
+	{
+		return "(" + statenum + "," + pos + ")";
+	}
 }

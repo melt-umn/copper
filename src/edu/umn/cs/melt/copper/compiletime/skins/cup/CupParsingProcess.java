@@ -61,6 +61,7 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 		catch(Exception ex)
 		{
 			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
+			else System.err.println("An unexpected fatal error has occurred in parsing. Run with -vv for debug information.");
 			return null;
 		}
 		if(args.getPackageName() != null) spec.setPackageDecl(args.getPackageName());
