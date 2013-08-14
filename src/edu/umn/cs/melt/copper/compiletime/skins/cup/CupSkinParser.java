@@ -2303,7 +2303,7 @@ public CupSkinParser() {}
     public ParserBean parse(java.io.Reader input,String inputName)
     throws java.io.IOException,edu.umn.cs.melt.copper.runtime.logging.CopperParserException
     {
-    this.buffer = edu.umn.cs.melt.copper.runtime.io.ScannerBuffer.instantiate(input);
+    this.charBuffer = edu.umn.cs.melt.copper.runtime.io.ScannerBuffer.instantiate(input);
     setupEngine();
     startEngine(edu.umn.cs.melt.copper.runtime.io.InputPosition.initialPos(inputName));
     ParserBean parseTree = (ParserBean) runEngine();

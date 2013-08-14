@@ -10,8 +10,10 @@ import java.util.Stack;
 
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
 import edu.umn.cs.melt.copper.runtime.engines.CopperParser;
+import edu.umn.cs.melt.copper.runtime.engines.CopperScanner;
 import edu.umn.cs.melt.copper.runtime.engines.semantics.VirtualLocation;
 import edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData;
+import edu.umn.cs.melt.copper.runtime.io.CircleTokenBuffer;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 
@@ -23,7 +25,7 @@ import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  *
  */
-public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements CopperParser<ROOT,EXCEPT>
+public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements CopperParser<ROOT,EXCEPT>,CopperScanner<SingleDFAParseStackNode,SingleDFAMatchData,EXCEPT>
 {
 	// Abstraction barriers for bit-mashing. Limit 536,870,912 symbols + productions, states.
 	public static int newSymbol(int symType,int index) { return ((symType & 0x03) << 29) | (index & 0x1FFFFFFF); }
@@ -161,6 +163,13 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 		StringReader reader = new StringReader(text);
 		return parse(reader,inputName);
 	}
+	
+	@Override
+	public SingleDFAMatchData pullToken(SingleDFAParseStackNode currentState)
+	throws EXCEPT
+	{
+		return null;
+	}
 
 
 
@@ -171,12 +180,15 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 	protected SingleDFAMatchData scanResult;
 	
 	
-    protected ScannerBuffer buffer;
+    protected ScannerBuffer charBuffer;
+    protected CircleTokenBuffer<SingleDFAMatchData> tokenBuffer;
     
     protected BitSet lastShiftable;
     protected InputPosition lastPosition;
     protected SingleDFAMatchData lastMatched;
     protected boolean functionalDisambiguationUsed;
+    protected boolean lastMatchFromQueue;
+    protected int lastAction;
     
     protected SingleDFAMatchData disjointMatch;
     
@@ -191,9 +203,14 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 	{
 		BitSet shiftable = getShiftableSets()[currentState.statenum];
 		InputPosition whence = currentState.pos;
-		buffer.advanceBufferTo(whence.getPos());
-		if(!runDisjoint && whence.equals(lastPosition))
+		charBuffer.advanceBufferTo(whence.getPos());
+		if(!runDisjoint && whence.equals(lastPosition) && lastAction != STATE_SHIFT)
 		{
+			if(lastMatchFromQueue)
+			{
+				lastShiftable = shiftable;
+				return lastMatched;					
+			}
 			if(lastMatched != null && !functionalDisambiguationUsed)
 			{
 				boolean partiallyDisjoint = false;
@@ -212,6 +229,7 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 		lastPosition = whence;
 		lastShiftable = shiftable;
 		functionalDisambiguationUsed = false;
+		lastMatchFromQueue = false;
 		
 		LinkedList<SingleDFAMatchData> layouts = new LinkedList<SingleDFAMatchData>();
 		SingleDFAMatchData finalMatches;
@@ -355,7 +373,16 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 			                    LinkedList<SingleDFAMatchData> layouts)
 	throws IOException
 	{
-		//System.err.println("Simple-shiftable " + shiftable);
+		//System.err.println("Simple-shiftable " + bitVecToDisplayStringList(shiftable) + "; token buffer size: " + tokenBuffer.size());
+		if(!tokenBuffer.isEmpty())
+		{
+			SingleDFAMatchData tok = tokenBuffer.poll();
+			tok.precedingPos = whence;
+			tok.followingPos = whence;
+			lastMatchFromQueue = true;
+			return tok;
+		}
+		//else lastMatchFromQueue = false;
 		int currentState = getSCANNER_START_STATENUM();
 		char symbol = '\0';
 		InputPosition p;
@@ -386,7 +413,7 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 					presentPos = whence;
 				}
 			}
-			symbol = buffer.charAt(p.getPos());
+			symbol = charBuffer.charAt(p.getPos());
 			if(symbol == ScannerBuffer.EOFIndicator)
 			{
 				break;
@@ -400,7 +427,7 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 			present.set(getEOF_SYMNUM());
 			return new SingleDFAMatchData(present,whence,p,"",layouts);
 		}
-		else return new SingleDFAMatchData(present,whence,presentPos,buffer.readStringFromBuffer(whence.getPos(),presentPos.getPos()),layouts);
+		else return new SingleDFAMatchData(present,whence,presentPos,charBuffer.readStringFromBuffer(whence.getPos(),presentPos.getPos()),layouts);
 	}
 	
 	protected void startEngine(InputPosition initialPos)
@@ -408,10 +435,13 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 	{
 		parseStack = new Stack<SingleDFAParseStackNode>();
 		parseStack.push(new SingleDFAParseStackNode(getPARSER_START_STATENUM(),initialPos,null));
+		tokenBuffer = new CircleTokenBuffer<SingleDFAMatchData>();
 		virtualLocation = new VirtualLocation(initialPos.getFileName(),1,0);
 		currentState = null;
 		disjointMatch = null;
 		functionalDisambiguationUsed = false;
+		lastAction = STATE_SHIFT;
+		lastMatchFromQueue = false;
 		lastPosition = null;
 		lastMatched = null;
 		lastShiftable = null;
@@ -423,6 +453,9 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 	{
 		while(true)
 		{
+			// DEBUG-X-BEGIN
+			//System.err.println(parseStack);
+			// DEBUG-X-END
 			currentState = parseStack.peek();
 			SingleDFAMatchData scanResult = layoutScan(false);
 			if(scanResult.terms.isEmpty())
@@ -464,6 +497,9 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 				synthAttr = runSemanticAction(scanResult.precedingPos,scanResult);
 				virtualLocation.defaultUpdateAutomatic(scanResult.lexeme);
 				parseStack.push(new SingleDFAParseStackNode(nextState,scanResult.followingPos,synthAttr));
+				// DEBUG-X-BEGIN
+				//System.err.println("shift(" + nextState + ")");
+				// DEBUG-X-END
 				break;
 			case STATE_REDUCE:
 				int production = actionIndex(action);
@@ -477,6 +513,9 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 				int gotoState = actionIndex(getParseTable()[parseStack.peek().statenum][productionLHS]);
 				synthAttr = runSemanticAction(currentState.pos,children,production);
 				parseStack.push(new SingleDFAParseStackNode(gotoState,currentState.pos,synthAttr));
+				// DEBUG-X-BEGIN
+				//System.err.println("reduce(" + production + "); goto(" + gotoState + ")");
+				// DEBUG-X-END
 				break;
 			default:
 				// DEBUG-X-BEGIN
@@ -485,6 +524,7 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 				disjointMatch = scanResult;
 				reportSyntaxError();
 			}
+			lastAction = actionType(action);
 		}
 	}
 }
