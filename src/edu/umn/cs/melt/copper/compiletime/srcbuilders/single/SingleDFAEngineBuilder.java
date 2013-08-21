@@ -618,7 +618,7 @@ public class SingleDFAEngineBuilder
 			String returnType = symbolTable.getTerminal(t).getReturnType();
 			if(returnType == null) returnType = Object.class.getName();
 			
-			out.print("        public " + returnType + " runSemanticAction_" + t + "(String lexeme)\n");
+			out.print("        public " + returnType + " runSemanticAction_" + t + "(final String lexeme)\n");
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
 			out.print("            " + returnType + " RESULT = null;\n");
@@ -646,7 +646,7 @@ public class SingleDFAEngineBuilder
 	    
 	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
 		{
-			out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(String lexeme)\n");
+			out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(final String lexeme)\n");
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
 			if(spec.df.hasDisambiguateTo(group))
@@ -657,7 +657,7 @@ public class SingleDFAEngineBuilder
 			{
 				for(int t = spec.df.getMembers(group).nextSetBit(0);t >= 0;t = spec.df.getMembers(group).nextSetBit(t+1))
 				{
-					out.print("            @SuppressWarnings(\"unused\") int " + symbolNames[t] + " = " + t + ";\n");
+					out.print("            @SuppressWarnings(\"unused\") final int " + symbolNames[t] + " = " + t + ";\n");
 				}
 				out.print("            " + symbolTable.getDisambiguationFunction(group).getCode() + "\n");
 			}
