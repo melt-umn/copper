@@ -198,11 +198,17 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
     protected abstract void reportSyntaxError() throws EXCEPT;
     
 
-	protected SingleDFAMatchData layoutScan(boolean runDisjoint)
+	protected SingleDFAMatchData layoutScan(boolean runDisjoint,SingleDFAMatchData previousResult)
 	throws IOException,EXCEPT
 	{
 		BitSet shiftable = getShiftableSets()[currentState.statenum];
-		InputPosition whence = currentState.pos;
+		InputPosition whence;
+		if(runDisjoint)
+		{
+			if(!previousResult.layouts.isEmpty()) whence = previousResult.layouts.getLast().followingPos;
+			else whence = currentState.pos;
+		}
+		else whence = currentState.pos;
 		charBuffer.advanceBufferTo(whence.getPos());
 		if(!runDisjoint && whence.equals(lastPosition) && lastAction != STATE_SHIFT)
 		{
@@ -457,10 +463,10 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 			//System.err.println(parseStack);
 			// DEBUG-X-END
 			currentState = parseStack.peek();
-			SingleDFAMatchData scanResult = layoutScan(false);
+			SingleDFAMatchData scanResult = layoutScan(false,null);
 			if(scanResult.terms.isEmpty())
 			{
-				disjointMatch = layoutScan(true);
+				disjointMatch = layoutScan(true,scanResult);
 				for(SingleDFAMatchData layout : scanResult.layouts)
 				{
 					runSemanticAction(layout.precedingPos,layout);
