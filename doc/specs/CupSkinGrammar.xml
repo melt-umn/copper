@@ -1061,6 +1061,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Regex> 
                     <CharacterSet invert="true">
                         <SingleCharacter char="&#10;"/>
+                        <SingleCharacter char="&#13;"/>
                     </CharacterSet>
                 </Regex>
                 <Type>Character</Type>
@@ -1092,6 +1093,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                         </CharacterSet>
                         <CharacterSet invert="true">
                             <SingleCharacter char="&#10;"/>
+                            <SingleCharacter char="&#13;"/>
                         </CharacterSet>
                     </Concatenation>
                 </Regex>
@@ -1115,6 +1117,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                             <Concatenation>
                                 <CharacterSet invert="true">
                                     <SingleCharacter char="&#10;"/>
+                                	<SingleCharacter char="&#13;"/>
                                     <SingleCharacter char="%"/>
                                 </CharacterSet>
                                 <CharacterSet>
@@ -1142,11 +1145,13 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                         <Concatenation>
                             <CharacterSet>
                                 <CharacterRange lower="&#9;" upper="&#10;"/>
+                                <SingleCharacter char="&#13;"/>
                                 <SingleCharacter char=" "/>
                             </CharacterSet>
                             <KleeneStar>
                                 <CharacterSet>
                                     <CharacterRange lower="&#9;" upper="&#10;"/>
+                                	<SingleCharacter char="&#13;"/>
                                     <SingleCharacter char=" "/>
                                 </CharacterSet>
                             </KleeneStar>
@@ -1161,6 +1166,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                             <KleeneStar>
                                 <CharacterSet invert="true">
                                     <SingleCharacter char="&#10;"/>
+                                	<SingleCharacter char="&#13;"/>
                                 </CharacterSet>
                             </KleeneStar>
                         </Concatenation>
@@ -1203,11 +1209,13 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                         <Concatenation>
                             <CharacterSet>
                                 <CharacterRange lower="&#9;" upper="&#10;"/>
+                                <SingleCharacter char="&#13;"/>
                                 <SingleCharacter char=" "/>
                             </CharacterSet>
                             <KleeneStar>
                                 <CharacterSet>
                                     <CharacterRange lower="&#9;" upper="&#10;"/>
+                                	<SingleCharacter char="&#13;"/>
                                     <SingleCharacter char=" "/>
                                 </CharacterSet>
                             </KleeneStar>
