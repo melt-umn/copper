@@ -68,6 +68,7 @@ public class ModularDeterminismAnalyzer
 			spillage.clear();
 			spillage.or(fullContextSets.getFollow(nt));
 			spillage.andNot(hostContextSets.getFollow(nt));
+			spillage.andNot(fullSpec.bridgeConstructs);
 			if(!spillage.isEmpty())
 			{
 				errorTypes.add(MDAResults.FOLLOW_SPILLAGE);
