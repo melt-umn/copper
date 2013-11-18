@@ -100,7 +100,7 @@ public class Grammar extends CopperASTBean
 	 * Adds a grammar element to the grammar.
 	 * @see Grammar#grammarElements
 	 * @param element The element to add.
-	 * @throws AlreadyBoundException If a grammar of the same name is already specified in the parser. 
+	 * @throws CopperException If a grammar element of the same name is already specified in the grammar. 
 	 * @return <code>true</code> <code>grammar.getName() != null</code> and an element of the same name was not yet defined in this grammar.
 	 */
 	public boolean addGrammarElement(GrammarElement element)
@@ -132,6 +132,6 @@ public class Grammar extends CopperASTBean
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
 	throws E
 	{
-		return visitor.visitGrammarBean(this);
+		return visitor.visitGrammar(this);
 	}
 }

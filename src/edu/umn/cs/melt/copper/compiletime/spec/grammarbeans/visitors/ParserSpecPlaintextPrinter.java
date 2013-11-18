@@ -48,7 +48,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+	public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 	throws RuntimeException
 	{
 		out.append("      Disambiguation " + (bean.getDisambiguateTo() == null ? "function" : "group") + ": " + bean.getName() + " (" + bean.getDisplayName() + ")\n");
@@ -63,7 +63,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitGrammarBean(Grammar bean)
+	public Boolean visitGrammar(Grammar bean)
 	throws RuntimeException
 	{
 		currentGrammar = bean;
@@ -84,7 +84,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+	public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 	throws RuntimeException
 	{
 		currentGrammar = bean;
@@ -115,7 +115,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitNonTerminalBean(NonTerminal bean)
+	public Boolean visitNonTerminal(NonTerminal bean)
 	throws RuntimeException
 	{
 		out.append("      Nonterminal " + bean.getName() + " (" + bean.getDisplayName() + ")\n");
@@ -123,7 +123,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitParserAttributeBean(ParserAttribute bean)
+	public Boolean visitParserAttribute(ParserAttribute bean)
 	throws RuntimeException
 	{
 		out.append("      Parser attribute " + bean.getName() + " (" + bean.getDisplayName() + ")\n");
@@ -169,7 +169,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitProductionBean(Production bean)
+	public Boolean visitProduction(Production bean)
 	throws RuntimeException
 	{
 		out.append("      Production: " + bean.getName() + " (" + bean.getDisplayName() + "), signature " + getName(bean.getLhs()) + " ::=");
@@ -187,7 +187,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitTerminalBean(Terminal bean)
+	public Boolean visitTerminal(Terminal bean)
 			throws RuntimeException
 	{
 		out.append("      Terminal: " + bean.getName() + " (" + bean.getDisplayName() + ")\n");
@@ -226,7 +226,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitTerminalClassBean(TerminalClass bean)
+	public Boolean visitTerminalClass(TerminalClass bean)
 	throws RuntimeException
 	{
 		out.append("      Terminal class: " + bean.getName() + " (" + bean.getDisplayName() + ")\n");
@@ -240,7 +240,7 @@ public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,
 	}
 
 	@Override
-	public Boolean visitOperatorClassBean(OperatorClass bean)
+	public Boolean visitOperatorClass(OperatorClass bean)
 	throws RuntimeException
 	{
 		out.append("      Operator class: " + bean.getName() + " (" + bean.getDisplayName() + ")\n");

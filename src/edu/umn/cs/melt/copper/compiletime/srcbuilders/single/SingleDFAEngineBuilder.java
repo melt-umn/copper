@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.LinkedList;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
@@ -21,6 +22,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
+import edu.umn.cs.melt.copper.runtime.engines.CopperTerminalEnum;
 import edu.umn.cs.melt.copper.runtime.engines.semantics.SpecialParserAttributes;
 import edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine;
 import edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData;
@@ -237,7 +239,7 @@ public class SingleDFAEngineBuilder
 	    parserAncillaries += "    throws " + IOException.class.getName() + "," + errorType + "\n";
 	    parserAncillaries += "    {\n"; 
 	    //parserAncillaries += "    this.reporter = reporter;\n";
-	    parserAncillaries += "    this.buffer = " + ScannerBuffer.class.getName() + ".instantiate(input);\n";
+	    parserAncillaries += "    this.charBuffer = " + ScannerBuffer.class.getName() + ".instantiate(input);\n";
 	    parserAncillaries += "    setupEngine();\n";
 	    parserAncillaries += "    startEngine(" + InputPosition.class.getName() + ".initialPos(inputName));\n";
 	    parserAncillaries += "    " + rootType + " parseTree = (" + rootType + ") runEngine();\n";
@@ -401,6 +403,30 @@ public class SingleDFAEngineBuilder
 		// To switch between scanner generation engines, change this line.
 //		generateScanner(out);
 //		generateScannerNew(out);
+		
+		out.print("    public static enum Terminals implements " + CopperTerminalEnum.class.getName() + "\n");
+		out.print("    {\n");
+		boolean first = true;
+		for(int i = spec.terminals.nextSetBit(0);i >= 0;i = spec.terminals.nextSetBit(i+1))
+		{
+			if(i != EOF_SYMNUM)
+			{
+				if(first) first = false;
+				else out.print(",\n");
+				out.print("        " + symbolNames[i] + "(" + i + ")");
+			}
+		}
+		out.print(";\n\n        private final int num;\n");
+		out.print("        Terminals(int num) { this.num = num; }\n");
+		out.print("        public int num() { return num; }\n");
+		out.print("    }\n\n");
+		
+		out.print("    public void pushToken(Terminals t,String lexeme)\n");
+		out.print("    {\n");
+		out.print("        " + BitSet.class.getName() + " ts = new " + BitSet.class.getName() + "();\n");
+		out.print("        ts.set(t.num());\n");
+		out.print("        tokenBuffer.offer(new " + SingleDFAMatchData.class.getName() + "(ts,currentState.pos,currentState.pos,lexeme,new " + LinkedList.class.getName() + "<" + SingleDFAMatchData.class.getName() + ">()));\n");
+		out.print("    }\n");
 		
 		out.print("    public void setupEngine()\n");
 		out.print("    {\n");
@@ -592,7 +618,7 @@ public class SingleDFAEngineBuilder
 			String returnType = symbolTable.getTerminal(t).getReturnType();
 			if(returnType == null) returnType = Object.class.getName();
 			
-			out.print("        public " + returnType + " runSemanticAction_" + t + "(String lexeme)\n");
+			out.print("        public " + returnType + " runSemanticAction_" + t + "(final String lexeme)\n");
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
 			out.print("            " + returnType + " RESULT = null;\n");
@@ -605,7 +631,7 @@ public class SingleDFAEngineBuilder
 	    out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
 	    out.print("        {\n");
 		if(spec.disambiguationFunctions.nextSetBit(0) >= 0) out.print("            String lexeme = match.lexeme;\n");
-		boolean first = true;
+		first = true;
 	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
 		{
 			out.print("            ");
@@ -620,7 +646,7 @@ public class SingleDFAEngineBuilder
 	    
 	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
 		{
-			out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(String lexeme)\n");
+			out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(final String lexeme)\n");
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
 			if(spec.df.hasDisambiguateTo(group))
@@ -631,7 +657,7 @@ public class SingleDFAEngineBuilder
 			{
 				for(int t = spec.df.getMembers(group).nextSetBit(0);t >= 0;t = spec.df.getMembers(group).nextSetBit(t+1))
 				{
-					out.print("            @SuppressWarnings(\"unused\") int " + symbolNames[t] + " = " + t + ";\n");
+					out.print("            @SuppressWarnings(\"unused\") final int " + symbolNames[t] + " = " + t + ";\n");
 				}
 				out.print("            " + symbolTable.getDisambiguationFunction(group).getCode() + "\n");
 			}

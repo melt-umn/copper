@@ -30,7 +30,7 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
 
 		boolean failed = false;
-		
+				
 		for(Pair<String,Object> i : inputs)
 		{
 			Reader second = null;
@@ -49,7 +49,10 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 			}
 			files.add(Pair.cons(i.first(),second));
 		}
-		if(failed) return null;
+		if(failed)
+		{
+			return null;
+		}
 
 		try
 		{
@@ -58,6 +61,7 @@ public class CupParsingProcess implements SpecParser<ParserBean>
 		catch(Exception ex)
 		{
 			if(logger.isLoggable(CompilerLevel.VERY_VERBOSE)) ex.printStackTrace(System.err);
+			else System.err.println("An unexpected fatal error has occurred in parsing. Run with -vv for debug information.");
 			return null;
 		}
 		if(args.getPackageName() != null) spec.setPackageDecl(args.getPackageName());

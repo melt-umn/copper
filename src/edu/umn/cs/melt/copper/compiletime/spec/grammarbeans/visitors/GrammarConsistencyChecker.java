@@ -67,7 +67,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	private boolean isBridgeProduction;
 	
 	@Override
-	public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+	public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 	{
 		boolean hasError = false;
 		// Check that none of the disambiguation function's required elements are missing.
@@ -143,7 +143,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 
 	@Override
-	public Boolean visitGrammarBean(Grammar bean)
+	public Boolean visitGrammar(Grammar bean)
 	{
 		currentGrammar = bean;
 		boolean hasError = false;
@@ -169,7 +169,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 
 	@Override
-	public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+	public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 	{
 		currentGrammar = bean;
 		boolean hasError = false;
@@ -200,7 +200,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 
 	@Override
-	public Boolean visitNonTerminalBean(NonTerminal bean)
+	public Boolean visitNonTerminal(NonTerminal bean)
 	{
 		boolean hasError = false;
 		// Check that none of the nonterminal's required elements are missing.
@@ -214,7 +214,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 
 	@Override
-	public Boolean visitParserAttributeBean(ParserAttribute bean)
+	public Boolean visitParserAttribute(ParserAttribute bean)
 	{
 		boolean hasError = false;
 		// Check that none of the parser attribute's required elements are missing.
@@ -355,7 +355,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 
 	@Override
-	public Boolean visitProductionBean(Production bean)
+	public Boolean visitProduction(Production bean)
 	{
 		// FIXME: Check that all production signatures in the parser spec are unique.
 		boolean hasError = false;
@@ -504,7 +504,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 
 	@Override
-	public Boolean visitTerminalBean(Terminal bean)
+	public Boolean visitTerminal(Terminal bean)
 	{
 		currentTerminal = bean;
 		boolean hasError = false;
@@ -595,7 +595,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 	}
 	
 	@Override
-	public Boolean visitTerminalClassBean(TerminalClass bean)
+	public Boolean visitTerminalClass(TerminalClass bean)
 	{
 		boolean hasError = false;
 		// Check that none of the terminal class's required elements are missing.
@@ -610,7 +610,7 @@ class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, Runtime
 
 
 	@Override
-	public Boolean visitOperatorClassBean(OperatorClass bean)
+	public Boolean visitOperatorClass(OperatorClass bean)
 	throws RuntimeException
 	{
 		boolean hasError = false;

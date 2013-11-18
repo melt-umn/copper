@@ -248,6 +248,6 @@ public class Terminal extends GrammarSymbol
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
 	throws E
 	{
-		return visitor.visitTerminalBean(this);
+		return visitor.visitTerminal(this);
 	}
 }

@@ -150,6 +150,12 @@ public class CopperAntTask extends Task
 	 * Defaults to {@link ParserCompiler#getDefaultSkin()}.
 	 */
 	private CopperSkinType useSkin;
+	/**
+	 * If true, the timestamps of the inputs and outputFile will be examined
+	 * to determine if this parser should be rebuilt.
+	 * Defaults to {@code false}, rebuilding the parser every time.
+	 */
+	private boolean avoidRecompile;
 	
 	public CopperAntTask()
 	{
@@ -174,6 +180,7 @@ public class CopperAntTask extends Task
 		dumpOutputType = null;
 		
 		isWarnUselessNTs = true;
+		avoidRecompile = false;
 		
 		customSwitches = new Hashtable<String,Object>();
 	}
@@ -204,6 +211,8 @@ public class CopperAntTask extends Task
 		params.setDumpFile(dumpFile);
 		params.setDumpOutputType(dumpOutputType);
 		
+		params.setAvoidRecompile(avoidRecompile);
+
 		params.setWarnUselessNTs(isWarnUselessNTs);
 		
 		for(String customSwitch : customSwitches.keySet())
@@ -429,5 +438,13 @@ public class CopperAntTask extends Task
 	public void setDump(CopperDumpControl dump)
 	{
 		this.dump = dump;
+	}
+
+	public boolean isAvoidRecompile() {
+		return avoidRecompile;
+	}
+
+	public void setAvoidRecompile(boolean avoidRecompile) {
+		this.avoidRecompile = avoidRecompile;
 	}
 }

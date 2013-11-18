@@ -86,7 +86,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 	private class NameAdder implements CopperASTBeanVisitor<Boolean,RuntimeException>
 	{
 		@Override
-		public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+		public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -95,7 +95,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitGrammarBean(Grammar bean)
+		public Boolean visitGrammar(Grammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -111,7 +111,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+		public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -136,7 +136,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitNonTerminalBean(NonTerminal bean)
+		public Boolean visitNonTerminal(NonTerminal bean)
 		throws RuntimeException
 		{
 			Symbol ntName = generateName(bean);
@@ -146,7 +146,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitParserAttributeBean(ParserAttribute bean)
+		public Boolean visitParserAttribute(ParserAttribute bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -175,7 +175,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitProductionBean(Production bean)
+		public Boolean visitProduction(Production bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -184,7 +184,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitTerminalBean(Terminal bean)
+		public Boolean visitTerminal(Terminal bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -195,7 +195,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitTerminalClassBean(TerminalClass bean)
+		public Boolean visitTerminalClass(TerminalClass bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -205,7 +205,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitOperatorClassBean(OperatorClass bean)
+		public Boolean visitOperatorClass(OperatorClass bean)
 		throws RuntimeException
 		{
 			return false;
@@ -216,7 +216,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 	private class AttributeAdder implements CopperASTBeanVisitor<Boolean,RuntimeException>, RegexBeanVisitor<ParsedRegex,RuntimeException>
 	{
 		@Override
-		public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+		public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -235,7 +235,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 	
 		@Override
-		public Boolean visitGrammarBean(Grammar bean)
+		public Boolean visitGrammar(Grammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -251,7 +251,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 	
 		@Override
-		public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+		public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -275,7 +275,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 	
 		@Override
-		public Boolean visitNonTerminalBean(NonTerminal bean)
+		public Boolean visitNonTerminal(NonTerminal bean)
 		throws RuntimeException
 		{
 			Symbol ntName = generateName(bean);
@@ -295,7 +295,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 	
 		@Override
-		public Boolean visitParserAttributeBean(ParserAttribute bean)
+		public Boolean visitParserAttribute(ParserAttribute bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -346,7 +346,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 	
 		@Override
-		public Boolean visitProductionBean(Production bean)
+		public Boolean visitProduction(Production bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -406,7 +406,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 	
 		@Override
-		public Boolean visitTerminalBean(Terminal bean)
+		public Boolean visitTerminal(Terminal bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -470,7 +470,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 	
 		@Override
-		public Boolean visitTerminalClassBean(TerminalClass bean)
+		public Boolean visitTerminalClass(TerminalClass bean)
 		throws RuntimeException
 		{
 			Symbol name = generateName(bean);
@@ -483,7 +483,7 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 		}
 
 		@Override
-		public Boolean visitOperatorClassBean(OperatorClass bean)
+		public Boolean visitOperatorClass(OperatorClass bean)
 		throws RuntimeException
 		{
 			return false;
@@ -540,35 +540,35 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 
 	
 	@Override
-	public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+	public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitGrammarBean(Grammar bean)
+	public Boolean visitGrammar(Grammar bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+	public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitNonTerminalBean(NonTerminal bean)
+	public Boolean visitNonTerminal(NonTerminal bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitParserAttributeBean(ParserAttribute bean)
+	public Boolean visitParserAttribute(ParserAttribute bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
@@ -593,28 +593,28 @@ public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, Runti
 	}
 
 	@Override
-	public Boolean visitProductionBean(Production bean)
+	public Boolean visitProduction(Production bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitTerminalBean(Terminal bean)
+	public Boolean visitTerminal(Terminal bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitTerminalClassBean(TerminalClass bean)
+	public Boolean visitTerminalClass(TerminalClass bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitOperatorClassBean(OperatorClass bean)
+	public Boolean visitOperatorClass(OperatorClass bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");

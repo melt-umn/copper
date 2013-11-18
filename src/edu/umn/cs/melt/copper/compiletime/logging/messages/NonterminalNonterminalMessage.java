@@ -47,7 +47,7 @@ public class NonterminalNonterminalMessage implements CompilerLocatedLogMessage<
 	
 	public String toString()
 	{
-		return getLocation() + ": warning: nonterminal '" + nt.getDisplayName() + "' has no terminal derivations";
+		return getLocation() + ": nonterminal '" + nt.getDisplayName() + "' has no terminal derivations";
 	}
 
 }

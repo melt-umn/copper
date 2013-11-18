@@ -84,6 +84,7 @@ public class ParserCompiler
 		rv += "\t-v\t\tRun the compiler with extra verbosity.\n";
 		rv += "\t-vv\t\tRun the compiler with even more extra verbosity.\n";
 		rv += "\t-mda\tRun Copper's modular determinism analysis on the input.\n\t\t\tIf this switch is used, the input must comprise exactly\n\t\t\ttwo grammars: the host and an extension to test.\n";
+		rv += "\t-avoidRecompile\tRun Copper only if one spec-file has a later\n\t\t\tmodification time than the output file.\n\t\t\tIf this switch is used, an output file must also\n\t\t\tbe specified.\n";
 		rv += "\t-logfile [lout]\tPipe all log output to the file 'lout'\n\t\t\t(default standard error).\n";
 		rv += "\t-dump\tProduce a detailed report of the grammar and generated parser.\n";
 		rv += "\t-errordump\tProduce a detailed report, but only if the parser\n\t\t\tcompiler has generated an error.\n";
@@ -250,6 +251,7 @@ public class ParserCompiler
 		boolean displayHelp = false;
 		boolean displayVersion = false;
 		boolean runMDA = false;
+		boolean avoidRecompile = false;
 		CopperDumpControl dumpControl = CopperDumpControl.OFF;
 		CopperDumpType.initTable();
 		CopperDumpType dumpFormat = getDefaultDumpType();
@@ -339,6 +341,10 @@ public class ParserCompiler
 					dumpFormat = CopperDumpType.fromString(args[i]);
 				}
 			}
+			else if(args[i].equals("-avoidRecompile"))
+			{
+				avoidRecompile = true;
+			}
 			else if(args[i].equals("-package"))
 			{
 				if(++i == args.length) usageMessageError(null);
@@ -358,6 +364,7 @@ public class ParserCompiler
 		ParserCompilerParameters argTable = new ParserCompilerParameters();
 		argTable.setQuietLevel(quietLevel);
 		argTable.setRunMDA(runMDA);
+		argTable.setAvoidRecompile(avoidRecompile);
 		argTable.setDump(dumpControl);
 		argTable.setUseEngine(useEngine);
 		argTable.setUseSkin(useSkin);
@@ -425,25 +432,6 @@ public class ParserCompiler
 		
 		if(i == -1 || i >= args.length) usageMessageError(argTable);
 
-//		ArrayList< Pair<String,Reader> > files = new ArrayList< Pair<String,Reader> >(); 
-		
-//		boolean failed = false;
-//		for(;i < args.length;i++)
-//		{
-//			FileReader file = null;
-//			try
-//			{
-//				file = new FileReader(args[i]);
-//			}
-//			catch(FileNotFoundException ex)
-//			{
-//				System.err.println("Grammar file not found: '" + args[i] + "'");
-//				failed = true;
-//			}
-//			if(file != null) files.add(Pair.cons(args[i],(Reader) file));
-//		}
-//		if(failed) System.exit(1);
-		
 		ArrayList< Pair<String,Object> > files = new ArrayList< Pair<String,Object> >();
 		
 		for(;i < args.length;i++) files.add(Pair.cons(args[i],(Object) args[i]));
@@ -455,6 +443,7 @@ public class ParserCompiler
 		try
 		{
 			errorlevel = compile(argTable);
+			AuxiliaryMethods.getOrMakeLogger(argTable).flush();
 		}
 		catch(IOException ex)
 		{

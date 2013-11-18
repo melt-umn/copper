@@ -57,7 +57,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+	public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 	throws RuntimeException
 	{
 		int beanId = symbolTable.get(bean);
@@ -77,7 +77,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitGrammarBean(Grammar bean)
+	public Boolean visitGrammar(Grammar bean)
 	throws RuntimeException
 	{
 		boolean hasError = false;
@@ -106,7 +106,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+	public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 	throws RuntimeException
 	{
 		boolean hasError = false;
@@ -143,7 +143,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitNonTerminalBean(NonTerminal bean)
+	public Boolean visitNonTerminal(NonTerminal bean)
 	throws RuntimeException
 	{
 		int beanId = symbolTable.get(bean);
@@ -159,7 +159,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitParserAttributeBean(ParserAttribute bean)
+	public Boolean visitParserAttribute(ParserAttribute bean)
 	throws RuntimeException
 	{
 		int beanId = symbolTable.get(bean);
@@ -253,7 +253,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitProductionBean(Production bean)
+	public Boolean visitProduction(Production bean)
 	throws RuntimeException
 	{
 		int beanId = symbolTable.get(bean);
@@ -318,7 +318,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitTerminalBean(Terminal bean)
+	public Boolean visitTerminal(Terminal bean)
 	throws RuntimeException
 	{
 		int beanId = symbolTable.get(bean);
@@ -357,7 +357,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitTerminalClassBean(TerminalClass bean)
+	public Boolean visitTerminalClass(TerminalClass bean)
 	throws RuntimeException
 	{
 		int beanId = symbolTable.get(bean);
@@ -375,7 +375,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 	}
 
 	@Override
-	public Boolean visitOperatorClassBean(OperatorClass bean)
+	public Boolean visitOperatorClass(OperatorClass bean)
 	throws RuntimeException
 	{
 		int beanId = symbolTable.get(bean);
