@@ -44,14 +44,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 	private class TerminalClassFiller implements CopperASTBeanVisitor<Boolean,RuntimeException>
 	{
 		@Override
-		public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+		public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 		throws RuntimeException
 		{
 			return false;
 		}
 
 		@Override
-		public Boolean visitGrammarBean(Grammar bean)
+		public Boolean visitGrammar(Grammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -64,7 +64,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+		public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -85,14 +85,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitNonTerminalBean(NonTerminal bean)
+		public Boolean visitNonTerminal(NonTerminal bean)
 		throws RuntimeException
 		{
 			return false;
 		}
 
 		@Override
-		public Boolean visitParserAttributeBean(ParserAttribute bean)
+		public Boolean visitParserAttribute(ParserAttribute bean)
 		throws RuntimeException
 		{
 			return false;
@@ -119,14 +119,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitProductionBean(Production bean)
+		public Boolean visitProduction(Production bean)
 		throws RuntimeException
 		{
 			return false;
 		}
 
 		@Override
-		public Boolean visitTerminalBean(Terminal bean)
+		public Boolean visitTerminal(Terminal bean)
 		throws RuntimeException
 		{
 			for(CopperElementReference n : bean.getTerminalClasses())
@@ -139,7 +139,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitTerminalClassBean(TerminalClass bean)
+		public Boolean visitTerminalClass(TerminalClass bean)
 		throws RuntimeException
 		{
 			for(CopperElementReference n : bean.getMembers())
@@ -152,7 +152,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitOperatorClassBean(OperatorClass bean)
+		public Boolean visitOperatorClass(OperatorClass bean)
 		throws RuntimeException
 		{
 			return false;
@@ -162,7 +162,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 	private class PrecedenceListNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException>
 	{
 		@Override
-		public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+		public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 		throws RuntimeException
 		{
 			HashSet<CopperElementReference> newMembers = new HashSet<CopperElementReference>();
@@ -181,7 +181,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitGrammarBean(Grammar bean)
+		public Boolean visitGrammar(Grammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -194,7 +194,7 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+		public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 		throws RuntimeException
 		{
 			currentGrammar = bean;
@@ -215,14 +215,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitNonTerminalBean(NonTerminal bean)
+		public Boolean visitNonTerminal(NonTerminal bean)
 		throws RuntimeException
 		{
 			return false;
 		}
 
 		@Override
-		public Boolean visitParserAttributeBean(ParserAttribute bean)
+		public Boolean visitParserAttribute(ParserAttribute bean)
 		throws RuntimeException
 		{
 			return false;
@@ -249,14 +249,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitProductionBean(Production bean)
+		public Boolean visitProduction(Production bean)
 		throws RuntimeException
 		{
 			return false;
 		}
 
 		@Override
-		public Boolean visitTerminalBean(Terminal bean)
+		public Boolean visitTerminal(Terminal bean)
 		throws RuntimeException
 		{
 			HashSet<CopperElementReference> newMembers = new HashSet<CopperElementReference>();
@@ -287,14 +287,14 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 		}
 
 		@Override
-		public Boolean visitTerminalClassBean(TerminalClass bean)
+		public Boolean visitTerminalClass(TerminalClass bean)
 		throws RuntimeException
 		{
 			return false;
 		}
 
 		@Override
-		public Boolean visitOperatorClassBean(OperatorClass bean)
+		public Boolean visitOperatorClass(OperatorClass bean)
 		throws RuntimeException
 		{
 			return false;
@@ -303,35 +303,35 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 	}
 
 	@Override
-	public Boolean visitDisambiguationFunctionBean(DisambiguationFunction bean)
+	public Boolean visitDisambiguationFunction(DisambiguationFunction bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitGrammarBean(Grammar bean)
+	public Boolean visitGrammar(Grammar bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitExtensionGrammarBean(ExtensionGrammar bean)
+	public Boolean visitExtensionGrammar(ExtensionGrammar bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitNonTerminalBean(NonTerminal bean)
+	public Boolean visitNonTerminal(NonTerminal bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitParserAttributeBean(ParserAttribute bean)
+	public Boolean visitParserAttribute(ParserAttribute bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
@@ -352,28 +352,28 @@ class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException
 	}
 
 	@Override
-	public Boolean visitProductionBean(Production bean)
+	public Boolean visitProduction(Production bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitTerminalBean(Terminal bean)
+	public Boolean visitTerminal(Terminal bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitTerminalClassBean(TerminalClass bean)
+	public Boolean visitTerminalClass(TerminalClass bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");
 	}
 
 	@Override
-	public Boolean visitOperatorClassBean(OperatorClass bean)
+	public Boolean visitOperatorClass(OperatorClass bean)
 	throws RuntimeException
 	{
 		throw new RuntimeException("This method should not be reached");

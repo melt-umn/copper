@@ -3,8 +3,6 @@ package edu.umn.cs.melt.copper.compiletime.spec.numeric;
 import java.util.BitSet;
 import java.util.Queue;
 
-import edu.umn.cs.melt.copper.runtime.logging.CopperException;
-
 /**
  * Extends {@link Digraph} with methods specifically related to lexical precedence
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
@@ -19,10 +17,7 @@ public class PrecedenceGraph extends Digraph
 
 	/**
 	 * Partitions the "accept set" represented by this graph into accept and reject halves.
-	 * @param logger The logger to which to pipe errors.
-	 * @param location The location to which to attribute those errors.
 	 * @return The partition, in the form of the reject set (terminals to be excluded).
-	 * @throws CopperException When an error such as a circular dependency occurs.
 	 */
 	public <T> BitSet partitionAcceptSet(Queue<BitSet> detectedCycles,BitSet acceptSet)
 	{
@@ -45,6 +40,18 @@ public class PrecedenceGraph extends Digraph
 		for(int i = acceptSetW.nextSetBit(0);i >= 0;i = acceptSetW.nextSetBit(i+1))
 		{
 			if(inDegrees[i] == 0) sources.set(i);
+			else
+			{
+				int j;
+				for(j = acceptSetW.nextSetBit(0);j >= 0;j = acceptSetW.nextSetBit(j+1))
+				{
+					if(hasEdge(i,j))
+					{
+						break;
+					}
+				}
+				if(j < 0) sources.set(i);
+			}
 		}
 		while(!sources.isEmpty())
 		{
@@ -69,7 +76,15 @@ public class PrecedenceGraph extends Digraph
 			}
 			for(int t = sources.nextSetBit(0);t >= 0;t = sources.nextSetBit(t+1))
 			{
-				if(inDegrees[t] != 0) sources.clear(t);
+				if(inDegrees[t] == 0) continue;
+				for(int d = acceptSetW.nextSetBit(0);d >= 0;d = acceptSetW.nextSetBit(d+1))
+				{
+					if(hasEdge(t,d))
+					{
+						sources.clear(t);
+						break;
+					}
+				}
 			}
 		}
 		// DEBUG-X-BEGIN

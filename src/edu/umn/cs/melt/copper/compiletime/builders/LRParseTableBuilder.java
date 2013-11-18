@@ -116,7 +116,8 @@ public class LRParseTableBuilder
 				{
 					if(shiftOperator != reduceOperator)
 					{
-						if(spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator))
+						if(spec.t.getOperatorClass(shiftOperator) == spec.t.getOperatorClass(reduceOperator) &&
+						   spec.t.hasOperatorPrecedence(shiftOperator) && spec.t.hasOperatorPrecedence(reduceOperator))
 						{
 							if(spec.t.getOperatorPrecedence(shiftOperator) > spec.t.getOperatorPrecedence(reduceOperator)) reduceActions.clear();
 							else if(spec.t.getOperatorPrecedence(reduceOperator) > spec.t.getOperatorPrecedence(shiftOperator)) shiftAction = -1;

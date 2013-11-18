@@ -1,3 +1,9 @@
+/*
+ * Built at Fri Oct 04 10:01:31 CDT 2013
+ * by Copper version 0.7.0,
+ *      revision bb020b7c012578e7a2bd63a447b7a46f7b26907f+,
+ *      build 20130730-0917
+ */
 package edu.umn.cs.melt.copper.compiletime.skins.cup;
 
 import java.util.ArrayList;
@@ -65,6 +71,75 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
     java.util.ArrayList<String> matchedTerminalsReal = bitVecToRealStringList(disjointMatch.terms);
     java.util.ArrayList<String> matchedTerminalsDisplay = bitVecToDisplayStringList(disjointMatch.terms);
     throw new edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError(virtualLocation,currentState.pos,currentState.statenum,expectedTerminalsReal,expectedTerminalsDisplay,matchedTerminalsReal,matchedTerminalsDisplay);
+    }
+    public static enum Terminals implements edu.umn.cs.melt.copper.runtime.engines.CopperTerminalEnum
+    {
+        assoctypes_kwd(1),
+        attribute_decl_kwd(2),
+        aux_block_close_kwd(3),
+        aux_block_open_kwd(4),
+        bar(5),
+        barrier_kwd(6),
+        cf_block_close_kwd(7),
+        cf_block_open_kwd(8),
+        character(9),
+        class_kwd(10),
+        code_block_close_kwd(11),
+        code_block_open_kwd(12),
+        code_t(13),
+        colon(14),
+        colon_kwd(15),
+        comma_kwd(16),
+        dash(17),
+        disambiguate_kwd(18),
+        escaped(19),
+        goesto_kwd(20),
+        gt_kwd(21),
+        ignore_kwd(22),
+        in_kwd(23),
+        init_block_close_kwd(24),
+        init_block_open_kwd(25),
+        layout_decl_kwd(26),
+        lbrace(27),
+        lbrack(28),
+        lex_block_close_kwd(29),
+        lex_block_open_kwd(30),
+        lparen(31),
+        lt_kwd(32),
+        name_tok(33),
+        non_kwd(34),
+        not(35),
+        parser_decl_kwd(36),
+        plus(37),
+        prec_decl_kwd(38),
+        prec_number(39),
+        precedence_kwd(40),
+        prefix_decl_kwd(41),
+        question(42),
+        rbrace(43),
+        rbrack(44),
+        rparen(45),
+        semi_kwd(46),
+        slash_kwd(47),
+        star(48),
+        start_kwd(49),
+        terminal_kwd(50),
+        termname(51),
+        wildcard(52),
+        with_kwd(53),
+        ws(54),
+        ws_no_line(55);
+
+        private final int num;
+        Terminals(int num) { this.num = num; }
+        public int num() { return num; }
+    }
+
+    public void pushToken(Terminals t,String lexeme)
+    {
+        java.util.BitSet ts = new java.util.BitSet();
+        ts.set(t.num());
+        tokenBuffer.offer(new edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData(ts,currentState.pos,currentState.pos,lexeme,new java.util.LinkedList<edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData>()));
     }
     public void setupEngine()
     {
@@ -991,6 +1066,7 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
                 if(code != null) bean.setCode(code.lexeme);
                 if(flags.layout != null) bean.setLayout(new TreeSet<CopperElementReference>(flags.layout));
                 if(flags.operator != null) bean.setOperator(flags.operator);
+                bean.setPrecedence(nextProductionPrecedence--);
                 RESULT = bean;
                 
             return RESULT;
@@ -1320,7 +1396,7 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
                                 RESULT = rv; 
             return RESULT;
         }
-        public OperatorAssociativity runSemanticAction_1(String lexeme)
+        public OperatorAssociativity runSemanticAction_1(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             OperatorAssociativity RESULT = null;
@@ -1331,21 +1407,21 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
                 else RESULT = OperatorAssociativity.NONE;
             return RESULT;
         }
-        public Character runSemanticAction_9(String lexeme)
+        public Character runSemanticAction_9(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             Character RESULT = null;
              RESULT = lexeme.charAt(0); 
             return RESULT;
         }
-        public Token runSemanticAction_13(String lexeme)
+        public Token runSemanticAction_13(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             Token RESULT = null;
              RESULT = new Token(lexeme,getStartRealLocation()); 
             return RESULT;
         }
-        public Character runSemanticAction_19(String lexeme)
+        public Character runSemanticAction_19(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             Character RESULT = null;
@@ -1354,21 +1430,21 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
     								RESULT = escapedChar; 
             return RESULT;
         }
-        public Token runSemanticAction_33(String lexeme)
+        public Token runSemanticAction_33(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             Token RESULT = null;
              RESULT = new Token(lexeme,getStartRealLocation()); 
             return RESULT;
         }
-        public Integer runSemanticAction_39(String lexeme)
+        public Integer runSemanticAction_39(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             Integer RESULT = null;
              RESULT = Integer.parseInt(lexeme); 
             return RESULT;
         }
-        public Token runSemanticAction_51(String lexeme)
+        public Token runSemanticAction_51(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             Token RESULT = null;
@@ -1399,92 +1475,92 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
             else if(match.terms.equals(disambiguationGroups[17])) return disambiguate_17(lexeme);
             else return -1;
         }
-        public int disambiguate_0(String lexeme)
+        public int disambiguate_0(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* lparen */ 31;
         }
-        public int disambiguate_1(String lexeme)
+        public int disambiguate_1(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* not */ 35;
         }
-        public int disambiguate_2(String lexeme)
+        public int disambiguate_2(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* colon */ 14;
         }
-        public int disambiguate_3(String lexeme)
+        public int disambiguate_3(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* plus */ 37;
         }
-        public int disambiguate_4(String lexeme)
+        public int disambiguate_4(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* slash_kwd */ 47;
         }
-        public int disambiguate_5(String lexeme)
+        public int disambiguate_5(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* rparen */ 45;
         }
-        public int disambiguate_6(String lexeme)
+        public int disambiguate_6(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* wildcard */ 52;
         }
-        public int disambiguate_7(String lexeme)
+        public int disambiguate_7(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* lbrack */ 28;
         }
-        public int disambiguate_8(String lexeme)
+        public int disambiguate_8(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* rbrack */ 44;
         }
-        public int disambiguate_9(String lexeme)
+        public int disambiguate_9(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* bar */ 5;
         }
-        public int disambiguate_10(String lexeme)
+        public int disambiguate_10(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* question */ 42;
         }
-        public int disambiguate_11(String lexeme)
+        public int disambiguate_11(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* star */ 48;
         }
-        public int disambiguate_12(String lexeme)
+        public int disambiguate_12(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* dash */ 17;
         }
-        public int disambiguate_13(String lexeme)
+        public int disambiguate_13(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* non_kwd */ 34;
         }
-        public int disambiguate_14(String lexeme)
+        public int disambiguate_14(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* start_kwd */ 49;
         }
-        public int disambiguate_15(String lexeme)
+        public int disambiguate_15(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* precedence_kwd */ 40;
         }
-        public int disambiguate_16(String lexeme)
+        public int disambiguate_16(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* code_t */ 13;
         }
-        public int disambiguate_17(String lexeme)
+        public int disambiguate_17(final String lexeme)
         throws edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             return /* ws */ 54;
@@ -2032,17 +2108,17 @@ public static final byte[] possibleSetsHash = edu.umn.cs.melt.copper.runtime.aux
 
 public static final byte[] cMapHash = edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder.literalToByteArray
 (new String[]{ "\037\213\010\000\000\000\000\000\000\000\355\321\071\112\104\101" +
-"\024\005\320\352\326\166\236\147\333\241\035\333\171\334\205\201" +
-"\053\060\161\011\042\050\156\310\314\310\320\045\011\356\301\053" +
-"\374\240\003\203\157\240\201\234\202\003\365\056\217\172\024\357" +
-"\345\243\264\036\356\113\363\346\352\372\355\266\373\370\376\372" +
-"\334\054\345\351\256\064\312\327\351\253\241\035\347\065\173\177" +
-"\252\375\115\066\320\163\037\211\213\330\215\305\350\304\150\314" +
-"\305\141\364\307\130\015\247\161\034\007\221\377\227\126\114\126" +
-"\063\166\376\310\140\254\305\112\154\307\164\065\177\042\226\343" +
-"\054\216\242\033\173\061\025\363\061\333\363\306\146\014\305\160" +
-"\234\304\102\225\317\304\176\254\306\106\225\135\306\172\154\125" +
-"\365\122\214\107\343\227\166\011\000\000\000\000\000\000\000\000" +
+"\024\005\320\352\326\166\236\347\171\266\235\265\165\027\006\256" +
+"\300\304\045\210\240\270\041\063\043\103\227\044\270\007\257\360" +
+"\203\217\321\017\304\100\116\301\201\172\027\352\075\036\365\372" +
+"\131\072\217\017\245\175\173\175\363\176\327\175\372\170\173\151" +
+"\227\362\174\137\132\345\373\364\065\260\022\275\132\335\153\370" +
+"\256\151\357\237\331\100\355\076\022\227\261\037\213\261\031\243" +
+"\061\027\307\321\037\143\015\234\307\151\034\105\366\057\235\230" +
+"\254\146\354\375\221\301\130\217\325\330\215\351\152\376\104\054" +
+"\307\105\234\104\067\016\142\052\346\143\266\326\143\073\206\142" +
+"\070\316\142\241\312\147\342\060\326\142\253\312\256\142\043\166" +
+"\252\172\051\306\243\365\213\377\007\000\000\000\000\000\000\000" +
 "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000" +
 "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000" +
 "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000" +
@@ -2058,8 +2134,8 @@ public static final byte[] cMapHash = edu.umn.cs.melt.copper.runtime.auxiliary.i
 "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000" +
 "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000" +
 "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000" +
-"\000\000\000\000\300\077\361\011\065\175\127\264\033\000\004\000" +
-""
+"\000\000\000\000\000\300\077\364\005\033\155\121\101\033\000\004" +
+"\000"
 });
 
 public static final byte[] deltaHash = edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder.literalToByteArray
@@ -2296,7 +2372,7 @@ public CupSkinParser() {}
     public ParserBean parse(java.io.Reader input,String inputName)
     throws java.io.IOException,edu.umn.cs.melt.copper.runtime.logging.CopperParserException
     {
-    this.buffer = edu.umn.cs.melt.copper.runtime.io.ScannerBuffer.instantiate(input);
+    this.charBuffer = edu.umn.cs.melt.copper.runtime.io.ScannerBuffer.instantiate(input);
     setupEngine();
     startEngine(edu.umn.cs.melt.copper.runtime.io.InputPosition.initialPos(inputName));
     ParserBean parseTree = (ParserBean) runEngine();
@@ -2310,6 +2386,7 @@ public CupSkinParser() {}
 			
 			private int nextPrecedence = 0;
 			private int nextProduction = 0;
+			private int nextProductionPrecedence = Integer.MAX_VALUE;
 			
 			private CopperElementName newName(Token token)
 			{
