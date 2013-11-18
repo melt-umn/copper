@@ -1,5 +1,5 @@
 bin
 jar
-doc/javadoc
 syntax: regexp
+doc/javadoc/[^R].*
 ^etc/Copper\.properties$
