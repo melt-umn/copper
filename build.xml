@@ -123,8 +123,8 @@
 	<target name='dist' depends='CopperCompilerJar,CopperRuntimeJar'/>
 
 	<target name='build_clean' depends=''>
-		<delete includeemptydirs='true' verbose='false'>
-			<fileset dir='${build}' includes='*,**'/>
+		<delete includeemptydirs='true' verbose='false' quiet='true'>
+			<fileset dir='${build}' includes='**/*'/>
 		</delete>
 	</target>
 
@@ -136,7 +136,7 @@
 	
 	<target name='javadoc_clean' depends=''>
 		<delete includeemptydirs='true' verbose='false'>
-			<fileset dir='${javadoc}' includes='*,**'/>
+			<fileset dir='${javadoc}' includes='**/*' excludes='README.txt'/>
 		</delete>
 	</target>
 	
