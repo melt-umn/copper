@@ -4,12 +4,11 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.resources.FileResource;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.main.CopperDumpControl;
@@ -73,15 +72,14 @@ public class CopperAntTask extends Task
 	 * object of nonspecific type. Tighter type restrictions may
 	 * be enforced by each pipeline.
 	 */
-	@SuppressWarnings("unchecked")
 	public void addConfiguredInputs(FileSet files)
 	{
-		Iterator<FileResource> it = files.iterator();
-		while(it.hasNext())
-		{
-			FileResource fr = it.next();
-			inputs.add(Pair.cons(fr.getFile().toString(),(Object) fr.getFile()));
-		}
+	    DirectoryScanner ds = files.getDirectoryScanner(getProject());
+	    String[] includedFiles = ds.getIncludedFiles();
+	    for(int i=0; i<includedFiles.length; i++)
+	    {
+		inputs.add(Pair.cons(includedFiles[i],(Object) new File(ds.getBasedir(),includedFiles[i])));
+	    }
 	}
 	
 	/** Turns on or off warnings on useless nonterminals. Defaults to {@code true}. */

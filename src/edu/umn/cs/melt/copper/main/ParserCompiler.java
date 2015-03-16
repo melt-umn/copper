@@ -31,8 +31,6 @@ public class ParserCompiler
 {
 	/** Copper's current version number. */
 	public static final String VERSION;
-	/** The Mercurial revision from which this version of Copper was built (if available). */
-	public static final String REVISION;
 	/** If running from a JAR, the timestamp recording when the JAR was built. */
 	public static final String BUILD;
 	
@@ -54,19 +52,13 @@ public class ParserCompiler
 		{
 		}
 		String version = p.getProperty("Version");
-		String revision = p.getProperty("Revision");
 		String build = p.getProperty("Build");
 		VERSION = (version == null || !version.matches("[0-9\\.]+")) ? "unknown" : version; 
-		REVISION = (revision == null || !revision.matches("[0-9a-f]{40}\\+?")) ? "unknown" : revision; 
 		BUILD = (build == null || !build.matches("[0-9]{8}-[0-9]{4}")) ? "unknown" : build; 
 	}
 	private static void versionMessage(ParserCompilerParameters args)
 	{
 		System.err.println("Copper version " + VERSION);
-		if(!REVISION.equals("unknown") && !BUILD.equals("unknown"))
-		{
-			System.err.println("Revision " + (args.getQuietLevel().compareTo(CompilerLevel.VERBOSE) <= 0 ? REVISION : REVISION.substring(0,8) + (REVISION.indexOf("+") != -1 ? "+" : "")) + ", build " + BUILD);
-		}
 		System.exit(0);
 	}
 	

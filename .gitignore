@@ -1,0 +1,6 @@
+bin
+jar
+etc/Copper\.properties
+doc/javadoc/**
+tests/parsers
+!doc/javadoc/README.txt

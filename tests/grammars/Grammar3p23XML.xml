@@ -31,7 +31,7 @@
 	     A "unitary" parser contains only one grammar and will not prefix
 	     grammar symbols with the grammar name in the output parser.
       -->
-	<Parser id="Grammar3p23Parser" isUnitary="false">
+	<Parser id="Grammar3p23XMLParser" isUnitary="false">
 		<PP>XMLSkinTemplate</PP>
 		<!-- The start symbol. -->
 		<Grammars>
@@ -51,7 +51,7 @@
 			<TerminalRef grammar="edu_umn_cs_melt_copper_example1" id="comment"/>
 		</StartLayout>
 		<Package>parsers</Package>
-		<ClassName>Grammar3p23Parser</ClassName>
+		<ClassName>Grammar3p23XMLParser</ClassName>
 		<ClassAuxiliaryCode>
 			<Code><![CDATA[ int PARSER; /* This goes in the parser class. */ ]]></Code>
 		</ClassAuxiliaryCode>

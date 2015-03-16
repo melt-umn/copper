@@ -250,7 +250,6 @@ public class SingleDFAEngineBuilder
 
 		out.print("/*\n * Built at " + new java.util.Date(System.currentTimeMillis()) + "\n");
 		out.print(" * by Copper version " + ParserCompiler.VERSION + ",\n");
-		out.print(" *      revision " + ParserCompiler.REVISION + ",\n");
 		out.print(" *      build " + ParserCompiler.BUILD + "\n */\n");
 		
 		out.print(packageDecl + "\n");
