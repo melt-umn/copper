@@ -1,5 +1,0 @@
-bin
-jar
-syntax: regexp
-doc/javadoc/[^R].*
-^etc/Copper\.properties$

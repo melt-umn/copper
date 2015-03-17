@@ -9,6 +9,15 @@
 
 ---
 
+## 0.7.2 ##
+
+_Released March 17, 2015._
+
+A maintenance release:
+
+  * Removed Mercurial dependencies in the build process to accommodate the project's hosting on GitHub.
+  * Fixed bit-rot in the ANT task, which had relied on an undocumented feature in an older version of ANT.
+  * Included the LaTeX source of Copper's user manual in the distribution.
 
 ## 0.7.1 ##
 

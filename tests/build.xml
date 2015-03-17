@@ -20,10 +20,14 @@
 	<!-- Uncomment this line and comment the one below to run Copper from JARs rather than unpackaged class files. -->
 	<!--<taskdef name='copper' classpath='${dist}/CopperCompiler.jar' classname='edu.umn.cs.melt.copper.ant.CopperAntTask'/>-->
 	<taskdef name='copper' classpathref='tests_and_src' classname='edu.umn.cs.melt.copper.ant.CopperAntTask'/>
+
+	<target name='MakeBuildPackageDir' depends=''>
+	  <mkdir dir='${build_package}'/>
+	</target>
 		
 
 	<!-- Auxiliary targets; not to be run directly -->
-	<target name='TestCupGrammar' depends=''>
+	<target name='TestCupGrammar' depends='MakeBuildPackageDir'>
 		<property name='skin' value='CUP'/>
 		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}'>
 		    <inputs dir='${grammars}' includes='${grammarName}.x'/>
@@ -31,7 +35,7 @@
 		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
 	</target>
 
-	<target name='TestXMLGrammar' depends=''>
+	<target name='TestXMLGrammar' depends='MakeBuildPackageDir'>
 		<property name='skin' value='XML'/>
 		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}'>
 		    <inputs dir='${grammars}' includes='${grammarName}.xml'/>
@@ -68,7 +72,7 @@
 	</target>
 
 	<target name='Grammar3p23XML' depends=''>
-		<property name='grammarName' value='Grammar3p23'/>
+		<property name='grammarName' value='Grammar3p23XML'/>
 		<property name='engine' value='SINGLE'/>
 		<ant target='TestXMLGrammar'/>
 	</target>
