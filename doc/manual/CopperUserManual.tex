@@ -1,0 +1,2161 @@
+\documentclass[12pt,english,twoside]{report}
+\usepackage{times}
+\renewcommand{\ttdefault}{cmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in,headheight=0in,headsep=0in,footskip=0.5in}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{float}
+\IfFileExists{url.sty}{\usepackage{url}}
+                      {\newcommand{\url}{\texttt}}
+\usepackage{color}
+\definecolor{darkgray}{gray}{0.25}
+\usepackage[colorlinks,linkcolor=darkgray,urlcolor=darkgray]{hyperref}
+
+\makeatletter
+
+\providecommand{\boldsymbol}[1]{\mbox{\boldmath $#1$}}
+
+\providecommand{\tabularnewline}{\\}
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}
+\floatname{algorithm}{Algorithm}
+
+\newenvironment{codeblock}
+{\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+\newcommand\sectionname{Section}
+
+\usepackage{babel}
+\makeatother
+\begin{document}
+
+\title{\textbf{Copper version 0.7\\
+User Manual}}
+
+
+\author{August Schwerdfeger\\
+(\texttt{schwerdf@cs.umn.edu})\\
+Minnesota Extensible Language Tools\\
+University of Minnesota}
+
+
+\date{~}
+
+\maketitle
+\tableofcontents{}
+
+\chapter{Introduction.}
+
+
+\section{Copper in a nutshell.}
+
+This manual contains instructions on how to use Copper, a Java-based
+LALR(1) parser generator with expanded parsing capability compared
+to the Java-based CUP (\url{http://www2.cs.tum.edu/projects/cup/})
+or the C-based Bison (\url{http://www.gnu.org/software/bison/}) .
+
+Like CUP and Bison, Copper takes the specification of a formal grammar
+and generates from it a program (specifically, a Java class) that
+can parse the language of that grammar. However, unlike CUP and Bison,
+Copper gives you everything necessary to do so. Parsers from most
+generators require an external scanner built by another tool, a scanner
+generator --- JLex (\url{http://www.cs.princeton.edu/~appel/modern/java/JLex/})
+is usually used with CUP and Flex (\url{http://flex.sourceforge.net/})
+with Bison --- in order to work. Copper generates both the scanner
+and the parser from a single specification and puts them in a single
+Java class; this integration enables Copper to parse a larger class
+of grammars than CUP or Bison.
+
+This manual assumes a working knowledge of LR parsing; knowledge of
+CUP and JLex may also be helpful.
+
+\section{Example specification.}
+
+Copper is designed to support several {}``skins,'' or methods of
+input, to suit a wide range of grammar writers. There are presently
+three such skins. The first is a skin mimicking the input styles of
+JLex and CUP as closely as possible, meant for use by flesh-and-blood
+grammar writers.
+
+The other two, an XML schema and an API, are meant for use with
+machine-generated grammar specifications. They are not covered in this
+manual, but are instead documented in Copper's Javadoc
+(\texttt{http://melt.cs.umn.edu/copper/0.7/javadoc/}).
+
+Input to Copper consists, loosely, of preamble materials (package and
+import declarations, \emph{etc.}), lexical syntax (terminal symbols
+and regexes used to build the scanner) and context-free syntax
+(nonterminal symbols and productions used to build the parser).
+Semantic actions may optionally be supplied with productions and
+terminals.
+
+For an example of a grammar specification written for the CUP skin
+of Copper, see Algorithms \ref{alg:Arithmetic-recognizer} (no semantic
+actions) and \ref{alg:Arithmetic-parser} (with semantic actions).
+%
+\begin{algorithm}
+\begin{codeblock}
+{\small package~math;}{\small \par}
+
+{\small /{*}~This~is~a~RECOGNIZER~for~a~simple~arithmetic}{\small \par}
+
+~{\small {*}~language;~it~will~give~errors~when~invalid}{\small \par}
+
+~{\small {*}~strings~are~entered,~but~takes~no~action~on~valid}{\small \par}
+
+~{\small {*}~strings.~{*}/}{\small \par}
+
+{\small \%\%}{\small \par}
+
+{\small \%parser~ArithmeticParser}{\small \par}
+
+
+
+{\small /{*}~Lexical~syntax~{*}/}{\small \par}
+
+{\small \%lex\{}{\small \par}
+\begin{codeblock}
+{\small /{*}~Whitespace~{*}/}{\small \par}
+
+{\small ignore~terminal~WS~::=~/{[}~]+/;}{\small \par}
+
+
+
+{\small /{*}~Grammar~terminals~{*}/}{\small \par}
+
+{\small terminal~PLUS~~~~~~~~~~~::=~/\textbackslash{}+/;}{\small \par}
+
+{\small terminal~UNARY\_MINUS~~~~::=~/-/;}{\small \par}
+
+{\small terminal~BINARY\_MINUS~~~::=~/-/;}{\small \par}
+
+{\small terminal~TIMES~~~~~~~~~~::=~/\textbackslash{}{*}/;}{\small \par}
+
+{\small terminal~DIVIDE~~~~~~~~~::=~/\textbackslash{}//;}{\small \par}
+
+{\small terminal~LPAREN~~~~~~~~~::=~/\textbackslash{}(/;}{\small \par}
+
+{\small terminal~RPAREN~~~~~~~~~::=~/\textbackslash{})/;}{\small \par}
+
+{\small terminal~NUMBER~~~~~~~~~::=~/0|({[}1-9]{[}0-9]{*})/;}{\small \par}
+\end{codeblock}
+{\small \%lex\}}{\small \par}
+
+
+
+{\small /{*}~Context-free~syntax~{*}/}{\small \par}
+
+{\small \%cf\{}{\small \par}
+\begin{codeblock}
+{\small /{*}~Nonterminals~{*}/}{\small \par}
+
+{\small non~terminal~expr;}{\small \par}
+
+
+
+{\small /{*}~Start~symbol~{*}/}{\small \par}
+
+{\small start~with~expr;}{\small \par}
+
+
+
+{\small /{*}~Precedences~{*}/}{\small \par}
+
+{\small precedence~left~PLUS,~BINARY\_MINUS;}{\small \par}
+
+{\small precedence~left~TIMES,~DIVIDE;}{\small \par}
+
+{\small precedence~left~UNARY\_MINUS;}{\small \par}
+
+
+
+{\small expr~::=}{\small \par}
+\begin{codeblock}
+~{\small ~expr~PLUS~expr}{\small \par}
+
+{\small |~expr~BINARY\_MINUS~expr}{\small \par}
+
+{\small |~expr~TIMES~expr}{\small \par}
+
+{\small |~expr~DIVIDE~expr}{\small \par}
+
+{\small |~UNARY\_MINUS~expr}{\small \par}
+\begin{codeblock}
+{\small \%layout~()}{\small \par}
+\end{codeblock}
+{\small |~LPAREN~expr~RPAREN}{\small \par}
+
+{\small |~NUMBER}{\small \par}
+
+{\small ;}{\small \par}
+\end{codeblock}
+\end{codeblock}
+{\small \%cf\}}{\small \par}
+\end{codeblock}
+
+\caption{\label{alg:Arithmetic-recognizer}Recognizer for simple arithmetic
+grammar.}
+\end{algorithm}
+ %
+\begin{algorithm}
+\begin{codeblock}
+{\small package~math;}{\small \par}
+
+{\small /{*}~This~is~a~PARSER~for~a~simple~arithmetic}{\small \par}
+
+~{\small {*}~language;~when~run~on~a~valid~string,~it}{\small \par}
+
+~{\small {*}~will~return~the~value~of~the~expression}{\small \par}
+
+~{\small {*}~represented~by~that~string.~{*}/}{\small \par}
+
+{\small \%\%}{\small \par}
+
+{\small \%parser~ArithmeticParser}{\small \par}
+
+
+
+{\small /{*}~Lexical~syntax~{*}/}{\small \par}
+
+{\small \%lex\{}{\small \par}
+\begin{codeblock}
+{\small /{*}~Whitespace~{*}/}{\small \par}
+
+{\small ignore~terminal~WS~::=~/{[}~]+/;}{\small \par}
+
+
+
+{\small /{*}~Grammar~terminals~{*}/}{\small \par}
+
+{\small terminal~PLUS~~~~~~~~~~~::=~/\textbackslash{}+/;}{\small \par}
+
+{\small terminal~UNARY\_MINUS~~~~::=~/-/;}{\small \par}
+
+{\small terminal~BINARY\_MINUS~~~::=~/-/;}{\small \par}
+
+{\small terminal~TIMES~~~~~~~~~~::=~/\textbackslash{}{*}/;}{\small \par}
+
+{\small terminal~DIVIDE~~~~~~~~~::=~/\textbackslash{}//;}{\small \par}
+
+{\small terminal~LPAREN~~~~~~~~~::=~/\textbackslash{}(/;}{\small \par}
+
+{\small terminal~RPAREN~~~~~~~~~::=~/\textbackslash{})/;}{\small \par}
+
+{\small terminal~Integer~NUMBER~::=~/0|({[}1-9]{[}0-9]{*})/}{\small \par}
+
+{\small \{:}{\small \par}
+\begin{codeblock}
+{\small RESULT~=~Integer.parseInt(lexeme);}{\small \par}
+\end{codeblock}
+{\small :\};}{\small \par}
+\end{codeblock}
+{\small \%lex\}}{\small \par}
+
+
+
+{\small /{*}~Context-free~syntax~{*}/}{\small \par}
+
+{\small \%cf\{}{\small \par}
+\begin{codeblock}
+{\small /{*}~Nonterminals~{*}/}{\small \par}
+
+{\small non~terminal~Integer~expr;}{\small \par}
+
+
+
+{\small /{*}~Start~symbol~{*}/}{\small \par}
+
+{\small start~with~expr;}{\small \par}
+
+
+
+{\small /{*}~Precedences~{*}/}{\small \par}
+
+{\small precedence~left~PLUS,~BINARY\_MINUS;}{\small \par}
+
+{\small precedence~left~TIMES,~DIVIDE;}{\small \par}
+
+{\small precedence~left~UNARY\_MINUS;}{\small \par}
+
+
+
+{\small expr~::=}{\small \par}
+\begin{codeblock}
+~{\small ~expr:l~PLUS~expr:r~~~~~~~~~~~\{:~RESULT~=~l~+~r;~:\}}{\small \par}
+
+{\small |~expr:l~BINARY\_MINUS~expr:r~\{:~RESULT~=~l~-~r;~:\}}{\small \par}
+
+{\small |~expr:l~TIMES~expr:r~~~~~~~~\{:~RESULT~=~l~{*}~r;~:\}}{\small \par}
+
+{\small |~expr:l~DIVIDE~expr:r~~~~~~~\{:~RESULT~=~l~/~r;~:\}}{\small \par}
+
+{\small |~UNARY\_MINUS~expr:e~~~~~~~~~\{:~RESULT~=~-1~{*}~e;~:\}}{\small \par}
+\begin{codeblock}
+{\small \%layout~()}{\small \par}
+\end{codeblock}
+{\small |~LPAREN~expr:e~RPAREN~~~~~~~\{:~RESULT~=~e;~:\}}{\small \par}
+
+{\small |~NUMBER:n~~~~~~~~~~~~~~~~~~~\{:~RESULT~=~n;~:\}}{\small \par}
+
+{\small ;}{\small \par}
+\end{codeblock}
+\end{codeblock}
+{\small \%cf\}}{\small \par}
+\end{codeblock}
+
+\caption{\label{alg:Arithmetic-parser}Parser for simple arithmetic grammar.}
+\end{algorithm}
+ The parser compiled for this grammar will recognize arithmetic operations
+over integers, by the four arithmetic operations as well as unary
+negation. Note that there are features of this specification that
+would not be found in grammar specifications written for traditional
+tools, such as two terminals sharing the same regex; these will be
+discussed in further detail below.
+
+\subsection{Overview of manual.}
+
+The structure of the rest of the manual is as follows.
+%
+\chaptername~\ref{cha:Copper's-parsing-algorithms.} discusses the
+novel features of Copper and how to utilize them.
+%
+\chaptername~\ref{cha:CUP-skin.} contains further information about
+the CUP skin, including the general organization of a specification
+in the CUP skin and the syntax of each construct it supports.
+%
+\chaptername~\ref{cha:Running-Copper.} contains information about
+running Copper, such as command-line syntax and how to interpret
+errors.
+%
+\chaptername~\ref{cha:Running-a-Copper-parser.} contains
+information about utilizing the generated parser.
+%
+\appendixname~\ref{cha:CUP-skin-grammar.} contains the grammar of the
+CUP skin's concrete syntax,
+%
+while \appendixname ~\ref{cha:"Mini-Java"-example-specification.}
+contains a more elaborate example of Copper's use in the form of a
+grammar for the {}``Mini-Java'' language from Andrew Appel's
+\emph{Modern Compiler Implementation in Java}.
+%
+\appendixname~\ref{cha:License.} gives information about Copper's
+software licensing.
+
+
+\chapter{\label{cha:Copper's-parsing-algorithms.}Copper's parsing algorithms.}
+
+
+\section{Context-aware scanning.}
+
+The most crucial difference between Copper and the standard LALR(1)
+parser generator is the addition of \emph{context-aware scanning}.
+
+The typical scanner will scan through the input file and separate
+it into a stream of tokens with no feedback from the parser. A scanner
+in Copper, by contrast, contains a distinct sub-scanner for every
+state of the parser; scanner and parser work in lock-step, and for
+each token a different scanner will run, scanning only for those terminals
+that are valid syntax at that location.%
+\footnote{If no such terminal is matched, the scanner will then scan for all
+terminals to procure information for an error message.%
+}
+
+This enables such constructs as the two {}``minus'' terminals in
+the arithmetic grammar of Algorithm \ref{alg:Arithmetic-recognizer};
+\texttt{UNARY\_MINUS} occurs \emph{before} an expression, while \texttt{BINARY\_MINUS}
+occurs \emph{between} expressions. However, it also requires more
+careful planning of lexical syntax, as described in \sectionname{}s
+\ref{sec:Custom-layout.} and \ref{sec:Lexical-precedence-paradigm.}.
+
+
+\section{\label{sec:Custom-layout.}Specification of whitespace and other
+layout.}
+
+
+\subsection{Layout in traditional tools.}
+
+With a scanner generator such as Lex or JLex, the specification consists
+of a list of regexes, optionally with semantic actions attached:
+
+\begin{codeblock}
+regex1~\{~return~tok(sym.TERM1,yytext());~\}
+
+regex2~\{~return~tok(sym.TERM2,yytext());~\}
+
+layout\_regex~\{~/{*}~No~semantic~action.~{*}/~\}
+
+regex3~\{~...
+
+
+\end{codeblock}
+When the scanner runs on an input, it will check its list of regexes
+in downward order until it finds one that matches the head of the
+input. It will then dequeue the matching part of the input (the {}``lexeme,''
+which in Lex and JLex is stored in the variable \texttt{yytext}) and
+run the semantic action associated with that regex; it will then scan
+again at the point in the input immediately following that scan's
+lexeme.
+
+If the semantic action returns an object, that object (the {}``token'')
+is added to the stream of tokens being returned to the parser. If
+no object is returned, the regex is judged to represent what we call
+\emph{layout} --- parts of the input that are not supposed to be visible
+to the parser and have no meaning thereto. The most common forms of
+layout are whitespace and comments.
+
+
+\subsection{How Copper handles layout.}
+
+Copper has a more sophisticated method for specifying and handling
+layout. While building a parser, Copper keeps track of which terminals
+have been designated to appear as layout in which contexts, and the
+sub-scanner for each parser state scans only for the layout that is
+valid at that location.
+
+Then, each time the parser calls out to the scanner for a new token,
+it will match as many tokens of layout (series of spaces, comment
+blocks, \emph{etc.}) as may precede the non-layout token.
+
+\subsection{How to specify layout in Copper.}
+
+
+\subsubsection{Grammar layout.}
+
+The simplest sort of layout in Copper is \emph{grammar} layout,
+which should suit the needs of most grammar writers. To designate
+a terminal as grammar layout, simply place the modifier \texttt{ignore}
+in front of its declaration, as is done on the terminal \texttt{WS}
+in Algorithm \ref{alg:Arithmetic-recognizer}. This has a similar
+effect to giving a terminal no semantic action in Lex or JLex, with
+the important exception that it does not \emph{per se} prevent the
+parser from using that terminal in a non-layout capacity.
+
+Any number of grammar-wide layout tokens may appear at the beginning
+and end of the input. It may also appear between any two input tokens,
+except where explicitly specified otherwise (see section \ref{sub:Layout-per-production.}).
+
+\subsubsection{\label{sub:Layout-per-production.}Layout per production.}
+
+Copper allows each production to override the grammar-wide layout
+and specify which terminals may appear as layout between the strings
+derived from symbols on its right-hand side.
+
+An \emph{empty} layout set may be explicitly specified, as is done
+on the production\\
+ \texttt{expr~::=~UNARY\_MINUS~expr} in Algorithm \ref{alg:Arithmetic-recognizer}.
+In this example, spaces are not permitted between the {}``negative''
+sign and the expression it negates (although they are permitted inside
+the latter).
+
+If instead layout sets contain one or more terminals, they behave
+similarly to grammar layout in their designated contexts. For example,
+if the production \texttt{expr ::= expr PLUS expr} in Algorithm \ref{alg:Arithmetic-recognizer}
+had a layout terminal with regex \texttt{{[}\_]+} (one or more underscores),
+the string \texttt{3~-~1\_\_\_+\_\_2} would be valid input, while
+the string \texttt{3~-~1+~2} would not, because the space between
+\texttt{+} and \texttt{2} is not valid layout in that context.
+
+The algorithm calculating what layout is valid where is quite a complex
+one, but rules-of-thumb when specifying layout are as follows:
+
+\begin{itemize}
+\item In any context where a terminal from the right-hand side of a certain
+production can be shifted (except the leftmost one), expect the layout
+of that production.
+\item In any context where a nonterminal from the right-hand side of a certain
+production can be reduced (except the rightmost one), expect the layout
+of that production.
+\item Layout specified on productions with zero or one symbols on the right-hand
+side is meaningless.
+\end{itemize}
+For details of how to specify layout per production in Copper, see
+\sectionname{} \ref{sub:Production-declarations.}.
+
+
+\section{\label{sec:Lexical-precedence-paradigm.}Lexical precedence paradigm.}
+
+It is possible for the languages of regexes to overlap, creating ambiguities
+in which several regexes match a given lexeme. The most common of
+these is the \emph{keyword-identifier} ambiguity, where a language
+keyword such as \texttt{int} also matches the regex given for identifiers.
+
+In the operation of a scanner from a traditional scanner generator,
+as described above, no ambiguities are possible because the regex
+list is gone through one at a time, and the first one that matches
+is always used. Only if two terminals share the exact same regex is
+any further kind of disambiguation possible.
+
+\emph{Lexical precedence} on terminals is here defined as a relation
+that determines, whenever several terminals have a regex matching
+a certain lexeme, which terminal should match. The above approach
+mandates a linear order on terminals: each terminal must take a place
+on a line, and the terminal closest to the front of the line always
+matches.
+
+Copper, on the other hand, allows a more generalized lexical precedence
+relation. Instead of putting terminals in a line, lexical precedence
+is specified in Copper by individual statements of one of the following
+forms:
+
+\begin{enumerate}
+\item {}``Terminal $x$ has precedence over terminal $y$,'' or
+\item {}``If an ambiguity occurs among terminals $x$, $y$, \emph{etc.,}
+return one of them.''
+\end{enumerate}
+Context-aware scanning, with its many sub-scanners scanning for restricted
+sets of regexes, eliminates most ambiguities and makes this scheme
+practical.
+
+
+\subsection{Dominate/submit-lists.}
+
+The primary sort of lexical precedence declarations used in Copper
+are \emph{dominate-lists} and \emph{submit-lists}, specified on terminals.
+They implement the first sort of statements listed above.
+
+As the names might suggest, a terminal $x$'s dominate-list is a list
+of terminals taking precedence over $x$, while $x$'s submit-list
+is a list of terminals over which $x$ takes precedence.
+
+Formally, $x$ is on $y$'s submit-list iff $y$ is on $x$'s dominate-list;
+however, in the actual grammar specifications, one of these will do
+for both. For details of how to specify these lists in Copper, see
+\sectionname{} \ref{sub:Terminal-declarations.}.
+
+
+\paragraph{N.B.:}
+
+The precedence relation created by dominate- and submit-lists is \emph{intransitive};
+\emph{i.e.}, if terminal $y$ is on terminal $x$'s submit-list, and
+$z$ on $y$'s, it does not follow that $z$ is on $x$'s submit-list.
+$z$ must be placed on that list explicitly in such a case.
+
+
+\paragraph{N.B.:}
+
+The precedence relation created by dominate- and submit-lists is \emph{context-insensitive};
+\emph{i.e.}, if terminal $y$ is on terminal $x$'s dominate-list,
+then even in a sub-scanner that is scanning for $x$ but not $y$,
+nothing matching $y$ will match $x$.
+
+
+\subsection{Disambiguation functions/groups.}
+
+The other kind of lexical precedence declarations in Copper are \emph{disambiguation
+functions} and \emph{disambiguation groups}.
+
+A disambiguation function is a function (a Java method, in the case
+of Copper's implementation) specified for a set of terminals, to disambiguate
+that particular set. It is meant as a second choice if dominate- and
+submit-lists do not fit the task. Disambiguation functions implement
+the second sort of statements described above.
+
+A disambiguation function works as follows: if the input to the scanner
+at a given point matches the regex of more than one terminal (\emph{e.g.,}
+the group \emph{}$x$\emph{,} $y$\emph{,} and \emph{}$z$), and this
+ambiguity is not able to be resolved through dominate- and submit-lists,
+the scanner will check to see if there has been a disambiguation function
+for $x$, $y$, and $z$ specified. If so, it will execute the function,
+which takes in the matched lexeme and returns exactly one of $x$,
+$y$, and $z$.
+
+One use for disambiguation functions is the {}``typename-identifier''
+ambiguity occurring when parsing C: typenames and identifiers share
+a regex; if a name has been defined as a type using a \texttt{typedef},
+it is scanned as a typename, and otherwise it is scanned as an identifier.
+
+This ambiguity may be resolved with a disambiguation function specified
+for typenames and identifiers, which returns {}``typename'' if the
+lexeme is on a list of typenames and {}``identifier'' otherwise.
+
+A \emph{disambiguation group} is a special case of the disambiguation
+function: instead of a function returning a terminal, it simply specifies
+the terminal to return. This has the advantage of being declarative.
+
+
+\paragraph{N.B.:}
+
+Disambiguation functions and groups are \emph{context-sensitive};
+\emph{i.e.}, if there is a disambiguation group on terminals $x$
+and $y$ specifying that terminal $x$ should be returned, in a context
+where only terminal $y$ is valid, $y$ will be matched.
+
+
+\section{Transparent prefixes.}
+
+The concept of a \emph{transparent prefix} can best be described by
+example:
+
+Suppose that in some grammar there is a terminal $IntConst$ matching
+integers and a terminal $FloatConst$ matching floating-point numbers,
+having the regexes \texttt{{[}0-9]+} and
+\texttt{{[}0-9]+(\textbackslash{}.{[}0-9]+)?} respectively. Clearly
+any number without a decimal point matches both, so there is also a
+disambiguation group on the set $\left\{ IntConst,FloatConst\right\}
+$, specifying that $IntConst$ should be returned. In the absence
+of a decimal point, $IntConst$ will be matched.
+
+Now suppose that there must be some way for the user of the parser
+to indicate that a number without a decimal point is a floating-point
+number. This is done using a transparent prefix: a terminal $FloatPrefix$
+with regex \texttt{float:} is defined, and assigned to be the transparent
+prefix of $FloatConst$. Now, the integer 214 would be entered as
+\texttt{214}, while the floating-point 214 would be entered as \texttt{float:214}.
+The \texttt{float:} prefix is scanned and thrown away like layout
+(the parser never sees it, hence the \emph{transparent}), but unlike
+layout, when it is scanned it produces a narrower context that allows
+$FloatConst$ to be the only valid terminal.
+
+
+\paragraph{N.B.:}
+
+Never use transparent prefixes to disambiguate between two terminals
+that are on each other's dominate- and submit-lists; this does not
+work due to context-insensitivity.
+
+\chapter{\label{cha:CUP-skin.}The CUP skin.}
+
+
+\section{Comments and whitespace.}
+
+Java-style comments (\texttt{//} followed by a comment and a newline,
+and comments enclosed in \texttt{/{*}} and \texttt{{*}/}) are also
+recognized as layout in the CUP skin. 
+
+
+\paragraph{N.B.:}
+
+An exception is in certain contexts in terminal declarations, where
+line comments are not allowed. See section \ref{sub:Terminal-declarations.}.
+
+
+\section{Preamble.}
+
+The \emph{preamble} is a block of Java code that will begin the parser
+source file to be output. It should contain any needed package or
+import declarations, as well as any non-public classes to be included
+in the file.
+
+The preamble is terminated by the string \texttt{\%\%} alone on a
+line, as shown in Algorithm \ref{alg:Arithmetic-recognizer}.
+
+
+\section{Parser name.}
+
+The name of the parser class is provided by a line of the form
+
+\begin{quote}
+\texttt{\%parser {[}classname]}
+\end{quote}
+occurring on the line directly after the \texttt{\%\%} ending the
+preamble.
+
+
+\section{Lexical syntax blocks.}
+
+Lexical syntax blocks are enclosed in the markers
+
+\begin{quote}
+\texttt{\%lex\{}
+\end{quote}
+and
+
+\begin{quote}
+\texttt{\%lex\}}
+\end{quote}
+They may include any number of declarations of terminals, disambiguation
+functions, and disambiguation groups.
+
+
+\subsection{Terminal class declarations.}
+
+For convenience, terminals may be classified into one or more
+(non-disjoint) sets known as \emph{terminal classes}. Terminal
+classes are declared with a line of this form:
+
+\begin{quote}
+\texttt{class tclass1{[},tclass2,...];}
+\end{quote}
+Note that such a line only declares the classes, as opposed to specifying
+which terminals a class contains. That is done in terminal declarations.
+
+
+\subsection{\label{sub:Terminal-declarations.}Terminal declarations.}
+
+The simplest terminal declaration is of this form:
+
+\begin{quote}
+\texttt{terminal {[}termname] ::= /{[}regex]/;}
+\end{quote}
+This declares a terminal with a specified regex that is a member of
+no terminal classes, does not specify any precedence relations with
+other terminals (although another terminal may include it on its dominate-
+or submit-list), and does not have a transparent prefix or semantic
+action.
+
+A terminal declaration specifying all optional attributes is of this
+form:
+
+\begin{quote}
+\texttt{ignore terminal {[}termtype] {[}termname] ::= /{[}regex]/}
+\begin{quote}
+\texttt{in ({[}terminal classes]), < ({[}submit-list]), > ({[}dominate-list])}
+
+\texttt{\{: ... :\} \%prefix {[}prefixname];}
+\end{quote}
+\end{quote}
+This declares a terminal that is a member of all terminal classes
+on the list following \texttt{in}, with submit- and dominate-lists
+containing at least the terminals provided on the lists following
+\texttt{<} and \texttt{>} respectively, a semantic action returning
+a designated type, and a transparent prefix.
+
+Submit- and dominate-lists may contain the names of terminal classes
+as well as the names of terminals. Placing a terminal class on the
+list is shorthand for placing all the members of that class on the
+list.
+
+
+\paragraph{N.B.:}
+
+Line comments are not allowed to be placed between the \texttt{::=}
+and the regex in terminal declarations, because the double-slash of
+the line comment is indistinguishable from a regex for the empty string
+(as in \texttt{terminal ws ::= //;}).
+
+
+\subsubsection{Semantic actions on terminals.}
+
+Semantic actions on terminals work differently in Copper than in other
+scanner generators. While in JLex semantic actions are specified on
+regexes and return an object identifying the matched terminal, as
+described above, in Copper the semantic action is only run after it
+is certain what terminal has been matched.
+
+Therefore, the semantic actions of terminals take on an identical
+format to those of productions in CUP. A variable \texttt{RESULT},
+of the type specified by \texttt{termtype} (default is \texttt{Object})
+is available inside the semantic action block; what is written to
+\texttt{RESULT} will be returned and is available to access in production
+semantic actions.
+
+In JLex's semantic actions, the matching lexeme is referred to by
+the name \texttt{yytext}. In Copper, the name \texttt{lexeme} is used
+instead.
+
+
+\paragraph{Example.}
+
+Consider a language with two keywords, \texttt{INT} and \texttt{FLOAT},
+and identifiers defined as strings of one or more lowercase letters.
+This language is defined by the lexical syntax block in Algorithm
+\ref{alg:Terminal-declaration-example.}.
+
+%
+\begin{algorithm}
+\begin{codeblock}
+\%lex\{
+\begin{codeblock}
+class~keywords;
+
+~
+
+terminal~INT~::=~/int/
+\begin{codeblock}
+in~(keywords),~<~(),~>~();
+\end{codeblock}
+terminal~FLOAT~::=~/float/
+\begin{codeblock}
+in~(keywords),~<~(),~>~();
+\end{codeblock}
+/{*}~Return~a~String:~the~token's~lexeme~{*}/
+
+terminal~String~IDENTIFIER~::=~/{[}a-z]+/
+\begin{codeblock}
+in~(),~<~(keywords),~>~()
+\end{codeblock}
+\{:
+\begin{codeblock}
+RESULT~=~lexeme;
+\end{codeblock}
+:\};
+\end{codeblock}
+\%lex\}
+\end{codeblock}
+
+\caption{\label{alg:Terminal-declaration-example.}Terminal declaration example.}
+\end{algorithm}
+
+
+
+\subsection{\label{sub:Disambiguation-functions.}Disambiguation functions/groups.}
+
+A disambiguation function takes this form:
+
+\begin{quote}
+\texttt{disambiguate {[}groupname]:(term1,term2{[},term3,...])}
+
+\texttt{\{:}
+\begin{quote}
+\texttt{{[}body of Java method returning one of term1, term2, ...]}
+\end{quote}
+\texttt{:\};}
+\end{quote}
+A disambiguation group takes this form:
+
+\begin{quote}
+\texttt{disambiguate {[}groupname]:(term1,term2{[},term3,...])}
+\begin{quote}
+\texttt{::= {[}one of term1, term2, ...];}
+\end{quote}
+\end{quote}
+
+\paragraph{Example.}
+
+Consider once again the example from above. As specified there with
+dominate- and submit-lists, \texttt{INT} and \texttt{FLOAT} are \emph{reserved}
+keywords, \emph{i.e.}, they cannot be used as identifiers even in
+contexts where \texttt{INT} and \texttt{FLOAT} are invalid syntax.
+
+Suppose that instead the strings \texttt{int} and \texttt{float} should
+only be interpreted as keywords in contexts where they are valid,
+and as identifiers everywhere else. Disambiguation groups may be used
+to implement this, as shown in Algorithm \ref{alg:Disambiguation-group-example.}.
+
+%
+\begin{algorithm}
+\begin{codeblock}
+\%lex\{
+\begin{codeblock}
+terminal~INT~::=~/int/;
+
+terminal~FLOAT~::=~/float/;
+
+terminal~String~IDENTIFIER~::=~/{[}a-z]+/
+
+\{:
+\begin{codeblock}
+RESULT~=~lexeme;
+\end{codeblock}
+:\};
+
+~
+
+disambiguate~ID\_FLOAT:(FLOAT,IDENTIFIER)~::=~FLOAT;
+
+disambiguate~ID\_INT:(INT,IDENTIFIER)~::=~INT;
+\end{codeblock}
+\%lex\}
+\end{codeblock}
+
+\caption{\label{alg:Disambiguation-group-example.}Disambiguation group example.}
+\end{algorithm}
+
+
+
+\section{Context-free syntax blocks.}
+
+Context-free syntax blocks are enclosed in the markers
+
+\begin{quote}
+\texttt{\%cf\{}
+\end{quote}
+and
+
+\begin{quote}
+\texttt{\%cf\}}
+\end{quote}
+They may include one declaration of a start symbol, and any number
+of declarations of nonterminals, operator precedence relations, and
+productions. With very few exceptions, these take the same form as
+in CUP.
+
+
+\subsection{Nonterminal/start-symbol declarations.}
+
+Nonterminal declarations take the familiar form:
+
+\begin{quote}
+\texttt{non terminal {[}nttype] ntname1{[},ntname2,...];}
+\end{quote}
+This declares one or more grammar nonterminals. If a type (\texttt{nttype})
+is provided, the variable \texttt{RESULT} declared in the semantic
+action of any production with one of these nonterminals on its left-hand
+side will be of type \texttt{nttype}. If a type is not provided, the
+default is \texttt{Object}.
+
+The declaration of a grammar's start symbol takes the self-explanatory
+form
+
+\begin{quote}
+\texttt{start with {[}ntname];}
+\end{quote}
+
+\subsection{Operator precedence/associativity declarations.}
+
+Operator precedence and associativity declarations take the familiar
+form:
+
+\begin{quote}
+\texttt{precedence (left/right/nonassoc) term1{[},term2,...];}
+\end{quote}
+Terminals listed on the same line have identical \emph{operator precedence},
+while terminals listed on successive lines have successively higher
+precedence; \emph{e.g.}, in Algorithm \ref{alg:Arithmetic-recognizer},
+\texttt{TIMES} has a higher precedence than \texttt{PLUS}, while \texttt{PLUS}
+and \texttt{BINARY\_MINUS} have equal precedence. All terminals on
+a line have the \emph{operator associativity} specified on that line.
+
+These precedences and associativities are used to resolve shift-reduce
+conflicts, using the following logic:
+
+\begin{itemize}
+\item Operators for the shift and reduce actions are defined:
+
+\begin{itemize}
+\item The shift action's operator is the terminal that would be shifted.
+\item The reduce action's operator is the operator of the production that
+would be reduced. This is by default the last terminal on the right-hand
+side of the production (\emph{e.g.} \texttt{+} in \texttt{NT ::= NT
+{*} NT + NT}), but this can be overridden --- see the \texttt{\%prec}
+attribute in the next section.)
+\end{itemize}
+\item If the two operators have different precedence, resolve the conflict
+in favor of the action whose operator has the highest precedence.
+\item If the two operators have the same precedence and the same associativity:
+
+\begin{itemize}
+\item If the associativity is \texttt{left}, resolve in favor of the reduce
+action.
+\item If the associativity is \texttt{right}, resolve in favor of the shift
+action.
+\item If the associativity is \texttt{nonassoc}, remove both actions ---
+the operator is meant to have its associativity defined through parentheses,
+or some other manner.
+\end{itemize}
+\item Otherwise, report the conflict as unresolvable.
+\end{itemize}
+
+\subsection{\label{sub:Production-declarations.}Production declarations.}
+
+Production declarations take the form:
+
+\begin{quote}
+\texttt{{[}ntname] ::=}
+\begin{quote}
+~~\texttt{~~{[}sym1{[}:label1] ...]}
+\begin{quote}
+\texttt{\{:}
+\begin{quote}
+\texttt{/{*} Semantic action for {[}ntname] ::= RHS1 {*}/}
+\end{quote}
+\texttt{:\}}
+
+\texttt{{[}\%prec {[}termname]] {[}\%layout ({[}term1,..])]}
+\end{quote}
+\texttt{{[} | RHS2 ...}
+
+\texttt{...]}
+
+\texttt{;}
+\end{quote}
+\end{quote}
+This form is identical in most respects to that used in CUP. The declaration
+starts with a nonterminal, giving the left-hand side of the productions
+to follow, followed by \texttt{::=}. Then come one or more sequences
+of zero or more terminals and nonterminals (right-hand sides), separated
+by vertical bars. Each right-hand side may optionally have a semantic
+action and two attributes:
+
+\begin{itemize}
+\item \textbf{Custom operator.} As in CUP, adding the attribute
+
+
+\texttt{\%prec {[}termname]}
+
+to a production will change the production's operator from the default
+of the last terminal on the right, to \texttt{termname}.
+
+\item \textbf{Custom layout.} The only bit of production syntax differing
+from CUP's, this allows specification of custom layout on productions.
+Adding the attribute
+
+
+\texttt{\%layout (term1,...,termn)}
+
+to a production will change the layout on that production from the
+grammar layout set to the set \texttt{term1,...,termn}. If an empty
+layout set is provided, this specifies that no layout may occur
+between the right-hand side symbols of the production.
+
+\end{itemize}
+
+\subsubsection{Semantic actions.}
+
+Semantic actions on productions are identical to those in CUP. Any
+right-hand-side symbols that have been labeled may be accessed inside
+the semantic action using the label name, as demonstrated in Algorithm
+\ref{alg:Arithmetic-parser}.
+
+
+\section{User code blocks.}
+
+
+\subsection{Auxiliary.}
+
+Auxiliary code is inserted in the body of the parser class. It is
+meant to hold fields and methods accessed by semantic actions and/or
+outside classes, such as additional constructors.
+
+An auxiliary code block takes this form:
+
+\begin{quote}
+\texttt{\%aux\{}
+\begin{quote}
+\texttt{{[}code block]}
+\end{quote}
+\texttt{\%aux\}}
+\end{quote}
+
+\subsection{Initialization.}
+
+Initialization code is inserted in the body of a method run when the
+parser is started. It is meant to hold initializations of parser attributes.
+
+An initialization code block takes this form:
+
+\begin{quote}
+\texttt{\%init\{}
+\begin{quote}
+\texttt{{[}code block]}
+\end{quote}
+\texttt{\%init\}}
+\end{quote}
+
+\section{Parser attributes.}
+
+A \emph{parser attribute} is a variable meant for use \emph{exclusively}
+in semantic actions. Unlike fields specified in auxiliary code, parser
+attributes can be accessed neither from auxiliary code nor from outside
+classes.
+
+A parser attribute is declared as follows:
+
+\begin{quote}
+\texttt{\%attr {[}attrtype] {[}attrname];}
+\end{quote}
+Both type and name are mandatory.
+
+
+\chapter{\label{cha:Running-Copper.}Running Copper.}
+
+
+\section{Requirements.}
+
+To compile a Copper parser, you need:
+
+\begin{itemize}
+\item Java Runtime Environment v.1.5 or greater.
+\item 256MB of memory (512--768 recommended if compiling large grammars).
+\item \texttt{CopperCompiler.jar} on the classpath.
+\end{itemize}
+
+\section{Command-line interface.}
+
+Copper's full command-line syntax is
+
+\begin{quote}
+\texttt{java -jar [location/]CopperCompiler.jar
+[~-?~]
+[~-version~]}\\
+\texttt{[~-package packagename~]
+[~-parser classname~]
+[~-o outputfile~]}\\
+\texttt{([~-q~] | [~-v~] | [~-vv~])
+[~-mda~]
+[~-logfile file~]}\\
+\texttt{([~-dump~] | [~-errordump~])
+[~-dumpfile file~]
+[~-dumptype type~]}\\
+\texttt{[~-skin skinname~]
+[~-engine enginename~]
+[~-pipeline pipelinename~]
+[custom-switches]
+spec-file1 spec-file2 ... spec-filen}
+\end{quote}
+
+All switches are optional. Most of the parameter-bearing switches have
+default values for when the switch is omitted.
+
+\subsection{Quick-start.}
+
+The simplest usage of Copper is
+
+\begin{quote}
+\texttt{java -jar [location/]CopperCompiler.jar [~-o parserfile~] specfile}
+\end{quote}
+This command takes a grammar specification in \texttt{specfile},
+written in the CUP skin, and compiles it to a parser class of the
+package and class name specified in the specification itself; if the
+\texttt{-o} switch was specified, the source code of this parser class
+is output to \texttt{parserfile}. The other settings are at defaults.
+
+
+\subsection{Switches.}
+
+\subsubsection{\texttt{-?}.}
+
+Displays the full list of command-line options for Copper, including
+supported parameters for the \texttt{-engine}, \texttt{-pipeline},
+and \texttt{-skin} switches.
+
+\texttt{java -jar [location/]CopperCompiler.jar -pipeline P -?} will
+also list any custom switches available for the pipeline \texttt{P}.
+
+\subsubsection{\texttt{-version}.}
+
+Displays the Copper version number, the identifier of the source code
+revision from which the specific JAR was built and the time at which
+it was built.
+
+\subsubsection{\texttt{-package}.}
+
+Specifies what package the output parser should be placed in.
+
+\paragraph{N.B.:}
+
+Do not specify packages both on the command line and in the specification;
+this will cause an error when compiling the parser source.
+
+\subsubsection{\texttt{-parser}.}
+
+Specifies what the name of the parser class should be. Overrides the
+name specified by a \texttt{\%parser} directive.
+
+\subsubsection{\texttt{-o}.}
+
+Specifies a file in which to place the output parser class. \texttt{-o
+  -} will output the parser class to standard output. Omitting
+\texttt{-o} altogether will result in parser output being suppressed;
+this option is useful for checking a grammar for conflicts or other
+errors.
+
+\subsubsection{\texttt{-q} , \texttt{-v}, and \texttt{-vv}.}
+
+By default, after running, Copper outputs a {}``final report'' giving
+details about the parser, such as the number of parse states, and
+how many conflicts were located and resolved.
+
+\begin{itemize}
+\item The \texttt{-q} switch turns this off.
+\item The \texttt{-v} switch causes additional compilation information,
+such as how parse conflicts were resolved, to be output to standard
+error.
+\item The \texttt{-vv} switch causes much debugging information to be output
+to standard error. This switch is meant mainly for use by Copper developers.
+\end{itemize}
+
+\subsubsection{\texttt{-mda}.}
+
+This runs Copper's modular determinism analysis over a pair of input
+grammars. The analysis, meant to prove certain properties on language
+extensions, is not of interest to most grammar writers and does not
+work with the CUP skin.
+
+\subsubsection{\texttt{-logfile}.}
+
+Specifies a file to which standard error should be redirected.
+
+\subsubsection{\texttt{-dump}, \texttt{-errordump}, \texttt{-dumpfile}, \texttt{-dumptype}.}
+
+CUP users will be familiar with the \texttt{-dump} switch, which tells
+Copper to output a formatted description (``dump'') of a parser,
+containing the terminals, nonterminals, productions, and
+disambiguation functions/groups of the implemented grammar, as well as
+the lexical precedence graph (a matrix combining information from all
+dominate- and submit-lists), and dumps of the LALR(1) DFA and parse
+table.
+
+Copper can produce a dump in several different formats, listed below.
+See section \ref{sec:Dump-format} for a complete description of the
+two main dump formats.
+
+\begin{itemize}
+\item To output a dump, either the \texttt{-dump} or the
+  \texttt{-errordump} switch must be specified. Using
+  \texttt{-errordump} produces a dump only in the event of a parser
+  compilation error (a parse table conflict, for example), while using
+  \texttt{-dump} always produces a dump.
+\item If \texttt{-dumpfile} is specified, the dump will be sent to
+  \texttt{file} instead of standard error.
+\item If \texttt{-dumptype} is specified, the dump will be of the
+  specified type, instead of plaintext. Available dump types are:
+\begin{itemize}
+\item \texttt{plain}: A plaintext dump adhering as closely as possible to the CUP convention.
+\item \texttt{html}: An HTML dump following the same general format as the plaintext dump, but thoroughly cross-referenced with symbol names and state numbers.
+\item \texttt{xmlspec}: Outputs the provided grammar specification in the XML format meant for use with machine-generated specifications. This effectively translates a grammar specified in one of Copper's skins to the XML schema.
+\end{itemize}
+\end{itemize}
+
+\subsubsection{\texttt{-pipeline}.}
+
+Copper is designed to support several compilation ``pipelines,'' or routines for compilation. These may compile using different algorithms or implementations, or to different output formats.
+
+There are two pipelines currently supported in Copper,
+\texttt{default} (a practically-oriented compiler implementation
+introduced in Copper 0.7) and \texttt{legacy} (the research-oriented
+implementation from versions 0.6 and earlier, which supports the
+experimental features of Copper).
+
+Unless grammar writers are using the experimental features of Copper,
+they should use the \texttt{default} pipeline.
+
+\subsubsection{\texttt{-skin}, \texttt{-engine}.}
+
+The \texttt{default} and \texttt{legacy} pipelines both divide compilation
+into three phases: parse the input spec, compile it into an LR DFA and
+scanner, and output the resulting Java class.
+
+On the input side, as mentioned, there are several input formats or
+``skins'' that may be used interchangeably for the input-spec-parsing
+phase. Most grammar writers will use the default skin, \texttt{cup}.
+The XML schema is also provided as a skin, \texttt{xml}. Additionally,
+one can specify a grammar using the Java API and pass it directly to
+the compiler without parsing (see the method
+\texttt{ParserCompiler.compile(ParserBean,ParserCompilerParameters)}
+in Copper's Javadoc).
+
+On the output side, there are different ``engines,'' or parser
+implementations, into which the compiled LR DFA can be placed. Most
+grammar writers will use the default \texttt{single} engine, which is
+the only engine supported outside the \texttt{legacy} pipeline.
+
+\section{Copper ANT task and API.}
+
+In addition to the command-line interface, Copper provides an ANT
+task, named \texttt{edu.}
+\texttt{umn.}\texttt{cs.}\texttt{melt.}\texttt{copper.}\texttt{ant.}\texttt{CopperAntTask},
+and an API in which parameters (and, optionally, parser specifications
+themselves) are specified as Java bean objects. Both are fully
+documented in Copper's Javadoc.
+
+\section{\label{sec:Dump-format}Format of the Copper grammar dump.}
+
+\subsection{Text dump.}
+
+This dump format adheres as closely as possible to its CUP analogue.
+
+
+\subsubsection{Terminals, nonterminals, productions, LALR(1) DFA.}
+
+These are put forth exactly as in CUP. Grammar constructs appear in
+lists with each one getting a number that appears in brackets immediately
+before it. DFA states appear as lists of LR(1) items followed by transitions.
+
+\subsubsection{Lexical precedence graph.}
+
+The precedence graph output is a representation of the precedence
+relations among the terminal set. It is in the DOT graph format and
+may be input to a tool such as \emph{Graphviz} for viewing.
+
+The vertices of the graph are labeled with one or more terminal
+numbers. These represent groups of terminals whose dominate-lists are
+all equal and whose submit-lists are all equal; \emph{e.g.}, a group
+of keywords with the same identifier in their dominate-lists. An arrow
+pointing from vertex $x$ to vertex $y$ means that all the terminals in
+vertex $x$ take precedence over all the terminals in vertex $y$.
+
+\subsubsection{Disambiguation functions/groups.}
+
+Each disambiguation function or group is given a number, which appears
+in brackets immediately before it.
+
+A disambiguation function or group is identified by its name and the
+set of terminals it disambiguates: \texttt{name :
+  \{term1,term2,...\}}. If it is a disambiguation group, this will be
+suffixed with \texttt{ -> termi}, where \texttt{termi} is the target
+of the disambiguation group.
+
+\subsubsection{Parse table.}
+
+The format of this dump is identical to CUP's with regard to all constructs
+that appear in parse tables made by that parser generator. Copper
+adds more information to each state about layout and transparent prefixes:
+
+\begin{quotation}
+\texttt{{[}layout term X]}
+
+\texttt{{[}prefix term Y -> terms Z,A,...]}
+\end{quotation}
+Constructs of this form mean that terminal \texttt{X} is valid as
+layout in the given state, while \texttt{Y} is valid as a transparent
+prefix and terminals \texttt{Z}, \texttt{A}, \emph{etc.} may validly
+occur following \texttt{Y}.
+
+\subsection{HTML dump.}
+
+The HTML dump has the same basic layout as the text dump, but is
+thoroughly cross-referenced via hyperlinks. It also omits the lexical
+precedence graph in favor of displaying the submit- and dominate-lists
+for each terminal.
+
+\section{Grammar troubleshooting.}
+
+In this section, five problems encountered when compiling grammars
+in Copper are discussed.
+
+\subsection{Heap overflow.}
+
+On larger grammars, Copper's memory requirements sometimes exceed the
+JVM's default maximum heap size, at which point compilation will terminate with an \texttt{OutOfMemoryError}. If this occurs, allocate more memory to the JVM by increasing the maximum heap size with the \texttt{-Xmx} switch, \emph{e.g.}:
+
+\begin{codeblock}
+java~-Xmx1024m~-jar~...
+\end{codeblock}
+The \texttt{-Xmx} switch is {}``nonstandard and subject to change
+without notice.''
+
+
+\subsection{\label{sub:Contradiction-involving-terminals}{}``Cyclic precedence relation involving terminals ...''}
+
+On occasion Copper will give an error of this form:
+
+\begin{quote}
+\texttt{Cyclic precedence relation involving terminals}
+
+\texttt{{[}...,{]}}
+\end{quote}
+This means that (1) there is a cyclic precedence relation among the
+listed terminals (\emph{i.e.} there is no way to say that one of the
+terminals has the \emph{maximum} precedence) and (2) they can all
+occur in the same context.
+
+
+\subsection{Parse table conflict.}
+
+As in a traditional parser generator, a parse table conflict occurs
+when two actions are placed in the same cell of the LR parse table;
+such a conflict is usually resolved by specifying precedence and associativity
+on terminals.
+
+Unlike a traditional parser generator, however, Copper does not make
+any attempt to resolve such conflicts automatically. Using the CUP
+skin, reduce-reduce conflicts are automatically resolved by the order
+in which conflicting productions appear in the file, as is done in
+CUP. Any shift-reduce conflicts are reported as compilation errors.
+
+The \texttt{default} pipeline suppresses output of parser code , but
+the \texttt{legacy} pipeline may not. Undefined behavior occurs if a
+parser compiled from a conflicting table is run.
+
+\subsection{Lexical ambiguity.}
+
+Copper is able to guarantee that there is no lexical ambiguity in
+its scanners, if certain compile-time checks pass. When any such checks
+fail, it is reported as a compilation error, of this form:
+
+\begin{quote}
+\texttt{Unresolvable lexical ambiguity at parser states}
+\begin{quote}
+\texttt{{[}...]}
+\texttt{(between/among) terminals:}
+\begin{quote}
+\texttt{{[}...,}
+
+\texttt{...]}
+\end{quote}
+\end{quote}
+\end{quote}
+This means that the the set of terminals given are not on each other's
+dominate- or submit-lists, and there is no disambiguation function
+or group assigned to the set. There are three ways to resolve the
+ambiguity:
+
+\begin{itemize}
+\item Modify the dominate- and submit-lists of the set of terminals;
+\item Add a disambiguation function or group to disambiguate the set appropriately;
+\item Alter the context-free syntax so this set of terminals do not appear
+in the same context.
+\end{itemize}
+
+\chapter{\label{cha:Running-a-Copper-parser.}Running a Copper parser.}
+
+\section{Requirements.}
+
+To run a Copper parser, you need:
+
+\begin{itemize}
+\item Java Runtime Environment v.1.5 or greater.
+\item \texttt{CopperRuntime.jar} or \texttt{CopperCompiler.jar} on the classpath.
+\end{itemize}
+
+\section{Constructors.}
+
+No parameters need to be passed to a Copper parser on construction.
+It is possible to specify additional constructors in the auxiliary
+code; however, the constructor with no parameters cannot be specified
+in that manner.
+
+\section{\texttt{parse()} methods.}
+
+A parser has several methods nameed \texttt{parse} that may be used to
+run the parser. These methods are documented in Copper's Javadoc for
+the interface
+\texttt{edu.}\texttt{umn.}\texttt{cs.}\texttt{melt.}\texttt{copper.} \texttt{runtime.}\texttt{engines.}\texttt{CopperParser}.
+
+\begin{itemize}
+\item \texttt{parse(Reader input)}
+\item \texttt{parse(Reader input,String inputName)}
+\item \texttt{parse(String text)}
+\item \texttt{parse(String text,String inputName)}
+\end{itemize}
+Each function returns an \texttt{Object} that is the \texttt{RESULT}
+of the last production reduced in the parse (\emph{i.e.}, the root
+of the parse tree).
+
+The arguments to the methods are as follows.
+
+\begin{itemize}
+\item \texttt{text} is a string containing text to parse.
+\item \texttt{input} is a \texttt{Reader} containing text to parse.
+\item \texttt{inputName} (defaults to {}``\texttt{<stdin>}'') is a label
+for \texttt{input} or \texttt{text}.
+\end{itemize}
+
+\section{The class \texttt{RunParser}.}
+
+The Copper parser runtime includes a runnable class
+\texttt{edu.}\texttt{umn.}\texttt{cs.}\texttt{melt.}\texttt{copper.}\texttt{runtime.} \texttt{RunParser}
+that will call into a Copper parser's \texttt{parse} method from the
+command line. If the parser class being run specifies a method
+\texttt{runPostParseCode(Object)}, it will then call that method on
+the returned parse object.
+
+Its full command-line syntax is:
+
+\begin{quote}
+\texttt{java -classpath [location/]CopperRuntime.jar:[parser-classpath]}
+
+\texttt{~~~~~~edu.umn.cs.melt.copper.runtime.RunParser}
+
+\texttt{~~~~~~parser-class-name [-v] [-f input-file]}
+\end{quote}
+
+\begin{itemize}
+\item \texttt{-f} tells the parser to read from the given \texttt{input-file} instead of from standard input.
+\item \texttt{-v} tells the parser to output the full stack trace of any exceptions thrown, instead of just their message.
+\end{itemize}
+
+\appendix
+
+\chapter{\label{cha:CUP-skin-grammar.}CUP skin grammar.}
+
+
+\section{Lexical syntax.}
+
+\begin{codeblock}
+assoctypes\_kwd~::=~left~|~right~|~nonassoc
+
+name\_tok~::=~{[}A-Za-z\_]{[}A-Za-z0-9\_]{*}
+
+prec\_number~::=~0|({[}1-9]{[}0-9]{*})
+
+character~::=~.
+
+termname~::=~{[}\textasciicircum{}\textbackslash{}:]+
+
+escaped~::=~\textbackslash{}\textbackslash{}.
+
+code\_t~::=~({[}\textasciicircum{}\%:]{*}|{[}\textasciicircum{}\%\textbackslash{}n]\%|:{[}\textasciicircum{}\}]){*}
+
+ws~::=~({[}~\textbackslash{}t\textbackslash{}n]+)|(//.{*})|(/\textbackslash{}{*}({[}\textasciicircum{}{*}]|\textbackslash{}{*}{[}\textasciicircum{}/]){*}\textbackslash{}{*}/)
+
+ws\_no\_line~::=~({[}~\textbackslash{}t\textbackslash{}n]+)|(/\textbackslash{}{*}({[}\textasciicircum{}{*}]|\textbackslash{}{*}{[}\textasciicircum{}/]){*}\textbackslash{}{*}/)
+\end{codeblock}
+
+\section{Context-free syntax.}
+
+
+\subsection{Specification syntax.}
+
+All Java layout (whitespace, block and line comments) is allowed between
+the symbols of these productions.
+
+\begin{codeblock}
+GrammarFile~::=~
+\begin{codeblock}
+code\_t~'\%\%'~ParserDecl~DeclBlocks
+\end{codeblock}
+ParserDecl~::=
+\begin{codeblock}
+'\%parser'~name\_tok
+\end{codeblock}
+DeclBlocks~::=
+\begin{codeblock}
+~~DeclBlock~DeclBlocks
+
+|~DeclBlock
+\end{codeblock}
+DeclBlock~::=
+\begin{codeblock}
+~~'\%attr'~TypeName~name\_tok~';'
+
+|~'\%aux\{'~code\_t~'\%aux\}'
+
+|~'\%init\{'~code\_t~'\%init\}'
+
+|~'\%lex\{'~LexDecls~'\%lex\}'
+
+|~'\%cf\{'~CFDecls~'\%cf\}'
+\end{codeblock}
+LexDecls~::=
+\begin{codeblock}
+LexDecl~LexDecls
+
+|~LexDecl
+\end{codeblock}
+CFDecls~::=
+\begin{codeblock}
+CFDecl~CFDecls
+
+|~CFDecl
+\end{codeblock}
+LexDecl~::=
+\begin{codeblock}
+'class'~CommaSymSeq~';'
+
+|~IgnoreOpt~'terminal'~name\_tok~SuperRegexRoot~\\
+~~~PrecListsOpt~CodeBlockOpt~TerminalFlags~';'
+
+|~IgnoreOpt~'terminal'~TypeName~name\_tok~'::='~\\
+~~~RegexRoot~PrecListsOpt~CodeBlockOpt~TerminalFlags~';'
+\end{codeblock}
+PrecLists~::=
+\begin{codeblock}
+PrecList~','~PrecLists
+
+|~PrecList
+\end{codeblock}
+PrecList~::=
+\begin{codeblock}
+'in'~'('~CommaSymSeqOpt~')'
+
+|~'<'~'('~CommaSymSeqOpt~')'
+
+|~'>'~'('~CommaSymSeqOpt~')'
+\end{codeblock}
+PrecListsOpt~::=
+\begin{codeblock}
+PrecLists~|
+\end{codeblock}
+TerminalFlags~::=
+\begin{codeblock}
+'\%prefix'~name\_tok~TerminalFlags
+
+|~
+\end{codeblock}
+LexDecl~::=
+\begin{codeblock}
+'disambiguate'~name\_tok~':'~'('~CommaSymSeq~')'~\\
+~~~'\{:'~code\_t~':\}'~';'
+
+|~'disambiguate'~name\_tok~':'~'('~CommaSymSeq~')'~\\
+~~~'::='~name\_tok~';'
+\end{codeblock}
+CodeBlockOpt~::=
+\begin{codeblock}
+'\{:'~code\_t~':\}'~|~
+\end{codeblock}
+IgnoreOpt~::=
+\begin{codeblock}
+'ignore'~|~
+\end{codeblock}
+CFDecl~::=
+\begin{codeblock}
+'precedence'~assoctypes\_kwd~CommaOrSymSeq~';'
+\end{codeblock}
+CommaOrSymSeq~::=
+\begin{codeblock}
+name\_tok~SymSeq
+
+|~name\_tok~','~CommaSymSeq
+\end{codeblock}
+CFDecl~::=
+\begin{codeblock}
+'non'~'terminal'~TypeName~CommaSymSeq~';'
+
+|~'non'~'terminal'~CommaSymSeq~';'
+\end{codeblock}
+TypeNameOpt~::=
+\begin{codeblock}
+TypeName
+
+|~
+\end{codeblock}
+TypeName~::=
+\begin{codeblock}
+QualifiedName
+
+|~QualifiedName~'<'~TypeNameSeq~'>'
+\end{codeblock}
+QualifiedName~::=
+\begin{codeblock}
+name\_tok
+
+|~name\_tok~wildcard~QualifiedName
+\end{codeblock}
+TypeNameSeq~::=
+\begin{codeblock}
+TypeName~','~TypeNameSeq
+
+|~TypeName
+\end{codeblock}
+CFDecl~::=
+\begin{codeblock}
+'start'~'with'~name\_tok~';'
+
+|~name\_tok~'::='~RHSSeq~';'
+\end{codeblock}
+RHS~::=
+\begin{codeblock}
+LabeledSymSeq~CodeBlockOpt~RHSFlags
+\end{codeblock}
+RHSSeq~::=
+\begin{codeblock}
+RHS~'|'~RHSSeq
+
+|~RHS
+\end{codeblock}
+RHSFlags~::=
+\begin{codeblock}
+'\%prec'~name\_tok~RHSFlags
+
+|~'\%layout'~'('~CommaSymSeqOpt~')'~RHSFlags
+
+|~
+\end{codeblock}
+CommaSymSeqOpt~::=
+\begin{codeblock}
+CommaSymSeq~|~
+\end{codeblock}
+CommaSymSeq~::=
+\begin{codeblock}
+name\_tok~','~CommaSymSeq
+
+|~name\_tok
+\end{codeblock}
+LabeledSymSeq~::=
+\begin{codeblock}
+name\_tok~':'~name\_tok~LabeledSymSeq
+
+|~name\_tok~LabeledSymSeq
+
+|~
+\end{codeblock}
+SymSeq~::=
+\begin{codeblock}
+name\_tok~SymSeq
+
+|~
+\end{codeblock}
+\end{codeblock}
+
+\subsection{Regex bridge syntax.}
+
+Encompasses the context immediately before the specification of a
+terminal's regex. Only whitespace and block comments are allowed here.
+
+\begin{codeblock}
+SuperRegexRoot~::=
+\begin{codeblock}
+'::='~RegexRoot~\%layout~(ws\_no\_line)
+\end{codeblock}
+\end{codeblock}
+
+\subsection{Regex syntax.}
+
+No whitespace of any sort is allowed between the symbols of these
+productions.
+
+\begin{codeblock}
+RegexRoot~::=
+\begin{codeblock}
+'/'~Regex\_R~'/'
+
+|~'/'~'/'
+\end{codeblock}
+Regex\_R~::=
+\begin{codeblock}
+Regex\_DR
+
+|~Regex\_DR~'|'~Regex\_R
+\end{codeblock}
+Regex\_DR~::=
+\begin{codeblock}
+Regex\_UR~Regex\_RR
+
+|~Regex\_UR~'{*}'~Regex\_RR
+
+|~Regex\_UR~'+'~Regex\_RR
+
+|~Regex\_UR~'?'~Regex\_RR
+\end{codeblock}
+Regex\_RR~::=
+\begin{codeblock}
+Regex\_DR
+
+|
+\end{codeblock}
+Regex\_UR~::=
+\begin{codeblock}
+Regex\_CHAR
+
+|~'.'
+
+|~'{[}'~Regex\_G~']'
+
+|~'{[}'~'\textasciicircum{}'~Regex\_G~']'
+
+|~'{[}'~':'~termname~':'~']'
+
+|~'('~Regex\_R~')'
+\end{codeblock}
+Regex\_G~::=
+\begin{codeblock}
+Regex\_UG~Regex\_RG
+\end{codeblock}
+Regex\_UG~::=
+\begin{codeblock}
+Regex\_CHAR
+
+|~Regex\_CHAR~'-'~Regex\_CHAR
+\end{codeblock}
+Regex\_RG~::=
+\begin{codeblock}
+Regex\_G
+
+|~
+\end{codeblock}
+Regex\_CHAR~::=
+\begin{codeblock}
+character
+
+|~escaped
+\end{codeblock}
+\end{codeblock}
+
+\chapter{\label{cha:"Mini-Java"-example-specification.}{}``Mini-Java''
+example specification.}
+
+\begin{codeblock}
+package~ancillary;
+
+\%\%
+
+\%parser~MiniJavaRecognizer
+
+\%lex\{
+\begin{codeblock}
+class~keyword;
+
+ignore~terminal~WS~::=~/{[}~\textbackslash{}t\textbackslash{}n\textbackslash{}r]+/;
+
+ignore~terminal~LINE\_COMMENT~::=~/\textbackslash{}/\textbackslash{}/.{*}/;
+
+ignore~terminal~BLOCK\_COMMENT~::=~/\textbackslash{}/\textbackslash{}{*}({[}\textasciicircum{}{*}]|\textbackslash{}{*}{[}\textasciicircum{}/])\textbackslash{}{*}\textbackslash{}//;
+
+terminal~ID~::=~/{[}A-Za-z]{[}A-Za-z0-9\_]{*}/
+\begin{codeblock}
+in~(),~<~(keyword),~>~();
+\end{codeblock}
+terminal~INTEGER~::=~/0|({[}1-9]{[}0-9]{*})/;
+
+terminal~CLASS~::=~/class/~in~(keyword),~<~(),~>~();
+
+terminal~PUBLIC~::=~/public/~in~(keyword),~<~(),~>~();
+
+terminal~STATIC~::=~/static/~in~(keyword),~<~(),~>~();
+
+terminal~VOID~::=~/void/~in~(keyword),~<~(),~>~();
+
+terminal~MAIN~::=~/main/~in~(keyword),~<~(),~>~();
+
+terminal~STRING~::=~/String/~in~(keyword),~<~(),~>~();
+
+terminal~EXTENDS~::=~/extends/~in~(keyword),~<~(),~>~();
+
+terminal~RETURN~::=~/return/~in~(keyword),~<~(),~>~();
+
+terminal~INT~::=~/int/~in~(keyword),~<~(),~>~();
+
+terminal~BOOLEAN~::=~/boolean/~in~(keyword),~<~(),~>~();
+
+terminal~IF~::=~/if/~in~(keyword),~<~(),~>~();
+
+terminal~ELSE~::=~/else/~in~(keyword),~<~(),~>~();
+
+terminal~WHILE~::=~/while/~in~(keyword),~<~(),~>~();
+
+terminal~PRINT~::=~/System\textbackslash{}.out\textbackslash{}.println/
+\begin{codeblock}
+in~(keyword),~<~(),~>~();
+\end{codeblock}
+terminal~LENGTH~::=~/length/~in~(keyword),~<~(),~>~();
+
+terminal~TRUE~::=~/true/~in~(keyword),~<~(),~>~();
+
+terminal~FALSE~::=~/false/~in~(keyword),~<~(),~>~();
+
+terminal~THIS~::=~/this/~in~(keyword),~<~(),~>~();
+
+terminal~NEW~::=~/new/~in~(keyword),~<~(),~>~();
+
+terminal~LBRACK~::=~/\textbackslash{}\{/~in~(keyword),~<~(),~>~();
+
+terminal~RBRACK~::=~/\textbackslash{}\}/~in~(keyword),~<~(),~>~();
+
+terminal~LBRACE~::=~/\textbackslash{}{[}/~in~(keyword),~<~(),~>~();
+
+terminal~RBRACE~::=~/\textbackslash{}]/~in~(keyword),~<~(),~>~();
+
+terminal~LPAREN~::=~/\textbackslash{}(/~in~(keyword),~<~(),~>~();
+
+terminal~RPAREN~::=~/\textbackslash{})/~in~(keyword),~<~(),~>~();
+
+terminal~DOT~::=~/\textbackslash{}./~in~(keyword),~<~(),~>~();
+
+terminal~PLUS~::=~/\textbackslash{}+/~in~(keyword),~<~(),~>~();
+
+terminal~MINUS~::=~/-/~in~(keyword),~<~(),~>~();
+
+terminal~TIMES~::=~/\textbackslash{}{*}/~in~(keyword),~<~(),~>~();
+
+terminal~AND~::=~/\&\&/~in~(keyword),~<~(),~>~();
+
+terminal~LT~::=~/</~in~(keyword),~<~(),~>~();
+
+terminal~NOT~::=~/!/~in~(keyword),~<~(),~>~();
+
+terminal~ASSIGN~::=~/=/~in~(keyword),~<~(),~>~();
+
+terminal~SEMICOLON~::=~/;/~in~(keyword),~<~(),~>~();
+
+terminal~COMMA~::=~/:/~in~(keyword),~<~(),~>~();
+\end{codeblock}
+\%lex\}
+
+\%cf\{
+\begin{codeblock}
+non~terminal~classdecl;
+
+non~terminal~classdecls;
+
+non~terminal~exp;
+
+non~terminal~exprest;
+
+non~terminal~exprests;
+
+non~terminal~explist;
+
+non~terminal~formallist;
+
+non~terminal~formalrests;
+
+non~terminal~formalrest;
+
+non~terminal~mainclass;
+
+non~terminal~methoddecl;
+
+non~terminal~vardeclsandstmts;
+
+non~terminal~methoddecls;
+
+non~terminal~program;
+
+non~terminal~nonidstmt;
+
+non~terminal~stmt;
+
+non~terminal~stmts;
+
+non~terminal~nonidtype;
+
+non~terminal~type;
+
+non~terminal~vardecl;
+
+non~terminal~vardecls;
+
+non~terminal~mainstuff;
+
+~
+
+precedence~left~AND;
+
+precedence~left~LT;
+
+precedence~left~PLUS,MINUS;
+
+precedence~left~TIMES;
+
+precedence~right~NOT;
+
+precedence~left~DOT,LBRACK;
+
+~
+
+start~with~program;
+
+~
+
+program~::=~
+\begin{codeblock}
+~~mainclass:mc~classdecls:cdls~
+
+;
+\end{codeblock}
+mainclass~::=~
+\begin{codeblock}
+~~CLASS:c~ID:name~mainstuff~ID:arg~RPAREN
+\begin{codeblock}
+LBRACE~stmt:body~RBRACE~RBRACE
+\end{codeblock}
+;
+\end{codeblock}
+mainstuff~::=
+\begin{codeblock}
+~~LBRACE~PUBLIC~STATIC~VOID~MAIN~\\
+~~~LPAREN~STRING~LBRACK~RBRACK~
+
+;
+\end{codeblock}
+classdecl~::=
+\begin{codeblock}
+~~CLASS:c~ID:name~LBRACE~vardecls:vlist
+\begin{codeblock}
+methoddecls:mlist~RBRACE
+\end{codeblock}
+|~CLASS:c~ID:name~EXTENDS~ID:sname~LBRACE
+\begin{codeblock}
+vardecls:vlist~methoddecls:mlist~RBRACE
+\end{codeblock}
+;
+\end{codeblock}
+classdecls~::=
+\begin{codeblock}
+~~classdecl:c~classdecls:clist
+
+|~
+
+;
+\end{codeblock}
+vardecl~::=
+\begin{codeblock}
+~~type:t~ID:i~SEMICOLON
+
+;
+\end{codeblock}
+vardecls~::=
+\begin{codeblock}
+~~vardecl:v~vardecls:vlist
+
+|~
+
+;
+\end{codeblock}
+vardeclsandstmts~::=
+\begin{codeblock}
+~~nonidtype:t~ID:name~SEMICOLON~vardeclsandstmts:rest
+
+|~nonidstmt:s~stmts:stmlist
+
+|~ID:t~ID:name~SEMICOLON~vardeclsandstmts:rest
+
+|~ID:var~ASSIGN~exp:e~SEMICOLON~stmts:stmlist
+
+|~ID:var~LBRACK~exp:e1~RBRACK~ASSIGN~exp:e2
+\begin{codeblock}
+SEMICOLON~stmts:stmlist
+\end{codeblock}
+|~
+
+;
+\end{codeblock}
+methoddecl~::=
+\begin{codeblock}
+~~PUBLIC:p~type:t~ID:name~LPAREN~formallist:fl~RPAREN~\\
+~~~LBRACE~vardeclsandstmts:rest~RETURN~exp:e~\\
+~~~SEMICOLON~RBRACE
+
+;
+\end{codeblock}
+methoddecls~::=
+\begin{codeblock}
+~~methoddecl:m~methoddecls:rest
+
+|~
+
+;
+\end{codeblock}
+formallist~::=
+\begin{codeblock}
+~~type:t~ID:name~formalrests:rest
+
+|~
+
+;
+\end{codeblock}
+formalrest~::=
+\begin{codeblock}
+~~COMMA~type:t~ID:name
+
+;
+\end{codeblock}
+formalrests~::=
+\begin{codeblock}
+~~formalrest:f~formalrests:rest
+
+|~
+
+;
+\end{codeblock}
+type~::=
+\begin{codeblock}
+~~nonidtype:t
+
+|~ID:i
+
+;
+\end{codeblock}
+nonidtype~::=
+\begin{codeblock}
+~~INT:i~
+
+|~INT:i~LBRACK~RBRACK~
+
+|~BOOLEAN:b~
+
+;
+\end{codeblock}
+stmt~::=
+\begin{codeblock}
+~~nonidstmt:s
+
+|~ID:var~ASSIGN~exp:e~SEMICOLON
+
+|~ID:var~LBRACK~exp:e1~RBRACK~ASSIGN~exp:e2~SEMICOLON
+
+;
+\end{codeblock}
+stmts~::=
+\begin{codeblock}
+~~stmt:s~stmts:rest
+
+|~
+
+;
+\end{codeblock}
+nonidstmt~::=
+\begin{codeblock}
+~~LBRACE~stmts:rest~RBRACE
+
+|~IF:start~LPAREN~exp:e~RPAREN~stmt:s1~ELSE~stmt:s2
+
+|~WHILE:start~LPAREN~exp:e~RPAREN~stmt:s
+
+|~PRINT:start~LPAREN~exp:e~RPAREN~SEMICOLON
+
+;
+\end{codeblock}
+exp~::=
+\begin{codeblock}
+~~exp:e1~AND~exp:e2
+
+|~exp:e1~LT~exp:e2
+
+|~exp:e1~PLUS~exp:e2
+
+|~exp:e1~MINUS~exp:e2
+
+|~exp:e1~TIMES~exp:e2
+
+|~exp:e1~LBRACK~exp:e2~RBRACK
+
+|~exp:array~DOT~LENGTH
+
+|~exp:obj~DOT~ID:name~LPAREN~explist:fl~RPAREN
+
+|~INTEGER:i
+
+|~TRUE:t
+
+|~FALSE:f
+
+|~ID:i
+
+|~THIS:t
+
+|~NEW:start~INT~LBRACK~exp:e~RBRACK
+
+|~NEW:start~ID:name~LPAREN~RPAREN
+
+|~NOT:start~exp:e
+
+|~LPAREN:start~exp:e~RPAREN
+
+;
+\end{codeblock}
+explist~::=
+\begin{codeblock}
+~~exp:e~exprests:rest~
+
+|~
+
+;
+\end{codeblock}
+exprest~::=
+\begin{codeblock}
+~~COMMA~exp:e~
+
+;
+\end{codeblock}
+exprests~::=
+\begin{codeblock}
+~~exprest:e~exprests:rest~
+
+|~
+
+;
+\end{codeblock}
+\end{codeblock}
+\%cf\}
+\end{codeblock}
+
+\chapter{\label{cha:License.}License.}
+
+Portions of Copper are \copyright{} 2005--2006, 2012, 2015 August
+Schwerdfeger, \copyright{} 2006--2010 Regents of the University of
+Minnesota, and \copyright{} 2011--2012 Adventium Enterprises LLC.
+
+Licensing information for Copper can be found in the files
+\texttt{CREDITS.txt} and \texttt{LICENSE.txt}, which are in the Copper
+source tree and both of the Copper JARs.
+
+This user manual is licensed under the Creative
+Commons Attribution-ShareAlike license, version 4.0 or later, the text
+of which may be found on the World Wide Web at
+\url{http://creativecommons.org/licenses/by-sa/4.0}.
+\end{document}

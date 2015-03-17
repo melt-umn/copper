@@ -2,5 +2,7 @@ bin
 jar
 etc/Copper\.properties
 doc/javadoc/**
+doc/manual/**
+!doc/manual/*.tex
 tests/parsers
 !doc/javadoc/README.txt
