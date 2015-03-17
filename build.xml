@@ -60,6 +60,9 @@
 	<package name='edu.umn.cs.melt.copper.runtime.logging'/>
       </group>
     </javadoc>
+    <tar destfile='${dist}/copper-javadoc.tar.gz' compression='gzip'>
+      <fileset dir='${javadoc}' includes='**' excludes='README.txt'/>
+    </tar>
   </target>
   
   <target name='CopperCompilerJar' depends='build'>
@@ -121,6 +124,7 @@
   <target name='javadoc_clean' depends=''>
     <delete includeemptydirs='true' verbose='false'>
       <fileset dir='${javadoc}' includes='**/*' excludes='README.txt'/>
+      <fileset dir='${dist}' includes='copper-javadoc.tar.gz'/>
     </delete>
   </target>
   
