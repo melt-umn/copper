@@ -227,7 +227,7 @@ public class ModularDeterminismAnalyzer
 		BitSet[] locationsA = new BitSet[locations.size()];
 		locations.toArray(locationsA);
 		
-		MDAResults rv = new MDAResults(errorTypesA, hostSetsA, fullSetsA, hostStatesA, fullStatesA, locationsA, encounteredStates, extensionStatePartition, newHostStatePartition);
+		MDAResults rv = new MDAResults(errorTypesA, hostSetsA, fullSetsA, hostStatesA, fullStatesA, locationsA, hostStatePartition, encounteredStates, extensionStatePartition, newHostStatePartition);
 		return rv;
 	}
 	

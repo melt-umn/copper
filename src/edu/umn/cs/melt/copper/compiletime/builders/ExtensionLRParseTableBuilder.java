@@ -23,7 +23,6 @@ public class ExtensionLRParseTableBuilder {
     private ParserSpec fullSpec;
     private ParserSpec hostSpec;
     private LRParseTable fullParseTable;
-    private Map<Integer, Integer> hostPartitionMap; // host state num to composed state num
     private Map<Integer, Integer> extensionPartitionMap; // extension state num to composed state num
     private BitSet extensionStatePartition;
     private Map<Integer, Integer> composedToDecomposedMap;
@@ -54,7 +53,6 @@ public class ExtensionLRParseTableBuilder {
         this.fullSpec = fullSpec;
         this.fullParseTable = fullParseTable;
         this.hostSpec = hostSpec;
-        this.hostPartitionMap = hostPartitionMap;
         this.extensionPartitionMap = new TreeMap<Integer, Integer>();
         this.extensionStatePartition = extensionStatePartition;
 
@@ -74,10 +72,52 @@ public class ExtensionLRParseTableBuilder {
 
         // Build 'reverse' composed to decomposed state map, host states
         for (Map.Entry<Integer, Integer> entry : hostPartitionMap.entrySet()) {
-            composedToDecomposedMap.put(entry.getValue(), entry.getKey());
+            composedToDecomposedMap.put(entry.getKey(), entry.getValue());
         }
 
         this.generateSymbolMap();
+        this.generateExtensionParseTables();
+
+        System.out.println("== BEGIN ExtensionLRParseTableBuilder ==");
+        System.out.println("Indicies:");
+        System.out.println("  host terminals: " + bitSetIndicesToString(hostTerminalIndices));
+        System.out.println("  host nonterminals: " + bitSetIndicesToString(hostNonterminalIndices));
+        System.out.println("  host productions: " + bitSetIndicesToString(hostProductionIndices));
+        System.out.println("  extension terminals: " + bitSetIndicesToString(extensionTerminalIndices));
+        System.out.println("  extension nonterminals: " + bitSetIndicesToString(extensionNonterminalIndices));
+        System.out.println("  extension productions: " + bitSetIndicesToString(extensionProductionIndices));
+
+        System.out.println("Maps:");
+        System.out.println("  terminalsMap:");
+        printPartitionMap(terminalsMap);
+        System.out.println("  nonterminalsMap:");
+        printPartitionMap(nonterminalsMap);
+        System.out.println("  productionsMap:");
+        printPartitionMap(productionsMap);
+        System.out.println("  extension state num to composed state num:");
+        printPartitionMap(extensionPartitionMap);
+        System.out.println("  composed to decomposed state map:");
+        printPartitionMap(composedToDecomposedMap);
+
+        System.out.println("Parse Table Host Side");
+        extensionParseTableHostSide.print();
+        extensionParseTableExtensionSide.print();
+
+        System.out.println("== END ExtensionLRParseTableBuilder ==");
+    }
+
+    private String bitSetIndicesToString(BitSet bitSet) {
+        String ret = "";
+        for (int i = bitSet.nextSetBit(0); i != -1; i = bitSet.nextSetBit(i + 1)) {
+            ret += i + ", ";
+        }
+        return ret;
+    }
+
+    private void printPartitionMap(Map<Integer, Integer> map) {
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            System.out.println("    " + entry.getKey() + " -> " + entry.getValue());
+        }
     }
 
     private void generateSymbolMap() {
@@ -172,7 +212,7 @@ public class ExtensionLRParseTableBuilder {
 
         for (int i = 0; i < extensionStateCount; i++) {
             int composedStateNumber = extensionPartitionMap.get(i);
-            for (int symbol = 0; i < fullSpecSymbolCount; i++) {
+            for (int symbol = 0; symbol < fullSpecSymbolCount; symbol++) {
                 int partialSymbolIndex;
                 if (this.fullSpec.terminals.get(symbol)) { // if terminal
                     partialSymbolIndex = this.terminalsMap.get(symbol);
@@ -209,7 +249,7 @@ public class ExtensionLRParseTableBuilder {
                 return 0;
             case LRParseTable.REDUCE:
                 return this.productionsMap.get(composedActionParameter);
-            case LRParseTable.SHIFT:
+            case LRParseTable.SHIFT: // Same as GOTO (SHIFT == GOTO)
                 return this.composedToDecomposedMap.get(composedActionParameter);
             default:
                 return 0;

@@ -55,4 +55,54 @@ public abstract class LRParseTable
 	public abstract LRParseTableConflict getConflict(int index);
 	
 	public int size() { return validLA.length; }
+
+	public void print() {
+		int rows = actionType.length;
+		int cols = actionType[0].length;
+
+		int entryWidth = 4;
+
+		System.out.print("State | ");
+		for (int i = 0; i < cols; i++) {
+			System.out.print(fixString(String.valueOf(i), entryWidth) + " ");
+		}
+		System.out.println();
+
+		for (int i = 0; i < rows; i++) {
+			System.out.print(fixString(String.valueOf(i), 6) + "| ");
+			for (int j = 0; j < cols; j++) {
+				String entry = "";
+				switch (actionType[i][j]) {
+					case ERROR:
+						entry += 'e';
+						break;
+					case SHIFT:
+						entry += 's';
+						break;
+					case REDUCE:
+						entry += 'r';
+						break;
+					default:
+						entry += 'x';
+						break;
+				}
+				entry += actionParameters[i][j];
+				System.out.print(fixString(entry, entryWidth) + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	private String fixString(String str, int size) {
+		int len = str.length();
+		if (len < size) {
+			String ret = str;
+			for (int i = 0; i < size - len; i++) {
+				ret = ret + " ";
+			}
+			return ret;
+		} else {
+			return str;
+		}
+	}
 }
