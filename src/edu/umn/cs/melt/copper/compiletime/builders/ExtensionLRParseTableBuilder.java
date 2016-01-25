@@ -23,35 +23,94 @@ public class ExtensionLRParseTableBuilder {
         // public ExtensionParserSpec extensionParserSpec; // to be defined
     }
 
+    public class ExtensionMappingSpec {
+        public Map<Integer, Integer>
+            composedToDecomposedStates, extensionToComposedStates,
+            composedToDecomposedTerminals, composedToDecomposedNonterminals, composedToDecomposedProductions;
+        public BitSet
+            composedExtensionStates,
+            extensionTerminalIndices, extensionNonterminalIndices, extensionProductionIndices;
+        public BitSet
+            hostTerminalIndices, hostNonterminalIndices, hostProductionIndices;
+
+        public ExtensionMappingSpec(ParserSpec fullSpec, ParserSpec hostSpec, Map<Integer, Integer> composedToHostMap, BitSet composedExtensionStates) {
+            this.composedToDecomposedStates = new TreeMap<Integer, Integer>();
+            this.extensionToComposedStates = new TreeMap<Integer, Integer>();
+
+            this.composedExtensionStates = composedExtensionStates;
+
+            // Build list of extension states
+            // Build 'reverse' composed to decomposed state map, extension states
+            this.composedToDecomposedStates = new TreeMap<Integer, Integer>();
+            for (int extensionState = composedExtensionStates.nextSetBit(0), i = 0;
+                 extensionState >= 0;
+                 extensionState = composedExtensionStates.nextSetBit(extensionState+1), i++
+                    ) {
+                extensionToComposedStates.put(i, extensionState);
+                composedToDecomposedStates.put(extensionState, encodeExtensionIndex(i));
+            }
+
+            // Build 'reverse' composed to decomposed state map, host states
+            for (Map.Entry<Integer, Integer> entry : composedToHostMap.entrySet()) {
+                composedToDecomposedStates.put(entry.getKey(), entry.getValue());
+            }
+
+            this.generateSymbolMaps(fullSpec, hostSpec);
+        }
+
+        private void generateSymbolMaps(ParserSpec fullSpec, ParserSpec hostSpec) {
+            this.extensionTerminalIndices = new BitSet();
+            this.extensionNonterminalIndices = new BitSet();
+            this.extensionProductionIndices = new BitSet();
+
+            this.hostTerminalIndices = new BitSet();
+            this.hostNonterminalIndices = new BitSet();
+            this.hostProductionIndices = new BitSet();
+
+            int extensionIndex = 0;
+            int hostIndex = 0;
+
+            this.composedToDecomposedTerminals = generateSymbolPartitionMap(fullSpec.terminals, hostSpec.terminals, extensionTerminalIndices, extensionIndex, hostTerminalIndices, hostIndex);
+            extensionIndex += extensionTerminalIndices.cardinality();
+            hostIndex += hostTerminalIndices.cardinality();
+
+            this.composedToDecomposedNonterminals = generateSymbolPartitionMap(fullSpec.nonterminals, hostSpec.nonterminals, extensionNonterminalIndices, extensionIndex, hostNonterminalIndices, hostIndex);
+            extensionIndex += extensionNonterminalIndices.cardinality();
+            hostIndex += hostNonterminalIndices.cardinality();
+
+            this.composedToDecomposedProductions = generateSymbolPartitionMap(fullSpec.productions, hostSpec.productions, extensionProductionIndices, extensionIndex, hostProductionIndices, hostIndex);
+            extensionIndex += extensionProductionIndices.cardinality();
+            hostIndex += hostProductionIndices.cardinality();
+        }
+
+        private Map<Integer, Integer> generateSymbolPartitionMap(BitSet fullSpecSymbols, BitSet hostSpecSymbols, BitSet extensionSymbolIndices, int eStartIndex, BitSet hostSymbolIndicies, int hStartIndex) {
+            Map<Integer, Integer> symbolMap = new TreeMap<Integer, Integer>(); // full to host/ext
+
+            int t = fullSpecSymbols.nextSetBit(0);
+            int hi = hStartIndex;
+            int ei = eStartIndex;
+            while (t >= 0) {
+                if (hostSpecSymbols.get(t)) {
+                    symbolMap.put(t, hi);
+                    hostSymbolIndicies.set(hi);
+                    hi += 1;
+                } else {
+                    symbolMap.put(t, encodeExtensionIndex(ei));
+                    extensionSymbolIndices.set(ei);
+                    ei += 1;
+                }
+                t = fullSpecSymbols.nextSetBit(t + 1);
+            }
+
+            return symbolMap;
+        }
+    }
+
     private ParserSpec fullSpec;
-    private ParserSpec hostSpec;
     private LRParseTable fullParseTable;
 
-    private Map<Integer, Integer> hostPartitionMap; // composed state num to extension state num
-    private Map<Integer, Integer> extensionToComposedMap; // extension state num to composed state num
-
-    private BitSet extensionStatePartition;
-    private Map<Integer, Integer> composedToDecomposedMap;
-
-    private BitSet extensionTerminalIndices;
-    private BitSet extensionNonterminalIndices;
-    private BitSet extensionProductionIndices;
-
-    private BitSet hostTerminalIndices;
-    private BitSet hostNonterminalIndices;
-    private BitSet hostProductionIndices;
-
     // composed to decomposed maps
-    private Map<Integer, Integer> terminalsMap;
-    private Map<Integer, Integer> nonterminalsMap;
-    private Map<Integer, Integer> productionsMap;
-    private Map<Integer, Integer> dfMap;
-    private Map<Integer, Integer> terminalClassesMap;
-    private Map<Integer, Integer> operatorClassesMap;
-    private Map<Integer, Integer> parserAttributesMap;
-    private Map<Integer, Integer> grammarsMap;
-
-    private int fullSpecSymbolCount, fullSpecStateCount;
+    private ExtensionMappingSpec mappingSpec;
 
     public static ExtensionCompilerReturnData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, ParserBean parserBean, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition) {
         ExtensionLRParseTableBuilder builder = new ExtensionLRParseTableBuilder(fullSpec, fullDFA, fullParseTable, parserBean, hostSpec, hostPartitionMap, extensionStatePartition);
@@ -60,24 +119,24 @@ public class ExtensionLRParseTableBuilder {
 
         System.out.println("== BEGIN ExtensionLRParseTableBuilder ==");
         System.out.println("Indicies:");
-        System.out.println("  host terminals: " + builder.bitSetIndicesToString(builder.hostTerminalIndices));
-        System.out.println("  host nonterminals: " + builder.bitSetIndicesToString(builder.hostNonterminalIndices));
-        System.out.println("  host productions: " + builder.bitSetIndicesToString(builder.hostProductionIndices));
-        System.out.println("  extension terminals: " + builder.bitSetIndicesToString(builder.extensionTerminalIndices));
-        System.out.println("  extension nonterminals: " + builder.bitSetIndicesToString(builder.extensionNonterminalIndices));
-        System.out.println("  extension productions: " + builder.bitSetIndicesToString(builder.extensionProductionIndices));
+        System.out.println("  host terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostTerminalIndices));
+        System.out.println("  host nonterminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostNonterminalIndices));
+        System.out.println("  host productions: " + builder.bitSetIndicesToString(builder.mappingSpec.hostProductionIndices));
+        System.out.println("  extension terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionTerminalIndices));
+        System.out.println("  extension nonterminals: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionNonterminalIndices));
+        System.out.println("  extension productions: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionProductionIndices));
 
         System.out.println("Maps:");
         System.out.println("  terminalsMap:");
-        builder.printPartitionMap(builder.terminalsMap);
+        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedTerminals);
         System.out.println("  nonterminalsMap:");
-        builder.printPartitionMap(builder.nonterminalsMap);
+        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedNonterminals);
         System.out.println("  productionsMap:");
-        builder.printPartitionMap(builder.productionsMap);
+        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedProductions);
         System.out.println("  extension state num to composed state num:");
-        builder.printPartitionMap(builder.extensionToComposedMap);
+        builder.printPartitionMap(builder.mappingSpec.extensionToComposedStates);
         System.out.println("  composed to decomposed state map:");
-        builder.printPartitionMap(builder.composedToDecomposedMap);
+        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedStates);
 
         System.out.println("Parse Table Host Side");
         data.hostSideTable.print();
@@ -87,27 +146,6 @@ public class ExtensionLRParseTableBuilder {
         System.out.println("== END ExtensionLRParseTableBuilder ==");
 
         return data;
-    }
-
-    private ExtensionLRParseTableBuilder(
-                ParserSpec fullSpec,
-                LR0DFA fullDFA,
-                LRParseTable fullParseTable,
-                ParserBean parserBean,
-                ParserSpec hostSpec,
-                Map<Integer, Integer> hostPartitionMap,
-                BitSet extensionStatePartition
-    ) {
-        this.fullSpec = fullSpec;
-        this.fullParseTable = fullParseTable;
-        this.hostSpec = hostSpec;
-        this.hostPartitionMap = hostPartitionMap;
-
-        this.extensionToComposedMap = new TreeMap<Integer, Integer>();
-        this.extensionStatePartition = extensionStatePartition;
-
-        this.fullSpecSymbolCount = Math.max(fullSpec.terminals.length(), fullSpec.nonterminals.length());
-        this.fullSpecStateCount = fullDFA.size();
     }
 
     private String bitSetIndicesToString(BitSet bitSet) {
@@ -124,60 +162,19 @@ public class ExtensionLRParseTableBuilder {
         }
     }
 
-    private void generateSymbolMap() {
-        this.extensionTerminalIndices = new BitSet();
-        this.extensionNonterminalIndices = new BitSet();
-        this.extensionProductionIndices = new BitSet();
+    private ExtensionLRParseTableBuilder(
+                ParserSpec fullSpec,
+                LR0DFA fullDFA,
+                LRParseTable fullParseTable,
+                ParserBean parserBean,
+                ParserSpec hostSpec,
+                Map<Integer, Integer> hostPartitionMap,
+                BitSet extensionStatePartition
+    ) {
+        this.fullSpec = fullSpec;
+        this.fullParseTable = fullParseTable;
 
-        this.hostTerminalIndices = new BitSet();
-        this.hostNonterminalIndices = new BitSet();
-        this.hostProductionIndices = new BitSet();
-
-        int extensionIndex = 0;
-        int hostIndex = 0;
-
-        this.terminalsMap = generateSymbolPartitionMap(fullSpec.terminals, hostSpec.terminals, extensionTerminalIndices, extensionIndex, hostTerminalIndices, hostIndex);
-        extensionIndex += extensionTerminalIndices.cardinality();
-        hostIndex += hostTerminalIndices.cardinality();
-
-        this.nonterminalsMap = generateSymbolPartitionMap(fullSpec.nonterminals, hostSpec.nonterminals, extensionNonterminalIndices, extensionIndex, hostNonterminalIndices, hostIndex);
-        extensionIndex += extensionNonterminalIndices.cardinality();
-        hostIndex += hostNonterminalIndices.cardinality();
-
-        this.productionsMap = generateSymbolPartitionMap(fullSpec.productions, hostSpec.productions, extensionProductionIndices, extensionIndex, hostProductionIndices, hostIndex);
-        extensionIndex += extensionProductionIndices.cardinality();
-        hostIndex += hostProductionIndices.cardinality();
-    }
-
-    private Map<Integer, Integer> generateSymbolPartitionMap(BitSet fullSpecSymbols, BitSet hostSpecSymbols, BitSet extensionSymbolIndices, int eStartIndex, BitSet hostSymbolIndicies, int hStartIndex) {
-        Map<Integer, Integer> symbolMap = new TreeMap<Integer, Integer>(); // full to host/ext
-
-        int t = fullSpecSymbols.nextSetBit(0);
-        int hi = hStartIndex;
-        int ei = eStartIndex;
-        while (t >= 0) {
-            if (hostSpecSymbols.get(t)) {
-                symbolMap.put(t, hi);
-                hostSymbolIndicies.set(hi);
-                hi += 1;
-            } else {
-                symbolMap.put(t, encodeExtensionIndex(ei));
-                extensionSymbolIndices.set(ei);
-                ei += 1;
-            }
-            t = fullSpecSymbols.nextSetBit(t + 1);
-        }
-
-        return symbolMap;
-    }
-
-    private void setExtensionSymbolBitSets(Map<Integer, Integer> symbolMap, BitSet bitSet) {
-        for (Map.Entry<Integer, Integer> entry : symbolMap.entrySet()) {
-            int index = entry.getValue();
-            if (index < 0) {
-                bitSet.set(decodeExtensionIndex(index));
-            }
-        }
+        this.mappingSpec = new ExtensionMappingSpec(fullSpec, hostSpec, hostPartitionMap, extensionStatePartition);
     }
 
     private int encodeExtensionIndex(int i) { return -1 * (i + 1); }
@@ -187,31 +184,12 @@ public class ExtensionLRParseTableBuilder {
     private ExtensionCompilerReturnData build() {
         ExtensionCompilerReturnData data = new ExtensionCompilerReturnData();
 
-        /* BUILD index maps ========================================================== */
-
-        // Build list of extension states
-        // Build 'reverse' composed to decomposed state map, extension states
-        this.composedToDecomposedMap = new TreeMap<Integer, Integer>();
-        for (int extensionState = extensionStatePartition.nextSetBit(0), i = 0;
-             extensionState >= 0;
-             extensionState = extensionStatePartition.nextSetBit(extensionState+1), i++
-                ) {
-            extensionToComposedMap.put(i, extensionState);
-            composedToDecomposedMap.put(extensionState, encodeExtensionIndex(i));
-        }
-
-        // Build 'reverse' composed to decomposed state map, host states
-        for (Map.Entry<Integer, Integer> entry : hostPartitionMap.entrySet()) {
-            composedToDecomposedMap.put(entry.getKey(), entry.getValue());
-        }
-
-        this.generateSymbolMap();
-
-        /* BUILD parse tables ======================================================== */
-
         this.generateExtensionParseTables(data);
 
-        // TODO finish
+        // TODO this.extensionSymbolTable = ?
+        // TODO this.extensionParserSpec = ?
+
+        // TODO others
 
         return data;
     }
@@ -226,22 +204,23 @@ public class ExtensionLRParseTableBuilder {
     //   -1        | extension 0
     //   -2        | extension 1
     private void generateExtensionParseTables(ExtensionCompilerReturnData data) {
-        int extensionStateCount = extensionStatePartition.cardinality();
+        int fullSpecSymbolCount = Math.max(fullSpec.terminals.length(), fullSpec.nonterminals.length());
+        int extensionStateCount = mappingSpec.composedExtensionStates.cardinality();
 
-        int hostColumnCount = Math.max(hostTerminalIndices.length(), hostNonterminalIndices.length());
-        int extensionColumnCount = Math.max(extensionTerminalIndices.length(), extensionNonterminalIndices.length());
+        int hostColumnCount = Math.max(mappingSpec.hostTerminalIndices.length(), mappingSpec.hostNonterminalIndices.length());
+        int extensionColumnCount = Math.max(mappingSpec.extensionTerminalIndices.length(), mappingSpec.extensionNonterminalIndices.length());
 
         MutableLRParseTable hostSideTable = new MutableLRParseTable(extensionStateCount, hostColumnCount);
         MutableLRParseTable extensionSideTable = new MutableLRParseTable(extensionStateCount, extensionColumnCount);
 
         for (int i = 0; i < extensionStateCount; i++) {
-            int composedStateNumber = extensionToComposedMap.get(i);
+            int composedStateNumber = mappingSpec.extensionToComposedStates.get(i);
             for (int symbol = 0; symbol < fullSpecSymbolCount; symbol++) {
                 int partialSymbolIndex;
                 if (this.fullSpec.terminals.get(symbol)) { // if terminal
-                    partialSymbolIndex = this.terminalsMap.get(symbol);
+                    partialSymbolIndex = mappingSpec.composedToDecomposedTerminals.get(symbol);
                 } else if (this.fullSpec.nonterminals.get(symbol)) { // if nonterminal
-                    partialSymbolIndex = this.nonterminalsMap.get(symbol);
+                    partialSymbolIndex = mappingSpec.composedToDecomposedNonterminals.get(symbol);
                 } else {
                     continue; // TODO error? Assumes that nonterminals and terminals come first
                 }
@@ -276,9 +255,9 @@ public class ExtensionLRParseTableBuilder {
                 // TODO Covert conflict number?
                 return 0;
             case LRParseTable.REDUCE:
-                return this.productionsMap.get(composedActionParameter);
+                return mappingSpec.composedToDecomposedProductions.get(composedActionParameter);
             case LRParseTable.SHIFT: // Same as GOTO (SHIFT == GOTO)
-                return this.composedToDecomposedMap.get(composedActionParameter);
+                return mappingSpec.composedToDecomposedStates.get(composedActionParameter);
             default:
                 return 0;
         }
