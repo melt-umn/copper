@@ -236,6 +236,7 @@ public class ExtensionLRParseTableBuilder {
                 int composedActionParameter = fullParseTable.getActionParameter(composedStateNumber, symbol);
                 int extensionActionParameter = translateActionParameter(actionType, composedActionParameter);
 
+                table.getValidLA(i).set(convertedSymbol);
                 table.setActionType(i, convertedSymbol, actionType);
                 table.setActionParameter(i, convertedSymbol, extensionActionParameter);
             }
