@@ -12,12 +12,14 @@ import java.util.TreeMap;
 public class ExtensionMappingSpec {
     public Map<Integer, Integer>
             composedToDecomposedStates, extensionToComposedStates,
-            composedToDecomposedTerminals, composedToDecomposedNonterminals, composedToDecomposedProductions;
+            composedToDecomposedTerminals, composedToDecomposedNonterminals, composedToDecomposedProductions,
+            composedToDecomposedSymbols;
     public BitSet
             composedExtensionStates,
             extensionTerminalIndices, extensionNonterminalIndices, extensionProductionIndices;
     public BitSet
             hostTerminalIndices, hostNonterminalIndices, hostProductionIndices;
+    public int extensionSymbolCount;
 
     public ExtensionMappingSpec(ParserSpec fullSpec, ParserSpec hostSpec, Map<Integer, Integer> composedToHostMap, BitSet composedExtensionStates) {
         this.composedToDecomposedStates = new TreeMap<Integer, Integer>();
@@ -53,6 +55,8 @@ public class ExtensionMappingSpec {
         this.hostNonterminalIndices = new BitSet();
         this.hostProductionIndices = new BitSet();
 
+        this.composedToDecomposedSymbols = new TreeMap<Integer, Integer>();
+
         int extensionIndex = 0;
         int hostIndex = 0;
 
@@ -67,6 +71,8 @@ public class ExtensionMappingSpec {
         this.composedToDecomposedProductions = generateSymbolPartitionMap(fullSpec.productions, hostSpec.productions, extensionProductionIndices, extensionIndex, hostProductionIndices, hostIndex);
         extensionIndex += extensionProductionIndices.cardinality();
         hostIndex += hostProductionIndices.cardinality();
+
+        this.extensionSymbolCount = extensionIndex;
     }
 
     private Map<Integer, Integer> generateSymbolPartitionMap(BitSet fullSpecSymbols, BitSet hostSpecSymbols, BitSet extensionSymbolIndices, int eStartIndex, BitSet hostSymbolIndicies, int hStartIndex) {
@@ -78,10 +84,12 @@ public class ExtensionMappingSpec {
         while (t >= 0) {
             if (hostSpecSymbols.get(t)) {
                 symbolMap.put(t, hi);
+                this.composedToDecomposedSymbols.put(t, hi);
                 hostSymbolIndicies.set(hi);
                 hi += 1;
             } else {
                 symbolMap.put(t, encodeExtensionIndex(ei));
+                this.composedToDecomposedSymbols.put(t, encodeExtensionIndex(ei));
                 extensionSymbolIndices.set(ei);
                 ei += 1;
             }

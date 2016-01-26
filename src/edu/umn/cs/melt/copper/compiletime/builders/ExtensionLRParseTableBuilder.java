@@ -3,10 +3,12 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.MutableLRParseTable;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
 
@@ -24,12 +26,13 @@ public class ExtensionLRParseTableBuilder {
 
     private ParserSpec fullSpec;
     private LRParseTable fullParseTable;
+    private PSSymbolTable fullSymbolTable;
 
     // composed to decomposed maps
     private ExtensionMappingSpec mappingSpec;
 
-    public static ExtensionCompilerReturnData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, ParserBean parserBean, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition) {
-        ExtensionLRParseTableBuilder builder = new ExtensionLRParseTableBuilder(fullSpec, fullDFA, fullParseTable, parserBean, hostSpec, hostPartitionMap, extensionStatePartition);
+    public static ExtensionCompilerReturnData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition) {
+        ExtensionLRParseTableBuilder builder = new ExtensionLRParseTableBuilder(fullSpec, fullDFA, fullParseTable, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition);
 
         ExtensionCompilerReturnData data = builder.build();
 
@@ -82,13 +85,14 @@ public class ExtensionLRParseTableBuilder {
                 ParserSpec fullSpec,
                 LR0DFA fullDFA,
                 LRParseTable fullParseTable,
-                ParserBean parserBean,
+                PSSymbolTable fullSymbolTable,
                 ParserSpec hostSpec,
                 Map<Integer, Integer> hostPartitionMap,
                 BitSet extensionStatePartition
     ) {
         this.fullSpec = fullSpec;
         this.fullParseTable = fullParseTable;
+        this.fullSymbolTable = fullSymbolTable;
 
         this.mappingSpec = new ExtensionMappingSpec(fullSpec, hostSpec, hostPartitionMap, extensionStatePartition);
     }
@@ -98,14 +102,35 @@ public class ExtensionLRParseTableBuilder {
     private ExtensionCompilerReturnData build() {
         ExtensionCompilerReturnData data = new ExtensionCompilerReturnData();
 
-        this.generateExtensionParseTables(data);
+        this.generateExtensionSymbolTable(data, mappingSpec);
+        this.generateExtensionParseTables(data, mappingSpec);
 
-        // TODO this.extensionSymbolTable = ?
         // TODO this.extensionParserSpec = ?
 
         // TODO others
 
         return data;
+    }
+
+    private void generateExtensionSymbolTable(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+        ArrayList<CopperASTBean> beans = new ArrayList<CopperASTBean>();
+
+        // TODO populate beans in order based on mappingSpec
+        for (Map.Entry<Integer, Integer> entry : mappingSpec.composedToDecomposedSymbols.entrySet()) {
+            int decomposedIndex = entry.getValue();
+            int composedIndex = entry.getKey();
+            if (decomposedIndex < 0) { // is extension symbol?
+                int extensionSymbolIndex = decodeExtensionIndex(decomposedIndex);
+                CopperASTBean composedBean = fullSymbolTable.get(composedIndex);
+                // Note, the beans don't need to be modified since they don't contain index information, just names
+                // TODO double check this?
+                beans.add(extensionSymbolIndex, composedBean);
+                // TODO ? create an accompanying traditional ParserSpec ?
+            }
+        }
+
+        PSSymbolTable symbolTable = new PSSymbolTable(beans);
+        data.extensionSymbolTable = symbolTable;
     }
 
     // Returns partial parse table
@@ -117,7 +142,7 @@ public class ExtensionLRParseTableBuilder {
     //   1         | host 1
     //   -1        | extension 0
     //   -2        | extension 1
-    private void generateExtensionParseTables(ExtensionCompilerReturnData data) {
+    private void generateExtensionParseTables(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
         int fullSpecSymbolCount = Math.max(fullSpec.terminals.length(), fullSpec.nonterminals.length());
         int extensionStateCount = mappingSpec.composedExtensionStates.cardinality();
 
