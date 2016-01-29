@@ -46,12 +46,8 @@ public class ExtensionLRParseTableBuilder {
         System.out.println("  extension productions: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionProductionIndices));
 
         System.out.println("Maps:");
-        System.out.println("  terminalsMap:");
-        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedTerminals);
-        System.out.println("  nonterminalsMap:");
-        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedNonterminals);
-        System.out.println("  productionsMap:");
-        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedProductions);
+        System.out.println("  composed to decomposed symbols:");
+        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedSymbols);
         System.out.println("  extension state num to composed state num:");
         builder.printPartitionMap(builder.mappingSpec.extensionToComposedStates);
         System.out.println("  composed to decomposed state map:");
@@ -94,10 +90,8 @@ public class ExtensionLRParseTableBuilder {
         this.fullParseTable = fullParseTable;
         this.fullSymbolTable = fullSymbolTable;
 
-        this.mappingSpec = new ExtensionMappingSpec(fullSpec, hostSpec, hostPartitionMap, extensionStatePartition);
+        this.mappingSpec = new ExtensionMappingSpec(fullSpec, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition);
     }
-
-    private int decodeExtensionIndex(int i) { return (-1 * i) - 1; }
 
     private ExtensionCompilerReturnData build() {
         ExtensionCompilerReturnData data = new ExtensionCompilerReturnData();
@@ -120,10 +114,9 @@ public class ExtensionLRParseTableBuilder {
             int decomposedIndex = entry.getValue();
             int composedIndex = entry.getKey();
             if (decomposedIndex < 0) { // is extension symbol?
-                int extensionSymbolIndex = decodeExtensionIndex(decomposedIndex);
+                int extensionSymbolIndex = ExtensionMappingSpec.decodeExtensionIndex(decomposedIndex);
                 CopperASTBean composedBean = fullSymbolTable.get(composedIndex);
                 // Note, the beans don't need to be modified since they don't contain index information, just names
-                // TODO double check this?
                 beans.add(extensionSymbolIndex, composedBean);
                 // TODO ? create an accompanying traditional ParserSpec ?
             }
@@ -155,19 +148,13 @@ public class ExtensionLRParseTableBuilder {
         for (int i = 0; i < extensionStateCount; i++) {
             int composedStateNumber = mappingSpec.extensionToComposedStates.get(i);
             for (int symbol = 0; symbol < fullSpecSymbolCount; symbol++) {
-                int partialSymbolIndex;
-                if (this.fullSpec.terminals.get(symbol)) { // if terminal
-                    partialSymbolIndex = mappingSpec.composedToDecomposedTerminals.get(symbol);
-                } else if (this.fullSpec.nonterminals.get(symbol)) { // if nonterminal
-                    partialSymbolIndex = mappingSpec.composedToDecomposedNonterminals.get(symbol);
-                } else {
-                    continue; // TODO error? Assumes that nonterminals and terminals come first
-                }
+                int partialSymbolIndex = mappingSpec.composedToDecomposedSymbols.get(symbol);
+                // null check?
 
                 MutableLRParseTable table;
                 int convertedSymbol;
                 if (partialSymbolIndex < 0) {
-                    convertedSymbol = decodeExtensionIndex(partialSymbolIndex);
+                    convertedSymbol = ExtensionMappingSpec.decodeExtensionIndex(partialSymbolIndex);
                     table = extensionSideTable;
                 } else {
                     convertedSymbol = partialSymbolIndex;
@@ -194,7 +181,7 @@ public class ExtensionLRParseTableBuilder {
                 // TODO Covert conflict number?
                 return 0;
             case LRParseTable.REDUCE:
-                return mappingSpec.composedToDecomposedProductions.get(composedActionParameter);
+                return mappingSpec.composedToDecomposedSymbols.get(composedActionParameter);
             case LRParseTable.SHIFT: // Same as GOTO (SHIFT == GOTO)
                 return mappingSpec.composedToDecomposedStates.get(composedActionParameter);
             default:

@@ -30,7 +30,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on terminals.
 	 */
-	public final class TerminalData
+	public static final class TerminalData
 	{
 		/** Regexes for each terminal. */
 		protected Regex[] regexes;
@@ -81,7 +81,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on nonterminals.
 	 */
-	public final class NonterminalData
+	public static final class NonterminalData
 	{
 		/** For each nonterminal, the set of productions with that nonterminal as their left hand side. */
 		protected BitSet[] productions;
@@ -102,7 +102,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on productions.
 	 */
-	public final class ProductionData
+	public static final class ProductionData
 	{
 		/** Each production's left hand side. */
 		protected int[] LHSs;
@@ -160,7 +160,7 @@ public class ParserSpec
 	 * Holds attributes on disambiguation functions/groups.
 	 *
 	 */
-	public final class DisambiguationFunctionData
+	public static final class DisambiguationFunctionData
 	{
 		/** The members of each disambiguation function/group. */
 		protected BitSet[] members;
@@ -188,7 +188,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on terminal classes.
 	 */
-	public final class TerminalClassData
+	public static final class TerminalClassData
 	{
 		/** The members of each terminal class. */
 		protected BitSet[] members;
@@ -210,7 +210,7 @@ public class ParserSpec
 	 * Holds attributes on grammars.
 	 *
 	 */
-	public final class GrammarData
+	public static final class GrammarData
 	{
 		/** Grammar layout for each grammar. */
 		protected BitSet[] layouts;
@@ -229,7 +229,7 @@ public class ParserSpec
 	}
 	
 	/** Holds attributes on parser specs. */
-	public final class ParserData
+	public static final class ParserData
 	{
 		/** Start layout. */
 		protected BitSet layout;
@@ -251,6 +251,8 @@ public class ParserSpec
 	public BitSet parserAttributes;
 	public BitSet grammars;
 	public int parser;
+
+	public SymbolTable<CopperASTBean> symbolTable;
 	
 	/** The grammar in which each grammar element was declared. */
 	public int[] owners;
@@ -283,6 +285,7 @@ public class ParserSpec
 	 */
 	public ParserSpec(SymbolTable<CopperASTBean> symbolTable)
 	{
+		this.symbolTable = symbolTable;
 		int symbolCount = symbolTable.size();
 		terminals = new BitSet(symbolCount);
 		nonterminals = new BitSet(symbolCount);
