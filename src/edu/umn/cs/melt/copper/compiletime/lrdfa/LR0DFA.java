@@ -21,6 +21,9 @@ public class LR0DFA
 	 * to the right of their bullet points. 
 	 */
 	protected BitSet[][] gotoItems;
+
+	/* The set of LHS nonterminals of a state's items */
+	protected BitSet[] initNTs;
 	
 	/**
 	 * Builds an LR0DFA object. 
@@ -30,12 +33,13 @@ public class LR0DFA
 	 * @param transitions The DFA's transition function.
 	 * @param gotoItems The set of "goto items" for each state and transition.
 	 */
-	public LR0DFA(LR0ItemSet[] itemSets,BitSet[] transitionLabels,int[][] transitions,BitSet[][] gotoItems)
+	public LR0DFA(LR0ItemSet[] itemSets, BitSet[] transitionLabels, int[][] transitions, BitSet[][] gotoItems, BitSet[] initNTs)
 	{
 		this.itemSets = itemSets;
 		this.transitionLabels = transitionLabels;
 		this.transitions = transitions;
 		this.gotoItems = gotoItems;
+		this.initNTs = initNTs;
 	}
 	
 	public int size() { return itemSets.length; }
@@ -44,4 +48,5 @@ public class LR0DFA
 	public final BitSet getTransitionLabels(int state)     { return transitionLabels[state]; }
 	public final int getTransition(int state,int symbol)   { return transitions[state][symbol]; }
 	public final BitSet getGotoItems(int state,int symbol) { return gotoItems[state][symbol]; }
+	public final BitSet getInitNTs(int state) { return initNTs[state]; }
 }

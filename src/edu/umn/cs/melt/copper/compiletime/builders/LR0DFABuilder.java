@@ -72,6 +72,16 @@ public class LR0DFABuilder
 				setsChanged = true;
 			}
 		}
+
+		/* populate initNTs */
+		BitSet[] initNTs = new BitSet[itemSets.size()];
+		for (int i = 0; i < itemSets.size(); i++) {
+			LR0ItemSet itemSet = itemSets.get(i);
+			initNTs[i] = new BitSet();
+			for (int j = 0; j < itemSet.size(); j++) {
+				initNTs[i].set(spec.pr.getLHS(itemSet.getProduction(j)));
+			}
+		}
 		
 		LR0ItemSet[] statesA = new LR0ItemSet[itemSets.size()];
 		itemSets.toArray(statesA);
@@ -82,7 +92,7 @@ public class LR0DFABuilder
 		BitSet[][] gotoItemsA = new BitSet[gotoItems.size()][transitionArraySize];
 		gotoItems.toArray(gotoItemsA);
 		
-		return new LR0DFA(statesA,transitionLabelsA,transitionsA,gotoItemsA);
+		return new LR0DFA(statesA,transitionLabelsA,transitionsA,gotoItemsA,initNTs);
 	}
 	
 	public int closure(LR0ItemSet seed)
