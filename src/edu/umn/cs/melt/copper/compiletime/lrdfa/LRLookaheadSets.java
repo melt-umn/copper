@@ -11,20 +11,28 @@ public class LRLookaheadSets
 {
 	protected int maxItemCount;
 	protected BitSet[][] lookahead;
+	protected BitSet[][] itemLASources; // state -> item -> BitSet<nt>
 	
 	public LRLookaheadSets(LR0DFA dfa)
 	{
 		maxItemCount = -1;
 		for(int i = 0;i < dfa.size();i++) maxItemCount = Math.max(maxItemCount,dfa.getItemSet(i).size());
-		
+
 		lookahead = new BitSet[dfa.size()][maxItemCount];
 		for(int i = 0;i < dfa.size();i++)
 		{
 			for(int j = 0;j < dfa.getItemSet(i).size();j++) lookahead[i][j] = new BitSet();
 		}
+
+		itemLASources = new BitSet[dfa.size()][maxItemCount];
+		for(int i = 0;i < dfa.size();i++)
+		{
+			for(int j = 0;j < dfa.getItemSet(i).size();j++) itemLASources[i][j] = new BitSet();
+		}
 	}
 	
 	public int getMaxItemCount() { return maxItemCount; }
-	
+
 	public BitSet getLookahead(int state,int item) { return lookahead[state][item]; }
+	public BitSet getItemLASources(int state,int item) { return itemLASources[state][item]; }
 }
