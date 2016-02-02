@@ -79,7 +79,9 @@ public class LR0DFABuilder
 			LR0ItemSet itemSet = itemSets.get(i);
 			initNTs[i] = new BitSet();
 			for (int j = 0; j < itemSet.size(); j++) {
-				initNTs[i].set(spec.pr.getLHS(itemSet.getProduction(j)));
+				if (itemSet.getPosition(j) == 0) {
+					initNTs[i].set(spec.pr.getLHS(itemSet.getProduction(j)));
+				}
 			}
 		}
 		
