@@ -208,15 +208,8 @@ public class ExtensionMappingSpec {
                 t.getTerminalClasses(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
             }
 
-            int transparentPrefix = fullSpec.t.getTransparentPrefix(composedIndex);
-            if (transparentPrefix >= 0) {
-                t.setTransparentPrefix(i, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(transparentPrefix)));
-            }
-
-            int operatorClass = fullSpec.t.getOperatorClass(composedIndex);
-            if (operatorClass >= 0) {
-                t.setOperatorClass(i, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(operatorClass)));
-            }
+            t.setTransparentPrefix(i, convertValidIndex(fullSpec.t.getTransparentPrefix(composedIndex)));
+            t.setOperatorClass(i, convertValidIndex(fullSpec.t.getOperatorClass(composedIndex)));
 
             t.setOperatorPrecedence(i, fullSpec.t.getOperatorPrecedence(composedIndex)); // TODO translate?
             t.setOperatorAssociativity(i, fullSpec.t.getOperatorAssociativity(composedIndex));
@@ -246,7 +239,7 @@ public class ExtensionMappingSpec {
             for (int j = 0; j < rhsLength; j++) {
                 pr.setRHSSym(i, j, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(fullSpec.pr.getRHSSym(composedIndex, j))));
             }
-            pr.setOperator(i, fullSpec.pr.getOperator(composedIndex));
+            pr.setOperator(i, convertValidIndex(fullSpec.pr.getOperator(composedIndex)));
             pr.setPrecedence(i, fullSpec.pr.getPrecedence(composedIndex)); // TODO translate?
             pr.setHasLayout(i, fullSpec.pr.hasLayout(composedIndex));
 
@@ -256,6 +249,13 @@ public class ExtensionMappingSpec {
                 pr.getLayouts(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
             }
         }
+    }
+
+    // Some values in ParserSpec use -1 as a null value
+    // if the composed index is valid (not null by this definition),
+    // it is converted to the (offset) extension index
+    private int convertValidIndex(int index) {
+        return index < 0 ? index : decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(index));
     }
 
     private void generateDisambiguationFunctionData(ParserSpec fullSpec) {
