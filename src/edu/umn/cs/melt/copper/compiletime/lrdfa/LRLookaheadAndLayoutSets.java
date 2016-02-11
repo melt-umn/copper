@@ -15,9 +15,18 @@ public class LRLookaheadAndLayoutSets extends LRLookaheadSets
 	public LRLookaheadAndLayoutSets(LR0DFA dfa)
 	{
 		super(dfa);
-		layoutSets = new BitSet[dfa.size()];
-		
-		for(int i = 0;i < dfa.size();i++)
+		initLayoutSets(dfa.size());
+	}
+
+	public LRLookaheadAndLayoutSets(int dfaSize, int maxItemCount) {
+		super(dfaSize, maxItemCount);
+		initLayoutSets(dfaSize);
+	}
+
+	private void initLayoutSets(int dfaSize) {
+		layoutSets = new BitSet[dfaSize];
+
+		for(int i = 0;i < dfaSize;i++)
 		{
 			layoutSets[i] = new BitSet();
 		}

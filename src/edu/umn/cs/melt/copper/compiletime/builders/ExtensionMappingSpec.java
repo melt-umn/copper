@@ -204,8 +204,7 @@ public class ExtensionMappingSpec {
 
             BitSet terminalClasses = fullSpec.t.getTerminalClasses(composedIndex);
             for (int j = terminalClasses.nextSetBit(0); j >= 0; j = terminalClasses.nextSetBit(j+1)) {
-                // j is composed index of a terminal class
-                t.getTerminalClasses(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
+                t.getTerminalClasses(i).set(translateAndOffsetComposedSymbol(j));
             }
 
             t.setTransparentPrefix(i, convertValidIndex(fullSpec.t.getTransparentPrefix(composedIndex)));
@@ -223,8 +222,7 @@ public class ExtensionMappingSpec {
             int composedIndex = extensionToComposedSymbols.get(i);
             BitSet productions = fullSpec.nt.getProductions(composedIndex);
             for (int j = productions.nextSetBit(0); j >= 0; j = productions.nextSetBit(j+1)) {
-                // j is composed index of a production
-                nt.getProductions(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
+                nt.getProductions(i).set(translateAndOffsetComposedSymbol(j));
             }
         }
     }
@@ -233,11 +231,11 @@ public class ExtensionMappingSpec {
         for(int i = extensionProductionIndices.nextSetBit(0); i >= 0; i = extensionProductionIndices.nextSetBit(i+1)) {
             int composedIndex = extensionToComposedSymbols.get(i);
 
-            pr.setLHS(i, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(fullSpec.pr.getLHS(composedIndex))));
+            pr.setLHS(i, translateAndOffsetComposedSymbol(fullSpec.pr.getLHS(composedIndex)));
             int rhsLength = fullSpec.pr.getRHSLength(composedIndex);
             pr.setRHSLength(i, rhsLength);
             for (int j = 0; j < rhsLength; j++) {
-                pr.setRHSSym(i, j, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(fullSpec.pr.getRHSSym(composedIndex, j))));
+                pr.setRHSSym(i, j, translateAndOffsetComposedSymbol(fullSpec.pr.getRHSSym(composedIndex, j)));
             }
             pr.setOperator(i, convertValidIndex(fullSpec.pr.getOperator(composedIndex)));
             pr.setPrecedence(i, fullSpec.pr.getPrecedence(composedIndex)); // TODO translate?
@@ -245,8 +243,7 @@ public class ExtensionMappingSpec {
 
             BitSet layouts = fullSpec.pr.getLayouts(composedIndex);
             for (int j = layouts.nextSetBit(0); j >= 0; j = layouts.nextSetBit(j+1)) {
-                // j is composed index of a production
-                pr.getLayouts(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
+                pr.getLayouts(i).set(translateAndOffsetComposedSymbol(j));
             }
         }
     }
@@ -257,7 +254,7 @@ public class ExtensionMappingSpec {
 
             BitSet members = fullSpec.df.getMembers(composedIndex);
             for (int j = members.nextSetBit(0); j >= 0; j = members.nextSetBit(j+1)) {
-                df.getMembers(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
+                df.getMembers(i).set(translateAndOffsetComposedSymbol(j));
             }
 
             df.setDisambiguateTo(i, convertValidIndex(fullSpec.df.getDisambiguateTo(composedIndex)));
@@ -270,7 +267,7 @@ public class ExtensionMappingSpec {
 
             BitSet members = fullSpec.tc.getMembers(composedIndex);
             for (int j = members.nextSetBit(0); j >= 0; j = members.nextSetBit(j+1)) {
-                tc.getMembers(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
+                tc.getMembers(i).set(translateAndOffsetComposedSymbol(j));
             }
         }
     }
@@ -279,16 +276,27 @@ public class ExtensionMappingSpec {
     // if the composed index is valid (not null by this definition),
     // it is converted to the (offset) extension index
     private int convertValidIndex(int index) {
-        return index < 0 ? index : decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(index));
+        return index < 0 ? index : translateAndOffsetComposedSymbol(index);
     }
 
-    // TODO Are operators symbols? ...according to ParserSpec.ProductionData.operators comment, they're terminals?
     // TODO Are operator precedences just numbers? Can they be left alone?
 
     // TODO make sure that these are being used correctly -- esp composedToDecomposed...
     public static int encodeExtensionIndex(int i) { return -1 * (i + 1); }
 
     public static int decodeExtensionIndex(int i) { return (-1 * i) - 1; }
+
+    public int translateAndOffsetComposedSymbol(int i) {
+        int decomposedIndex = composedToDecomposedSymbols.get(i);
+        return decomposedIndex < 0 ? decodeAndOffsetExtensionIndex(decomposedIndex) : decomposedIndex;
+    }
+
+    // TODO take advantage of
+    public void translateSymbolBitSet(BitSet from, BitSet to) {
+        for (int i = from.nextSetBit(0); i >= 0; i = from.nextSetBit(i+1)) {
+            to.set(translateAndOffsetComposedSymbol(i));
+        }
+    }
 
     public int decodeAndOffsetExtensionIndex(int i) {
         return (-1 * i) - 1 + this.extensionSymbolOffset;
