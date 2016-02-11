@@ -251,19 +251,35 @@ public class ExtensionMappingSpec {
         }
     }
 
+    private void generateDisambiguationFunctionData(ParserSpec fullSpec) {
+        for(int i = extensionDisambiguationFunctionIndices.nextSetBit(0); i >= 0; i = extensionDisambiguationFunctionIndices.nextSetBit(i+1)) {
+            int composedIndex = extensionToComposedSymbols.get(i);
+
+            BitSet members = fullSpec.df.getMembers(composedIndex);
+            for (int j = members.nextSetBit(0); j >= 0; j = members.nextSetBit(j+1)) {
+                df.getMembers(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
+            }
+
+            df.setDisambiguateTo(i, convertValidIndex(fullSpec.df.getDisambiguateTo(composedIndex)));
+        }
+    }
+
+    private void generateTerminalClassData(ParserSpec fullSpec) {
+        for(int i = extensionTerminalClassIndices.nextSetBit(0); i >= 0; i = extensionTerminalClassIndices.nextSetBit(i+1)) {
+            int composedIndex = extensionToComposedSymbols.get(i);
+
+            BitSet members = fullSpec.tc.getMembers(composedIndex);
+            for (int j = members.nextSetBit(0); j >= 0; j = members.nextSetBit(j+1)) {
+                tc.getMembers(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
+            }
+        }
+    }
+
     // Some values in ParserSpec use -1 as a null value
     // if the composed index is valid (not null by this definition),
     // it is converted to the (offset) extension index
     private int convertValidIndex(int index) {
         return index < 0 ? index : decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(index));
-    }
-
-    private void generateDisambiguationFunctionData(ParserSpec fullSpec) {
-        ; // TODO finish
-    }
-
-    private void generateTerminalClassData(ParserSpec fullSpec) {
-        ; // TODO finish
     }
 
     // TODO Are operators symbols? ...according to ParserSpec.ProductionData.operators comment, they're terminals?
