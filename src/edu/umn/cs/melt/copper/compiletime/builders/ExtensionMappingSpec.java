@@ -17,17 +17,24 @@ import java.util.TreeMap;
 public class ExtensionMappingSpec {
 
     public Map<Integer, Integer>
-            composedToDecomposedStates, extensionToComposedStates,
-            composedToDecomposedSymbols, extensionToComposedSymbols;
+            composedToDecomposedStates, // non-neg composed indexes -> non-neg (host) or neg (ext) indices
+            extensionToComposedStates, // non-neg ext indices -> non-neg composed indices
+            composedToDecomposedSymbols, // non-neg composed indexes -> non-neg (host) or neg (ext) indices
+            extensionToComposedSymbols; // non-neg ext indices -> non-neg composed indices
     public BitSet
-            composedExtensionStates,
+            composedExtensionStates, // true if index corresponds to the extension state in composed enumeration
+            // true if index corresponds to a symbol kind in extension enumeration
             extensionTerminalIndices, extensionNonterminalIndices, extensionProductionIndices,
-            extensionDisambiguationFunctionIndices, extensionTerminalClassIndices, extensionOperatorClassIndices, extensionParserAttributeIndices;
+            extensionDisambiguationFunctionIndices, extensionTerminalClassIndices, extensionOperatorClassIndices, extensionParserAttributeIndices,
+            extensionGrammarIndices, extensionParserIndices;
     public BitSet
+            // true if index corresponds to a symbol kind in host enumeration
             hostTerminalIndices, hostNonterminalIndices, hostProductionIndices,
-            hostDisambiguationFunctionIndices, hostTerminalClassIndices, hostOperatorClassIndices, hostParserAttributeIndices;
-    public int extensionSymbolCount;
+            hostDisambiguationFunctionIndices, hostTerminalClassIndices, hostOperatorClassIndices, hostParserAttributeIndices,
+            hostGrammarIndices, hostParserIndices;
+    public int extensionSymbolCount, extensionSymbolOffset;
 
+    // indexed by extension enumeration, however references to other symbols in the data use offset indices
     public ParserSpec.TerminalData t;
     public ParserSpec.NonterminalData nt;
     public ParserSpec.ProductionData pr;
@@ -90,6 +97,8 @@ public class ExtensionMappingSpec {
         this.extensionTerminalClassIndices = new BitSet();
         this.extensionOperatorClassIndices = new BitSet();
         this.extensionParserAttributeIndices = new BitSet();
+        this.extensionGrammarIndices = new BitSet();
+        this.extensionParserIndices = new BitSet();
 
         this.hostTerminalIndices = new BitSet();
         this.hostNonterminalIndices = new BitSet();
@@ -98,6 +107,8 @@ public class ExtensionMappingSpec {
         this.hostTerminalClassIndices = new BitSet();
         this.hostOperatorClassIndices = new BitSet();
         this.hostParserAttributeIndices = new BitSet();
+        this.hostGrammarIndices = new BitSet();
+        this.hostParserIndices = new BitSet();
 
         this.composedToDecomposedSymbols = new TreeMap<Integer, Integer>();
         this.extensionToComposedSymbols = new TreeMap<Integer, Integer>();
@@ -111,6 +122,7 @@ public class ExtensionMappingSpec {
         symbolMapDataList.add(new SymbolMapData(fullSpec.terminalClasses, hostSpec.terminalClasses, extensionTerminalClassIndices, hostTerminalClassIndices));
         symbolMapDataList.add(new SymbolMapData(fullSpec.operatorClasses, hostSpec.operatorClasses, extensionOperatorClassIndices, hostOperatorClassIndices));
         symbolMapDataList.add(new SymbolMapData(fullSpec.parserAttributes, hostSpec.parserAttributes, extensionParserAttributeIndices, hostParserAttributeIndices));
+        symbolMapDataList.add(new SymbolMapData(fullSpec.grammars, hostSpec.grammars, extensionGrammarIndices, hostGrammarIndices));
 
         int extensionIndex = 0;
         int hostIndex = 0;
@@ -121,7 +133,12 @@ public class ExtensionMappingSpec {
             hostIndex += data.hostSymbolIndices.cardinality();
         }
 
+        hostParserIndices.set(hostIndex);
+        this.composedToDecomposedSymbols.put(fullSpec.parser, hostIndex);
+        hostIndex += 1;
+
         this.extensionSymbolCount = extensionIndex;
+        this.extensionSymbolOffset = hostIndex;
     }
 
     private void generateSymbolPartitionMap(BitSet fullSpecSymbols, BitSet hostSpecSymbols, BitSet extensionSymbolIndices, int eStartIndex, BitSet hostSymbolIndicies, int hStartIndex) {
@@ -188,17 +205,17 @@ public class ExtensionMappingSpec {
             BitSet terminalClasses = fullSpec.t.getTerminalClasses(composedIndex);
             for (int j = terminalClasses.nextSetBit(0); j >= 0; j = terminalClasses.nextSetBit(j+1)) {
                 // j is composed index of a terminal class
-                t.getTerminalClasses(i).set(composedToDecomposedSymbols.get(j));
+                t.getTerminalClasses(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
             }
 
             int transparentPrefix = fullSpec.t.getTransparentPrefix(composedIndex);
             if (transparentPrefix >= 0) {
-                t.setTransparentPrefix(i, composedToDecomposedSymbols.get(transparentPrefix));
+                t.setTransparentPrefix(i, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(transparentPrefix)));
             }
 
             int operatorClass = fullSpec.t.getOperatorClass(composedIndex);
             if (operatorClass >= 0) {
-                t.setOperatorClass(i, composedToDecomposedSymbols.get(operatorClass));
+                t.setOperatorClass(i, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(operatorClass)));
             }
 
             t.setOperatorPrecedence(i, fullSpec.t.getOperatorPrecedence(composedIndex)); // TODO translate?
@@ -214,7 +231,7 @@ public class ExtensionMappingSpec {
             BitSet productions = fullSpec.nt.getProductions(composedIndex);
             for (int j = productions.nextSetBit(0); j >= 0; j = productions.nextSetBit(j+1)) {
                 // j is composed index of a production
-                nt.getProductions(i).set(composedToDecomposedSymbols.get(j));
+                nt.getProductions(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
             }
         }
     }
@@ -223,20 +240,20 @@ public class ExtensionMappingSpec {
         for(int i = extensionProductionIndices.nextSetBit(0); i >= 0; i = extensionProductionIndices.nextSetBit(i+1)) {
             int composedIndex = extensionToComposedSymbols.get(i);
 
-            pr.setLHS(i, composedToDecomposedSymbols.get(fullSpec.pr.getLHS(composedIndex)));
+            pr.setLHS(i, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(fullSpec.pr.getLHS(composedIndex))));
             int rhsLength = fullSpec.pr.getRHSLength(composedIndex);
             pr.setRHSLength(i, rhsLength);
             for (int j = 0; j < rhsLength; j++) {
-                pr.setRHSSym(i, j, composedToDecomposedSymbols.get(fullSpec.pr.getRHSSym(composedIndex, j)));
+                pr.setRHSSym(i, j, decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(fullSpec.pr.getRHSSym(composedIndex, j))));
             }
-            pr.setOperator(i, composedToDecomposedSymbols.get(fullSpec.pr.getOperator(composedIndex))); // TODO translate?
+            pr.setOperator(i, fullSpec.pr.getOperator(composedIndex));
             pr.setPrecedence(i, fullSpec.pr.getPrecedence(composedIndex)); // TODO translate?
             pr.setHasLayout(i, fullSpec.pr.hasLayout(composedIndex));
 
             BitSet layouts = fullSpec.pr.getLayouts(composedIndex);
             for (int j = layouts.nextSetBit(0); j >= 0; j = layouts.nextSetBit(j+1)) {
                 // j is composed index of a production
-                pr.getLayouts(i).set(composedToDecomposedSymbols.get(j));
+                pr.getLayouts(i).set(decodeAndOffsetExtensionIndex(composedToDecomposedSymbols.get(j)));
             }
         }
     }
@@ -256,5 +273,21 @@ public class ExtensionMappingSpec {
     public static int encodeExtensionIndex(int i) { return -1 * (i + 1); }
 
     public static int decodeExtensionIndex(int i) { return (-1 * i) - 1; }
+
+    public int decodeAndOffsetExtensionIndex(int i) {
+        return (-1 * i) - 1 + this.extensionSymbolOffset;
+    }
+
+    public int offsetExtensionIndex(int i) {
+        return i + this.extensionSymbolOffset;
+    }
+
+    public int unOffsetExtensionIndex(int i) {
+        return i - this.extensionSymbolOffset;
+    }
+
+    public int encodeOffsetExtensionIndex(int i) {
+        return -1 * ((i - this.extensionSymbolOffset) + 1);
+    }
 }
 
