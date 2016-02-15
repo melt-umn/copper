@@ -17,12 +17,20 @@ public class TransparentPrefixes
 {
 	protected BitSet[] prefixSets;
 	protected BitSet[][] prefixMaps;
-	
+
+	// Modified by Kevin Viratyosin
 	public TransparentPrefixes(ParserSpec spec,LRParseTable parseTable)
 	{
-		prefixSets = new BitSet[parseTable.size()];
-		prefixMaps = new BitSet[parseTable.size()][spec.terminals.length()];
-		for(int i = 0;i < parseTable.size();i++) prefixSets[i] = new BitSet();
+		this(spec.terminals.length(), parseTable.size());
+	}
+
+	// Added by Kevin Viratyosin
+	public TransparentPrefixes(int terminalsLength, int parseTableSize) {
+		prefixSets = new BitSet[parseTableSize];
+		prefixMaps = new BitSet[parseTableSize][terminalsLength];
+		for(int i = 0; i < parseTableSize; i++) {
+			prefixSets[i] = new BitSet();
+		}
 	}
 	
 	public BitSet getPrefixes(int state) { return prefixSets[state]; }

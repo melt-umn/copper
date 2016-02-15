@@ -2,10 +2,10 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.MutableLRParseTable;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
@@ -19,25 +19,26 @@ import java.util.Map;
 public class ExtensionLRParseTableBuilder {
 
     public class ExtensionCompilerReturnData {
-        public LRParseTable hostSideTable;
-        public LRParseTable extensionSideTable;
+        public LRParseTable appendedExtensionTable; // columns are table offset symbols
         public PSSymbolTable extensionSymbolTable;
         public LRLookaheadAndLayoutSets extensionLookaheadAndLayoutSets;
-        // public ExtensionParserSpec extensionParserSpec; // to be defined
+        public ExtensionMappingSpec extensionMappingSpec;
+        public TransparentPrefixes transparentPrefixes; // BitSet of table offset symbols
     }
 
     private ParserSpec fullSpec;
     private LRParseTable fullParseTable;
     private PSSymbolTable fullSymbolTable;
     private LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets;
+    private TransparentPrefixes fullPrefixes;
 
     private int extensionStateCount;
 
     // composed to decomposed maps
     private ExtensionMappingSpec mappingSpec;
 
-    public static ExtensionCompilerReturnData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition, LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets) {
-        ExtensionLRParseTableBuilder builder = new ExtensionLRParseTableBuilder(fullSpec, fullDFA, fullParseTable, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition, fullLookaheadAndLayoutSets);
+    public static ExtensionCompilerReturnData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition, LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets, TransparentPrefixes fullPrefixes) {
+        ExtensionLRParseTableBuilder builder = new ExtensionLRParseTableBuilder(fullSpec, fullDFA, fullParseTable, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition, fullLookaheadAndLayoutSets, fullPrefixes);
 
         ExtensionCompilerReturnData data = builder.build();
 
@@ -58,10 +59,8 @@ public class ExtensionLRParseTableBuilder {
         System.out.println("  composed to decomposed state map:");
         builder.printPartitionMap(builder.mappingSpec.composedToDecomposedStates);
 
-        System.out.println("Parse Table Host Side");
-        data.hostSideTable.print();
-        System.out.println("Parse Table Extension Side");
-        data.extensionSideTable.print();
+        System.out.println("Appended Extension Parse Table");
+        data.appendedExtensionTable.print();
 
         System.out.println("== END ExtensionLRParseTableBuilder ==");
 
@@ -90,12 +89,14 @@ public class ExtensionLRParseTableBuilder {
                 ParserSpec hostSpec,
                 Map<Integer, Integer> hostPartitionMap,
                 BitSet extensionStatePartition,
-                LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets
+                LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets,
+                TransparentPrefixes fullPrefixes
     ) {
         this.fullSpec = fullSpec;
         this.fullParseTable = fullParseTable;
         this.fullSymbolTable = fullSymbolTable;
         this.fullLookaheadAndLayoutSets = fullLookaheadAndLayoutSets;
+        this.fullPrefixes = fullPrefixes;
         this.extensionStateCount = extensionStatePartition.cardinality();
 
         this.mappingSpec = new ExtensionMappingSpec(fullSpec, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition);
@@ -104,9 +105,12 @@ public class ExtensionLRParseTableBuilder {
     private ExtensionCompilerReturnData build() {
         ExtensionCompilerReturnData data = new ExtensionCompilerReturnData();
 
+        data.extensionMappingSpec = mappingSpec;
+
         this.generateExtensionSymbolTable(data, mappingSpec);
         this.generateExtensionLookaheadAndLayout(data, mappingSpec);
         this.generateExtensionParseTables(data, mappingSpec);
+        this.generateExtensionTransparentPrefixes(data, mappingSpec);
 
         // TODO others
 
@@ -138,13 +142,41 @@ public class ExtensionLRParseTableBuilder {
         LRLookaheadAndLayoutSets extensionSets = new LRLookaheadAndLayoutSets(extensionStateCount, maxItemCount);
         for (int extState = 0; extState < extensionStateCount; extState++) {
             int composedState = mappingSpec.extensionToComposedStates.get(extState);
-            mappingSpec.translateSymbolBitSet(fullLookaheadAndLayoutSets.getLayout(composedState), extensionSets.getLayout(extState));
+            mappingSpec.translateSymbolBitSetWithOffset(fullLookaheadAndLayoutSets.getLayout(composedState), extensionSets.getLayout(extState));
             for (int item = 0; item < maxItemCount; item++) {
-                mappingSpec.translateSymbolBitSet(fullLookaheadAndLayoutSets.getLookahead(composedState, item), extensionSets.getLookahead(extState, item));
-                mappingSpec.translateSymbolBitSet(fullLookaheadAndLayoutSets.getItemLASources(composedState, item), extensionSets.getItemLASources(extState, item));
+                if (fullLookaheadAndLayoutSets.getLookahead(composedState, item) != null) {
+                    mappingSpec.translateSymbolBitSetWithOffset(fullLookaheadAndLayoutSets.getLookahead(composedState, item), extensionSets.getLookahead(extState, item));
+                }
+                if (fullLookaheadAndLayoutSets.getItemLASources(composedState, item) != null) {
+                    mappingSpec.translateSymbolBitSetWithOffset(fullLookaheadAndLayoutSets.getItemLASources(composedState, item), extensionSets.getItemLASources(extState, item));
+                }
             }
         }
         data.extensionLookaheadAndLayoutSets = extensionSets;
+    }
+
+    private void generateExtensionTransparentPrefixes(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+        LRParseTable parseTable = data.appendedExtensionTable;
+        int offsetTerminalsLength = mappingSpec.offsetExtensionIndex(mappingSpec.extensionTerminalIndices.length() - 1);
+        TransparentPrefixes prefixes = new TransparentPrefixes(offsetTerminalsLength, parseTable.size());
+
+        for (Map.Entry<Integer, Integer> entry : mappingSpec.extensionToComposedStates.entrySet()) {
+            int extensionState = entry.getKey();
+            int composedState = entry.getValue();
+
+            mappingSpec.translateSymbolBitSetWithTableOffset(fullPrefixes.getPrefixes(composedState), prefixes.getPrefixes(extensionState));
+
+            for (int t = 0; t < fullSpec.terminals.length(); t++) {
+                BitSet originalFollowingTerminals = fullPrefixes.getFollowingTerminals(composedState, t);
+                if (originalFollowingTerminals != null) {
+                    int translatedT = mappingSpec.translateAndTableOffsetComposedSymbol(t);
+                    prefixes.initializePrefixMap(extensionState, translatedT);
+                    mappingSpec.translateSymbolBitSetWithTableOffset(originalFollowingTerminals, prefixes.getFollowingTerminals(extensionState, translatedT));
+                }
+            }
+        }
+
+        data.transparentPrefixes = prefixes;
     }
 
     // Returns partial parse table
@@ -160,40 +192,27 @@ public class ExtensionLRParseTableBuilder {
         int fullSpecSymbolCount = Math.max(fullSpec.terminals.length(), fullSpec.nonterminals.length());
         int extensionStateCount = mappingSpec.composedExtensionStates.cardinality();
 
-        int hostColumnCount = Math.max(mappingSpec.hostTerminalIndices.length(), mappingSpec.hostNonterminalIndices.length());
+        int hostColumnCount = mappingSpec.extensionSymbolTableOffset;
         int extensionColumnCount = Math.max(mappingSpec.extensionTerminalIndices.length(), mappingSpec.extensionNonterminalIndices.length());
 
-        MutableLRParseTable hostSideTable = new MutableLRParseTable(extensionStateCount, hostColumnCount);
-        MutableLRParseTable extensionSideTable = new MutableLRParseTable(extensionStateCount, extensionColumnCount);
+        MutableLRParseTable appendedExtensionTable = new MutableLRParseTable(extensionStateCount, hostColumnCount + extensionColumnCount);
 
         for (int i = 0; i < extensionStateCount; i++) {
             int composedStateNumber = mappingSpec.extensionToComposedStates.get(i);
             for (int symbol = 0; symbol < fullSpecSymbolCount; symbol++) {
-                int partialSymbolIndex = mappingSpec.composedToDecomposedSymbols.get(symbol);
-                // null check?
-
-                MutableLRParseTable table;
-                int convertedSymbol;
-                if (partialSymbolIndex < 0) {
-                    convertedSymbol = ExtensionMappingSpec.decodeExtensionIndex(partialSymbolIndex);
-                    table = extensionSideTable;
-                } else {
-                    convertedSymbol = partialSymbolIndex;
-                    table = hostSideTable;
-                }
+                int convertedSymbol = mappingSpec.translateAndTableOffsetComposedSymbol(symbol);
 
                 byte actionType = fullParseTable.getActionType(composedStateNumber, symbol);
                 int composedActionParameter = fullParseTable.getActionParameter(composedStateNumber, symbol);
                 int extensionActionParameter = translateActionParameter(actionType, composedActionParameter);
 
-                table.getValidLA(i).set(convertedSymbol);
-                table.setActionType(i, convertedSymbol, actionType);
-                table.setActionParameter(i, convertedSymbol, extensionActionParameter);
+                appendedExtensionTable.getValidLA(i).set(convertedSymbol);
+                appendedExtensionTable.setActionType(i, convertedSymbol, actionType);
+                appendedExtensionTable.setActionParameter(i, convertedSymbol, extensionActionParameter);
             }
         }
 
-        data.extensionSideTable = extensionSideTable;
-        data.hostSideTable = hostSideTable;
+        data.appendedExtensionTable = appendedExtensionTable;
     }
 
     private int translateActionParameter(byte actionType, int composedActionParameter) {
@@ -201,7 +220,7 @@ public class ExtensionLRParseTableBuilder {
             case LRParseTable.CONFLICT:
                 // TODO Covert conflict number?
                 return 0;
-            case LRParseTable.REDUCE:
+            case LRParseTable.REDUCE: // convert production
                 return mappingSpec.composedToDecomposedSymbols.get(composedActionParameter);
             case LRParseTable.SHIFT: // Same as GOTO (SHIFT == GOTO)
                 return mappingSpec.composedToDecomposedStates.get(composedActionParameter);

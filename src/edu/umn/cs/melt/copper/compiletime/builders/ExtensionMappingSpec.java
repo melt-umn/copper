@@ -32,7 +32,7 @@ public class ExtensionMappingSpec {
             hostTerminalIndices, hostNonterminalIndices, hostProductionIndices,
             hostDisambiguationFunctionIndices, hostTerminalClassIndices, hostOperatorClassIndices, hostParserAttributeIndices,
             hostGrammarIndices, hostParserIndices;
-    public int extensionSymbolCount, extensionSymbolOffset;
+    public int extensionSymbolCount, extensionSymbolOffset, extensionSymbolTableOffset;
 
     // indexed by extension enumeration, however references to other symbols in the data use offset indices
     public ParserSpec.TerminalData t;
@@ -139,6 +139,8 @@ public class ExtensionMappingSpec {
 
         this.extensionSymbolCount = extensionIndex;
         this.extensionSymbolOffset = hostIndex;
+
+        this.extensionSymbolTableOffset = Math.max(hostTerminalIndices.length(), hostNonterminalIndices.length());
     }
 
     private void generateSymbolPartitionMap(BitSet fullSpecSymbols, BitSet hostSpecSymbols, BitSet extensionSymbolIndices, int eStartIndex, BitSet hostSymbolIndicies, int hStartIndex) {
@@ -291,15 +293,31 @@ public class ExtensionMappingSpec {
         return decomposedIndex < 0 ? decodeAndOffsetExtensionIndex(decomposedIndex) : decomposedIndex;
     }
 
+    public int translateAndTableOffsetComposedSymbol(int i) {
+        int decomposedIndex = composedToDecomposedSymbols.get(i);
+        return decomposedIndex < 0 ? decodeAndTableOffsetExtensionIndex(decomposedIndex) : decomposedIndex;
+    }
+
     // TODO take advantage of
-    public void translateSymbolBitSet(BitSet from, BitSet to) {
+    public void translateSymbolBitSetWithOffset(BitSet from, BitSet to) {
+        to.clear();
         for (int i = from.nextSetBit(0); i >= 0; i = from.nextSetBit(i+1)) {
             to.set(translateAndOffsetComposedSymbol(i));
+        }
+    }
+    public void translateSymbolBitSetWithTableOffset(BitSet from, BitSet to) {
+        to.clear();
+        for (int i = from.nextSetBit(0); i >= 0; i = from.nextSetBit(i+1)) {
+            to.set(translateAndTableOffsetComposedSymbol(i));
         }
     }
 
     public int decodeAndOffsetExtensionIndex(int i) {
         return (-1 * i) - 1 + this.extensionSymbolOffset;
+    }
+
+    public int decodeAndTableOffsetExtensionIndex(int i) {
+        return (-1 * i) - 1 + this.extensionSymbolTableOffset;
     }
 
     public int offsetExtensionIndex(int i) {
