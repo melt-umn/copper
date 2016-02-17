@@ -1,6 +1,7 @@
 package edu.umn.cs.melt.copper.compiletime.builders;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
@@ -32,9 +33,15 @@ public class ExtensionLRParseTableBuilder {
         public TransparentPrefixes transparentPrefixes; // BitSet of table offset symbols
         public GeneralizedDFA scannerDFA; // DFA for both host and extension symbols
         public SingleScannerDFAAnnotations scannerDFAAnnotations;
+
+        // map from marking terminal extension index to lhs (host index) of bridge production
+        public Map<Integer, Integer> markingTerminalLHS;
+        // map from marking terminal extension index to state (extension index) to transition to on marking terminal shift
+        public Map<Integer, Integer> markingTerminalStates;
     }
 
     private ParserSpec fullSpec;
+    private LR0DFA fullDFA;
     private LRParseTable fullParseTable;
     private PSSymbolTable fullSymbolTable;
     private LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets;
@@ -101,6 +108,7 @@ public class ExtensionLRParseTableBuilder {
                 TransparentPrefixes fullPrefixes
     ) {
         this.fullSpec = fullSpec;
+        this.fullDFA = fullDFA;
         this.fullParseTable = fullParseTable;
         this.fullSymbolTable = fullSymbolTable;
         this.fullLookaheadAndLayoutSets = fullLookaheadAndLayoutSets;
@@ -120,6 +128,7 @@ public class ExtensionLRParseTableBuilder {
         this.generateExtensionTransparentPrefixes(data, mappingSpec);
         this.generateScannerDFA(data, mappingSpec);
         this.generateScannerDFAAnnotations(data, mappingSpec);
+        this.generateMarkingTerminalMetadata(data, mappingSpec);
 
         // TODO others
 
@@ -248,5 +257,36 @@ public class ExtensionLRParseTableBuilder {
 
         SingleScannerDFAAnnotations annotations = SingleScannerDFAAnnotationBuilder.build(precedenceGraph, data.scannerDFA);
         data.scannerDFAAnnotations = annotations;
+    }
+
+    private void generateMarkingTerminalMetadata(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+        Map<Integer, Integer> markingTerminalLHS = new TreeMap<Integer, Integer>();
+        Map<Integer, Integer> markingTerminalStates = new TreeMap<Integer, Integer>();
+
+        BitSet composedBridgeProductions = new BitSet();
+        composedBridgeProductions.or(fullSpec.bridgeConstructs);
+        composedBridgeProductions.and(fullSpec.productions);
+        for (int cp = composedBridgeProductions.nextSetBit(0); cp >= 0; cp = composedBridgeProductions.nextSetBit(cp + 1)) {
+            int lhs = mappingSpec.composedToDecomposedSymbols.get(fullSpec.pr.getLHS(cp)); // lhs is host NT, no more conversion needed
+            int composedMarkingTerminal = fullSpec.pr.getRHSSym(cp, 0); // marking terminal is first on RHS of bridge production
+            int extensionMarkingTerminal = ExtensionMappingSpec.decodeExtensionIndex(mappingSpec.composedToDecomposedSymbols.get(composedMarkingTerminal));
+            markingTerminalLHS.put(extensionMarkingTerminal, lhs);
+        }
+
+        // look for the states with items: X -> t (*) ... for bridge productions
+        for (int state = 0; state < fullDFA.size(); state++) {
+            LR0ItemSet itemSet = fullDFA.getItemSet(state);
+            for (int item = 0; item < itemSet.size(); item++) {
+                if (itemSet.getPosition(item) == 1 && fullSpec.bridgeConstructs.get(itemSet.getProduction(item))) {
+                    int composedMarkingTerminal = fullSpec.pr.getRHSSym(itemSet.getProduction(item), 0);
+                    int extensionMarkingTerminal = ExtensionMappingSpec.decodeExtensionIndex(mappingSpec.composedToDecomposedSymbols.get(composedMarkingTerminal));
+                    int extensionState = ExtensionMappingSpec.decodeExtensionIndex(mappingSpec.composedToDecomposedStates.get(state));
+                    markingTerminalStates.put(extensionMarkingTerminal, extensionState);
+                }
+            }
+        }
+
+        data.markingTerminalLHS = markingTerminalLHS;
+        data.markingTerminalStates = markingTerminalStates;
     }
 }
