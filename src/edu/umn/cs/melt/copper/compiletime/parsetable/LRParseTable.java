@@ -6,7 +6,9 @@ import java.util.BitSet;
  * Holds a parse table in the form of two matrices, one holding an action's "type" (error, shift, reduce, etc.)
  * and one holding its parameter (destination state, production to reduce on, etc.) 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to include a print function
  */
 public abstract class LRParseTable
 {

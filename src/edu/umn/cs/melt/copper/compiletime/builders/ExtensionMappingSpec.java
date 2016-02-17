@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Created by kviratyosin on 1/25/16.
+ * @author Kevin Viratyosin
  */
 public class ExtensionMappingSpec {
 

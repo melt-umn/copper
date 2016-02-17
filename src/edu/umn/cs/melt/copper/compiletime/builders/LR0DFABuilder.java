@@ -11,7 +11,9 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 /**
  * Builds an LR(0) DFA (without any lookahead sets on items). 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified to compute initNTs
  */
 public class LR0DFABuilder
 {

@@ -3,6 +3,9 @@ package edu.umn.cs.melt.copper.compiletime.mda;
 import java.util.BitSet;
 import java.util.Map;
 
+/**
+ * Modified by Kevin Viratyosin to include hostPartition
+ */
 public class MDAResults
 {
 	/** Error type code for lookahead spillage. */

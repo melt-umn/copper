@@ -10,7 +10,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
  * using the procedure specified in Algorithm 3.13 of Appel's "Modern Compiler Implementation
  * in Java," 2nd ed.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  * @see ContextSets
+ *
+ * Modified by Kevin to compute firstNTs
  */
 public class ContextSetBuilder
 {

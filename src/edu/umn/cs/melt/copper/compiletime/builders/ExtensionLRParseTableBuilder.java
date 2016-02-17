@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Created by Kevin Viratyosin on 12/22/15.
+ * @author Kevin Viratyosin
  */
 public class ExtensionLRParseTableBuilder {
 

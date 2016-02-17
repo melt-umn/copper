@@ -13,6 +13,9 @@ import edu.umn.cs.melt.copper.compiletime.mda.MDAResults;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
+/**
+ * Modified by Kevin to return the hostStatesPartition in MDAResults
+ */
 public class ModularDeterminismAnalyzer
 {
 	public static MDAResults build(boolean checkILSubsets,ParserSpec hostSpec,ParserSpec fullSpec,ContextSets hostContextSets,ContextSets fullContextSets,LR0DFA hostDFA,LR0DFA fullDFA,LRLookaheadAndLayoutSets hostLookaheadSets,LRLookaheadAndLayoutSets fullLookaheadSets)
