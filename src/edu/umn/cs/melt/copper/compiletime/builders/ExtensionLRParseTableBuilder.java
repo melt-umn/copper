@@ -5,16 +5,22 @@ import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.MutableLRParseTable;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * Created by kviratyosin on 12/22/15.
+ * Created by Kevin Viratyosin on 12/22/15.
  */
 public class ExtensionLRParseTableBuilder {
 
@@ -24,6 +30,8 @@ public class ExtensionLRParseTableBuilder {
         public LRLookaheadAndLayoutSets extensionLookaheadAndLayoutSets;
         public ExtensionMappingSpec extensionMappingSpec;
         public TransparentPrefixes transparentPrefixes; // BitSet of table offset symbols
+        public GeneralizedDFA scannerDFA; // DFA for both host and extension symbols
+        public SingleScannerDFAAnnotations scannerDFAAnnotations;
     }
 
     private ParserSpec fullSpec;
@@ -111,12 +119,15 @@ public class ExtensionLRParseTableBuilder {
         this.generateExtensionLookaheadAndLayout(data, mappingSpec);
         this.generateExtensionParseTables(data, mappingSpec);
         this.generateExtensionTransparentPrefixes(data, mappingSpec);
+        this.generateScannerDFA(data, mappingSpec);
+        this.generateScannerDFAAnnotations(data, mappingSpec);
 
         // TODO others
 
         return data;
     }
 
+    // TODO Why do I have this and the same thing in ExtensionMappingSpec?
     private void generateExtensionSymbolTable(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
         ArrayList<CopperASTBean> beans = new ArrayList<CopperASTBean>();
 
@@ -227,5 +238,37 @@ public class ExtensionLRParseTableBuilder {
             default:
                 return 0;
         }
+    }
+
+    private void generateScannerDFA(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+        TreeMap<Integer, Regex> regexes = new TreeMap<Integer, Regex>();
+        BitSet appendedTerminals = new BitSet();
+        for (int i = fullSpec.terminals.nextSetBit(0); i >= 0; i = fullSpec.terminals.nextSetBit(i + 1)) {
+            Regex regex = fullSpec.t.getRegex(i);
+            int oi = mappingSpec.translateAndTableOffsetComposedSymbol(i);
+            appendedTerminals.set(oi);
+            regexes.put(oi, regex);
+        }
+        int translatedEOF = mappingSpec.translateAndTableOffsetComposedSymbol(fullSpec.getEOFTerminal());
+        data.scannerDFA = SingleScannerDFABuilder.build(regexes, appendedTerminals, translatedEOF);
+    }
+
+    private void generateScannerDFAAnnotations(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+        int appendedTerminalsLength = mappingSpec.extensionSymbolTableOffset + mappingSpec.extensionTerminalIndices.length();
+        PrecedenceGraph precedenceGraph = new PrecedenceGraph(appendedTerminalsLength);
+        int composedTerminalsLength = fullSpec.terminals.length();
+
+        for (int i = 0; i < composedTerminalsLength; i++) {
+            int oi = mappingSpec.translateAndTableOffsetComposedSymbol(i);
+            for (int j = 0; j < composedTerminalsLength; j++) {
+                if (fullSpec.t.precedences.hasEdge(i, j)) {
+                    int oj = mappingSpec.translateAndOffsetComposedSymbol(j);
+                    precedenceGraph.addEdge(oi, oj);
+                }
+            }
+        }
+
+        SingleScannerDFAAnnotations annotations = SingleScannerDFAAnnotationBuilder.build(precedenceGraph, data.scannerDFA);
+        data.scannerDFAAnnotations = annotations;
     }
 }

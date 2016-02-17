@@ -324,6 +324,10 @@ public class ExtensionMappingSpec {
         return i + this.extensionSymbolOffset;
     }
 
+    public int tableOffsetExtensionIndex(int i) {
+        return i + this.extensionSymbolTableOffset;
+    }
+
     public int unOffsetExtensionIndex(int i) {
         return i - this.extensionSymbolOffset;
     }
