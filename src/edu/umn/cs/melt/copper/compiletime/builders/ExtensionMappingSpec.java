@@ -204,10 +204,7 @@ public class ExtensionMappingSpec {
 
             t.setRegex(i, fullSpec.t.getRegex(composedIndex));
 
-            BitSet terminalClasses = fullSpec.t.getTerminalClasses(composedIndex);
-            for (int j = terminalClasses.nextSetBit(0); j >= 0; j = terminalClasses.nextSetBit(j+1)) {
-                t.getTerminalClasses(i).set(translateAndOffsetComposedSymbol(j));
-            }
+            translateSymbolBitSetWithOffset(fullSpec.t.getTerminalClasses(composedIndex), t.getTerminalClasses(i));
 
             t.setTransparentPrefix(i, convertValidIndex(fullSpec.t.getTransparentPrefix(composedIndex)));
             t.setOperatorClass(i, convertValidIndex(fullSpec.t.getOperatorClass(composedIndex)));
@@ -215,17 +212,16 @@ public class ExtensionMappingSpec {
             t.setOperatorPrecedence(i, fullSpec.t.getOperatorPrecedence(composedIndex)); // TODO translate?
             t.setOperatorAssociativity(i, fullSpec.t.getOperatorAssociativity(composedIndex));
 
-            // TODO precedence graph !?
+            // t.precedences is ignored here, but
+            // a PrecedenceGraph for host+ext terminals (using table offset) is generated elsewhere
+            //   for the specific purpose of building the scanner DFA annotations
         }
     }
 
     private void generateNonTerminalData(ParserSpec fullSpec) {
         for(int i = extensionNonterminalIndices.nextSetBit(0); i >= 0; i = extensionNonterminalIndices.nextSetBit(i+1)) {
             int composedIndex = extensionToComposedSymbols.get(i);
-            BitSet productions = fullSpec.nt.getProductions(composedIndex);
-            for (int j = productions.nextSetBit(0); j >= 0; j = productions.nextSetBit(j+1)) {
-                nt.getProductions(i).set(translateAndOffsetComposedSymbol(j));
-            }
+            translateSymbolBitSetWithOffset(fullSpec.nt.getProductions(composedIndex), nt.getProductions(i));
         }
     }
 
@@ -243,10 +239,7 @@ public class ExtensionMappingSpec {
             pr.setPrecedence(i, fullSpec.pr.getPrecedence(composedIndex)); // TODO translate?
             pr.setHasLayout(i, fullSpec.pr.hasLayout(composedIndex));
 
-            BitSet layouts = fullSpec.pr.getLayouts(composedIndex);
-            for (int j = layouts.nextSetBit(0); j >= 0; j = layouts.nextSetBit(j+1)) {
-                pr.getLayouts(i).set(translateAndOffsetComposedSymbol(j));
-            }
+            translateSymbolBitSetWithOffset(fullSpec.pr.getLayouts(composedIndex), pr.getLayouts(i));
         }
     }
 
@@ -254,10 +247,7 @@ public class ExtensionMappingSpec {
         for(int i = extensionDisambiguationFunctionIndices.nextSetBit(0); i >= 0; i = extensionDisambiguationFunctionIndices.nextSetBit(i+1)) {
             int composedIndex = extensionToComposedSymbols.get(i);
 
-            BitSet members = fullSpec.df.getMembers(composedIndex);
-            for (int j = members.nextSetBit(0); j >= 0; j = members.nextSetBit(j+1)) {
-                df.getMembers(i).set(translateAndOffsetComposedSymbol(j));
-            }
+            translateSymbolBitSetWithOffset(fullSpec.df.getMembers(composedIndex), df.getMembers(i));
 
             df.setDisambiguateTo(i, convertValidIndex(fullSpec.df.getDisambiguateTo(composedIndex)));
         }
@@ -266,11 +256,7 @@ public class ExtensionMappingSpec {
     private void generateTerminalClassData(ParserSpec fullSpec) {
         for(int i = extensionTerminalClassIndices.nextSetBit(0); i >= 0; i = extensionTerminalClassIndices.nextSetBit(i+1)) {
             int composedIndex = extensionToComposedSymbols.get(i);
-
-            BitSet members = fullSpec.tc.getMembers(composedIndex);
-            for (int j = members.nextSetBit(0); j >= 0; j = members.nextSetBit(j+1)) {
-                tc.getMembers(i).set(translateAndOffsetComposedSymbol(j));
-            }
+            translateSymbolBitSetWithOffset(fullSpec.tc.getMembers(composedIndex), tc.getMembers(i));
         }
     }
 
@@ -298,7 +284,6 @@ public class ExtensionMappingSpec {
         return decomposedIndex < 0 ? decodeAndTableOffsetExtensionIndex(decomposedIndex) : decomposedIndex;
     }
 
-    // TODO take advantage of
     public void translateSymbolBitSetWithOffset(BitSet from, BitSet to) {
         to.clear();
         for (int i = from.nextSetBit(0); i >= 0; i = from.nextSetBit(i+1)) {

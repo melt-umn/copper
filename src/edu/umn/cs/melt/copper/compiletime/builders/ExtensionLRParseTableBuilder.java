@@ -26,7 +26,7 @@ public class ExtensionLRParseTableBuilder {
 
     public class ExtensionCompilerReturnData {
         public LRParseTable appendedExtensionTable; // columns are table offset symbols
-        public PSSymbolTable extensionSymbolTable;
+        //  No PSSymbolTable since it's generated in ExtensionMappingSpec
         public LRLookaheadAndLayoutSets extensionLookaheadAndLayoutSets;
         public ExtensionMappingSpec extensionMappingSpec;
         public TransparentPrefixes transparentPrefixes; // BitSet of table offset symbols
@@ -115,7 +115,6 @@ public class ExtensionLRParseTableBuilder {
 
         data.extensionMappingSpec = mappingSpec;
 
-        this.generateExtensionSymbolTable(data, mappingSpec);
         this.generateExtensionLookaheadAndLayout(data, mappingSpec);
         this.generateExtensionParseTables(data, mappingSpec);
         this.generateExtensionTransparentPrefixes(data, mappingSpec);
@@ -125,27 +124,6 @@ public class ExtensionLRParseTableBuilder {
         // TODO others
 
         return data;
-    }
-
-    // TODO Why do I have this and the same thing in ExtensionMappingSpec?
-    private void generateExtensionSymbolTable(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
-        ArrayList<CopperASTBean> beans = new ArrayList<CopperASTBean>();
-
-        // TODO populate beans in order based on mappingSpec
-        for (Map.Entry<Integer, Integer> entry : mappingSpec.composedToDecomposedSymbols.entrySet()) {
-            int decomposedIndex = entry.getValue();
-            int composedIndex = entry.getKey();
-            if (decomposedIndex < 0) { // is extension symbol?
-                int extensionSymbolIndex = ExtensionMappingSpec.decodeExtensionIndex(decomposedIndex);
-                CopperASTBean composedBean = fullSymbolTable.get(composedIndex);
-                // Note, the beans don't need to be modified since they don't contain index information, just names
-                beans.add(extensionSymbolIndex, composedBean);
-                // TODO ? create an accompanying traditional ParserSpec ?
-            }
-        }
-
-        PSSymbolTable symbolTable = new PSSymbolTable(beans);
-        data.extensionSymbolTable = symbolTable;
     }
 
     private void generateExtensionLookaheadAndLayout(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
