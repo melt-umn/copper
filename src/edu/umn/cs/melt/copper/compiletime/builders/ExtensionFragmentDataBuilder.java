@@ -8,14 +8,11 @@ import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.MutableLRParseTable;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,9 +20,9 @@ import java.util.TreeMap;
 /**
  * @author Kevin Viratyosin
  */
-public class ExtensionLRParseTableBuilder {
+public class ExtensionFragmentDataBuilder {
 
-    public class ExtensionCompilerReturnData {
+    public class ExtensionFragmentData {
         public LRParseTable appendedExtensionTable; // columns are table offset symbols
         //  No PSSymbolTable since it's generated in ExtensionMappingSpec
         public LRLookaheadAndLayoutSets extensionLookaheadAndLayoutSets;
@@ -52,10 +49,10 @@ public class ExtensionLRParseTableBuilder {
     // composed to decomposed maps
     private ExtensionMappingSpec mappingSpec;
 
-    public static ExtensionCompilerReturnData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition, LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets, TransparentPrefixes fullPrefixes) {
-        ExtensionLRParseTableBuilder builder = new ExtensionLRParseTableBuilder(fullSpec, fullDFA, fullParseTable, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition, fullLookaheadAndLayoutSets, fullPrefixes);
+    public static ExtensionFragmentData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition, LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets, TransparentPrefixes fullPrefixes) {
+        ExtensionFragmentDataBuilder builder = new ExtensionFragmentDataBuilder(fullSpec, fullDFA, fullParseTable, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition, fullLookaheadAndLayoutSets, fullPrefixes);
 
-        ExtensionCompilerReturnData data = builder.build();
+        ExtensionFragmentData data = builder.build();
 
         System.out.println("== BEGIN ExtensionLRParseTableBuilder ==");
         System.out.println("Indicies:");
@@ -96,16 +93,16 @@ public class ExtensionLRParseTableBuilder {
         }
     }
 
-    private ExtensionLRParseTableBuilder(
-                ParserSpec fullSpec,
-                LR0DFA fullDFA,
-                LRParseTable fullParseTable,
-                PSSymbolTable fullSymbolTable,
-                ParserSpec hostSpec,
-                Map<Integer, Integer> hostPartitionMap,
-                BitSet extensionStatePartition,
-                LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets,
-                TransparentPrefixes fullPrefixes
+    private ExtensionFragmentDataBuilder(
+            ParserSpec fullSpec,
+            LR0DFA fullDFA,
+            LRParseTable fullParseTable,
+            PSSymbolTable fullSymbolTable,
+            ParserSpec hostSpec,
+            Map<Integer, Integer> hostPartitionMap,
+            BitSet extensionStatePartition,
+            LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets,
+            TransparentPrefixes fullPrefixes
     ) {
         this.fullSpec = fullSpec;
         this.fullDFA = fullDFA;
@@ -118,8 +115,8 @@ public class ExtensionLRParseTableBuilder {
         this.mappingSpec = new ExtensionMappingSpec(fullSpec, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition);
     }
 
-    private ExtensionCompilerReturnData build() {
-        ExtensionCompilerReturnData data = new ExtensionCompilerReturnData();
+    private ExtensionFragmentData build() {
+        ExtensionFragmentData data = new ExtensionFragmentData();
 
         data.extensionMappingSpec = mappingSpec;
 
@@ -135,7 +132,7 @@ public class ExtensionLRParseTableBuilder {
         return data;
     }
 
-    private void generateExtensionLookaheadAndLayout(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+    private void generateExtensionLookaheadAndLayout(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
         int maxItemCount = fullLookaheadAndLayoutSets.getMaxItemCount();
         LRLookaheadAndLayoutSets extensionSets = new LRLookaheadAndLayoutSets(extensionStateCount, maxItemCount);
         for (int extState = 0; extState < extensionStateCount; extState++) {
@@ -153,7 +150,7 @@ public class ExtensionLRParseTableBuilder {
         data.extensionLookaheadAndLayoutSets = extensionSets;
     }
 
-    private void generateExtensionTransparentPrefixes(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+    private void generateExtensionTransparentPrefixes(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
         LRParseTable parseTable = data.appendedExtensionTable;
         int offsetTerminalsLength = mappingSpec.offsetExtensionIndex(mappingSpec.extensionTerminalIndices.length() - 1);
         TransparentPrefixes prefixes = new TransparentPrefixes(offsetTerminalsLength, parseTable.size());
@@ -186,7 +183,7 @@ public class ExtensionLRParseTableBuilder {
     //   1         | host 1
     //   -1        | extension 0
     //   -2        | extension 1
-    private void generateExtensionParseTables(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+    private void generateExtensionParseTables(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
         int fullSpecSymbolCount = Math.max(fullSpec.terminals.length(), fullSpec.nonterminals.length());
         int extensionStateCount = mappingSpec.composedExtensionStates.cardinality();
 
@@ -227,7 +224,7 @@ public class ExtensionLRParseTableBuilder {
         }
     }
 
-    private void generateScannerDFA(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+    private void generateScannerDFA(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
         TreeMap<Integer, Regex> regexes = new TreeMap<Integer, Regex>();
         BitSet appendedTerminals = new BitSet();
         for (int i = fullSpec.terminals.nextSetBit(0); i >= 0; i = fullSpec.terminals.nextSetBit(i + 1)) {
@@ -240,7 +237,7 @@ public class ExtensionLRParseTableBuilder {
         data.scannerDFA = SingleScannerDFABuilder.build(regexes, appendedTerminals, translatedEOF);
     }
 
-    private void generateScannerDFAAnnotations(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+    private void generateScannerDFAAnnotations(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
         int appendedTerminalsLength = mappingSpec.extensionSymbolTableOffset + mappingSpec.extensionTerminalIndices.length();
         PrecedenceGraph precedenceGraph = new PrecedenceGraph(appendedTerminalsLength);
         int composedTerminalsLength = fullSpec.terminals.length();
@@ -259,7 +256,7 @@ public class ExtensionLRParseTableBuilder {
         data.scannerDFAAnnotations = annotations;
     }
 
-    private void generateMarkingTerminalMetadata(ExtensionCompilerReturnData data, ExtensionMappingSpec mappingSpec) {
+    private void generateMarkingTerminalMetadata(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
         Map<Integer, Integer> markingTerminalLHS = new TreeMap<Integer, Integer>();
         Map<Integer, Integer> markingTerminalStates = new TreeMap<Integer, Integer>();
 
