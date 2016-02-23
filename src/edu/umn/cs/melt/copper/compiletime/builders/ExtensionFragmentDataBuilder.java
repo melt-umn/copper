@@ -22,21 +22,6 @@ import java.util.TreeMap;
  */
 public class ExtensionFragmentDataBuilder {
 
-    public class ExtensionFragmentData {
-        public LRParseTable appendedExtensionTable; // columns are table offset symbols
-        //  No PSSymbolTable since it's generated in ExtensionMappingSpec
-        public LRLookaheadAndLayoutSets extensionLookaheadAndLayoutSets;
-        public ExtensionMappingSpec extensionMappingSpec;
-        public TransparentPrefixes transparentPrefixes; // BitSet of table offset symbols
-        public GeneralizedDFA scannerDFA; // DFA for both host and extension symbols
-        public SingleScannerDFAAnnotations scannerDFAAnnotations;
-
-        // map from marking terminal extension index to lhs (host index) of bridge production
-        public Map<Integer, Integer> markingTerminalLHS;
-        // map from marking terminal extension index to state (extension index) to transition to on marking terminal shift
-        public Map<Integer, Integer> markingTerminalStates;
-    }
-
     private ParserSpec fullSpec;
     private LR0DFA fullDFA;
     private LRParseTable fullParseTable;

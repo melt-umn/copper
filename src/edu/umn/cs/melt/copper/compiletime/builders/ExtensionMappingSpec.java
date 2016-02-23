@@ -6,6 +6,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Production;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.TreeMap;
 /**
  * @author Kevin Viratyosin
  */
-public class ExtensionMappingSpec {
+public class ExtensionMappingSpec implements Serializable {
 
     public Map<Integer, Integer>
             composedToDecomposedStates, // non-neg composed indexes -> non-neg (host) or neg (ext) indices
@@ -35,15 +36,15 @@ public class ExtensionMappingSpec {
     public int extensionSymbolCount, extensionSymbolOffset, extensionSymbolTableOffset;
 
     // indexed by extension enumeration, however references to other symbols in the data use offset indices
-    public ParserSpec.TerminalData t;
-    public ParserSpec.NonterminalData nt;
+    transient public ParserSpec.TerminalData t;
+    transient public ParserSpec.NonterminalData nt;
     public ParserSpec.ProductionData pr;
     public ParserSpec.DisambiguationFunctionData df;
-    public ParserSpec.TerminalClassData tc;
-    public ParserSpec.GrammarData g;
-    public ParserSpec.ParserData p;
+    transient public ParserSpec.TerminalClassData tc;
+    transient public ParserSpec.GrammarData g;
+    transient public ParserSpec.ParserData p;
 
-    private PSSymbolTable extensionSymbolTable;
+    public PSSymbolTable extensionSymbolTable;
 
     public ExtensionMappingSpec(ParserSpec fullSpec, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> composedToHostStates, BitSet composedExtensionStates) {
 

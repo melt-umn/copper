@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.auxiliary;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -9,9 +10,11 @@ import java.util.TreeSet;
  * A functional analogue of the JCL class SetOfIntegerSyntax for Unicode characters,
  * also adding union, intersection, and subtract operations.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to allow for serialization
  */
-public class SetOfCharsSyntax
+public class SetOfCharsSyntax implements Serializable
 {
 	private String stringRep = null;
 	private int size = -1;

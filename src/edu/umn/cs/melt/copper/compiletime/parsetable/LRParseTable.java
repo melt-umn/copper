@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.parsetable;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
 /**
@@ -8,9 +9,9 @@ import java.util.BitSet;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
- * Modified by Kevin to include a print function
+ * Modified by Kevin to include a print function, serialization
  */
-public abstract class LRParseTable
+public abstract class LRParseTable implements Serializable
 {
 	// SHIFT and GOTO are assumed to be identical in the class LRParseTableBuilder.
 	

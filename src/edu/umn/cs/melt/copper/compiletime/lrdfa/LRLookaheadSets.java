@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.lrdfa;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
 /**
@@ -7,9 +8,9 @@ import java.util.BitSet;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
- * Modified by Kevin to include itemLASources
+ * Modified by Kevin to include itemLASources, serializable
  */
-public class LRLookaheadSets
+public class LRLookaheadSets implements Serializable
 {
 	protected int maxItemCount;
 	protected BitSet[][] lookahead;

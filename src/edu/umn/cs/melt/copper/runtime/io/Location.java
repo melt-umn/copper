@@ -1,11 +1,15 @@
 package edu.umn.cs.melt.copper.runtime.io;
 
+import java.io.Serializable;
+
 /**
  * This interface represents parsing locations (can be real or virtual).
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to allow serialization
  */
-public interface Location extends Comparable<Location>
+public interface Location extends Comparable<Location>, Serializable
 {
 	/**
 	 * The name of the file being parsed.

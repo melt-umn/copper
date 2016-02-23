@@ -11,12 +11,14 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  * The field <code>regex</code> must be set to a non-null value
  * before a terminal is passed to the compiler.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to allow serialization
  */
 public class Terminal extends GrammarSymbol
 {
 	/** The regex represented by this terminal. */
-	protected Regex regex;
+	transient protected Regex regex;
 	/**
 	 * The terminal's operator precedence class. Shift-reduce conflicts can
 	 * only be resolved on operators within the same precedence class.

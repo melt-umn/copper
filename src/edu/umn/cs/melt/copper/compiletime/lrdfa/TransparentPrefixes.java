@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.lrdfa;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
@@ -13,9 +14,9 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
- * Modified to allowing construction without a spec or parsetable
+ * Modified to allowing construction without a spec or parsetable, serialization
  */
-public class TransparentPrefixes
+public class TransparentPrefixes implements Serializable
 {
 	protected BitSet[] prefixSets;
 	protected BitSet[][] prefixMaps;

@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.spec.numeric;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
@@ -13,6 +14,9 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
  * with all nomenclature being relegated to a symbol table (see {@link SymbolTable}). 
  *
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
+ *
+ * Modified by Kevin to allow serialization of inner classes
  */
 public class ParserSpec
 {
@@ -102,7 +106,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on productions.
 	 */
-	public static final class ProductionData
+	public static final class ProductionData implements Serializable
 	{
 		/** Each production's left hand side. */
 		protected int[] LHSs;
@@ -160,7 +164,7 @@ public class ParserSpec
 	 * Holds attributes on disambiguation functions/groups.
 	 *
 	 */
-	public static final class DisambiguationFunctionData
+	public static final class DisambiguationFunctionData implements Serializable
 	{
 		/** The members of each disambiguation function/group. */
 		protected BitSet[] members;
