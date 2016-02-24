@@ -28,13 +28,11 @@ public class ExtensionFragmentData implements Serializable {
     // map from marking terminal extension index to state (extension index) to transition to on marking terminal shift
     public Map<Integer, Integer> markingTerminalStates;
 
-    public void serialize(String filename) {
+    public void serialize(FileOutputStream file) {
         try {
-            FileOutputStream fileOut = new FileOutputStream(filename);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            ObjectOutputStream out = new ObjectOutputStream(file);
             out.writeObject(this);
             out.close();
-            fileOut.close();
             System.err.println("Successfully serialized extension fragment data");
         } catch (IOException e) {
             System.err.println("Failed to serialize extension fragment data");
@@ -42,13 +40,11 @@ public class ExtensionFragmentData implements Serializable {
         }
     }
 
-    public static ExtensionFragmentData deserialize(String filename) {
+    public static ExtensionFragmentData deserialize(FileInputStream file) {
         try {
-            FileInputStream fileIn = new FileInputStream(filename);
-            ObjectInputStream in = new ObjectInputStream(fileIn);
+            ObjectInputStream in = new ObjectInputStream(file);
             ExtensionFragmentData e = (ExtensionFragmentData) in.readObject();
             in.close();
-            fileIn.close();
             System.err.println("Successfully deserialized extension fragment data");
             return e;
         } catch (Exception e) {

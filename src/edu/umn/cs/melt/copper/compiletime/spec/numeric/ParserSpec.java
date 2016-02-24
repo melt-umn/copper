@@ -16,9 +16,9 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
- * Modified by Kevin to allow serialization of inner classes
+ * Modified by Kevin to allow serialization
  */
-public class ParserSpec
+public class ParserSpec implements Serializable
 {
 	/**
 	 * A wrapper around {@link java.util.BitSet.or} that returns <code>true</code>
@@ -263,14 +263,14 @@ public class ParserSpec
 	
 	/** Marking terminals and bridge productions. */
 	public BitSet bridgeConstructs;
-	
-	public TerminalData t;
-	public NonterminalData nt;
+
+	transient public TerminalData t;
+	transient public NonterminalData nt;
 	public ProductionData pr;
 	public DisambiguationFunctionData df;
-	public TerminalClassData tc;
-	public GrammarData g;
-	public ParserData p;
+	transient public TerminalClassData tc;
+	transient public GrammarData g;
+	transient public ParserData p;
 	
 	/** Returns the number for the special "end-of-file" or "end-of-input" terminal, {@code $}. */
 	public int getEOFTerminal() { return terminals.nextSetBit(0); }
