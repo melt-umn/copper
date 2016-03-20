@@ -207,18 +207,44 @@ public class ParserFragmentEngineBuilder {
         }
 
         parseTable = new int[stateTotal][maxTableSymbols];
-        // TODO copy host table
-        // TODO copy ext tables
+        copyParseTable(hostFragment.parseTable, hostFragment.fullSpec.terminals, hostFragment.fullSpec.nonterminals, -1, null, null);
+        for (int i = 0; i < extensionCount; i++) {
+            ExtensionFragmentData fragment = extensionFragments.get(i);
+            ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
+
+            copyParseTable(fragment.appendedExtensionTable, spec.hostTerminalIndices, spec.hostNonterminalIndices, i, spec.extensionTerminalIndices, spec.extensionNonterminalIndices);
+        }
+
+        // TODO fill marking terminal cells
     }
 
-    private void copyParseTable(LRParseTable table, BitSet terminals, BitSet nonterminals, boolean isExtension) {
+    private void copyParseTable(LRParseTable table, BitSet hostTerminals, BitSet hostNonterminals, int extensionId, BitSet extTerminals, BitSet extNonterminals) {
         int symType;
 
-        // TODO finish modifying below
+        boolean isExtension = extensionId >= 0;
+        ExtensionFragmentData extensionFragmentData = null;
+        ExtensionMappingSpec extSpec = null;
+        if (isExtension) {
+            extensionFragmentData = extensionFragments.get(extensionId);
+            extSpec = extensionFragmentData.extensionMappingSpec;
+        }
+
         for (int state = 0; state < table.size(); state++) {
             for (int t = table.getValidLA(state).nextSetBit(0); t >= 0; t = table.getValidLA(state).nextSetBit(t+1)) {
-                if(terminals.get(t)) {
-                    byte actionType = table.getActionType(state,t);
+                boolean isTerminal, isNonterminal;
+                if (extSpec != null && t >= extSpec.extensionSymbolTableOffset) {
+                    int extensionIndex = t - extSpec.extensionSymbolTableOffset;
+                    isTerminal = hostTerminals.get(extensionIndex);
+                    isNonterminal = hostNonterminals.get(extensionIndex);
+                } else {
+                    isTerminal = hostTerminals.get(t);
+                    isNonterminal = hostNonterminals.get(t);
+                }
+
+                int actionParameter = table.getActionParameter(state, t);
+
+                if(isTerminal) {
+                    byte actionType = table.getActionType(state, t);
 
                     if (actionType == LRParseTable.ERROR) {
                         symType = SingleDFAEngine.STATE_ERROR;
@@ -226,15 +252,22 @@ public class ParserFragmentEngineBuilder {
                         symType = SingleDFAEngine.STATE_ACCEPT;
                     } else if (actionType == LRParseTable.SHIFT) {
                         symType = SingleDFAEngine.STATE_SHIFT;
+                        if (isExtension && actionParameter < 0) { // ext state
+                            actionParameter = ExtensionMappingSpec.decodeExtensionIndex(actionParameter) + extStateOffset[extensionId];
+                        }
                     } else if (actionType == LRParseTable.REDUCE) {
                         symType = SingleDFAEngine.STATE_REDUCE;
+                        // TODO Q: translate action parameter (production)? -- A: no, (TODO) handle on the other side for now
                     } else {
                         symType = SingleDFAEngine.STATE_ERROR;
                     }
 
-                    parseTable[state][t] = SingleDFAEngine.newAction(symType,table.getActionParameter(state,t));
-                } else if (nonterminals.get(t)) {
-                    parseTable[state][t] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_GOTO,table.getActionParameter(state,t));
+                    parseTable[state][t] = SingleDFAEngine.newAction(symType, actionParameter);
+                } else if (isNonterminal) {
+                    if (isExtension && actionParameter < 0) { // ext state
+                        actionParameter = ExtensionMappingSpec.decodeExtensionIndex(actionParameter) + extStateOffset[extensionId];
+                    }
+                    parseTable[state][t] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_GOTO, actionParameter);
                 }
             }
         }
