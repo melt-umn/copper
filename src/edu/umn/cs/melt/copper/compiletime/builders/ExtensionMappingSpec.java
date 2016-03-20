@@ -291,11 +291,12 @@ public class ExtensionMappingSpec implements Serializable {
             to.set(translateAndOffsetComposedSymbol(i));
         }
     }
-    public void translateSymbolBitSetWithTableOffset(BitSet from, BitSet to) {
+    public BitSet translateSymbolBitSetWithTableOffset(BitSet from, BitSet to) {
         to.clear();
         for (int i = from.nextSetBit(0); i >= 0; i = from.nextSetBit(i+1)) {
             to.set(translateAndTableOffsetComposedSymbol(i));
         }
+        return to;
     }
 
     public int decodeAndOffsetExtensionIndex(int i) {

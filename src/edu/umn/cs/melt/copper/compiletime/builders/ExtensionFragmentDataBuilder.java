@@ -244,6 +244,7 @@ public class ExtensionFragmentDataBuilder {
     private void generateMarkingTerminalMetadata(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
         Map<Integer, Integer> markingTerminalLHS = new TreeMap<Integer, Integer>();
         Map<Integer, Integer> markingTerminalStates = new TreeMap<Integer, Integer>();
+        BitSet[] initNTs = new BitSet[extensionStateCount];
 
         BitSet composedBridgeProductions = new BitSet();
         composedBridgeProductions.or(fullSpec.bridgeConstructs);
@@ -255,8 +256,8 @@ public class ExtensionFragmentDataBuilder {
             markingTerminalLHS.put(extensionMarkingTerminal, lhs);
         }
 
-        // look for the states with items: X -> t (*) ... for bridge productions
         for (int state = 0; state < fullDFA.size(); state++) {
+            // look for the states with items: X -> t (*) ... for bridge productions
             LR0ItemSet itemSet = fullDFA.getItemSet(state);
             for (int item = 0; item < itemSet.size(); item++) {
                 if (itemSet.getPosition(item) == 1 && fullSpec.bridgeConstructs.get(itemSet.getProduction(item))) {
@@ -265,6 +266,12 @@ public class ExtensionFragmentDataBuilder {
                     int extensionState = ExtensionMappingSpec.decodeExtensionIndex(mappingSpec.composedToDecomposedStates.get(state));
                     markingTerminalStates.put(extensionMarkingTerminal, extensionState);
                 }
+            }
+
+            // build initNTs
+            if (mappingSpec.composedExtensionStates.get(state)) {
+                int extensionState = ExtensionMappingSpec.decodeExtensionIndex(mappingSpec.composedToDecomposedStates.get(state));
+                initNTs[extensionState] = mappingSpec.translateSymbolBitSetWithTableOffset(fullDFA.getInitNTs(state), new BitSet());
             }
         }
 

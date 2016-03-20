@@ -299,6 +299,22 @@ public class ParserFragmentEngineBuilder {
         // TODO finish
     }
 
+    private boolean isHostFragment(int fragmentId) {
+        return fragmentId == 0;
+    }
+
+    private int getFragmentIdFromState(int state) {
+        int fragmentId = 0;
+        for (int i = 0; i < extensionCount; i++) {
+            if (state < extStateOffset[i]) {
+                break;
+            } else {
+                fragmentId += 1;
+            }
+        }
+        return fragmentId;
+    }
+
     private void makeProductionLengths() {
         productionLengths = new int[fragmentCount][];
         // TODO finish
