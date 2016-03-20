@@ -30,6 +30,21 @@ public class ParserFragmentEngineBuilder {
     private GeneralizedDFA markingTerminalScannerDFA;
 
     private int[][][] deltas;
+    private int[][] productionLengths;
+
+    private static class ObjectToHash {
+        public Object obj;
+        public String type;
+        public String name;
+
+        public ObjectToHash(Object obj, String type, String name) {
+            this.obj = obj;
+            this.type = type;
+            this.name = name;
+        }
+    }
+
+    private List<ObjectToHash> objectsToHash;
 
     public ParserFragmentEngineBuilder(StandardSpecCompilerReturnData hostFragment, List<ExtensionFragmentData> extensionFragments) {
         this.hostFragment = hostFragment;
@@ -125,6 +140,7 @@ public class ParserFragmentEngineBuilder {
 
     private void printParserAncillaryDecls(PrintStream out) {
         out.println("  private static int[][][] deltas;");
+        out.println("  private static int[][] productionLengths;");
         // TODO finish
     }
 
@@ -133,23 +149,39 @@ public class ParserFragmentEngineBuilder {
         out.println("    return deltas[fragmentId];");
         out.println("  }");
 
+        out.println("  protected int[] getProductionLengths(int fragmentId) {");
+        out.println("    return productionLengths[fragmentId]");
+        out.println("  }");
+
         // TODO finish
     }
 
     private void makeObjectsToBeHashed() {
+        objectsToHash = new ArrayList<ObjectToHash>();
+
         deltas[0] = markingTerminalScannerDFA.getTransitions();
         for (int i = 0; i < extensionCount; i++) {
             deltas[i + 1] = extensionFragments.get(i).scannerDFA.getTransitions();
         }
+        objectsToHash.add(new ObjectToHash(deltas, "int[][][]", "deltas"));
 
+        // TODO make productionLengths
+        makeProductionLengths();
+        objectsToHash.add(new ObjectToHash(productionLengths, "int[][]", "productionLengths"));
+
+        // TODO finish
+    }
+
+    private void makeProductionLengths() {
+        productionLengths = new int[fragmentCount][];
         // TODO finish
     }
 
     private void writeHashes(PrintStream out) throws IOException {
         ByteArrayOutputStream stringOut = new ByteArrayOutputStream();
-
-        writeHash(deltas, "deltas", stringOut, out);
-        // TODO finish
+        for (ObjectToHash obj: objectsToHash) {
+            writeHash(obj.obj, obj.name, stringOut, out);
+        }
     }
 
     private void writeHash(Object obj, String prefix, ByteArrayOutputStream stringOut, PrintStream out) throws IOException {
@@ -163,7 +195,9 @@ public class ParserFragmentEngineBuilder {
         // TODO finish
 
         out.println("  public static void initArrays() throws " + IOException.class.getName() + "," + ClassNotFoundException.class.getName() + " {");
-        out.println("    deltas = (int[][][]) " + ByteArrayEncoder.class.getName() + ".readHash(deltasHash);");
+        for (ObjectToHash obj: objectsToHash) {
+            out.println("    " + obj.name + " = (" + obj.type + ") " + ByteArrayEncoder.class.getName() + ".readHash(" + obj.name + "Hash);");
+        }
         out.println("  }");
 
         out.println("  static {");
