@@ -1,11 +1,14 @@
 package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
 
 import edu.umn.cs.melt.copper.compiletime.builders.ExtensionFragmentData;
+import edu.umn.cs.melt.copper.compiletime.builders.ExtensionMappingSpec;
+import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
 import edu.umn.cs.melt.copper.runtime.engines.single.ParserFragmentEngine;
+import edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
@@ -14,6 +17,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 /**
@@ -27,10 +31,14 @@ public class ParserFragmentEngineBuilder {
     private int extensionCount;
     private int fragmentCount;
 
+    private int[] extStateOffset;
+
     private GeneralizedDFA markingTerminalScannerDFA;
 
+    private int[][] parseTable;
     private int[][][] deltas;
     private int[][] productionLengths;
+    private int hostStateCount;
 
     private static class ObjectToHash {
         public Object obj;
@@ -139,12 +147,17 @@ public class ParserFragmentEngineBuilder {
     }
 
     private void printParserAncillaryDecls(PrintStream out) {
-        out.println("  private static int[][][] deltas;");
-        out.println("  private static int[][] productionLengths;");
+        for (ObjectToHash obj: objectsToHash) {
+            out.println("  private static " + obj.type + " " + obj.name + ";");
+        }
         // TODO finish
     }
 
     private void printParserAncillaryMethods(PrintStream out) {
+        out.println("  protected int[][] getParseTable() {");
+        out.println("    return parseTable;");
+        out.println("  }");
+
         out.println("  protected int[][] getFragmentTransitionTable(int fragmentId) {");
         out.println("    return deltas[fragmentId];");
         out.println("  }");
@@ -159,6 +172,9 @@ public class ParserFragmentEngineBuilder {
     private void makeObjectsToBeHashed() {
         objectsToHash = new ArrayList<ObjectToHash>();
 
+        makeParseTable();
+        objectsToHash.add(new ObjectToHash(parseTable, "int[][]", "parseTable"));
+
         deltas[0] = markingTerminalScannerDFA.getTransitions();
         for (int i = 0; i < extensionCount; i++) {
             deltas[i + 1] = extensionFragments.get(i).scannerDFA.getTransitions();
@@ -170,6 +186,58 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(productionLengths, "int[][]", "productionLengths"));
 
         // TODO finish
+    }
+
+    private void makeParseTable() {
+        hostStateCount = hostFragment.parseTable.size();
+        int stateTotal = hostStateCount;
+        int maxTableSymbols = hostFragment.fullSpec.nonterminals.length();
+
+        extStateOffset = new int[extensionCount];
+        for (int i = 0; i < extensionCount; i++) {
+            ExtensionFragmentData fragment = extensionFragments.get(i);
+            ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
+
+            extStateOffset[i] = stateTotal;
+            stateTotal += fragment.appendedExtensionTable.size();
+            int extTableWidth = spec.tableOffsetExtensionIndex(spec.extensionNonterminalIndices.length());
+            if (extTableWidth > maxTableSymbols) {
+                maxTableSymbols = extTableWidth;
+            }
+        }
+
+        parseTable = new int[stateTotal][maxTableSymbols];
+        // TODO copy host table
+        // TODO copy ext tables
+    }
+
+    private void copyParseTable(LRParseTable table, BitSet terminals, BitSet nonterminals, boolean isExtension) {
+        int symType;
+
+        // TODO finish modifying below
+        for (int state = 0; state < table.size(); state++) {
+            for (int t = table.getValidLA(state).nextSetBit(0); t >= 0; t = table.getValidLA(state).nextSetBit(t+1)) {
+                if(terminals.get(t)) {
+                    byte actionType = table.getActionType(state,t);
+
+                    if (actionType == LRParseTable.ERROR) {
+                        symType = SingleDFAEngine.STATE_ERROR;
+                    } else if (actionType == LRParseTable.ACCEPT && t == hostFragment.fullSpec.getEOFTerminal()) {
+                        symType = SingleDFAEngine.STATE_ACCEPT;
+                    } else if (actionType == LRParseTable.SHIFT) {
+                        symType = SingleDFAEngine.STATE_SHIFT;
+                    } else if (actionType == LRParseTable.REDUCE) {
+                        symType = SingleDFAEngine.STATE_REDUCE;
+                    } else {
+                        symType = SingleDFAEngine.STATE_ERROR;
+                    }
+
+                    parseTable[state][t] = SingleDFAEngine.newAction(symType,table.getActionParameter(state,t));
+                } else if (nonterminals.get(t)) {
+                    parseTable[state][t] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_GOTO,table.getActionParameter(state,t));
+                }
+            }
+        }
     }
 
     private void makeProductionLengths() {
