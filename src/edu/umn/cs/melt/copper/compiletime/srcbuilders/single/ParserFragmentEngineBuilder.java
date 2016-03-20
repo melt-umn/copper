@@ -2,12 +2,16 @@ package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
 
 import edu.umn.cs.melt.copper.compiletime.builders.ExtensionFragmentData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
+import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
 import edu.umn.cs.melt.copper.runtime.engines.single.ParserFragmentEngine;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +27,18 @@ public class ParserFragmentEngineBuilder {
     private int extensionCount;
     private int fragmentCount;
 
+    private GeneralizedDFA markingTerminalScannerDFA;
+
+    private int[][][] deltas;
+
     public ParserFragmentEngineBuilder(StandardSpecCompilerReturnData hostFragment, List<ExtensionFragmentData> extensionFragments) {
         this.hostFragment = hostFragment;
         this.extensionFragments = extensionFragments;
 
         this.extensionCount = extensionFragments.size();
         this.fragmentCount = this.extensionCount + 1;
+
+        // TODO generate marking terminal scanner
     }
 
     public void buildEngine(
@@ -57,13 +67,15 @@ public class ParserFragmentEngineBuilder {
 
         // TODO print Semantics class and implement related methods (including instatiate Semantics in startEngine)
 
-        // TODO write hashes in static variables, and write init function
+        makeObjectsToBeHashed();
+        writeHashes(out);
 
         // TODO write "parserAncillaries" -- var decls and getters
+        printParserAncillaryDecls(out);
 
-        // TODO write scannerAncillaries
+        System.out.println(scannerAncillaries);
 
-        // TODO write static variable initializations
+        writeStaticMemberInitializations(out);
 
         out.println("}");
     }
@@ -108,6 +120,54 @@ public class ParserFragmentEngineBuilder {
         out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsReal = bitVecToRealStringList(disjointMatch.terms);");
         out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsDisplay = bitVecToDisplayStringList(disjointMatch.terms);");
         out.println("    throw new edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError(virtualLocation,currentState.pos,currentState.statenum,expectedTerminalsReal,expectedTerminalsDisplay,matchedTerminalsReal,matchedTerminalsDisplay);");
+        out.println("  }");
+    }
+
+    private void printParserAncillaryDecls(PrintStream out) {
+        out.println("  private static int[][][] deltas;");
+        // TODO finish
+    }
+
+    private void printParserAncillaryMethods(PrintStream out) {
+        out.println("  protected int[][] getFragmentTransitionTable(int fragmentId) {");
+        out.println("    return deltas[fragmentId];");
+        out.println("  }");
+
+        // TODO finish
+    }
+
+    private void makeObjectsToBeHashed() {
+        deltas[0] = markingTerminalScannerDFA.getTransitions();
+        for (int i = 0; i < extensionCount; i++) {
+            deltas[i + 1] = extensionFragments.get(i).scannerDFA.getTransitions();
+        }
+
+        // TODO finish
+    }
+
+    private void writeHashes(PrintStream out) throws IOException {
+        ByteArrayOutputStream stringOut = new ByteArrayOutputStream();
+
+        writeHash(deltas, "deltas", stringOut, out);
+        // TODO finish
+    }
+
+    private void writeHash(Object obj, String prefix, ByteArrayOutputStream stringOut, PrintStream out) throws IOException {
+        stringOut.reset();
+        ObjectOutputStream outp = new ObjectOutputStream(stringOut);
+        outp.writeObject(obj);
+        out.println("public static final byte[] " + prefix + "Hash = " + ByteArrayEncoder.class.getName() + ".literalToByteArray\n(new String[]{ " + ByteArrayEncoder.byteArrayToLiteral(16,stringOut.toByteArray()) + "});\n");
+    }
+
+    private void writeStaticMemberInitializations(PrintStream out) {
+        // TODO finish
+
+        out.println("  public static void initArrays() throws " + IOException.class.getName() + "," + ClassNotFoundException.class.getName() + " {");
+        out.println("    deltas = (int[][][]) " + ByteArrayEncoder.class.getName() + ".readHash(deltasHash);");
+        out.println("  }");
+
+        out.println("  static {");
+        out.println("    try { initArrays(); }");
         out.println("  }");
     }
 }
