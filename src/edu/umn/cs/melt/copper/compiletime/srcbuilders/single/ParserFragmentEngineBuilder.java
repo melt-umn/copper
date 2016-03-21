@@ -17,10 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Kevin Viratyosin
@@ -40,7 +37,7 @@ public class ParserFragmentEngineBuilder {
     private int[][] parseTable;
     private int[][][] deltas;
     private int[][] productionLengths;
-    private int hostStateCount;
+    private int totalStateCount, hostStateCount;
 
     private static class ObjectToHash {
         public Object obj;
@@ -195,17 +192,19 @@ public class ParserFragmentEngineBuilder {
         public int extensionTerminal;
         public int hostLHS;
         public int offsetTransitionState;
-        public MarkingTerminalData(int extensionId, int extensionTerminal, int hostLHS, int offsetTransitionState) {
+        public int endIndex;
+        public MarkingTerminalData(int extensionId, int extensionTerminal, int hostLHS, int offsetTransitionState, int endIndex) {
             this.extensionId = extensionId;
             this.extensionTerminal = extensionTerminal;
             this.hostLHS = hostLHS;
             this.offsetTransitionState = offsetTransitionState;
+            this.endIndex = endIndex;
         }
     }
 
     private void makeParseTable() {
         hostStateCount = hostFragment.parseTable.size();
-        int stateTotal = hostStateCount;
+        totalStateCount = hostStateCount;
         int maxTableSymbols = hostFragment.fullSpec.nonterminals.length();
         ArrayList<MarkingTerminalData> markingTerminalDatas = new ArrayList<MarkingTerminalData>();
 
@@ -214,22 +213,26 @@ public class ParserFragmentEngineBuilder {
             ExtensionFragmentData fragment = extensionFragments.get(i);
             ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
 
-            extStateOffset[i] = stateTotal;
-            stateTotal += fragment.appendedExtensionTable.size();
+            extStateOffset[i] = totalStateCount;
+            totalStateCount += fragment.appendedExtensionTable.size();
             int extTableWidth = spec.tableOffsetExtensionIndex(spec.extensionNonterminalIndices.length());
             if (extTableWidth > maxTableSymbols) {
                 maxTableSymbols = extTableWidth;
             }
+        }
 
+        for (int i = 0; i < extensionCount; i++) {
+            ExtensionFragmentData fragment = extensionFragments.get(i);
             Set<Integer> markingTerminals = fragment.markingTerminalLHS.keySet();
             for (int mt: markingTerminals) {
                 int lhs = fragment.markingTerminalLHS.get(mt);
                 int offsetState = fragment.markingTerminalStates.get(mt) + extStateOffset[i];
-                markingTerminalDatas.add(new MarkingTerminalData(i, mt, lhs, offsetState));
+                markingTerminalDatas.add(new MarkingTerminalData(i, mt, lhs, offsetState, maxTableSymbols));
+                maxTableSymbols += 1;
             }
         }
 
-        parseTable = new int[stateTotal][maxTableSymbols + markingTerminalDatas.size()];
+        parseTable = new int[totalStateCount][maxTableSymbols];
         copyParseTable(hostFragment.parseTable, hostFragment.fullSpec.terminals, hostFragment.fullSpec.nonterminals, -1, null, null);
         for (int i = 0; i < extensionCount; i++) {
             ExtensionFragmentData fragment = extensionFragments.get(i);
@@ -238,7 +241,7 @@ public class ParserFragmentEngineBuilder {
             copyParseTable(fragment.appendedExtensionTable, spec.hostTerminalIndices, spec.hostNonterminalIndices, i, spec.extensionTerminalIndices, spec.extensionNonterminalIndices);
         }
 
-        fillMarkingTerminalMetaData(markingTerminalDatas, maxTableSymbols);
+        fillMarkingTerminalMetaData(markingTerminalDatas);
     }
 
     private void copyParseTable(LRParseTable table, BitSet hostTerminals, BitSet hostNonterminals, int extensionId, BitSet extTerminals, BitSet extNonterminals) {
@@ -296,8 +299,28 @@ public class ParserFragmentEngineBuilder {
         }
     }
 
-    private void fillMarkingTerminalMetaData(List<MarkingTerminalData> markingTerminalDatas, int markingTerminalOffset) {
-        // TODO finish
+    private void fillMarkingTerminalMetaData(List<MarkingTerminalData> markingTerminalDatas) {
+        for (int state = 0; state < hostStateCount; state++) {
+            BitSet stateInitNTs = hostFragment.initNTs[state];
+            for (int nt = stateInitNTs.nextSetBit(0); nt >= 0; nt = stateInitNTs.nextSetBit(nt + 1)) {
+                for (MarkingTerminalData mtData: markingTerminalDatas) {
+                    if (nt == mtData.hostLHS) {
+                        parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_SHIFT, mtData.offsetTransitionState);
+                    }
+                }
+            }
+            Map<Integer, Set<Integer>> stateLASources = hostFragment.laSources.get(state);
+            for (MarkingTerminalData mtData: markingTerminalDatas) {
+                Set<Integer> productions = stateLASources.get(mtData.hostLHS);
+                if (productions != null && !productions.isEmpty()) {
+                    for (int production: productions) {
+                        parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, production);
+                    }
+                }
+            }
+        }
+
+        // TODO finish for extension states
     }
 
     private boolean isHostFragment(int fragmentId) {
