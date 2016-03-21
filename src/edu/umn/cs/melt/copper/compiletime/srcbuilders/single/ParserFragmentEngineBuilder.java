@@ -192,7 +192,7 @@ public class ParserFragmentEngineBuilder {
         }
         objectsToHash.add(new ObjectToHash(deltas, "int[][][]", "deltas"));
 
-        addScannerAnnotationsToBeHased(objectsToHash);
+        addScannerAnnotationsToBeHashed();
 
         // TODO make productionLengths
         makeProductionLengths();
@@ -201,7 +201,7 @@ public class ParserFragmentEngineBuilder {
         // TODO finish
     }
 
-    private void addScannerAnnotationsToBeHased(ArrayList<ObjectToHash> objectsToHash) {
+    private void addScannerAnnotationsToBeHashed() {
         BitSet[][] acceptSetss = new BitSet[fragmentCount][];
         acceptSetss[0] = hostFragment.scannerDFAAnnotations.acceptSets;
         for (int e = 0; e < extensionCount; e++) {
