@@ -83,6 +83,8 @@ public class ParserFragmentEngineBuilder {
 
         printFixedMethods(out, errorType);
 
+        printFragmentMethods(out);
+
         // TODO, Terminals enum and pushToken ...?
 
         // TODO write methods related to transition
@@ -94,6 +96,7 @@ public class ParserFragmentEngineBuilder {
 
         // TODO write "parserAncillaries" -- var decls and getters
         printParserAncillaryDecls(out);
+        printParserAncillaryMethods(out);
 
         System.out.println(scannerAncillaries);
 
@@ -142,6 +145,24 @@ public class ParserFragmentEngineBuilder {
         out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsReal = bitVecToRealStringList(disjointMatch.terms);");
         out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsDisplay = bitVecToDisplayStringList(disjointMatch.terms);");
         out.println("    throw new edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError(virtualLocation,currentState.pos,currentState.statenum,expectedTerminalsReal,expectedTerminalsDisplay,matchedTerminalsReal,matchedTerminalsDisplay);");
+        out.println("  }");
+    }
+
+    private void printFragmentMethods(PrintStream out) {
+        out.println("  protected int getFragmentCount() {");
+        out.println("  return " + fragmentCount + ";");
+        out.println("  }");
+
+        out.println("  protected int stateToFragmentId(int state) {");
+        out.println("    if (state < " + hostStateCount + ") {");
+        out.println("      return 0;");
+        for (int e = 1; e < extensionCount; e++) {
+            out.println("    } else if (state < " + extStateOffset[e] + ") {");
+            out.println("      return " + e + ";");
+        }
+        out.println("    } else {");
+        out.println("      return " + extensionCount + ";");
+        out.println("    }");
         out.println("  }");
     }
 
