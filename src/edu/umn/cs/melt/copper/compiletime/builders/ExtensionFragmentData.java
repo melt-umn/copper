@@ -9,7 +9,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 
 import java.io.*;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Kevin Viratyosin
@@ -27,6 +27,11 @@ public class ExtensionFragmentData implements Serializable {
     public Map<Integer, Integer> markingTerminalLHS;
     // map from marking terminal extension index to state (extension index) to transition to on marking terminal shift
     public Map<Integer, Integer> markingTerminalStates;
+
+    // table offset initNTs index by extension state
+    public BitSet[] initNTs;
+    // extension state indexed list of maps: (table offset nt -> set of decomposed (mixed +/-) productions)
+    public Map<Integer, Map<Integer, Set<Integer>>> laSources;
 
     public void serialize(FileOutputStream file) {
         try {

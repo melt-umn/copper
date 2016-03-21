@@ -13,9 +13,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 
-import java.util.BitSet;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Kevin Viratyosin
@@ -245,6 +243,7 @@ public class ExtensionFragmentDataBuilder {
         Map<Integer, Integer> markingTerminalLHS = new TreeMap<Integer, Integer>();
         Map<Integer, Integer> markingTerminalStates = new TreeMap<Integer, Integer>();
         BitSet[] initNTs = new BitSet[extensionStateCount];
+        Map<Integer, Map<Integer, Set<Integer>>> laSources = new TreeMap<Integer, Map<Integer, Set<Integer>>>();
 
         BitSet composedBridgeProductions = new BitSet();
         composedBridgeProductions.or(fullSpec.bridgeConstructs);
@@ -268,14 +267,34 @@ public class ExtensionFragmentDataBuilder {
                 }
             }
 
-            // build initNTs
             if (mappingSpec.composedExtensionStates.get(state)) {
                 int extensionState = ExtensionMappingSpec.decodeExtensionIndex(mappingSpec.composedToDecomposedStates.get(state));
+
+                // build initNTs
                 initNTs[extensionState] = mappingSpec.translateSymbolBitSetWithTableOffset(fullDFA.getInitNTs(state), new BitSet());
+
+                // build laSources
+                Map<Integer, Set<Integer>> stateLASources = new TreeMap<Integer, Set<Integer>>();
+                int items = fullDFA.getItemSet(state).size();
+                for (int item = 0; item < items; item++) {
+                    int production = fullDFA.getItemSet(state).getProduction(item);
+                    int decomposedProduction = mappingSpec.composedToDecomposedSymbols.get(production);
+                    BitSet sources = fullLookaheadAndLayoutSets.getItemLASources(state, item);
+                    for (int nt = sources.nextSetBit(0); nt >= 0; nt = sources.nextSetBit(nt + 1)) {
+                        int toNT = mappingSpec.translateAndTableOffsetComposedSymbol(nt);
+                        if (stateLASources.get(toNT) == null) {
+                            stateLASources.put(toNT, new HashSet<Integer>());
+                        }
+                        stateLASources.get(toNT).add(decomposedProduction);
+                    }
+                }
+                laSources.put(extensionState, stateLASources);
             }
         }
 
         data.markingTerminalLHS = markingTerminalLHS;
         data.markingTerminalStates = markingTerminalStates;
+        data.initNTs = initNTs;
+        data.laSources = laSources;
     }
 }
