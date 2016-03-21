@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
 
 import edu.umn.cs.melt.copper.compiletime.builders.ExtensionFragmentData;
 import edu.umn.cs.melt.copper.compiletime.builders.ExtensionMappingSpec;
+import edu.umn.cs.melt.copper.compiletime.builders.HostFragmentData;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
@@ -26,7 +27,7 @@ import java.util.Set;
  */
 public class ParserFragmentEngineBuilder {
 
-    private StandardSpecCompilerReturnData hostFragment;
+    private HostFragmentData hostFragment;
     private List<ExtensionFragmentData> extensionFragments;
 
     private int extensionCount;
@@ -55,7 +56,7 @@ public class ParserFragmentEngineBuilder {
 
     private List<ObjectToHash> objectsToHash;
 
-    public ParserFragmentEngineBuilder(StandardSpecCompilerReturnData hostFragment, List<ExtensionFragmentData> extensionFragments) {
+    public ParserFragmentEngineBuilder(HostFragmentData hostFragment, List<ExtensionFragmentData> extensionFragments) {
         this.hostFragment = hostFragment;
         this.extensionFragments = extensionFragments;
 
