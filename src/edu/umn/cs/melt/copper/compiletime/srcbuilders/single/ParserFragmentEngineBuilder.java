@@ -283,7 +283,7 @@ public class ParserFragmentEngineBuilder {
                         }
                     } else if (actionType == LRParseTable.REDUCE) {
                         symType = SingleDFAEngine.STATE_REDUCE;
-                        // TODO Q: translate action parameter (production)? -- A: no, (TODO) handle on the other side for now
+                        // TODO Q: translate action parameter (production)? -- A: Yes, new action parameters can't be negative :(
                     } else {
                         symType = SingleDFAEngine.STATE_ERROR;
                     }
@@ -320,7 +320,32 @@ public class ParserFragmentEngineBuilder {
             }
         }
 
-        // TODO finish for extension states
+        for (int extensionId = 0; extensionId < extensionCount; extensionId++) {
+            ExtensionFragmentData fragment = extensionFragments.get(extensionId);
+            for (int state = 0; state < fragment.appendedExtensionTable.size(); state++) {
+                int offsetState = state + extStateOffset[extensionId];
+                BitSet stateInitNTs = fragment.initNTs[state];
+                for (int nt = stateInitNTs.nextSetBit(0); nt >= 0; nt = stateInitNTs.nextSetBit(nt + 1)) {
+                    for (MarkingTerminalData mtData: markingTerminalDatas) {
+                        if (nt == mtData.hostLHS) {
+                            parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_SHIFT, mtData.offsetTransitionState);
+                        }
+                    }
+                }
+                Map<Integer, Set<Integer>> stateLASources = fragment.laSources.get(state);
+                for (MarkingTerminalData mtData: markingTerminalDatas) {
+                    Set<Integer> productions = stateLASources.get(mtData.hostLHS);
+                    if (productions != null && !productions.isEmpty()) {
+                        for (int production: productions) {
+                            // TODO action productions can't be negative!
+                            parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, production);
+                        }
+                    }
+                }
+            }
+        }
+
+        // TODO reduce code dup
     }
 
     private boolean isHostFragment(int fragmentId) {
