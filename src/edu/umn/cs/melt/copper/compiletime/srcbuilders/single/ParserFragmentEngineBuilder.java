@@ -161,6 +161,18 @@ public class ParserFragmentEngineBuilder {
         out.println("    return deltas[fragmentId];");
         out.println("  }");
 
+        out.println("  protected BitSet[] getFragmentAcceptSets(int fragmentId) {");
+        out.println("    return acceptSetss[fragmentId];");
+        out.println("  }");
+
+        out.println("  protected BitSet[] getFragmentRejectSets(int fragmentId) {");
+        out.println("    return rejectSetss[fragmentId];");
+        out.println("  }");
+
+        out.println("  protected BitSet[] getFragmentPossibleSets(int fragmentId) {");
+        out.println("    return possibleSetss[fragmentId];");
+        out.println("  }");
+
         out.println("  protected int[] getProductionLengths(int fragmentId) {");
         out.println("    return productionLengths[fragmentId]");
         out.println("  }");
@@ -180,11 +192,36 @@ public class ParserFragmentEngineBuilder {
         }
         objectsToHash.add(new ObjectToHash(deltas, "int[][][]", "deltas"));
 
+        addScannerAnnotationsToBeHased(objectsToHash);
+
         // TODO make productionLengths
         makeProductionLengths();
         objectsToHash.add(new ObjectToHash(productionLengths, "int[][]", "productionLengths"));
 
         // TODO finish
+    }
+
+    private void addScannerAnnotationsToBeHased(ArrayList<ObjectToHash> objectsToHash) {
+        BitSet[][] acceptSetss = new BitSet[fragmentCount][];
+        acceptSetss[0] = hostFragment.scannerDFAAnnotations.acceptSets;
+        for (int e = 0; e < extensionCount; e++) {
+            acceptSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.acceptSets;
+        }
+        objectsToHash.add(new ObjectToHash(acceptSetss, "BitSet[][]", "acceptSetss"));
+
+        BitSet[][] rejectSetss = new BitSet[fragmentCount][];
+        rejectSetss[0] = hostFragment.scannerDFAAnnotations.rejectSets;
+        for (int e = 0; e < extensionCount; e++) {
+            rejectSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.rejectSets;
+        }
+        objectsToHash.add(new ObjectToHash(rejectSetss, "BitSet[][]", "rejectSetss"));
+
+        BitSet[][] possibleSetss = new BitSet[fragmentCount][];
+        possibleSetss[0] = hostFragment.scannerDFAAnnotations.possibleSets;
+        for (int e = 0; e < extensionCount; e++) {
+            possibleSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.possibleSets;
+        }
+        objectsToHash.add(new ObjectToHash(possibleSetss, "BitSet[][]", "possibleSetss"));
     }
 
     private static class MarkingTerminalData {
