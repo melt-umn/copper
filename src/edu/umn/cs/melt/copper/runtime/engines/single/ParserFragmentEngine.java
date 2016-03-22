@@ -424,6 +424,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             //System.err.println(bitVecToString(scanResult.terms));
             // DEBUG-X-END
             int action = getParseTable()[currentState.statenum][scanResult.firstTerm];
+            // TODO adjust here or in scanning method to account for case when result is a marking terminal! (offset)
             Object synthAttr;
             switch(actionType(action))
             {
