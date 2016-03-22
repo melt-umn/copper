@@ -292,8 +292,18 @@ public class ExtensionFragmentDataBuilder {
             }
         }
 
+        Map<Integer, Regex> markingTerminalRegexes = new TreeMap<Integer, Regex>();
+        BitSet composedMarkingTerminals = new BitSet();
+        composedMarkingTerminals.or(fullSpec.bridgeConstructs);
+        composedMarkingTerminals.and(fullSpec.terminals);
+        for (int ct = composedMarkingTerminals.nextSetBit(0); ct >= 0; ct = composedMarkingTerminals.nextSetBit(ct + 1)) {
+            int extensionMarkingTerminal = ExtensionMappingSpec.decodeExtensionIndex(mappingSpec.composedToDecomposedSymbols.get(ct));
+            markingTerminalRegexes.put(extensionMarkingTerminal, fullSpec.t.getRegex(ct));
+        }
+
         data.markingTerminalLHS = markingTerminalLHS;
         data.markingTerminalStates = markingTerminalStates;
+        data.markingTerminalRegexes = markingTerminalRegexes;
         data.initNTs = initNTs;
         data.laSources = laSources;
     }

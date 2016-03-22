@@ -1,11 +1,12 @@
 package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
 
-import edu.umn.cs.melt.copper.compiletime.builders.ExtensionFragmentData;
-import edu.umn.cs.melt.copper.compiletime.builders.ExtensionMappingSpec;
-import edu.umn.cs.melt.copper.compiletime.builders.HostFragmentData;
+import edu.umn.cs.melt.copper.compiletime.builders.*;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
+import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
 import edu.umn.cs.melt.copper.runtime.engines.single.ParserFragmentEngine;
@@ -33,12 +34,15 @@ public class ParserFragmentEngineBuilder {
     private int[] extStateOffset;
 
     private GeneralizedDFA markingTerminalScannerDFA;
+    private SingleScannerDFAAnnotations markingTerminalScannerDFAAnnotations;
 
     private int[][] parseTable;
     private int[][][] deltas;
     private int[][] productionLengths;
     private int totalStateCount, hostStateCount;
     private int[][] terminalUses;
+    private ArrayList<MarkingTerminalData> markingTerminalDatas;
+    private int markingTerminalOffset;
 
     private static class ObjectToHash {
         public Object obj;
@@ -60,8 +64,6 @@ public class ParserFragmentEngineBuilder {
 
         this.extensionCount = extensionFragments.size();
         this.fragmentCount = this.extensionCount + 1;
-
-        // TODO generate marking terminal scanner
     }
 
     public void buildEngine(
@@ -247,6 +249,8 @@ public class ParserFragmentEngineBuilder {
         makeParseTable();
         objectsToHash.add(new ObjectToHash(parseTable, "int[][]", "parseTable"));
 
+        generateMarkingTerminalScanner();
+
         deltas[0] = markingTerminalScannerDFA.getTransitions();
         for (int i = 0; i < extensionCount; i++) {
             deltas[i + 1] = extensionFragments.get(i).scannerDFA.getTransitions();
@@ -273,28 +277,28 @@ public class ParserFragmentEngineBuilder {
 
     private void addScannerAnnotationsToBeHashed() {
         BitSet[][] acceptSetss = new BitSet[fragmentCount][];
-        acceptSetss[0] = hostFragment.scannerDFAAnnotations.acceptSets;
+        acceptSetss[0] = markingTerminalScannerDFAAnnotations.acceptSets;
         for (int e = 0; e < extensionCount; e++) {
             acceptSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.acceptSets;
         }
         objectsToHash.add(new ObjectToHash(acceptSetss, "BitSet[][]", "acceptSetss"));
 
         BitSet[][] rejectSetss = new BitSet[fragmentCount][];
-        rejectSetss[0] = hostFragment.scannerDFAAnnotations.rejectSets;
+        rejectSetss[0] = markingTerminalScannerDFAAnnotations.rejectSets;
         for (int e = 0; e < extensionCount; e++) {
             rejectSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.rejectSets;
         }
         objectsToHash.add(new ObjectToHash(rejectSetss, "BitSet[][]", "rejectSetss"));
 
         BitSet[][] possibleSetss = new BitSet[fragmentCount][];
-        possibleSetss[0] = hostFragment.scannerDFAAnnotations.possibleSets;
+        possibleSetss[0] = markingTerminalScannerDFAAnnotations.possibleSets;
         for (int e = 0; e < extensionCount; e++) {
             possibleSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.possibleSets;
         }
         objectsToHash.add(new ObjectToHash(possibleSetss, "BitSet[][]", "possibleSetss"));
     }
 
-    private static class MarkingTerminalData {
+    private static class MarkingTerminalData implements Comparable {
         public int extensionId;
         public int extensionTerminal;
         public int hostLHS;
@@ -307,13 +311,35 @@ public class ParserFragmentEngineBuilder {
             this.offsetTransitionState = offsetTransitionState;
             this.endIndex = endIndex;
         }
+
+        @Override
+        public int compareTo(Object o) {
+            return this.endIndex - ((MarkingTerminalData) o).endIndex;
+        }
+    }
+
+    // Must be called after makeParseTable
+    private void generateMarkingTerminalScanner() {
+        Collections.sort(markingTerminalDatas);
+        TreeMap<Integer, Regex> regexes = new TreeMap<Integer, Regex>();
+        BitSet terminals = new BitSet();
+        int markingTerminalCount = markingTerminalDatas.size();
+
+        for (int t = 0; t < markingTerminalCount; t++) {
+            MarkingTerminalData data = markingTerminalDatas.get(t);
+            regexes.put(t, extensionFragments.get(data.extensionId).markingTerminalRegexes.get(data.extensionTerminal));
+            terminals.set(t);
+        }
+
+        markingTerminalScannerDFA = SingleScannerDFABuilder.build(regexes, terminals, -1);
+        markingTerminalScannerDFAAnnotations = SingleScannerDFAAnnotationBuilder.build(new PrecedenceGraph(markingTerminalCount), markingTerminalScannerDFA);
     }
 
     private void makeParseTable() {
         hostStateCount = hostFragment.parseTable.size();
         totalStateCount = hostStateCount;
         int maxTableSymbols = hostFragment.fullSpec.nonterminals.length();
-        ArrayList<MarkingTerminalData> markingTerminalDatas = new ArrayList<MarkingTerminalData>();
+        markingTerminalDatas = new ArrayList<MarkingTerminalData>();
 
         extStateOffset = new int[extensionCount];
         for (int i = 0; i < extensionCount; i++) {
@@ -328,6 +354,7 @@ public class ParserFragmentEngineBuilder {
             }
         }
 
+        markingTerminalOffset = maxTableSymbols;
         for (int i = 0; i < extensionCount; i++) {
             ExtensionFragmentData fragment = extensionFragments.get(i);
             Set<Integer> markingTerminals = fragment.markingTerminalLHS.keySet();

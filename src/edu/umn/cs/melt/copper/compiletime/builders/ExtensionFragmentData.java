@@ -5,6 +5,7 @@ import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 
@@ -27,6 +28,8 @@ public class ExtensionFragmentData implements Serializable {
     public Map<Integer, Integer> markingTerminalLHS;
     // map from marking terminal extension index to state (extension index) to transition to on marking terminal shift
     public Map<Integer, Integer> markingTerminalStates;
+    // map from marking terminal extension index to associated Regex
+    public Map<Integer, Regex> markingTerminalRegexes;
 
     // table offset initNTs indexed by extension state
     public BitSet[] initNTs;
