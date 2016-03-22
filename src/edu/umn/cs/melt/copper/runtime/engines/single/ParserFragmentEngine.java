@@ -18,7 +18,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         public int fragmentId;
         public BitSet[] shiftableSets;
         public BitSet shiftableUnion;
-        public int[] terminalUses;
         public BitSet[] layoutSets;
         public BitSet[] prefixSets;
         public BitSet[][] prefixMaps;
@@ -58,7 +57,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected abstract BitSet[][] getFragmentPrefixMaps(int fragmentId);
     protected abstract BitSet[] getFragmentPrefixSets(int fragmentId);
     protected abstract BitSet[] getFragmentLayoutSets(int fragmentId);
-    protected abstract int[] getFragmentTerminalUses(int fragmentId);
+    protected abstract int getFragmentTerminalUses(int fragmentId, int t);
     protected abstract BitSet getFragmentShiftableUnion(int fragmentId);
     protected abstract BitSet[] getFragmentShiftableSets(int fragmentId);
 
@@ -301,7 +300,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                 break;
             }
 
-            int useAs = params.terminalUses[finalMatches.firstTerm];
+            int useAs = getFragmentTerminalUses(params.fragmentId, finalMatches.firstTerm);
             if(useAs == TERMINAL_VERSATILE)
             {
                 if(params.layoutSets[currentState.statenum].get(finalMatches.firstTerm)) useAs = TERMINAL_EXCLUSIVELY_LAYOUT;
@@ -392,7 +391,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             fragmentScannerParams.fragmentId = fragmentId;
             fragmentScannerParams.shiftableSets = getFragmentShiftableSets(fragmentId);
             fragmentScannerParams.shiftableUnion = getFragmentShiftableUnion(fragmentId);
-            fragmentScannerParams.terminalUses = getFragmentTerminalUses(fragmentId);
             fragmentScannerParams.layoutSets = getFragmentLayoutSets(fragmentId);
             fragmentScannerParams.prefixSets = getFragmentPrefixSets(fragmentId);
             fragmentScannerParams.prefixMaps = getFragmentPrefixMaps(fragmentId);
