@@ -38,6 +38,7 @@ public class ParserFragmentEngineBuilder {
     private int[][][] deltas;
     private int[][] productionLengths;
     private int totalStateCount, hostStateCount;
+    private int[][] terminalUses;
 
     private static class ObjectToHash {
         public Object obj;
@@ -178,6 +179,10 @@ public class ParserFragmentEngineBuilder {
         out.println("    return parseTable;");
         out.println("  }");
 
+        out.println("  protected int[] getProductionLengths(int fragmentId) {");
+        out.println("    return productionLengths[fragmentId];");
+        out.println("  }");
+
         out.println("  protected int[][] getFragmentTransitionTable(int fragmentId) {");
         out.println("    return deltas[fragmentId];");
         out.println("  }");
@@ -229,8 +234,8 @@ public class ParserFragmentEngineBuilder {
         out.println("    return " + hostFragment.fullSpec.getEOFTerminal() + ";");
         out.println("  }");
 
-        out.println("  protected int[] getProductionLengths(int fragmentId) {");
-        out.println("    return productionLengths[fragmentId];");
+        out.println("  protected int[] getFragmentTerminalUses(int fragmentId) {");
+        out.println("    return terminalUses[fragmentId];");
         out.println("  }");
 
         // TODO finish
@@ -250,9 +255,18 @@ public class ParserFragmentEngineBuilder {
 
         addScannerAnnotationsToBeHashed();
 
+        makeTerminalUses();
+        objectsToHash.add(new ObjectToHash(terminalUses, "int[][]", "terminalUses"));
+
         // TODO make productionLengths
         makeProductionLengths();
         objectsToHash.add(new ObjectToHash(productionLengths, "int[][]", "productionLengths"));
+
+        // TODO finish
+    }
+
+    private void makeTerminalUses() {
+        terminalUses = new int[fragmentCount][];
 
         // TODO finish
     }
