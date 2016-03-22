@@ -194,8 +194,43 @@ public class ParserFragmentEngineBuilder {
         out.println("    return possibleSetss[fragmentId];");
         out.println("  }");
 
+        out.println("  protected int getFragmentTerminalCount(int fragmentId) {");
+        out.println("    switch (fragmentId) {");
+        out.println("      case 0:");
+        out.println("        return " + hostFragment.fullSpec.terminals.length() + ";");
+        out.println("        break;");
+        for (int e = 0; e < extensionCount; e++) {
+            ExtensionMappingSpec spec = extensionFragments.get(e).extensionMappingSpec;
+            out.println("      case " + (e+1) + ":");
+            out.println("        return " + spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length()) + ";");
+            out.println("        break;");
+        }
+        out.println("      default:");
+        out.println("        return 0;");
+        out.println("    }");
+        out.println("  }");
+
+        out.println("  protected int getFragmentStartState(int fragmentId) {");
+        out.println("    switch (fragmentId) {");
+        out.println("      case 0:");
+        out.println("        return " + hostFragment.scannerDFA.getStartState() + ";");
+        out.println("        break;");
+        for (int e = 0; e < extensionCount; e++) {
+            out.println("      case " + (e+1) + ":");
+            out.println("        return " + extensionFragments.get(e).scannerDFA.getStartState() + ";");
+            out.println("        break;");
+        }
+        out.println("      default:");
+        out.println("        return -1;"); // TODO fragment error
+        out.println("    }");
+        out.println("  }");
+
+        out.println("  protected int getFragmentEOFSymNum(int fragmentId) {");
+        out.println("    return " + hostFragment.fullSpec.getEOFTerminal() + ";");
+        out.println("  }");
+
         out.println("  protected int[] getProductionLengths(int fragmentId) {");
-        out.println("    return productionLengths[fragmentId]");
+        out.println("    return productionLengths[fragmentId];");
         out.println("  }");
 
         // TODO finish
