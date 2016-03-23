@@ -18,7 +18,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         public int fragmentId;
         public BitSet[] shiftableSets;
         public BitSet shiftableUnion;
-        public BitSet[] layoutSets;
         public BitSet[] prefixSets;
         public BitSet[][] prefixMaps;
         public int eofSymNum;
@@ -35,6 +34,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
 
     // Function from SingleDFAEngine that still need to be implemented
     public abstract int[][] getParseTable();
+    public abstract BitSet[] getLayoutSets();
     protected abstract void reportSyntaxError() throws EXCEPT;
 
     // New abstract functions
@@ -56,7 +56,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected abstract int getFragmentEOFSymNum(int fragmentId);
     protected abstract BitSet[][] getFragmentPrefixMaps(int fragmentId);
     protected abstract BitSet[] getFragmentPrefixSets(int fragmentId);
-    protected abstract BitSet[] getFragmentLayoutSets(int fragmentId);
     protected abstract int getFragmentTerminalUses(int fragmentId, int t);
     protected abstract BitSet getFragmentShiftableUnion(int fragmentId);
     protected abstract BitSet[] getFragmentShiftableSets(int fragmentId);
@@ -71,8 +70,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     public int[] getProductionLHSs() { throw new UnsupportedOperationException(); }
     @Override
     public BitSet[] getShiftableSets() { throw new UnsupportedOperationException(); }
-    @Override
-    public BitSet[] getLayoutSets() { throw new UnsupportedOperationException(); }
     @Override
     public BitSet[] getPrefixSets() { throw new UnsupportedOperationException(); }
     @Override
@@ -303,7 +300,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             int useAs = getFragmentTerminalUses(params.fragmentId, finalMatches.firstTerm);
             if(useAs == TERMINAL_VERSATILE)
             {
-                if(params.layoutSets[currentState.statenum].get(finalMatches.firstTerm)) useAs = TERMINAL_EXCLUSIVELY_LAYOUT;
+                if(getLayoutSets()[currentState.statenum].get(finalMatches.firstTerm)) useAs = TERMINAL_EXCLUSIVELY_LAYOUT;
                 else if(params.prefixSets[currentState.statenum].get(finalMatches.firstTerm)) useAs = TERMINAL_EXCLUSIVELY_PREFIX;
                 else useAs = TERMINAL_EXCLUSIVELY_SHIFTABLE;
             }
@@ -329,7 +326,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                             layouts.add(finalMatches);
                         }
                         shiftable = (BitSet) shiftable.clone();
-                        shiftable.andNot(params.layoutSets[currentState.statenum]);
+                        shiftable.andNot(getLayoutSets()[currentState.statenum]);
                     }
                     else
                     {
@@ -391,7 +388,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             fragmentScannerParams.fragmentId = fragmentId;
             fragmentScannerParams.shiftableSets = getFragmentShiftableSets(fragmentId);
             fragmentScannerParams.shiftableUnion = getFragmentShiftableUnion(fragmentId);
-            fragmentScannerParams.layoutSets = getFragmentLayoutSets(fragmentId);
             fragmentScannerParams.prefixSets = getFragmentPrefixSets(fragmentId);
             fragmentScannerParams.prefixMaps = getFragmentPrefixMaps(fragmentId);
             fragmentScannerParams.eofSymNum = getFragmentEOFSymNum(fragmentId);
