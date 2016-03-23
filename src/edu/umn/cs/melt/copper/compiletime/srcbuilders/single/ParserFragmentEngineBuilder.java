@@ -49,6 +49,7 @@ public class ParserFragmentEngineBuilder {
     private int[][] extTerminalUses;
     private int[] hostTerminalUses;
     private BitSet[] layoutSets;
+    private BitSet[] markingTerminalLayoutSets;
 
     private static class ObjectToHash {
         public Object obj;
@@ -243,8 +244,12 @@ public class ParserFragmentEngineBuilder {
         out.println("    return " + hostFragment.fullSpec.getEOFTerminal() + ";");
         out.println("  }");
 
-        out.println("  public " + BitSet.class.getName() + "[] getLayoutSets() {");
-        out.println("    return layoutSets;");
+        out.println("  public " + BitSet.class.getName() + "[] getFragmentLayoutSets(int fragmentId) {");
+        out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("      return markingTerminalLayoutSets;");
+        out.println("    } else {");
+        out.println("      return layoutSets;");
+        out.println("    }");
         out.println("  }");
 
         out.println("  protected int getFragmentTerminalUses(int fragmentId, int t) {");
@@ -267,6 +272,7 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(parseTable, "int[][]", "parseTable"));
         objectsToHash.add(new ObjectToHash(hostTerminalUses, "int[]", "hostTerminalUses"));
         objectsToHash.add(new ObjectToHash(extTerminalUses, "int[][]", "extTerminalUses"));
+        objectsToHash.add(new ObjectToHash(layoutSets, BitSet.class.getName() + "[]", "markingTerminalLayoutSets"));
         objectsToHash.add(new ObjectToHash(layoutSets, BitSet.class.getName() + "[]", "layoutSets"));
 
         generateMarkingTerminalScanner();
@@ -392,6 +398,12 @@ public class ParserFragmentEngineBuilder {
         }
 
         fillMarkingTerminalMetaData(markingTerminalDatas);
+
+        markingTerminalLayoutSets = new BitSet[totalStateCount];
+        BitSet empty = SingleDFAEngine.newBitVec(markingTerminalCount);
+        for (int state = 0; state < totalStateCount; state++) {
+            markingTerminalLayoutSets[state] = empty;
+        }
     }
 
     private void copyParseTable(int extensionId) {
