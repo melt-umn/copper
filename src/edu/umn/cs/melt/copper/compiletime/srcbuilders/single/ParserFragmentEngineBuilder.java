@@ -51,7 +51,8 @@ public class ParserFragmentEngineBuilder {
     private int[][] extTerminalUses;
     private int[] hostTerminalUses;
     private BitSet[] layoutSets;
-    private BitSet[] markingTerminalLayoutSets;
+    private BitSet[] prefixSets;
+    private BitSet[] markingTerminalEmptyStateSets;
 
     private static class ObjectToHash {
         public Object obj;
@@ -247,9 +248,17 @@ public class ParserFragmentEngineBuilder {
 
         out.println("  public " + BitSet.class.getName() + "[] getFragmentLayoutSets(int fragmentId) {");
         out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
-        out.println("      return markingTerminalLayoutSets;");
+        out.println("      return markingTerminalEmptyStateSets;");
         out.println("    } else {");
         out.println("      return layoutSets;");
+        out.println("    }");
+        out.println("  }");
+
+        out.println("  public " + BitSet.class.getName() + "[] getFragmentPrefixSets(int fragmentId) {");
+        out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("      return markingTerminalEmptyStateSets;");
+        out.println("    } else {");
+        out.println("      return prefixSets;");
         out.println("    }");
         out.println("  }");
 
@@ -275,8 +284,9 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(parseTable, "int[][]", "parseTable"));
         objectsToHash.add(new ObjectToHash(hostTerminalUses, "int[]", "hostTerminalUses"));
         objectsToHash.add(new ObjectToHash(extTerminalUses, "int[][]", "extTerminalUses"));
-        objectsToHash.add(new ObjectToHash(layoutSets, BitSet.class.getName() + "[]", "markingTerminalLayoutSets"));
+        objectsToHash.add(new ObjectToHash(markingTerminalEmptyStateSets, BitSet.class.getName() + "[]", "markingTerminalEmptyStateSets"));
         objectsToHash.add(new ObjectToHash(layoutSets, BitSet.class.getName() + "[]", "layoutSets"));
+        objectsToHash.add(new ObjectToHash(prefixSets, BitSet.class.getName() + "[]", "prefixSets"));
 
         generateMarkingTerminalScanner();
 
@@ -388,6 +398,8 @@ public class ParserFragmentEngineBuilder {
 
         parseTable = new int[totalStateCount][maxTableSymbols];
         layoutSets = new BitSet[totalStateCount];
+        prefixSets = new BitSet[totalStateCount];
+
         hostTerminalUses = new int[hostTerminalLength];
         copyParseTable(-1);
 
@@ -402,10 +414,10 @@ public class ParserFragmentEngineBuilder {
 
         fillMarkingTerminalMetaData(markingTerminalDatas);
 
-        markingTerminalLayoutSets = new BitSet[totalStateCount];
+        markingTerminalEmptyStateSets = new BitSet[totalStateCount];
         BitSet empty = SingleDFAEngine.newBitVec(markingTerminalCount);
         for (int state = 0; state < totalStateCount; state++) {
-            markingTerminalLayoutSets[state] = empty;
+            markingTerminalEmptyStateSets[state] = empty;
         }
     }
 
@@ -485,12 +497,11 @@ public class ParserFragmentEngineBuilder {
                 }
             }
 
-            if (isExtension) {
-                layoutSets[state + stateOffset] = SingleDFAEngine.newBitVec(extTerminalLengths[extensionId]);
-            } else {
-                layoutSets[state] = SingleDFAEngine.newBitVec(hostTerminalLength);
-            }
+            layoutSets[state + stateOffset] = SingleDFAEngine.newBitVec(isExtension ? extTerminalLengths[extensionId] : hostTerminalLength);
             layoutSets[state + stateOffset].or(layouts.getLayout(state));
+
+            prefixSets[state + stateOffset] = SingleDFAEngine.newBitVec(isExtension ? extTerminalLengths[extensionId] : hostTerminalLength);
+            prefixSets[state + stateOffset].or(prefixes.getPrefixes(state));
 
             for (int layout = layouts.getLayout(state).nextSetBit(0); layout >= 0; layout = layouts.getLayout(state).nextSetBit(layout + 1)) {
                 if (isExtension) {
