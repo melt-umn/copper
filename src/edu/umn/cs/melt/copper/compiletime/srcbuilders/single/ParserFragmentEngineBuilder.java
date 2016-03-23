@@ -57,6 +57,9 @@ public class ParserFragmentEngineBuilder {
     private BitSet[][] markingTerminalEmptyPrefixMaps;
     private BitSet[] shiftableSets;
     private BitSet[] markingTerminalShiftableSets;
+    private BitSet[] extShiftableUnion;
+    private BitSet hostStateShiftableUnion;
+    private BitSet markingTerminalShiftableUnion;
 
     private static class ObjectToHash {
         public Object obj;
@@ -284,6 +287,14 @@ public class ParserFragmentEngineBuilder {
         out.println("    }");
         out.println("  }");
 
+        out.println("  public " + BitSet.class.getName() + " getFragmentShiftableUnion(int fragmentId) {");
+        out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("      return markingTerminalShiftableUnion;");
+        out.println("    } else {");
+        out.println("      return extShiftableUnion[fragmentId - 1];");
+        out.println("    }");
+        out.println("  }");
+
         out.println("  public " + BitSet.class.getName() + "[] getFragmentShiftableSets(int fragmentId) {");
         out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
         out.println("      return markingTerminalShiftableSets;");
@@ -310,6 +321,8 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(prefixMaps, BitSet.class.getName() + "[][]", "prefixMaps"));
         objectsToHash.add(new ObjectToHash(markingTerminalEmptyPrefixMaps, BitSet.class.getName() + "[][]", "markingTerminalEmptyPrefixMaps"));
         objectsToHash.add(new ObjectToHash(shiftableSets, BitSet.class.getName() + "[]", "shiftableSets"));
+        objectsToHash.add(new ObjectToHash(extShiftableUnion, BitSet.class.getName() + "[]", "extShiftableUnion"));
+        objectsToHash.add(new ObjectToHash(markingTerminalShiftableUnion, BitSet.class.getName(), "markingTerminalShiftableUnion"));
 
         generateMarkingTerminalScanner();
 
@@ -426,15 +439,19 @@ public class ParserFragmentEngineBuilder {
         shiftableSets = new BitSet[totalStateCount];
 
         hostTerminalUses = new int[hostTerminalLength];
+        hostStateShiftableUnion = SingleDFAEngine.newBitVec(hostTerminalLength);
         copyParseTable(-1);
 
         extTerminalUses = new int[extensionCount][];
+        extShiftableUnion = new BitSet[extensionCount];
         for (int i = 0; i < extensionCount; i++) {
             ExtensionFragmentData fragment = extensionFragments.get(i);
             ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
 
             extTerminalUses[i] = new int[extTerminalLengths[i]];
+            extShiftableUnion[i] = SingleDFAEngine.newBitVec(extTerminalLengths[i]);
             copyParseTable(i);
+            extShiftableUnion[i].or(hostStateShiftableUnion);
         }
 
         fillMarkingTerminalMetaData(markingTerminalDatas);
@@ -458,8 +475,10 @@ public class ParserFragmentEngineBuilder {
         ExtensionMappingSpec extSpec = null;
         BitSet extTerminals = null;
         BitSet extNonterminals = null;
+        BitSet offsetExtNonterminals = null;
         LRLookaheadAndLayoutSets layouts = null;
         TransparentPrefixes prefixes = null;
+        BitSet shiftableUnion = null;
 
         boolean isExtension = extensionId >= 0;
         int stateOffset = 0;
@@ -469,13 +488,21 @@ public class ParserFragmentEngineBuilder {
             extSpec = extensionFragmentData.extensionMappingSpec;
             extTerminals = extSpec.extensionTerminalIndices;
             extNonterminals = extSpec.extensionNonterminalIndices;
+
+            offsetExtNonterminals = new BitSet();
+            for (int nt = extNonterminals.nextSetBit(0); nt >= 0; nt = extNonterminals.nextSetBit(nt + 1)) {
+                offsetExtNonterminals.set(extSpec.tableOffsetExtensionIndex(nt));
+            }
+
             stateOffset = extStateOffset[extensionId];
             layouts = extensionFragmentData.extensionLookaheadAndLayoutSets;
             prefixes = extensionFragmentData.transparentPrefixes;
+            shiftableUnion = extShiftableUnion[extensionId];
         } else {
             table = hostFragment.parseTable;
             layouts = hostFragment.lookaheadSets;
             prefixes = hostFragment.prefixes;
+            shiftableUnion = hostStateShiftableUnion;
         }
 
         int symType;
@@ -537,6 +564,10 @@ public class ParserFragmentEngineBuilder {
             prefixSets[state + stateOffset].or(prefixes.getPrefixes(state));
             shiftableSets[state + stateOffset].or(prefixes.getPrefixes(state));
 
+            shiftableSets[state + stateOffset].andNot(isExtension ? offsetExtNonterminals : hostNonterminals);
+
+            shiftableUnion.or(shiftableSets[state + stateOffset]);
+
             for (int layout = layouts.getLayout(state).nextSetBit(0); layout >= 0; layout = layouts.getLayout(state).nextSetBit(layout + 1)) {
                 if (isExtension) {
                     extTerminalUses[extensionId][layout] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_LAYOUT;
@@ -562,6 +593,9 @@ public class ParserFragmentEngineBuilder {
 
     private void fillMarkingTerminalMetaData(List<MarkingTerminalData> markingTerminalDatas) {
         markingTerminalShiftableSets = new BitSet[totalStateCount];
+
+        markingTerminalShiftableUnion = SingleDFAEngine.newBitVec(markingTerminalCount);
+        markingTerminalShiftableUnion.set(0, markingTerminalCount);
 
         for (int state = 0; state < hostStateCount; state++) {
             markingTerminalShiftableSets[state] = SingleDFAEngine.newBitVec(markingTerminalCount);
