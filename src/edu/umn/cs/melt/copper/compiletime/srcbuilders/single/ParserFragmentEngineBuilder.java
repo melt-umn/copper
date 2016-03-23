@@ -55,6 +55,8 @@ public class ParserFragmentEngineBuilder {
     private BitSet[] markingTerminalEmptyStateSets;
     private BitSet[][] prefixMaps;
     private BitSet[][] markingTerminalEmptyPrefixMaps;
+    private BitSet[] shiftableSets;
+    private BitSet[] markingTerminalShiftableSets;
 
     private static class ObjectToHash {
         public Object obj;
@@ -282,6 +284,14 @@ public class ParserFragmentEngineBuilder {
         out.println("    }");
         out.println("  }");
 
+        out.println("  public " + BitSet.class.getName() + "[] getFragmentShiftableSets(int fragmentId) {");
+        out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("      return markingTerminalShiftableSets;");
+        out.println("    } else {");
+        out.println("      return shiftableSets;");
+        out.println("    }");
+        out.println("  }");
+
         // TODO finish
     }
 
@@ -299,6 +309,7 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(prefixSets, BitSet.class.getName() + "[]", "prefixSets"));
         objectsToHash.add(new ObjectToHash(prefixMaps, BitSet.class.getName() + "[][]", "prefixMaps"));
         objectsToHash.add(new ObjectToHash(markingTerminalEmptyPrefixMaps, BitSet.class.getName() + "[][]", "markingTerminalEmptyPrefixMaps"));
+        objectsToHash.add(new ObjectToHash(shiftableSets, BitSet.class.getName() + "[]", "shiftableSets"));
 
         generateMarkingTerminalScanner();
 
@@ -412,6 +423,7 @@ public class ParserFragmentEngineBuilder {
         layoutSets = new BitSet[totalStateCount];
         prefixSets = new BitSet[totalStateCount];
         prefixMaps = new BitSet[totalStateCount][];
+        shiftableSets = new BitSet[totalStateCount];
 
         hostTerminalUses = new int[hostTerminalLength];
         copyParseTable(-1);
@@ -514,11 +526,16 @@ public class ParserFragmentEngineBuilder {
                 }
             }
 
+            shiftableSets[state + stateOffset] = SingleDFAEngine.newBitVec(isExtension ? extTerminalLengths[extensionId] : hostTerminalLength);
+            shiftableSets[state + stateOffset].or(table.getValidLA(state));
+
             layoutSets[state + stateOffset] = SingleDFAEngine.newBitVec(isExtension ? extTerminalLengths[extensionId] : hostTerminalLength);
             layoutSets[state + stateOffset].or(layouts.getLayout(state));
+            shiftableSets[state + stateOffset].or(layouts.getLayout(state));
 
             prefixSets[state + stateOffset] = SingleDFAEngine.newBitVec(isExtension ? extTerminalLengths[extensionId] : hostTerminalLength);
             prefixSets[state + stateOffset].or(prefixes.getPrefixes(state));
+            shiftableSets[state + stateOffset].or(prefixes.getPrefixes(state));
 
             for (int layout = layouts.getLayout(state).nextSetBit(0); layout >= 0; layout = layouts.getLayout(state).nextSetBit(layout + 1)) {
                 if (isExtension) {
@@ -544,12 +561,17 @@ public class ParserFragmentEngineBuilder {
     }
 
     private void fillMarkingTerminalMetaData(List<MarkingTerminalData> markingTerminalDatas) {
+        markingTerminalShiftableSets = new BitSet[totalStateCount];
+
         for (int state = 0; state < hostStateCount; state++) {
+            markingTerminalShiftableSets[state] = SingleDFAEngine.newBitVec(markingTerminalCount);
+
             BitSet stateInitNTs = hostFragment.initNTs[state];
             for (int nt = stateInitNTs.nextSetBit(0); nt >= 0; nt = stateInitNTs.nextSetBit(nt + 1)) {
                 for (MarkingTerminalData mtData: markingTerminalDatas) {
                     if (nt == mtData.hostLHS) {
                         parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_SHIFT, mtData.offsetTransitionState);
+                        markingTerminalShiftableSets[state].set(mtData.endIndex - markingTerminalOffset);
                     }
                 }
             }
@@ -559,6 +581,7 @@ public class ParserFragmentEngineBuilder {
                 if (productions != null && !productions.isEmpty()) {
                     for (int production: productions) {
                         parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, production);
+                        markingTerminalShiftableSets[state].set(mtData.endIndex - markingTerminalOffset);
                     }
                 }
             }
@@ -568,11 +591,15 @@ public class ParserFragmentEngineBuilder {
             ExtensionFragmentData fragment = extensionFragments.get(extensionId);
             for (int state = 0; state < fragment.appendedExtensionTable.size(); state++) {
                 int offsetState = state + extStateOffset[extensionId];
+
+                markingTerminalShiftableSets[offsetState] = SingleDFAEngine.newBitVec(markingTerminalCount);
+
                 BitSet stateInitNTs = fragment.initNTs[state];
                 for (int nt = stateInitNTs.nextSetBit(0); nt >= 0; nt = stateInitNTs.nextSetBit(nt + 1)) {
                     for (MarkingTerminalData mtData: markingTerminalDatas) {
                         if (nt == mtData.hostLHS) {
                             parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_SHIFT, mtData.offsetTransitionState);
+                            markingTerminalShiftableSets[offsetState].set(mtData.endIndex - markingTerminalOffset);
                         }
                     }
                 }
@@ -583,6 +610,7 @@ public class ParserFragmentEngineBuilder {
                         for (int production: productions) {
                             // TODO action productions can't be negative!
                             parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, production);
+                            markingTerminalShiftableSets[offsetState].set(mtData.endIndex - markingTerminalOffset);
                         }
                     }
                 }
