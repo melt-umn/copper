@@ -120,13 +120,13 @@ public class ExtensionFragmentDataBuilder {
         LRLookaheadAndLayoutSets extensionSets = new LRLookaheadAndLayoutSets(extensionStateCount, maxItemCount);
         for (int extState = 0; extState < extensionStateCount; extState++) {
             int composedState = mappingSpec.extensionToComposedStates.get(extState);
-            mappingSpec.translateSymbolBitSetWithOffset(fullLookaheadAndLayoutSets.getLayout(composedState), extensionSets.getLayout(extState));
+            mappingSpec.translateSymbolBitSetWithTableOffset(fullLookaheadAndLayoutSets.getLayout(composedState), extensionSets.getLayout(extState));
             for (int item = 0; item < maxItemCount; item++) {
                 if (fullLookaheadAndLayoutSets.getLookahead(composedState, item) != null) {
-                    mappingSpec.translateSymbolBitSetWithOffset(fullLookaheadAndLayoutSets.getLookahead(composedState, item), extensionSets.getLookahead(extState, item));
+                    mappingSpec.translateSymbolBitSetWithTableOffset(fullLookaheadAndLayoutSets.getLookahead(composedState, item), extensionSets.getLookahead(extState, item));
                 }
                 if (fullLookaheadAndLayoutSets.getItemLASources(composedState, item) != null) {
-                    mappingSpec.translateSymbolBitSetWithOffset(fullLookaheadAndLayoutSets.getItemLASources(composedState, item), extensionSets.getItemLASources(extState, item));
+                    mappingSpec.translateSymbolBitSetWithTableOffset(fullLookaheadAndLayoutSets.getItemLASources(composedState, item), extensionSets.getItemLASources(extState, item));
                 }
             }
         }

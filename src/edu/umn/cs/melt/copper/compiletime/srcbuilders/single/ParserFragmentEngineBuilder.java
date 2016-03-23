@@ -1,8 +1,9 @@
 package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
 
 import edu.umn.cs.melt.copper.compiletime.builders.*;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
-import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
@@ -45,7 +46,7 @@ public class ParserFragmentEngineBuilder {
     private ArrayList<MarkingTerminalData> markingTerminalDatas;
     private int markingTerminalOffset;
     private int markingTerminalCount;
-    private int[][] terminalUses;
+    private int[][] extTerminalUses;
     private int[] hostTerminalUses;
 
     private static class ObjectToHash {
@@ -243,9 +244,11 @@ public class ParserFragmentEngineBuilder {
 
         out.println("  protected int getFragmentTerminalUses(int fragmentId, int t) {");
         out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
-        out.println("      return terminalUses[fragmentId][t];");
+        out.println("      return " + SingleDFAEngine.TERMINAL_EXCLUSIVELY_SHIFTABLE + ";");
+        out.println("    } else if (t >= hostTerminalUses.length) {");
+        out.println("      return extTerminalUses[fragmentId - 1][t];");
         out.println("    } else {");
-        out.println("      return hostTerminalUses[t] & terminalUses[fragmentId][t];");
+        out.println("      return hostTerminalUses[t] & extTerminalUses[fragmentId - 1][t];");
         out.println("    }");
         out.println("  }");
 
@@ -258,7 +261,7 @@ public class ParserFragmentEngineBuilder {
         makeParseTableAndSets();
         objectsToHash.add(new ObjectToHash(parseTable, "int[][]", "parseTable"));
         objectsToHash.add(new ObjectToHash(hostTerminalUses, "int[]", "hostTerminalUses"));
-        objectsToHash.add(new ObjectToHash(terminalUses, "int[][]", "terminalUses"));
+        objectsToHash.add(new ObjectToHash(extTerminalUses, "int[][]", "extTerminalUses"));
 
         generateMarkingTerminalScanner();
 
@@ -368,36 +371,49 @@ public class ParserFragmentEngineBuilder {
         }
         markingTerminalCount = markingTerminalDatas.size();
 
-        terminalUses[MARKING_TERMINAL_FRAGMENT_ID] = new int[markingTerminalCount];
-        // TODO fill this
-
         parseTable = new int[totalStateCount][maxTableSymbols];
         hostTerminalUses = new int[hostFragment.fullSpec.terminals.length()];
-        copyParseTable(hostFragment.parseTable, hostFragment.fullSpec.terminals, hostFragment.fullSpec.nonterminals, -1, null, null);
+        copyParseTable(-1);
         for (int i = 0; i < extensionCount; i++) {
             ExtensionFragmentData fragment = extensionFragments.get(i);
             ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
 
-            terminalUses[i + 1] = new int[spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length())];
-            copyParseTable(fragment.appendedExtensionTable, spec.hostTerminalIndices, spec.hostNonterminalIndices, i, spec.extensionTerminalIndices, spec.extensionNonterminalIndices);
+            extTerminalUses[i] = new int[spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length())];
+            copyParseTable(i);
         }
 
         fillMarkingTerminalMetaData(markingTerminalDatas);
     }
 
-    private void copyParseTable(LRParseTable table, BitSet hostTerminals, BitSet hostNonterminals, int extensionId, BitSet extTerminals, BitSet extNonterminals) {
-        int symType;
-
-        boolean isExtension = extensionId >= 0;
+    private void copyParseTable(int extensionId) {
+        LRParseTable table = null;
+        BitSet hostTerminals = hostFragment.fullSpec.terminals;
+        BitSet hostNonterminals = hostFragment.fullSpec.nonterminals;
         ExtensionFragmentData extensionFragmentData = null;
         ExtensionMappingSpec extSpec = null;
+        BitSet extTerminals = null;
+        BitSet extNonterminals = null;
+        LRLookaheadAndLayoutSets layouts = null;
+        TransparentPrefixes prefixes = null;
+
+        boolean isExtension = extensionId >= 0;
         int stateOffset = 0;
         if (isExtension) {
             extensionFragmentData = extensionFragments.get(extensionId);
+            table = extensionFragmentData.appendedExtensionTable;
             extSpec = extensionFragmentData.extensionMappingSpec;
+            extTerminals = extSpec.extensionTerminalIndices;
+            extNonterminals = extSpec.extensionNonterminalIndices;
             stateOffset = extStateOffset[extensionId];
+            layouts = extensionFragmentData.extensionLookaheadAndLayoutSets;
+            prefixes = extensionFragmentData.transparentPrefixes;
+        } else {
+            table = hostFragment.parseTable;
+            layouts = hostFragment.lookaheadSets;
+            prefixes = hostFragment.prefixes;
         }
 
+        int symType;
         for (int state = 0; state < table.size(); state++) {
             for (int t = table.getValidLA(state).nextSetBit(0); t >= 0; t = table.getValidLA(state).nextSetBit(t+1)) {
                 boolean isTerminal, isNonterminal;
@@ -412,7 +428,7 @@ public class ParserFragmentEngineBuilder {
 
                 int actionParameter = table.getActionParameter(state, t);
 
-                if(isTerminal) {
+                if (isTerminal) {
                     byte actionType = table.getActionType(state, t);
 
                     if (actionType == LRParseTable.ERROR) {
@@ -433,7 +449,7 @@ public class ParserFragmentEngineBuilder {
 
                     parseTable[state + stateOffset][t] = SingleDFAEngine.newAction(symType, actionParameter);
                     if (isExtension) {
-                        terminalUses[extensionId][t] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_SHIFTABLE;
+                        extTerminalUses[extensionId][t] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_SHIFTABLE;
                     } else {
                         hostTerminalUses[t] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_SHIFTABLE;
                     }
@@ -442,6 +458,22 @@ public class ParserFragmentEngineBuilder {
                         actionParameter = ExtensionMappingSpec.decodeExtensionIndex(actionParameter) + extStateOffset[extensionId];
                     }
                     parseTable[state + stateOffset][t] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_GOTO, actionParameter);
+                }
+            }
+
+            for (int layout = layouts.getLayout(state).nextSetBit(0); layout >= 0; layout = layouts.getLayout(state).nextSetBit(layout + 1)) {
+                if (isExtension) {
+                    extTerminalUses[extensionId][layout] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_LAYOUT;
+                } else {
+                    hostTerminalUses[layout] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_LAYOUT;
+                }
+            }
+
+            for (int prefix = prefixes.getPrefixes(state).nextSetBit(0); prefix >= 0; prefix = prefixes.getPrefixes(state).nextSetBit(prefix + 1)) {
+                if (isExtension) {
+                    extTerminalUses[extensionId][prefix] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_PREFIX;
+                } else {
+                    hostTerminalUses[prefix] &= SingleDFAEngine.TERMINAL_EXCLUSIVELY_PREFIX;
                 }
             }
         }
