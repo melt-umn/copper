@@ -33,6 +33,8 @@ public class ParserFragmentEngineBuilder {
 
     private int extensionCount;
     private int fragmentCount;
+    private int hostTerminalLength;
+    private int[] extTerminalLengths;
 
     private int[] extStateOffset;
 
@@ -71,6 +73,13 @@ public class ParserFragmentEngineBuilder {
 
         this.extensionCount = extensionFragments.size();
         this.fragmentCount = this.extensionCount + 1;
+
+        this.hostTerminalLength = hostFragment.fullSpec.terminals.length();
+        this.extTerminalLengths = new int[extensionCount];
+        for (int e = 0; e < this.extensionCount; e++) {
+            ExtensionMappingSpec spec = this.extensionFragments.get(e).extensionMappingSpec;
+            this.extTerminalLengths[e] = spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length());
+        }
     }
 
     public void buildEngine(
@@ -208,27 +217,19 @@ public class ParserFragmentEngineBuilder {
         out.println("    return possibleSetss[fragmentId];");
         out.println("  }");
 
-        // TODO convert to array access
         out.println("  protected int getFragmentTerminalCount(int fragmentId) {");
-        out.println("    switch (fragmentId) {");
-        out.println("      case 0:");
-        out.println("        return " + hostFragment.fullSpec.terminals.length() + ";");
-        out.println("        break;");
-        for (int e = 0; e < extensionCount; e++) {
-            ExtensionMappingSpec spec = extensionFragments.get(e).extensionMappingSpec;
-            out.println("      case " + (e+1) + ":");
-            out.println("        return " + spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length()) + ";");
-            out.println("        break;");
-        }
-        out.println("      default:");
-        out.println("        return 0;");
+        out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("      return " + markingTerminalCount + ";");
+        out.println("    } else {");
+        out.println("      return extTerminalLengths[fragmentId - 1];");
         out.println("    }");
         out.println("  }");
 
+        // TODO convert to array access?
         out.println("  protected int getFragmentStartState(int fragmentId) {");
         out.println("    switch (fragmentId) {");
         out.println("      case 0:");
-        out.println("        return " + hostFragment.scannerDFA.getStartState() + ";");
+        out.println("        return " + markingTerminalScannerDFA.getStartState() + ";");
         out.println("        break;");
         for (int e = 0; e < extensionCount; e++) {
             out.println("      case " + (e+1) + ":");
@@ -267,6 +268,8 @@ public class ParserFragmentEngineBuilder {
 
     private void makeObjectsToBeHashed() {
         objectsToHash = new ArrayList<ObjectToHash>();
+
+        objectsToHash.add(new ObjectToHash(extTerminalLengths, "int[]", "extTerminalLengths"));
 
         makeParseTableAndSets();
         objectsToHash.add(new ObjectToHash(parseTable, "int[][]", "parseTable"));
@@ -385,7 +388,7 @@ public class ParserFragmentEngineBuilder {
 
         parseTable = new int[totalStateCount][maxTableSymbols];
         layoutSets = new BitSet[totalStateCount];
-        hostTerminalUses = new int[hostFragment.fullSpec.terminals.length()];
+        hostTerminalUses = new int[hostTerminalLength];
         copyParseTable(-1);
 
         extTerminalUses = new int[extensionCount][];
@@ -393,7 +396,7 @@ public class ParserFragmentEngineBuilder {
             ExtensionFragmentData fragment = extensionFragments.get(i);
             ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
 
-            extTerminalUses[i] = new int[spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length())];
+            extTerminalUses[i] = new int[extTerminalLengths[i]];
             copyParseTable(i);
         }
 
@@ -483,9 +486,9 @@ public class ParserFragmentEngineBuilder {
             }
 
             if (isExtension) {
-                layoutSets[state + stateOffset] = SingleDFAEngine.newBitVec(extSpec.tableOffsetExtensionIndex(extSpec.extensionTerminalIndices.length()));
+                layoutSets[state + stateOffset] = SingleDFAEngine.newBitVec(extTerminalLengths[extensionId]);
             } else {
-                layoutSets[state] = SingleDFAEngine.newBitVec(hostFragment.fullSpec.terminals.length());
+                layoutSets[state] = SingleDFAEngine.newBitVec(hostTerminalLength);
             }
             layoutSets[state + stateOffset].or(layouts.getLayout(state));
 
