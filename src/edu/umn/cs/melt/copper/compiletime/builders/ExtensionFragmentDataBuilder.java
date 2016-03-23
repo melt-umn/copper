@@ -177,7 +177,8 @@ public class ExtensionFragmentDataBuilder {
 
         for (int i = 0; i < extensionStateCount; i++) {
             int composedStateNumber = mappingSpec.extensionToComposedStates.get(i);
-            for (int symbol = 0; symbol < fullSpecSymbolCount; symbol++) {
+            BitSet validLA = fullParseTable.getValidLA(composedStateNumber);
+            for (int symbol = validLA.nextSetBit(0); symbol >= 0; symbol = validLA.nextSetBit(symbol + 1)) {
                 int convertedSymbol = mappingSpec.translateAndTableOffsetComposedSymbol(symbol);
 
                 byte actionType = fullParseTable.getActionType(composedStateNumber, symbol);
