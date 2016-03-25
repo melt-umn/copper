@@ -6,13 +6,20 @@ import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserAttribute;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
+import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
+import edu.umn.cs.melt.copper.runtime.engines.semantics.SpecialParserAttributes;
 import edu.umn.cs.melt.copper.runtime.engines.single.ParserFragmentEngine;
 import edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine;
+import edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData;
+import edu.umn.cs.melt.copper.runtime.engines.single.semantics.SingleDFASemanticActionContainer;
+import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 
@@ -67,6 +74,8 @@ public class ParserFragmentEngineBuilder {
     private Map<Integer, Pair<Integer, Integer>> productionMapBack;
     private int[] productionCounts;
     private int[] productionLHSs;
+    private String rootType;
+    private String errorType;
 
     private static class ObjectToHash {
         public Object obj;
@@ -109,13 +118,15 @@ public class ParserFragmentEngineBuilder {
         printSignature(out);
         printDecls(out, packageDecl, importDecls);
 
-        String rootType = hostFragment.symbolTable.getNonTerminal(hostFragment.fullSpec.pr.getRHSSym(hostFragment.fullSpec.getStartProduction(), 0)).getReturnType();
+        rootType = hostFragment.symbolTable.getNonTerminal(hostFragment.fullSpec.pr.getRHSSym(hostFragment.fullSpec.getStartProduction(), 0)).getReturnType();
         rootType = rootType == null ? Object.class.getName() : rootType;
-        String errorType = CopperParserException.class.getName();
+        errorType = CopperParserException.class.getName();
 
         out.println("public class " + parserName + " extends " + ParserFragmentEngine.class.getName() + "<" + rootType + "," + errorType + "> {");
 
-        printFixedMethods(out, errorType);
+        makeObjectsToBeHashed();
+
+        printFixedMethods(out);
 
         printFragmentMethods(out);
 
@@ -124,8 +135,8 @@ public class ParserFragmentEngineBuilder {
         // TODO write methods related to transition
 
         // TODO print Semantics class and implement related methods (including instatiate Semantics in startEngine)
+        writeSemanticsClass(out);
 
-        makeObjectsToBeHashed();
         writeHashes(out);
 
         // TODO write "parserAncillaries" -- var decls and getters
@@ -137,6 +148,118 @@ public class ParserFragmentEngineBuilder {
         writeStaticMemberInitializations(out);
 
         out.println("}");
+    }
+
+    private void writeSemanticsClass(PrintStream out) {
+        out.println("  public class Semantics extends " + SingleDFASemanticActionContainer.class.getName() + "<" + errorType + "> {");
+
+        /* TODO -- SemanticActionAuxCode? -- seems pretty important
+        if(parser.getSemanticActionAuxCode() != null) out.print(parser.getSemanticActionAuxCode());
+        for(int attrN = spec.parserAttributes.nextSetBit(0);attrN >= 0;attrN = spec.parserAttributes.nextSetBit(attrN+1))
+        {
+            ParserAttribute attr = symbolTable.getParserAttribute(attrN);
+            out.print("        public " + attr.getAttributeType() + " " + generateVariableName(attrN) + ";\n");
+        }
+        */
+
+        out.println("    public Semantics() throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("      runInit();");
+        out.println("    }");
+
+        out.println("    public void error(" + InputPosition.class.getName() + " pos," + String.class.getName() + " message) throws " + errorType + " {");
+        out.println("      reportError(\"Error at \" + pos.toString() + \":\\n  \" + message);");
+        out.println("    }");
+
+        out.println("    public void runDefaultTermAction() throws " + IOException.class.getName() + "," + errorType + " {");
+        // TODO ; if(parser.getDefaultTerminalCode() != null) out.println("            " + parser.getDefaultTerminalCode() + "");
+        out.println("    }");
+
+        out.println("    public void runDefaultProdAction() throws " + IOException.class.getName() + "," + errorType + " {");
+        /// TODO ; if(parser.getDefaultProductionCode() != null) out.println("            " + parser.getDefaultProductionCode() + "");
+        out.println("    }");
+
+        out.println("    public void runInit() throws " + IOException.class.getName() + "," + errorType + " {");
+        /* TODO
+        if(parser.getParserInitCode() != null) out.print("            " + parser.getParserInitCode());// grammar.getParserSources().getParserAttrInitCode());
+        for(int attrN = spec.parserAttributes.nextSetBit(0);attrN >= 0;attrN = spec.parserAttributes.nextSetBit(attrN+1))
+        {
+            ParserAttribute attr = symbolTable.getParserAttribute(attrN);
+            if(attr.getCode() != null) out.print("            " + attr.getCode() + "\n");
+        }
+        */
+        out.println("    }");
+
+        writeRunSemanticAction(out);
+
+        out.println("  }");
+    }
+
+    private void writeRunSemanticAction(PrintStream out) {
+        // Object runSemanticAction(InputPosition _pos, Object[] _children, int _prod)
+        out.println("    public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos, " + Object.class.getName() + "[] _children, int _prod)");
+        out.println("    throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("      this._pos = _pos;");
+        out.println("      this._children = _children;");
+        out.println("      this._prod = _prod;");
+        out.println("      this._specialAttributes = new " + SpecialParserAttributes.class.getName() + "(virtualLocation);");
+        out.println("      " + Object.class.getName() + " RESULT = null;");
+        out.println("      switch (_prod) {");
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : productionMapBack.entrySet()) {
+            int p = entry.getKey();
+            int fragment = entry.getValue().first();
+            int fragmentIndex = entry.getValue().second();
+
+            PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
+            String productionCode = symbolTable.getProduction(fragmentIndex).getCode();
+            if (fragment == 0 && fragmentIndex == hostFragment.fullSpec.getStartProduction()) {
+                continue;
+            } else if (productionCode != null && !QuotedStringFormatter.isJavaWhitespace(productionCode)) {
+                out.println("        case " + p + ":");
+                out.println("          RESULT = runSemanticAction_" + p + "();");
+                out.println("          break;");
+            }
+        }
+        out.println("        default:");
+        out.println("          runDefaultProdAction();");
+        out.println("          break;");
+        out.println("      }");
+        out.println("      return RESULT;");
+        out.println("    }");
+
+        out.println("    public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " _terminal)");
+        out.println("    throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("      this._pos = _pos;");
+        out.println("      this._terminal = _terminal;");
+        out.println("      this._specialAttributes = new " + SpecialParserAttributes.class.getName() + "(virtualLocation);");
+        out.println("      String lexeme = _terminal.lexeme;");
+        out.println("      " + Object.class.getName() + " RESULT = null;");
+        out.println("      switch(_terminal.firstTerm) {");
+        for (int fragmentId = 0; fragmentId < fragmentCount; fragmentId++) {
+            int extensionId = fragmentId - 1;
+            boolean isExtension = fragmentId != 0;
+            ExtensionMappingSpec extSpec = isExtension ? extensionFragments.get(extensionId).extensionMappingSpec : null;
+            BitSet terminals = isExtension ? extSpec.extensionTerminalIndices : hostFragment.fullSpec.terminals;
+            PSSymbolTable symbolTable = isExtension ? extSpec.extensionSymbolTable : hostFragment.symbolTable;
+            for (int t = terminals.nextSetBit(0); t >= 0; t = terminals.nextSetBit(t + 1)) {
+                if (!isExtension && t == hostFragment.fullSpec.getEOFTerminal()) {
+                    continue;
+                } else {
+                    String code = symbolTable.getTerminal(t).getCode();
+                    if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                        int offsetT = isExtension ? extSpec.tableOffsetExtensionIndex(t) : t;
+                        out.println("        case " + offsetT + ":");
+                        out.println("          RESULT = runSemanticAction_" + offsetT + "(lexeme);");
+                        out.println("          break;");
+                    }
+                }
+            }
+        }
+        out.println("        default:");
+        out.println("          runDefaultTermAction();");
+        out.println("          break;");
+        out.println("      }");
+        out.println("      return RESULT;");
+        out.println("    }");
     }
 
     private void printSignature(PrintStream out) {
@@ -157,7 +280,7 @@ public class ParserFragmentEngineBuilder {
         }
     }
 
-    private void printFixedMethods(PrintStream out, String errorType) {
+    private void printFixedMethods(PrintStream out) {
         out.println("  protected String formatError(String error) {");
         out.println("    String location = \"\";");
         out.println("    location += \"line \" + virtualLocation.getLine() + \", column \" + virtualLocation.getColumn();");
