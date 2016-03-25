@@ -9,6 +9,7 @@ import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserAttribute;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
@@ -179,7 +180,7 @@ public class ParserFragmentEngineBuilder {
         out.println("    }");
 
         out.println("    public void runInit() throws " + IOException.class.getName() + "," + errorType + " {");
-        /* TODO
+        /* TODO fill parserInitCode
         if(parser.getParserInitCode() != null) out.print("            " + parser.getParserInitCode());// grammar.getParserSources().getParserAttrInitCode());
         for(int attrN = spec.parserAttributes.nextSetBit(0);attrN >= 0;attrN = spec.parserAttributes.nextSetBit(attrN+1))
         {
@@ -190,6 +191,17 @@ public class ParserFragmentEngineBuilder {
         out.println("    }");
 
         writeRunSemanticAction(out);
+        writeRunProductionSemanticAction(out);
+
+        out.println("    public void runPostParseCode(" + Object.class.getName() + " __root) {");
+        /* TODO fill runPostParseCode
+        if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
+        {
+            out.println("      " + rootType + " root = (" + rootType + ") __root;");
+            out.println("      " + parser.getPostParseCode());
+        }
+        */
+        out.println("    }");
 
         out.println("  }");
     }
@@ -215,7 +227,7 @@ public class ParserFragmentEngineBuilder {
                 continue;
             } else if (productionCode != null && !QuotedStringFormatter.isJavaWhitespace(productionCode)) {
                 out.println("        case " + p + ":");
-                out.println("          RESULT = runSemanticAction_" + p + "();");
+                out.println("          RESULT = runSemanticAction_p" + p + "();");
                 out.println("          break;");
             }
         }
@@ -248,7 +260,7 @@ public class ParserFragmentEngineBuilder {
                     if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
                         int offsetT = isExtension ? extSpec.tableOffsetExtensionIndex(t) : t;
                         out.println("        case " + offsetT + ":");
-                        out.println("          RESULT = runSemanticAction_" + offsetT + "(lexeme);");
+                        out.println("          RESULT = runSemanticAction_t" + offsetT + "(lexeme);");
                         out.println("          break;");
                     }
                 }
@@ -260,6 +272,76 @@ public class ParserFragmentEngineBuilder {
         out.println("      }");
         out.println("      return RESULT;");
         out.println("    }");
+    }
+
+    private void writeRunProductionSemanticAction(PrintStream out) {
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : productionMapBack.entrySet()) {
+            int p = entry.getKey();
+            int fragment = entry.getValue().first();
+            int fragmentP = entry.getValue().second();
+
+            boolean isExtension = fragment > 0;
+
+            ExtensionMappingSpec extSpec = isExtension ? extensionFragments.get(fragment - 1).extensionMappingSpec : null;
+            PSSymbolTable symbolTable = isExtension ? extSpec.extensionSymbolTable : hostFragment.symbolTable;
+            String productionCode = symbolTable.getProduction(fragmentP).getCode();
+            ParserSpec.ProductionData pr = isExtension ? extSpec.pr : hostFragment.fullSpec.pr;
+
+            if (fragment == 0 && fragmentP == hostFragment.fullSpec.getStartProduction()) {
+                continue;
+            } else if (productionCode == null || QuotedStringFormatter.isJavaWhitespace(productionCode)) {
+                continue;
+            }
+
+            //String returnType = symbolTable.getNonTerminal(pr.getLHS(fragmentP)).getReturnType();
+            String returnType = null;
+            if (isExtension) {
+                int tableLHS = pr.getLHS(fragmentP);
+                if (tableLHS > extSpec.extensionSymbolTableOffset) {
+                    returnType = symbolTable.getNonTerminal(tableLHS - extSpec.extensionSymbolTableOffset).getReturnType();
+                } else {
+                    returnType = hostFragment.symbolTable.getNonTerminal(tableLHS).getReturnType();
+                }
+            } else {
+                returnType = symbolTable.getNonTerminal(pr.getLHS(fragmentP)).getReturnType();
+            }
+            returnType = returnType == null ? Object.class.getName() : returnType;
+
+            out.println("    public " + returnType + " runSemanticAction_p" + p + "() throws " + errorType + " {");
+            if (symbolTable.getProduction(fragmentP).getRhsVarNames() != null) {
+                int k = 0;
+                for (String var : symbolTable.getProduction(fragmentP).getRhsVarNames()) {
+                    if(var != null) {
+                        int sym = pr.getRHSSym(fragmentP, k);
+                        String type = null;
+
+                        if (isExtension && sym >= extSpec.extensionSymbolTableOffset) {
+                            int extSym = sym - extSpec.extensionSymbolTableOffset;
+                            if (extSpec.extensionTerminalIndices.get(extSym)) {
+                                type = symbolTable.getTerminal(sym).getReturnType();
+                            } else if (extSpec.extensionNonterminalIndices.get(extSym)) {
+                                type = symbolTable.getNonTerminal(sym).getReturnType();
+                            }
+                        } else {
+                            if (hostFragment.fullSpec.terminals.get(sym)) {
+                                type = symbolTable.getTerminal(sym).getReturnType();
+                            } else if (hostFragment.fullSpec.nonterminals.get(sym)) {
+                                type = symbolTable.getNonTerminal(sym).getReturnType();
+                            }
+                        }
+                        type = type == null ? Object.class.getName() : type;
+                        out.print("            ");
+                        String suppressWarnings = type.contains("<") ? "@SuppressWarnings(\"unchecked\") " : "";
+                        out.println("      " + suppressWarnings + type + " " + var + " = (" + type + ") _children[" + k + "];");
+                    }
+                    k++;
+                }
+            }
+            out.print("      " + returnType + " RESULT = null;\n");
+            out.print("      " + productionCode + "\n");
+            out.print("      return RESULT;\n");
+            out.print("    }\n");
+        }
     }
 
     private void printSignature(PrintStream out) {
@@ -675,10 +757,9 @@ public class ParserFragmentEngineBuilder {
         for (int state = 0; state < table.size(); state++) {
             for (int t = table.getValidLA(state).nextSetBit(0); t >= 0; t = table.getValidLA(state).nextSetBit(t+1)) {
                 boolean isTerminal, isNonterminal;
-                if (extSpec != null && t >= extSpec.extensionSymbolTableOffset) {
-                    int extensionIndex = t - extSpec.extensionSymbolTableOffset;
-                    isTerminal = extTerminals.get(extensionIndex);
-                    isNonterminal = extNonterminals.get(extensionIndex);
+                if (extSpec != null) {
+                    isTerminal = extSpec.isTableOffsetTerminal(t);
+                    isNonterminal = extSpec.isTableOffsetNonterminal(t);
                 } else {
                     isTerminal = hostTerminals.get(t);
                     isNonterminal = hostNonterminals.get(t);

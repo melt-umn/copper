@@ -230,17 +230,17 @@ public class ExtensionMappingSpec implements Serializable {
         for(int i = extensionProductionIndices.nextSetBit(0); i >= 0; i = extensionProductionIndices.nextSetBit(i+1)) {
             int composedIndex = extensionToComposedSymbols.get(i);
 
-            pr.setLHS(i, translateAndOffsetComposedSymbol(fullSpec.pr.getLHS(composedIndex)));
+            pr.setLHS(i, translateAndTableOffsetComposedSymbol(fullSpec.pr.getLHS(composedIndex)));
             int rhsLength = fullSpec.pr.getRHSLength(composedIndex);
             pr.setRHSLength(i, rhsLength);
             for (int j = 0; j < rhsLength; j++) {
-                pr.setRHSSym(i, j, translateAndOffsetComposedSymbol(fullSpec.pr.getRHSSym(composedIndex, j)));
+                pr.setRHSSym(i, j, translateAndTableOffsetComposedSymbol(fullSpec.pr.getRHSSym(composedIndex, j)));
             }
-            pr.setOperator(i, convertValidIndex(fullSpec.pr.getOperator(composedIndex)));
+            pr.setOperator(i, translateAndTableOffsetComposedSymbol(fullSpec.pr.getOperator(composedIndex)));
             pr.setPrecedence(i, fullSpec.pr.getPrecedence(composedIndex)); // TODO translate?
             pr.setHasLayout(i, fullSpec.pr.hasLayout(composedIndex));
 
-            translateSymbolBitSetWithOffset(fullSpec.pr.getLayouts(composedIndex), pr.getLayouts(i));
+            translateSymbolBitSetWithTableOffset(fullSpec.pr.getLayouts(composedIndex), pr.getLayouts(i));
         }
     }
 
@@ -329,6 +329,22 @@ public class ExtensionMappingSpec implements Serializable {
 
     public int encodeOffsetExtensionIndex(int i) {
         return -1 * ((i - this.extensionSymbolOffset) + 1);
+    }
+
+    public boolean isTableOffsetTerminal(int i) {
+        if (i >= extensionSymbolTableOffset) {
+            return extensionTerminalIndices.get(i - extensionSymbolTableOffset);
+        } else {
+            return hostTerminalIndices.get(i);
+        }
+    }
+
+    public boolean isTableOffsetNonterminal(int i) {
+        if (i >= extensionSymbolTableOffset) {
+            return extensionNonterminalIndices.get(i - extensionSymbolTableOffset);
+        } else {
+            return hostNonterminalIndices.get(i);
+        }
     }
 }
 
