@@ -344,6 +344,36 @@ public class ParserFragmentEngineBuilder {
         }
     }
 
+    private void writeRunTerminalSemanticAction(PrintStream out) {
+        for (int fragmentId = 0; fragmentId < fragmentCount; fragmentId++) {
+            int extensionId = fragmentId - 1;
+            boolean isExtension = fragmentId != 0;
+            ExtensionMappingSpec extSpec = isExtension ? extensionFragments.get(extensionId).extensionMappingSpec : null;
+            BitSet terminals = isExtension ? extSpec.extensionTerminalIndices : hostFragment.fullSpec.terminals;
+            PSSymbolTable symbolTable = isExtension ? extSpec.extensionSymbolTable : hostFragment.symbolTable;
+
+            for (int t = terminals.nextSetBit(0); t >= 0; t = terminals.nextSetBit(t + 1)) {
+                if (!isExtension && t == hostFragment.fullSpec.getEOFTerminal()) {
+                    continue;
+                } else {
+                    String code = symbolTable.getTerminal(t).getCode();
+                    if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                        String returnType = symbolTable.getTerminal(t).getReturnType();
+                        returnType = returnType == null ? Object.class.getName() : null;
+
+                        int offsetT = isExtension ? extSpec.tableOffsetExtensionIndex(t) : t;
+                        out.println("    public " + returnType + " runSemanticAction_t" + offsetT + "(final String lexeme)");
+                        out.println("    throws " + errorType + " {");
+                        out.println("      " + returnType + " RESULT = null;");
+                        out.println("      " + code + "");
+                        out.println("      return RESULT;");
+                        out.println("    }");
+                    }
+                }
+            }
+        }
+    }
+
     private void printSignature(PrintStream out) {
         out.println("/*");
         out.println(" * Built at " + new java.util.Date(System.currentTimeMillis()));
