@@ -280,6 +280,14 @@ public class ExtensionMappingSpec implements Serializable {
         return decomposedIndex < 0 ? decodeAndOffsetExtensionIndex(decomposedIndex) : decomposedIndex;
     }
 
+    public int untranslateAndOffsetComposedSymbol(int i) {
+        if (i < extensionSymbolOffset) {
+            return i;
+        } else {
+            return encodeOffsetExtensionIndex(i);
+        }
+    }
+
     public int translateAndTableOffsetComposedSymbol(int i) {
         int decomposedIndex = composedToDecomposedSymbols.get(i);
         return decomposedIndex < 0 ? decodeAndTableOffsetExtensionIndex(decomposedIndex) : decomposedIndex;

@@ -66,6 +66,7 @@ public class ParserFragmentEngineBuilder {
     private Map<Integer, Map<Integer, Integer>> productionMap;
     private Map<Integer, Pair<Integer, Integer>> productionMapBack;
     private int[] productionCounts;
+    private int[] productionLHSs;
 
     private static class ObjectToHash {
         public Object obj;
@@ -207,12 +208,16 @@ public class ParserFragmentEngineBuilder {
     }
 
     private void printParserAncillaryMethods(PrintStream out) {
-        out.println("  protected int[][] getParseTable() {");
+        out.println("  public int[][] getParseTable() {");
         out.println("    return parseTable;");
         out.println("  }");
 
         out.println("  protected int[] getProductionLengths() {");
         out.println("    return productionLengths;");
+        out.println("  }");
+
+        out.println("  public int[] getProductionLHSs() {");
+        out.println("    return productionLHSs;");
         out.println("  }");
 
         out.println("  protected int[][] getFragmentTransitionTable(int fragmentId) {");
@@ -345,6 +350,8 @@ public class ParserFragmentEngineBuilder {
         makeProductionLengths();
         objectsToHash.add(new ObjectToHash(productionLengths, "int[]", "productionLengths"));
 
+        makeProductionLHSs();
+        objectsToHash.add(new ObjectToHash(productionLHSs, "int[]", "productionLHSs"));
         // TODO finish
     }
 
@@ -728,6 +735,24 @@ public class ParserFragmentEngineBuilder {
                 productionLengths[index] = hostFragment.fullSpec.pr.getRHSLength(fragmentIndex);
             } else {
                 productionLengths[index] = extensionFragments.get(fragment - 1).extensionMappingSpec.pr.getRHSLength(fragmentIndex);
+            }
+        }
+    }
+
+    private void makeProductionLHSs() {
+        productionLHSs = new int[totalProductionCount];
+
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : productionMapBack.entrySet()) {
+            int index = entry.getKey();
+            int fragment = entry.getValue().first();
+            int fragmentIndex = entry.getValue().second();
+
+            if (fragment == 0) {
+                productionLHSs[index] = hostFragment.fullSpec.pr.getLHS(fragmentIndex);
+            } else {
+                ExtensionMappingSpec spec = extensionFragments.get(fragment - 1).extensionMappingSpec;
+                int encodedLHS = spec.untranslateAndOffsetComposedSymbol(spec.pr.getLHS(fragmentIndex));
+                productionLHSs[index] = encodedLHS < 0 ? spec.decodeAndTableOffsetExtensionIndex(encodedLHS) : encodedLHS;
             }
         }
     }

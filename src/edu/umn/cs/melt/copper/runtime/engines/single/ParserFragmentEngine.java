@@ -35,12 +35,12 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     // Function from SingleDFAEngine that still need to be implemented
     public abstract int[][] getParseTable();
     protected abstract void reportSyntaxError() throws EXCEPT;
+    public abstract int[] getProductionLHSs();
 
     // New abstract functions
     protected abstract int getFragmentCount();
     protected abstract int stateToFragmentId(int state);
     protected abstract int[] getProductionLengths();
-    protected abstract int[] getProductionLHSs(int fragmentId);
     protected abstract int runFragmentDisambiguationAction(int fragmentId, InputPosition _pos,SingleDFAMatchData match) throws IOException,EXCEPT;
     protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, Object[] _children,int _prod) throws IOException,EXCEPT;
     protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, SingleDFAMatchData _terminal) throws IOException,EXCEPT;
@@ -66,8 +66,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     public int getEOF_SYMNUM() { throw new UnsupportedOperationException(); }
     @Override
     public int[] getSymbolNumbers() { throw new UnsupportedOperationException(); }
-    @Override
-    public int[] getProductionLHSs() { throw new UnsupportedOperationException(); }
     @Override
     public BitSet[] getShiftableSets() { throw new UnsupportedOperationException(); }
     @Override
@@ -300,8 +298,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             }
 
             int useAs = getFragmentTerminalUses(params.fragmentId, finalMatches.firstTerm);
-            if(useAs == TERMINAL_VERSATILE)
-            {
+            if (useAs == TERMINAL_VERSATILE) {
                 if(getFragmentLayoutSets(params.fragmentId)[currentState.statenum].get(finalMatches.firstTerm)) useAs = TERMINAL_EXCLUSIVELY_LAYOUT;
                 else if(params.prefixSets[currentState.statenum].get(finalMatches.firstTerm)) useAs = TERMINAL_EXCLUSIVELY_PREFIX;
                 else useAs = TERMINAL_EXCLUSIVELY_SHIFTABLE;
@@ -448,7 +445,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                 case STATE_REDUCE:
                     int production = actionIndex(action);
                     int productionLength = actionIndex(getProductionLengths()[production]);
-                    int productionLHS = actionIndex(getProductionLHSs(fragmentId)[production - getGRAMMAR_SYMBOL_COUNT()]);
+                    int productionLHS = actionIndex(getProductionLHSs()[production]);
                     Object[] children = new Object[productionLength];
                     for(int i = productionLength - 1;i >= 0;i--)
                     {
