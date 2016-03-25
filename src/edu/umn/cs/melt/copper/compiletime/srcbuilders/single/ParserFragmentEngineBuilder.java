@@ -197,6 +197,7 @@ public class ParserFragmentEngineBuilder {
         writeRunTerminalSemanticAction(out);
 
         writeRunDisambiguationAction(out);
+        writeRunDisambiguationActionMethods(out);
 
         out.println("    public void runPostParseCode(" + Object.class.getName() + " __root) {");
         /* TODO fill runPostParseCode
@@ -405,6 +406,29 @@ public class ParserFragmentEngineBuilder {
             out.println("      }");
         }
         out.println("    }");
+    }
+
+    private void writeRunDisambiguationActionMethods(PrintStream out) {
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : disambiguationFunctionMapBack.entrySet()) {
+            int df = entry.getKey();
+            int fragment = entry.getValue().first();
+            int fragmentIndex = entry.getValue().second();
+
+            ParserSpec.DisambiguationFunctionData dfData = fragment == 0 ? hostFragment.fullSpec.df : extensionFragments.get(fragment - 1).extensionMappingSpec.df;
+
+            out.println("    public int disambiguate_" + df + "(final String lexeme) throws " + errorType + " {");
+            if (dfData.hasDisambiguateTo(fragmentIndex)) {
+                out.println("      return " + dfData.getDisambiguateTo(df) + ";"); // TODO symbolNames?
+            } else {
+                BitSet members = dfData.getMembers(fragmentIndex);
+                for (int t = members.nextSetBit(0); t >= 0; t = members.nextSetBit(t + 1)) {
+//                    out.println("      @SuppressWarnings(\"unused\") final int " + symbolNames[t] + " = " + t + ";"); // TODO symbolNames!
+                }
+                PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
+                out.println("      " + symbolTable.getDisambiguationFunction(fragmentIndex).getCode());
+            }
+            out.println("    }");
+        }
     }
 
     private void printSignature(PrintStream out) {
@@ -1099,7 +1123,7 @@ public class ParserFragmentEngineBuilder {
             int fragment = entry.getValue().first();
             int fragmentIndex = entry.getValue().second();
 
-            BitSet members = fragment == 0 ? extensionFragments.get(fragment - 1).extensionMappingSpec.df.getMembers(fragmentIndex) : hostFragment.fullSpec.df.getMembers(fragmentIndex);
+            BitSet members = fragment == 0 ? hostFragment.fullSpec.df.getMembers(fragmentIndex) : extensionFragments.get(fragment - 1).extensionMappingSpec.df.getMembers(fragmentIndex);
 
             int terminalCount = fragment == 0 ? hostTerminalLength : extTerminalLengths[fragment - 1];
             out.print("    disambiguationGroups[" + df + "] = newBitVec(" + terminalCount);
