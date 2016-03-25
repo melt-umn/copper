@@ -39,7 +39,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     // New abstract functions
     protected abstract int getFragmentCount();
     protected abstract int stateToFragmentId(int state);
-    protected abstract int[] getProductionLengths(int fragmentId);
+    protected abstract int[] getProductionLengths();
     protected abstract int[] getProductionLHSs(int fragmentId);
     protected abstract int runFragmentDisambiguationAction(int fragmentId, InputPosition _pos,SingleDFAMatchData match) throws IOException,EXCEPT;
     protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, Object[] _children,int _prod) throws IOException,EXCEPT;
@@ -447,7 +447,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                     break;
                 case STATE_REDUCE:
                     int production = actionIndex(action);
-                    int productionLength = actionIndex(getProductionLengths(fragmentId)[production]);
+                    int productionLength = actionIndex(getProductionLengths()[production]);
                     int productionLHS = actionIndex(getProductionLHSs(fragmentId)[production - getGRAMMAR_SYMBOL_COUNT()]);
                     Object[] children = new Object[productionLength];
                     for(int i = productionLength - 1;i >= 0;i--)

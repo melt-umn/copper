@@ -9,6 +9,7 @@ import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
+import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
 import edu.umn.cs.melt.copper.runtime.engines.single.ParserFragmentEngine;
 import edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine;
@@ -43,7 +44,6 @@ public class ParserFragmentEngineBuilder {
 
     private int[][] parseTable;
     private int[][][] deltas;
-    private int[][] productionLengths;
     private int totalStateCount, hostStateCount;
     private ArrayList<MarkingTerminalData> markingTerminalDatas;
     private int markingTerminalOffset;
@@ -60,6 +60,12 @@ public class ParserFragmentEngineBuilder {
     private BitSet[] extShiftableUnion;
     private BitSet hostStateShiftableUnion;
     private BitSet markingTerminalShiftableUnion;
+
+    private int totalProductionCount;
+    private int[] productionLengths;
+    private Map<Integer, Map<Integer, Integer>> productionMap;
+    private Map<Integer, Pair<Integer, Integer>> productionMapBack;
+    private int[] productionCounts;
 
     private static class ObjectToHash {
         public Object obj;
@@ -205,8 +211,8 @@ public class ParserFragmentEngineBuilder {
         out.println("    return parseTable;");
         out.println("  }");
 
-        out.println("  protected int[] getProductionLengths(int fragmentId) {");
-        out.println("    return productionLengths[fragmentId];");
+        out.println("  protected int[] getProductionLengths() {");
+        out.println("    return productionLengths;");
         out.println("  }");
 
         out.println("  protected int[][] getFragmentTransitionTable(int fragmentId) {");
@@ -309,6 +315,8 @@ public class ParserFragmentEngineBuilder {
     private void makeObjectsToBeHashed() {
         objectsToHash = new ArrayList<ObjectToHash>();
 
+        prepProductionIndices();
+
         objectsToHash.add(new ObjectToHash(extTerminalLengths, "int[]", "extTerminalLengths"));
 
         makeParseTableAndSets();
@@ -334,11 +342,39 @@ public class ParserFragmentEngineBuilder {
 
         addScannerAnnotationsToBeHashed();
 
-        // TODO make productionLengths
         makeProductionLengths();
-        objectsToHash.add(new ObjectToHash(productionLengths, "int[][]", "productionLengths"));
+        objectsToHash.add(new ObjectToHash(productionLengths, "int[]", "productionLengths"));
 
         // TODO finish
+    }
+
+    private void prepProductionIndices() {
+        productionMap = new TreeMap<Integer, Map<Integer, Integer>>();
+        productionMapBack = new TreeMap<Integer, Pair<Integer, Integer>>();
+        productionCounts = new int[fragmentCount];
+
+        int newIndex = 0;
+
+        BitSet hostProductions = hostFragment.fullSpec.productions;
+        productionCounts[0] = hostProductions.cardinality();
+        productionMap.put(0, new TreeMap<Integer, Integer>());
+        for (int p = hostProductions.nextSetBit(0); p >= 0; p = hostProductions.nextSetBit(p + 1)) {
+            productionMap.get(0).put(p, newIndex);
+            productionMapBack.put(newIndex, new Pair<Integer, Integer>(0, p));
+            newIndex += 1;
+        }
+        for (int e = 0; e < extensionCount; e++) {
+            BitSet productions = extensionFragments.get(e).extensionMappingSpec.extensionProductionIndices;
+            productionCounts[e + 1] = productions.cardinality();
+            productionMap.put(e + 1, new TreeMap<Integer, Integer>());
+            for (int p = productions.nextSetBit(0); p >= 0; p = productions.nextSetBit(p + 1)) {
+                productionMap.get(e + 1).put(p, newIndex);
+                productionMapBack.put(newIndex, new Pair<Integer, Integer>(e + 1, p));
+                newIndex += 1;
+            }
+        }
+
+        totalProductionCount = newIndex;
     }
 
     private void addScannerAnnotationsToBeHashed() {
@@ -534,7 +570,11 @@ public class ParserFragmentEngineBuilder {
                         }
                     } else if (actionType == LRParseTable.REDUCE) {
                         symType = SingleDFAEngine.STATE_REDUCE;
-                        // TODO Q: translate action parameter (production)? -- A: Yes, new action parameters can't be negative :(
+                        if (isExtension && actionParameter < 0) {
+                            actionParameter = productionMap.get(extensionId + 1).get(ExtensionMappingSpec.decodeExtensionIndex(actionParameter));
+                        } else {
+                            actionParameter = productionMap.get(0).get(actionParameter);
+                        }
                     } else {
                         symType = SingleDFAEngine.STATE_ERROR;
                     }
@@ -614,7 +654,8 @@ public class ParserFragmentEngineBuilder {
                 Set<Integer> productions = stateLASources.get(mtData.hostLHS);
                 if (productions != null && !productions.isEmpty()) {
                     for (int production: productions) {
-                        parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, production);
+                        int newProductionIndex = productionMap.get(0).get(production);
+                        parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, newProductionIndex);
                         markingTerminalShiftableSets[state].set(mtData.endIndex - markingTerminalOffset);
                     }
                 }
@@ -642,8 +683,13 @@ public class ParserFragmentEngineBuilder {
                     Set<Integer> productions = stateLASources.get(mtData.hostLHS);
                     if (productions != null && !productions.isEmpty()) {
                         for (int production: productions) {
-                            // TODO action productions can't be negative!
-                            parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, production);
+                            int newProductionIndex = 0;
+                            if (production < 0) { // ext production
+                                newProductionIndex = productionMap.get(extensionId + 1).get(ExtensionMappingSpec.decodeExtensionIndex(production));
+                            } else {
+                                newProductionIndex = productionMap.get(0).get(production);
+                            }
+                            parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, newProductionIndex);
                             markingTerminalShiftableSets[offsetState].set(mtData.endIndex - markingTerminalOffset);
                         }
                     }
@@ -671,8 +717,19 @@ public class ParserFragmentEngineBuilder {
     }
 
     private void makeProductionLengths() {
-        productionLengths = new int[fragmentCount][];
-        // TODO finish
+        productionLengths = new int[totalProductionCount];
+
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : productionMapBack.entrySet()) {
+            int index = entry.getKey();
+            int fragment = entry.getValue().first();
+            int fragmentIndex = entry.getValue().second();
+
+            if (fragment == 0) {
+                productionLengths[index] = hostFragment.fullSpec.pr.getRHSLength(fragmentIndex);
+            } else {
+                productionLengths[index] = extensionFragments.get(fragment - 1).extensionMappingSpec.pr.getRHSLength(fragmentIndex);
+            }
+        }
     }
 
     private void writeHashes(PrintStream out) throws IOException {
