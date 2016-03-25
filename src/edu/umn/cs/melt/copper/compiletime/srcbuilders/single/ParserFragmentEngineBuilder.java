@@ -77,6 +77,8 @@ public class ParserFragmentEngineBuilder {
     private int[] productionLHSs;
     private String rootType;
     private String errorType;
+    private Map<Integer, Pair<Integer, Integer>> disambiguationFunctionMapBack;
+    private int totalDisambiguationFunctionCount;
 
     private static class ObjectToHash {
         public Object obj;
@@ -192,6 +194,9 @@ public class ParserFragmentEngineBuilder {
 
         writeRunSemanticAction(out);
         writeRunProductionSemanticAction(out);
+        writeRunTerminalSemanticAction(out);
+
+        writeRunDisambiguationAction(out);
 
         out.println("    public void runPostParseCode(" + Object.class.getName() + " __root) {");
         /* TODO fill runPostParseCode
@@ -374,6 +379,34 @@ public class ParserFragmentEngineBuilder {
         }
     }
 
+    private void writeRunDisambiguationAction(PrintStream out) {
+        out.println("    public int runDisambiguationAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " match)");
+        out.println("    throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("      String lexeme = match.lexeme;");
+        boolean first = true;
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : disambiguationFunctionMapBack.entrySet()) {
+            int df = entry.getKey();
+            int fragment = entry.getValue().first();
+            int fragmentIndex = entry.getValue().second();
+
+            String elseStr = "} else ";
+            if (first) {
+                elseStr = "";
+                first = false;
+            }
+            out.println("      " + elseStr + "if (match.terms.equals(disambiguationGroups[" + df + "])) {");
+            out.println("        return disambiguate_" + df + "(lexeme);");
+        }
+        if (first) {
+            out.println("      return -1;");
+        } else {
+            out.println("      } else {");
+            out.println("        return -1;");
+            out.println("      }");
+        }
+        out.println("    }");
+    }
+
     private void printSignature(PrintStream out) {
         out.println("/*");
         out.println(" * Built at " + new java.util.Date(System.currentTimeMillis()));
@@ -439,6 +472,7 @@ public class ParserFragmentEngineBuilder {
         for (ObjectToHash obj: objectsToHash) {
             out.println("  private static " + obj.type + " " + obj.name + ";");
         }
+        out.println("  private static " + BitSet.class.getName() + "[] disambiguationGroups;");
         // TODO finish
     }
 
@@ -507,6 +541,11 @@ public class ParserFragmentEngineBuilder {
         out.println("    }");
         out.println("  }");
 
+
+        out.println("  public BitSet[] getDisambiguationGroups() {");
+        out.println("    return disambiguationGroups;");
+        out.println("  }");
+
         out.println("  public " + BitSet.class.getName() + "[] getFragmentLayoutSets(int fragmentId) {");
         out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
         out.println("      return markingTerminalEmptyStateSets;");
@@ -555,9 +594,10 @@ public class ParserFragmentEngineBuilder {
     private void makeObjectsToBeHashed() {
         objectsToHash = new ArrayList<ObjectToHash>();
 
-        prepProductionIndices();
-
         objectsToHash.add(new ObjectToHash(extTerminalLengths, "int[]", "extTerminalLengths"));
+
+        prepProductionIndices();
+        prepDisambiguationFunctionIndices();
 
         makeParseTableAndSets();
         objectsToHash.add(new ObjectToHash(parseTable, "int[][]", "parseTable"));
@@ -617,6 +657,36 @@ public class ParserFragmentEngineBuilder {
         }
 
         totalProductionCount = newIndex;
+    }
+
+    private void prepDisambiguationFunctionIndices() {
+        // TODO reduce code dup with prepProductionIndices
+        Map<Integer, Map<Integer, Integer>> disambiguationFunctionMap = new TreeMap<Integer, Map<Integer, Integer>>();
+        disambiguationFunctionMapBack = new TreeMap<Integer, Pair<Integer, Integer>>();
+        int[] disambiguationFunctionCounts = new int[fragmentCount];
+
+        int newIndex = 0;
+
+        BitSet hostDisambiguationFunctions = hostFragment.fullSpec.disambiguationFunctions;
+        disambiguationFunctionCounts[0] = hostDisambiguationFunctions.cardinality();
+        disambiguationFunctionMap.put(0, new TreeMap<Integer, Integer>());
+        for (int p = hostDisambiguationFunctions.nextSetBit(0); p >= 0; p = hostDisambiguationFunctions.nextSetBit(p + 1)) {
+            disambiguationFunctionMap.get(0).put(p, newIndex);
+            disambiguationFunctionMapBack.put(newIndex, new Pair<Integer, Integer>(0, p));
+            newIndex += 1;
+        }
+        for (int e = 0; e < extensionCount; e++) {
+            BitSet disambiguationFunctions = extensionFragments.get(e).extensionMappingSpec.extensionDisambiguationFunctionIndices;
+            disambiguationFunctionCounts[e + 1] = disambiguationFunctions.cardinality();
+            disambiguationFunctionMap.put(e + 1, new TreeMap<Integer, Integer>());
+            for (int p = disambiguationFunctions.nextSetBit(0); p >= 0; p = disambiguationFunctions.nextSetBit(p + 1)) {
+                disambiguationFunctionMap.get(e + 1).put(p, newIndex);
+                disambiguationFunctionMapBack.put(newIndex, new Pair<Integer, Integer>(e + 1, p));
+                newIndex += 1;
+            }
+        }
+
+        totalDisambiguationFunctionCount = newIndex;
     }
 
     private void addScannerAnnotationsToBeHashed() {
@@ -1016,6 +1086,27 @@ public class ParserFragmentEngineBuilder {
 
         out.println("  static {");
         out.println("    try { initArrays(); }");
+        out.println("    catch(" + IOException.class.getName() + " ex) { ex.printStackTrace(); System.exit(1); }");
+        out.println("    catch(" + ClassNotFoundException.class.getName() + " ex) { ex.printStackTrace(); System.exit(1); }");
+        initializeDisambiguationGroups(out);
         out.println("  }");
+    }
+
+    private void initializeDisambiguationGroups(PrintStream out) {
+        out.println("    disambiguationGroups = new " + BitSet.class.getName() + "[" + totalDisambiguationFunctionCount + "];");
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : disambiguationFunctionMapBack.entrySet()) {
+            int df = entry.getKey();
+            int fragment = entry.getValue().first();
+            int fragmentIndex = entry.getValue().second();
+
+            BitSet members = fragment == 0 ? extensionFragments.get(fragment - 1).extensionMappingSpec.df.getMembers(fragmentIndex) : hostFragment.fullSpec.df.getMembers(fragmentIndex);
+
+            int terminalCount = fragment == 0 ? hostTerminalLength : extTerminalLengths[fragment - 1];
+            out.print("    disambiguationGroups[" + df + "] = newBitVec(" + terminalCount);
+            for (int t = members.nextSetBit(0); t >= 0; t = members.nextSetBit(t + 1)) {
+                out.print(", " + t);
+            }
+            out.print(");\n");
+        }
     }
 }

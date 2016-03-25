@@ -36,6 +36,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     public abstract int[][] getParseTable();
     protected abstract void reportSyntaxError() throws EXCEPT;
     public abstract int[] getProductionLHSs();
+    public abstract BitSet[] getDisambiguationGroups();
 
     // New abstract functions
     protected abstract int getFragmentCount();

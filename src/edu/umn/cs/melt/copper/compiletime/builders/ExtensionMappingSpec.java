@@ -236,7 +236,7 @@ public class ExtensionMappingSpec implements Serializable {
             for (int j = 0; j < rhsLength; j++) {
                 pr.setRHSSym(i, j, translateAndTableOffsetComposedSymbol(fullSpec.pr.getRHSSym(composedIndex, j)));
             }
-            pr.setOperator(i, translateAndTableOffsetComposedSymbol(fullSpec.pr.getOperator(composedIndex)));
+            pr.setOperator(i, convertValidIndexWithTableOffset(fullSpec.pr.getOperator(composedIndex)));
             pr.setPrecedence(i, fullSpec.pr.getPrecedence(composedIndex)); // TODO translate?
             pr.setHasLayout(i, fullSpec.pr.hasLayout(composedIndex));
 
@@ -248,9 +248,9 @@ public class ExtensionMappingSpec implements Serializable {
         for(int i = extensionDisambiguationFunctionIndices.nextSetBit(0); i >= 0; i = extensionDisambiguationFunctionIndices.nextSetBit(i+1)) {
             int composedIndex = extensionToComposedSymbols.get(i);
 
-            translateSymbolBitSetWithOffset(fullSpec.df.getMembers(composedIndex), df.getMembers(i));
+            translateSymbolBitSetWithTableOffset(fullSpec.df.getMembers(composedIndex), df.getMembers(i));
 
-            df.setDisambiguateTo(i, convertValidIndex(fullSpec.df.getDisambiguateTo(composedIndex)));
+            df.setDisambiguateTo(i, convertValidIndexWithTableOffset(fullSpec.df.getDisambiguateTo(composedIndex)));
         }
     }
 
@@ -266,6 +266,10 @@ public class ExtensionMappingSpec implements Serializable {
     // it is converted to the (offset) extension index
     private int convertValidIndex(int index) {
         return index < 0 ? index : translateAndOffsetComposedSymbol(index);
+    }
+
+    private int convertValidIndexWithTableOffset(int index) {
+        return index < 0 ? index : translateAndTableOffsetComposedSymbol(index);
     }
 
     // TODO Are operator precedences just numbers? Can they be left alone?
