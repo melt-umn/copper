@@ -37,13 +37,13 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected abstract void reportSyntaxError() throws EXCEPT;
     public abstract int[] getProductionLHSs();
     public abstract BitSet[] getDisambiguationGroups();
+    protected abstract Object runSemanticAction(InputPosition _pos, Object[] _children, int _prod) throws IOException,EXCEPT;
 
     // New abstract functions
     protected abstract int getFragmentCount();
     protected abstract int stateToFragmentId(int state);
     protected abstract int[] getProductionLengths();
     protected abstract int runFragmentDisambiguationAction(int fragmentId, InputPosition _pos,SingleDFAMatchData match) throws IOException,EXCEPT;
-    protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, Object[] _children,int _prod) throws IOException,EXCEPT;
     protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, SingleDFAMatchData _terminal) throws IOException,EXCEPT;
 
     // New abstract functions (scanner getters)
@@ -91,10 +91,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected int transition(int state, char ch) { throw new UnsupportedOperationException(); }
     @Override
     protected int runDisambiguationAction(InputPosition _pos,SingleDFAMatchData match) throws IOException,EXCEPT {
-        throw new UnsupportedOperationException();
-    }
-    @Override
-    protected Object runSemanticAction(InputPosition _pos, Object[] _children,int _prod) throws IOException,EXCEPT {
         throw new UnsupportedOperationException();
     }
     @Override
@@ -453,7 +449,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                         children[i] = parseStack.pop().synthAttr;
                     }
                     int gotoState = actionIndex(getParseTable()[parseStack.peek().statenum][productionLHS]);
-                    synthAttr = runFragmentSemanticAction(fragmentId, currentState.pos, children, production);
+                    synthAttr = runSemanticAction(currentState.pos, children, production);
                     parseStack.push(new SingleDFAParseStackNode(gotoState,currentState.pos,synthAttr));
                     // DEBUG-X-BEGIN
                     //System.err.println("reduce(" + production + "); goto(" + gotoState + ")");

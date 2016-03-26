@@ -8,6 +8,7 @@ import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserAttribute;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
@@ -79,6 +80,7 @@ public class ParserFragmentEngineBuilder {
     private String errorType;
     private Map<Integer, Pair<Integer, Integer>> disambiguationFunctionMapBack;
     private int totalDisambiguationFunctionCount;
+    private int extTableOffset;
 
     private static class ObjectToHash {
         public Object obj;
@@ -107,6 +109,8 @@ public class ParserFragmentEngineBuilder {
             ExtensionMappingSpec spec = this.extensionFragments.get(e).extensionMappingSpec;
             this.extTerminalLengths[e] = spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length());
         }
+
+        this.extTableOffset = Math.max(hostTerminalLength, hostFragment.fullSpec.nonterminals.length());
     }
 
     public void buildEngine(
@@ -139,6 +143,7 @@ public class ParserFragmentEngineBuilder {
 
         // TODO print Semantics class and implement related methods (including instatiate Semantics in startEngine)
         writeSemanticsClass(out);
+        writeSemanticsClassUse(out);
 
         writeHashes(out);
 
@@ -244,37 +249,63 @@ public class ParserFragmentEngineBuilder {
         out.println("      return RESULT;");
         out.println("    }");
 
-        out.println("    public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " _terminal)");
+        // TODO -- probably a good idea to make sure that this actually works...
+        out.println("    public " + Object.class.getName() + " runSemanticTerminalAction(int fragmentId, " + InputPosition.class.getName() + " _pos, " + SingleDFAMatchData.class.getName() + " _terminal)");
         out.println("    throws " + IOException.class.getName() + "," + errorType + " {");
         out.println("      this._pos = _pos;");
         out.println("      this._terminal = _terminal;");
         out.println("      this._specialAttributes = new " + SpecialParserAttributes.class.getName() + "(virtualLocation);");
         out.println("      String lexeme = _terminal.lexeme;");
         out.println("      " + Object.class.getName() + " RESULT = null;");
-        out.println("      switch(_terminal.firstTerm) {");
-        for (int fragmentId = 0; fragmentId < fragmentCount; fragmentId++) {
-            int extensionId = fragmentId - 1;
-            boolean isExtension = fragmentId != 0;
-            ExtensionMappingSpec extSpec = isExtension ? extensionFragments.get(extensionId).extensionMappingSpec : null;
-            BitSet terminals = isExtension ? extSpec.extensionTerminalIndices : hostFragment.fullSpec.terminals;
-            PSSymbolTable symbolTable = isExtension ? extSpec.extensionSymbolTable : hostFragment.symbolTable;
-            for (int t = terminals.nextSetBit(0); t >= 0; t = terminals.nextSetBit(t + 1)) {
-                if (!isExtension && t == hostFragment.fullSpec.getEOFTerminal()) {
-                    continue;
-                } else {
-                    String code = symbolTable.getTerminal(t).getCode();
-                    if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
-                        int offsetT = isExtension ? extSpec.tableOffsetExtensionIndex(t) : t;
-                        out.println("        case " + offsetT + ":");
-                        out.println("          RESULT = runSemanticAction_t" + offsetT + "(lexeme);");
-                        out.println("          break;");
-                    }
-                }
+        out.println("      if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("        switch(_terminal.firstTerm) {");
+        for (int t = 0; t < markingTerminalCount; t++) {
+            String code = markingTerminalDatas.get(t).terminal.getCode();
+            if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                out.println("          case " + t + ":");
+                out.println("            RESULT = runSemanticAction_mt_" + t + "(lexeme);");
+                out.println("            break;");
+            }
+            out.println("          default:");
+            out.println("            runDefaultTermAction();");
+            out.println("            break;");
+        }
+        out.println("        }");
+        out.println("      } else {");
+        out.println("        switch(_terminal.firstTerm) {");
+        for (int t = hostFragment.fullSpec.terminals.nextSetBit(0); t >= 0; t = hostFragment.fullSpec.terminals.nextSetBit(t + 1)) {
+            String code = hostFragment.symbolTable.getTerminal(t).getCode();
+            if (t != hostFragment.fullSpec.getEOFTerminal() && code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                out.println("          case " + t + ":");
+                out.println("            RESULT = runSemanticAction_th_" + t + "(lexeme);");
+                out.println("            break;");
             }
         }
-        out.println("        default:");
-        out.println("          runDefaultTermAction();");
-        out.println("          break;");
+        BitSet extensionTerminalUnion = new BitSet();
+        for (int e = 0; e < extensionCount; e++) {
+            extensionTerminalUnion.or(extensionFragments.get(e).extensionMappingSpec.extensionTerminalIndices);
+        }
+        for (int t = extensionTerminalUnion.nextSetBit(0); t >= 0; t = extensionTerminalUnion.nextSetBit(t + 1)) {
+            out.println("          case " + (t + extTableOffset) + ":");
+            out.println("            switch (fragmentId - 1) {");
+            for (int e = 0; e < extensionCount; e++) {
+                String code = extensionFragments.get(e).extensionMappingSpec.extensionSymbolTable.getTerminal(t).getCode();
+                if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                    out.println("              case " + e + ":");
+                    out.println("                RESULT = runSemanticAction_te" + e + "_" + t + "(lexeme);");
+                    out.println("                break;");
+                }
+            }
+            out.println("              default:");
+            out.println("                runDefaultTermAction();");
+            out.println("                break;");
+            out.println("            }");
+            out.println("            break;");
+        }
+        out.println("          default:");
+        out.println("            runDefaultTermAction();");
+        out.println("            break;");
+        out.println("        }");
         out.println("      }");
         out.println("      return RESULT;");
         out.println("    }");
@@ -351,30 +382,42 @@ public class ParserFragmentEngineBuilder {
     }
 
     private void writeRunTerminalSemanticAction(PrintStream out) {
-        for (int fragmentId = 0; fragmentId < fragmentCount; fragmentId++) {
-            int extensionId = fragmentId - 1;
-            boolean isExtension = fragmentId != 0;
-            ExtensionMappingSpec extSpec = isExtension ? extensionFragments.get(extensionId).extensionMappingSpec : null;
-            BitSet terminals = isExtension ? extSpec.extensionTerminalIndices : hostFragment.fullSpec.terminals;
-            PSSymbolTable symbolTable = isExtension ? extSpec.extensionSymbolTable : hostFragment.symbolTable;
-
-            for (int t = terminals.nextSetBit(0); t >= 0; t = terminals.nextSetBit(t + 1)) {
-                if (!isExtension && t == hostFragment.fullSpec.getEOFTerminal()) {
-                    continue;
-                } else {
-                    String code = symbolTable.getTerminal(t).getCode();
-                    if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
-                        String returnType = symbolTable.getTerminal(t).getReturnType();
-                        returnType = returnType == null ? Object.class.getName() : null;
-
-                        int offsetT = isExtension ? extSpec.tableOffsetExtensionIndex(t) : t;
-                        out.println("    public " + returnType + " runSemanticAction_t" + offsetT + "(final String lexeme)");
-                        out.println("    throws " + errorType + " {");
-                        out.println("      " + returnType + " RESULT = null;");
-                        out.println("      " + code + "");
-                        out.println("      return RESULT;");
-                        out.println("    }");
-                    }
+        for (int t = 0; t < markingTerminalCount; t++) {
+            String code = markingTerminalDatas.get(t).terminal.getCode();
+            String returnType = markingTerminalDatas.get(t).terminal.getReturnType();
+            if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                out.println("    public " + returnType + " runSemanticAction_mt_" + t + "(final String lexeme)");
+                out.println("    throws " + errorType + " {");
+                out.println("      " + returnType + " RESULT = null;");
+                out.println("      " + code + "");
+                out.println("      return RESULT;");
+                out.println("    }");
+            }
+        }
+        for (int t = hostFragment.fullSpec.terminals.nextSetBit(0); t >= 0; t = hostFragment.fullSpec.terminals.nextSetBit(t + 1)) {
+            String code = hostFragment.symbolTable.getTerminal(t).getCode();
+            String returnType = hostFragment.symbolTable.getTerminal(t).getReturnType();
+            if (t != hostFragment.fullSpec.getEOFTerminal() && code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                out.println("    public " + returnType + " runSemanticAction_th_" + t + "(final String lexeme)");
+                out.println("    throws " + errorType + " {");
+                out.println("      " + returnType + " RESULT = null;");
+                out.println("      " + code + "");
+                out.println("      return RESULT;");
+                out.println("    }");
+            }
+        }
+        for (int e = 0; e < extensionCount; e++) {
+            ExtensionMappingSpec extSpec = extensionFragments.get(e).extensionMappingSpec;
+            for (int t = extSpec.extensionTerminalIndices.nextSetBit(0); t >= 0; t = extSpec.extensionTerminalIndices.nextSetBit(t + 1)) {
+                String code = extSpec.extensionSymbolTable.getTerminal(t).getCode();
+                String returnType = extSpec.extensionSymbolTable.getTerminal(t).getReturnType();
+                if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                    out.println("    public " + returnType + " runSemanticAction_te" + e + "_" + t + "(final String lexeme)");
+                    out.println("    throws " + errorType + " {");
+                    out.println("      " + returnType + " RESULT = null;");
+                    out.println("      " + code + "");
+                    out.println("      return RESULT;");
+                    out.println("    }");
                 }
             }
         }
@@ -429,6 +472,46 @@ public class ParserFragmentEngineBuilder {
             }
             out.println("    }");
         }
+    }
+
+    private void writeSemanticsClassUse(PrintStream out) {
+        // TODO are these functions right in the interface ? Are the Fragment* functions correct?
+        out.println("  public Semantics semantics;");
+
+        out.println("  public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + Object.class.getName() + "[] _children,int _prod)");
+        out.println("  throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("    return semantics.runSemanticAction(_pos, _children, _prod);");
+        out.println("  }");
+
+        out.println("  public " + Object.class.getName() + " runFragmentSemanticAction(int fragmentId, " + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " _terminal)");
+        out.println("  throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("    return semantics.runSemanticTerminalAction(fragmentId, _pos, _terminal);");
+        out.println("  }");
+
+        /* TODO getPostParseCode
+        if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
+        {
+            out.println("  public void runPostParseCode(" + Object.class.getName() + " __root) {");
+            out.println("    semantics.runPostParseCode(__root);");
+            out.println("  }");
+        }
+        */
+
+        // Leaving in the fragmentId argument for now...
+        out.println("  public int runFragmentDisambiguationAction(int fragmentId, " + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " matches)");
+        out.println("  throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("    return semantics.runDisambiguationAction(_pos,matches);");
+        out.println("  }");
+
+        out.println("  public " + SpecialParserAttributes.class.getName() + " getSpecialAttributes() {");
+        out.println("    return semantics.getSpecialAttributes();");
+        out.println("  }");
+
+        out.println("  public void startEngine(" + InputPosition.class.getName() + " initialPos)");
+        out.println("  throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("     super.startEngine(initialPos);");
+        out.println("     semantics = new Semantics();");
+        out.println("  }");
     }
 
     private void printSignature(PrintStream out) {
@@ -742,12 +825,14 @@ public class ParserFragmentEngineBuilder {
         public int hostLHS;
         public int offsetTransitionState;
         public int endIndex;
-        public MarkingTerminalData(int extensionId, int extensionTerminal, int hostLHS, int offsetTransitionState, int endIndex) {
+        public Terminal terminal;
+        public MarkingTerminalData(int extensionId, int extensionTerminal, int hostLHS, int offsetTransitionState, int endIndex, Terminal terminal) {
             this.extensionId = extensionId;
             this.extensionTerminal = extensionTerminal;
             this.hostLHS = hostLHS;
             this.offsetTransitionState = offsetTransitionState;
             this.endIndex = endIndex;
+            this.terminal = terminal;
         }
 
         @Override
@@ -798,7 +883,8 @@ public class ParserFragmentEngineBuilder {
             for (int mt: markingTerminals) {
                 int lhs = fragment.markingTerminalLHS.get(mt);
                 int offsetState = fragment.markingTerminalStates.get(mt) + extStateOffset[i];
-                markingTerminalDatas.add(new MarkingTerminalData(i, mt, lhs, offsetState, maxTableSymbols));
+                Terminal terminal = fragment.extensionMappingSpec.extensionSymbolTable.getTerminal(mt);
+                markingTerminalDatas.add(new MarkingTerminalData(i, mt, lhs, offsetState, maxTableSymbols, terminal));
                 maxTableSymbols += 1;
             }
         }
