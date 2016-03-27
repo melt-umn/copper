@@ -1,5 +1,7 @@
 package edu.umn.cs.melt.copper.compiletime.builders;
 
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
@@ -32,32 +34,34 @@ public class ExtensionFragmentDataBuilder {
     // composed to decomposed maps
     private ExtensionMappingSpec mappingSpec;
 
-    public static ExtensionFragmentData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition, LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets, TransparentPrefixes fullPrefixes) {
+    public static ExtensionFragmentData build(ParserSpec fullSpec, LR0DFA fullDFA, LRParseTable fullParseTable, PSSymbolTable fullSymbolTable, ParserSpec hostSpec, Map<Integer, Integer> hostPartitionMap, BitSet extensionStatePartition, LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets, TransparentPrefixes fullPrefixes, CompilerLogger logger) {
         ExtensionFragmentDataBuilder builder = new ExtensionFragmentDataBuilder(fullSpec, fullDFA, fullParseTable, fullSymbolTable, hostSpec, hostPartitionMap, extensionStatePartition, fullLookaheadAndLayoutSets, fullPrefixes);
 
         ExtensionFragmentData data = builder.build();
 
-        System.out.println("== BEGIN ExtensionLRParseTableBuilder ==");
-        System.out.println("Indicies:");
-        System.out.println("  host terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostTerminalIndices));
-        System.out.println("  host nonterminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostNonterminalIndices));
-        System.out.println("  host productions: " + builder.bitSetIndicesToString(builder.mappingSpec.hostProductionIndices));
-        System.out.println("  extension terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionTerminalIndices));
-        System.out.println("  extension nonterminals: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionNonterminalIndices));
-        System.out.println("  extension productions: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionProductionIndices));
+        if (logger.getLevel() == CompilerLevel.VERY_VERBOSE) {
+            System.out.println("== BEGIN ExtensionLRParseTableBuilder ==");
+            System.out.println("Indicies:");
+            System.out.println("  host terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostTerminalIndices));
+            System.out.println("  host nonterminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostNonterminalIndices));
+            System.out.println("  host productions: " + builder.bitSetIndicesToString(builder.mappingSpec.hostProductionIndices));
+            System.out.println("  extension terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionTerminalIndices));
+            System.out.println("  extension nonterminals: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionNonterminalIndices));
+            System.out.println("  extension productions: " + builder.bitSetIndicesToString(builder.mappingSpec.extensionProductionIndices));
 
-        System.out.println("Maps:");
-        System.out.println("  composed to decomposed symbols:");
-        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedSymbols);
-        System.out.println("  extension state num to composed state num:");
-        builder.printPartitionMap(builder.mappingSpec.extensionToComposedStates);
-        System.out.println("  composed to decomposed state map:");
-        builder.printPartitionMap(builder.mappingSpec.composedToDecomposedStates);
+            System.out.println("Maps:");
+            System.out.println("  composed to decomposed symbols:");
+            builder.printPartitionMap(builder.mappingSpec.composedToDecomposedSymbols);
+            System.out.println("  extension state num to composed state num:");
+            builder.printPartitionMap(builder.mappingSpec.extensionToComposedStates);
+            System.out.println("  composed to decomposed state map:");
+            builder.printPartitionMap(builder.mappingSpec.composedToDecomposedStates);
 
-        System.out.println("Appended Extension Parse Table");
-        data.appendedExtensionTable.print();
+            System.out.println("Appended Extension Parse Table");
+            data.appendedExtensionTable.print();
 
-        System.out.println("== END ExtensionLRParseTableBuilder ==");
+            System.out.println("== END ExtensionLRParseTableBuilder ==");
+        }
 
         return data;
     }

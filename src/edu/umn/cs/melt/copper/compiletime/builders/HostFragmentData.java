@@ -29,7 +29,6 @@ public class HostFragmentData implements Serializable {
     public TransparentPrefixes prefixes;
     public GeneralizedDFA scannerDFA;
     public SingleScannerDFAAnnotations scannerDFAAnnotations;
-    public LR0DFA parserDFA;
 
     // initNTs indexed by state
     public BitSet[] initNTs;
@@ -48,12 +47,10 @@ public class HostFragmentData implements Serializable {
         this.scannerDFA = returnData.scannerDFA;
         this.scannerDFAAnnotations = returnData.scannerDFAAnnotations;
 
-        this.parserDFA = parserDFA;
-
-        generateMarkingTerminalMetadata();
+        generateMarkingTerminalMetadata(parserDFA);
     }
 
-    private void generateMarkingTerminalMetadata() {
+    private void generateMarkingTerminalMetadata(LR0DFA parserDFA) {
         initNTs = new BitSet[parserDFA.size()];
         laSources = new TreeMap<Integer, Map<Integer, Set<Integer>>>();
 

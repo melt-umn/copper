@@ -36,18 +36,6 @@ public class ExtensionFragmentData implements Serializable {
     // extension state indexed list of maps: (table offset nt -> set of decomposed (mixed +/-) productions)
     public Map<Integer, Map<Integer, Set<Integer>>> laSources;
 
-    public void serialize(FileOutputStream file) {
-        try {
-            ObjectOutputStream out = new ObjectOutputStream(file);
-            out.writeObject(this);
-            out.close();
-            System.err.println("Successfully serialized extension fragment data");
-        } catch (IOException e) {
-            System.err.println("Failed to serialize extension fragment data");
-            e.printStackTrace();
-        }
-    }
-
     public static ExtensionFragmentData deserialize(FileInputStream file) {
         try {
             ObjectInputStream in = new ObjectInputStream(file);

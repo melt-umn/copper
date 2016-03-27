@@ -4,10 +4,7 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
-import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
-import edu.umn.cs.melt.copper.compiletime.pipeline.StandardPipeline;
-import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompiler;
+import edu.umn.cs.melt.copper.compiletime.pipeline.*;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 
 /**
@@ -21,6 +18,9 @@ public enum CopperPipelineType
 	 * This pipeline first converts a parser specification into the class of objects in the
 	 * {@link edu.umn.cs.melt.copper.compiletime.spec.grammarbeans} package,
 	 * from which a parser is compiled.
+	 * @author Kevin Viratyosin
+	 *
+	 * Modified by Kevin to include FRAGMENT type
 	 */
 	GRAMMARBEANS
 	{
@@ -40,6 +40,31 @@ public enum CopperPipelineType
 		String stringName()
 		{
 			return "default";
+		}
+	},
+	/**
+	 * This pipeline first converts a parser specification into the class of objects in the
+	 * {@link edu.umn.cs.melt.copper.compiletime.spec.grammarbeans} package,
+	 * from which a parser is compiled.
+	 */
+	FRAGMENT
+	{
+		@Override
+		StandardPipeline<ParserBean,FragmentGeneratorReturnData> getPipeline(ParserCompilerParameters args)
+		{
+			return new StandardPipeline<ParserBean, FragmentGeneratorReturnData>(args.getUseSkin().getStandardSpecParser(args),new FragmentGenerator(),args.getUseEngine().getFragmentSerializer(args));
+		}
+
+		@Override
+		String usageMessage()
+		{
+			return "Generates parser and scanner fragments to be composed later.";
+		}
+
+		@Override
+		String stringName()
+		{
+			return "fragment";
 		}
 	},
 	// TODO: Rip this out when GrammarSource is gone. 
