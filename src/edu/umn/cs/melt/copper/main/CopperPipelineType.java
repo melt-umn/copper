@@ -11,6 +11,9 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
  * Represents the parser compilation pipelines available in the Copper parser generator.
  * @see edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
+ *
+ * Modified by Kevin to include FRAGMENT type
  */
 public enum CopperPipelineType
 {
@@ -18,9 +21,6 @@ public enum CopperPipelineType
 	 * This pipeline first converts a parser specification into the class of objects in the
 	 * {@link edu.umn.cs.melt.copper.compiletime.spec.grammarbeans} package,
 	 * from which a parser is compiled.
-	 * @author Kevin Viratyosin
-	 *
-	 * Modified by Kevin to include FRAGMENT type
 	 */
 	GRAMMARBEANS
 	{
@@ -45,7 +45,7 @@ public enum CopperPipelineType
 	/**
 	 * This pipeline first converts a parser specification into the class of objects in the
 	 * {@link edu.umn.cs.melt.copper.compiletime.spec.grammarbeans} package,
-	 * from which a parser is compiled.
+	 * from which a parser fragment is compiled and serialized.
 	 */
 	FRAGMENT
 	{
