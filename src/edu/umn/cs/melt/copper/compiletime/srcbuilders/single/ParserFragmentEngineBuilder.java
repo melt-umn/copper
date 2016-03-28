@@ -651,7 +651,6 @@ public class ParserFragmentEngineBuilder {
             out.println("  private static " + obj.type + " " + obj.name + ";");
         }
         out.println("  private static " + BitSet.class.getName() + "[] disambiguationGroups;");
-        // TODO finish
     }
 
     private void printParserAncillaryMethods(PrintStream out) {
@@ -785,8 +784,6 @@ public class ParserFragmentEngineBuilder {
         out.println("      return shiftableSets;");
         out.println("    }");
         out.println("  }");
-
-        // TODO finish
     }
 
     private void makeObjectsToBeHashed() {
@@ -827,7 +824,6 @@ public class ParserFragmentEngineBuilder {
 
         makeProductionLHSs();
         objectsToHash.add(new ObjectToHash(productionLHSs, "int[]", "productionLHSs"));
-        // TODO finish
 
         generateSymbolNames();
         objectsToHash.add(new ObjectToHash(symbolNames, "String[][]", "symbolNames"));
@@ -836,63 +832,65 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(markingTerminalSymbolDisplayNames, "String[]", "markingTerminalSymbolDisplayNames"));
     }
 
+    private int prepElementIndices(
+            Map<Integer, Map<Integer, Integer>> map,
+            Map<Integer, Pair<Integer, Integer>> mapBack,
+            int[] counts,
+            BitSet hostElements,
+            BitSet[] extensionElements
+    ) {
+        int newIndex = 0;
+
+        counts[0] = hostElements.cardinality();
+        map.put(0, new TreeMap<Integer, Integer>());
+        for (int x = hostElements.nextSetBit(0); x >= 0; x = hostElements.nextSetBit(x + 1)) {
+            map.get(0).put(x, newIndex);
+            mapBack.put(newIndex, new Pair<Integer, Integer>(0, x));
+            newIndex += 1;
+        }
+        for (int e = 0; e < extensionCount; e++) {
+            BitSet elements = extensionElements[e];
+            counts[e + 1] = elements.cardinality();
+            map.put(e + 1, new TreeMap<Integer, Integer>());
+            for (int p = elements.nextSetBit(0); p >= 0; p = elements.nextSetBit(p + 1)) {
+                map.get(e + 1).put(p, newIndex);
+                mapBack.put(newIndex, new Pair<Integer, Integer>(e + 1, p));
+                newIndex += 1;
+            }
+        }
+
+        int totalElementCount = newIndex;
+        return totalElementCount;
+    }
+
     private void prepProductionIndices() {
         productionMap = new TreeMap<Integer, Map<Integer, Integer>>();
         productionMapBack = new TreeMap<Integer, Pair<Integer, Integer>>();
         productionCounts = new int[fragmentCount];
 
-        int newIndex = 0;
-
-        BitSet hostProductions = hostFragment.fullSpec.productions;
-        productionCounts[0] = hostProductions.cardinality();
-        productionMap.put(0, new TreeMap<Integer, Integer>());
-        for (int p = hostProductions.nextSetBit(0); p >= 0; p = hostProductions.nextSetBit(p + 1)) {
-            productionMap.get(0).put(p, newIndex);
-            productionMapBack.put(newIndex, new Pair<Integer, Integer>(0, p));
-            newIndex += 1;
-        }
+        BitSet[] extProductions = new BitSet[extensionCount];
         for (int e = 0; e < extensionCount; e++) {
-            BitSet productions = extensionFragments.get(e).extensionMappingSpec.extensionProductionIndices;
-            productionCounts[e + 1] = productions.cardinality();
-            productionMap.put(e + 1, new TreeMap<Integer, Integer>());
-            for (int p = productions.nextSetBit(0); p >= 0; p = productions.nextSetBit(p + 1)) {
-                productionMap.get(e + 1).put(p, newIndex);
-                productionMapBack.put(newIndex, new Pair<Integer, Integer>(e + 1, p));
-                newIndex += 1;
-            }
+            extProductions[e] = extensionFragments.get(e).extensionMappingSpec.extensionProductionIndices;
         }
-
-        totalProductionCount = newIndex;
+        totalProductionCount = prepElementIndices(productionMap, productionMapBack, productionCounts, hostFragment.fullSpec.productions, extProductions);
     }
 
     private void prepDisambiguationFunctionIndices() {
-        // TODO reduce code dup with prepProductionIndices
         Map<Integer, Map<Integer, Integer>> disambiguationFunctionMap = new TreeMap<Integer, Map<Integer, Integer>>();
         disambiguationFunctionMapBack = new TreeMap<Integer, Pair<Integer, Integer>>();
         int[] disambiguationFunctionCounts = new int[fragmentCount];
 
-        int newIndex = 0;
-
-        BitSet hostDisambiguationFunctions = hostFragment.fullSpec.disambiguationFunctions;
-        disambiguationFunctionCounts[0] = hostDisambiguationFunctions.cardinality();
-        disambiguationFunctionMap.put(0, new TreeMap<Integer, Integer>());
-        for (int p = hostDisambiguationFunctions.nextSetBit(0); p >= 0; p = hostDisambiguationFunctions.nextSetBit(p + 1)) {
-            disambiguationFunctionMap.get(0).put(p, newIndex);
-            disambiguationFunctionMapBack.put(newIndex, new Pair<Integer, Integer>(0, p));
-            newIndex += 1;
-        }
+        BitSet[] extDisambiguationFunctions = new BitSet[extensionCount];
         for (int e = 0; e < extensionCount; e++) {
-            BitSet disambiguationFunctions = extensionFragments.get(e).extensionMappingSpec.extensionDisambiguationFunctionIndices;
-            disambiguationFunctionCounts[e + 1] = disambiguationFunctions.cardinality();
-            disambiguationFunctionMap.put(e + 1, new TreeMap<Integer, Integer>());
-            for (int p = disambiguationFunctions.nextSetBit(0); p >= 0; p = disambiguationFunctions.nextSetBit(p + 1)) {
-                disambiguationFunctionMap.get(e + 1).put(p, newIndex);
-                disambiguationFunctionMapBack.put(newIndex, new Pair<Integer, Integer>(e + 1, p));
-                newIndex += 1;
-            }
+            extDisambiguationFunctions[e] = extensionFragments.get(e).extensionMappingSpec.extensionDisambiguationFunctionIndices;
         }
-
-        totalDisambiguationFunctionCount = newIndex;
+        totalDisambiguationFunctionCount = prepElementIndices(
+                disambiguationFunctionMap,
+                disambiguationFunctionMapBack,
+                disambiguationFunctionCounts,
+                hostFragment.fullSpec.disambiguationFunctions,
+                extDisambiguationFunctions
+        );
     }
 
     private void addScannerAnnotationsToBeHashed() {
@@ -1285,8 +1283,6 @@ public class ParserFragmentEngineBuilder {
     }
 
     private void writeStaticMemberInitializations(PrintStream out) {
-        // TODO finish
-
         out.println("  public static void initArrays() throws " + IOException.class.getName() + "," + ClassNotFoundException.class.getName() + " {");
         for (ObjectToHash obj: objectsToHash) {
             out.println("    " + obj.name + " = (" + obj.type + ") " + ByteArrayEncoder.class.getName() + ".readHash(" + obj.name + "Hash);");
