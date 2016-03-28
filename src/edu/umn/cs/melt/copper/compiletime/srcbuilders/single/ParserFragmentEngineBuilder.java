@@ -7,9 +7,7 @@ import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.pipeline.ParserFragments;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserAttribute;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.*;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
@@ -82,6 +80,12 @@ public class ParserFragmentEngineBuilder {
     private Map<Integer, Pair<Integer, Integer>> disambiguationFunctionMapBack;
     private int totalDisambiguationFunctionCount;
     private int extTableOffset;
+    private ParserBean hostParser;
+
+    private String[] markingTerminalScannerSymbolNames;
+    private String[] hostScannerSymbolNames;
+    private String[][] extScannerSymbolNames;
+    private String[][] grammarSymbolNames;
 
     private static class ObjectToHash {
         public Object obj;
@@ -112,6 +116,8 @@ public class ParserFragmentEngineBuilder {
         }
 
         extTableOffset = Math.max(hostTerminalLength, hostFragment.fullSpec.nonterminals.length());
+
+        hostParser = hostFragment.symbolTable.getParser(hostFragment.fullSpec.parser);
     }
 
     public void buildEngine(
@@ -133,6 +139,7 @@ public class ParserFragmentEngineBuilder {
         out.println("public class " + parserName + " extends " + ParserFragmentEngine.class.getName() + "<" + rootType + "," + errorType + "> {");
 
         makeObjectsToBeHashed();
+        generateSymbolNames();
 
         printFixedMethods(out);
 
@@ -140,15 +147,11 @@ public class ParserFragmentEngineBuilder {
 
         // TODO, Terminals enum and pushToken ...?
 
-        // TODO write methods related to transition
-
-        // TODO print Semantics class and implement related methods (including instatiate Semantics in startEngine)
         writeSemanticsClass(out);
         writeSemanticsClassUse(out);
 
         writeHashes(out);
 
-        // TODO write "parserAncillaries" -- var decls and getters
         printParserAncillaryDecls(out);
         printParserAncillaryMethods(out);
 
@@ -158,18 +161,73 @@ public class ParserFragmentEngineBuilder {
 
         out.println("}");
     }
+    
+    private void generateSymbolNames() {
+        markingTerminalScannerSymbolNames = new String[markingTerminalCount];
+        hostScannerSymbolNames = new String[hostTerminalLength];
+        extScannerSymbolNames = new String[extensionCount][];
+        grammarSymbolNames = new String[fragmentCount][];
+
+        for (int t = 0; t < markingTerminalCount; t++) {
+            MarkingTerminalData data = markingTerminalDatas.get(t);
+            markingTerminalScannerSymbolNames[t] = generateVariableName(data.extensionId + 1, data.extensionTerminal);
+        }
+
+        grammarSymbolNames[0] = new String[hostFragment.symbolTable.size()];
+        for (int s = 0; s < hostFragment.symbolTable.size(); s++) {
+            String name = generateVariableName(0, s);
+            if (hostFragment.fullSpec.terminals.get(s)) {
+                hostScannerSymbolNames[s] = name;
+            }
+            grammarSymbolNames[0][s] = name;
+        }
+
+        for (int e = 0; e < extensionCount; e++) {
+            ExtensionMappingSpec spec = extensionFragments.get(e).extensionMappingSpec;
+            grammarSymbolNames[e + 1] = new String[spec.extensionSymbolTable.size()];
+            extScannerSymbolNames[e] = new String[extTerminalLengths[e] - extTableOffset];
+            for (int s = 0; s < spec.extensionSymbolTable.size(); s++) {
+                String name = generateVariableName(e + 1, s);
+                if (spec.extensionTerminalIndices.get(s)) {
+                    extScannerSymbolNames[e][s] = name;
+                }
+                grammarSymbolNames[e + 1][s] = name;
+            }
+        }
+    }
+
+    private String getSymbolName(int fragmentId, int symbol) {
+        return grammarSymbolNames[fragmentId][symbol];
+    }
+
+    private String getScannerSymbolName(int fragmentId, int symbol) {
+        if (fragmentId == MARKING_TERMINAL_FRAGMENT_ID) {
+            return markingTerminalScannerSymbolNames[symbol];
+        } else {
+            return getScannerSymbolNameExclMT(fragmentId, symbol);
+        }
+    }
+
+    // ExclMT = Excluding Marking Terminals
+    // fragmentId == 0 => HOST symbol
+    private String getScannerSymbolNameExclMT(int fragmentId, int symbol) {
+        if (fragmentId == HOST_FRAGMENT_ID || symbol < extTableOffset) {
+            return hostScannerSymbolNames[symbol];
+        } else {
+            return extScannerSymbolNames[fragmentId - 1][symbol - extTableOffset];
+        }
+    }
 
     private void writeSemanticsClass(PrintStream out) {
         out.println("  public class Semantics extends " + SingleDFASemanticActionContainer.class.getName() + "<" + errorType + "> {");
 
-        /* TODO -- SemanticActionAuxCode? -- seems pretty important
-        if(parser.getSemanticActionAuxCode() != null) out.print(parser.getSemanticActionAuxCode());
-        for(int attrN = spec.parserAttributes.nextSetBit(0);attrN >= 0;attrN = spec.parserAttributes.nextSetBit(attrN+1))
-        {
-            ParserAttribute attr = symbolTable.getParserAttribute(attrN);
-            out.print("        public " + attr.getAttributeType() + " " + generateVariableName(attrN) + ";\n");
+        // TODO do extensions have semantic action aux code?
+        String semanticActionAuxCode = hostParser.getSemanticActionAuxCode();
+        // TODO do extensions have parser attributes? -- probably...
+        for(int attrN = hostFragment.fullSpec.parserAttributes.nextSetBit(0); attrN >= 0; attrN = hostFragment.fullSpec.parserAttributes.nextSetBit(attrN + 1)) {
+            ParserAttribute attr = hostFragment.symbolTable.getParserAttribute(attrN);
+            out.println("    public " + attr.getAttributeType() + " " + generateVariableName(0, attrN) + ";");
         }
-        */
 
         out.println("    public Semantics() throws " + IOException.class.getName() + "," + errorType + " {");
         out.println("      runInit();");
@@ -179,23 +237,32 @@ public class ParserFragmentEngineBuilder {
         out.println("      reportError(\"Error at \" + pos.toString() + \":\\n  \" + message);");
         out.println("    }");
 
+        // TODO do extensions have default terminal code?
         out.println("    public void runDefaultTermAction() throws " + IOException.class.getName() + "," + errorType + " {");
-        // TODO ; if(parser.getDefaultTerminalCode() != null) out.println("            " + parser.getDefaultTerminalCode() + "");
-        out.println("    }");
-
-        out.println("    public void runDefaultProdAction() throws " + IOException.class.getName() + "," + errorType + " {");
-        /// TODO ; if(parser.getDefaultProductionCode() != null) out.println("            " + parser.getDefaultProductionCode() + "");
-        out.println("    }");
-
-        out.println("    public void runInit() throws " + IOException.class.getName() + "," + errorType + " {");
-        /* TODO fill parserInitCode
-        if(parser.getParserInitCode() != null) out.print("            " + parser.getParserInitCode());// grammar.getParserSources().getParserAttrInitCode());
-        for(int attrN = spec.parserAttributes.nextSetBit(0);attrN >= 0;attrN = spec.parserAttributes.nextSetBit(attrN+1))
-        {
-            ParserAttribute attr = symbolTable.getParserAttribute(attrN);
-            if(attr.getCode() != null) out.print("            " + attr.getCode() + "\n");
+        if (hostParser.getDefaultTerminalCode() != null) {
+            out.println("      " + hostParser.getDefaultTerminalCode() + "");
         }
-        */
+        out.println("    }");
+
+        // TODO do extensions have default production code?
+        out.println("    public void runDefaultProdAction() throws " + IOException.class.getName() + "," + errorType + " {");
+        if (hostParser.getDefaultProductionCode() != null) {
+            out.println("      " + hostParser.getDefaultProductionCode() + "");
+        }
+        out.println("    }");
+
+        // TODO can extensions have parser init code?
+        out.println("    public void runInit() throws " + IOException.class.getName() + "," + errorType + " {");
+        if (hostParser.getParserInitCode() != null) {
+            out.print("      " + hostParser.getParserInitCode());
+        }
+        // TODO can extensions have parser attributes? -- probably...
+        for (int attrN = hostFragment.fullSpec.parserAttributes.nextSetBit(0); attrN >= 0; attrN = hostFragment.fullSpec.parserAttributes.nextSetBit(attrN+1)) {
+            ParserAttribute attr = hostFragment.symbolTable.getParserAttribute(attrN);
+            if (attr.getCode() != null) {
+                out.println("      " + attr.getCode());
+            }
+        }
         out.println("    }");
 
         writeRunSemanticAction(out);
@@ -205,14 +272,12 @@ public class ParserFragmentEngineBuilder {
         writeRunDisambiguationAction(out);
         writeRunDisambiguationActionMethods(out);
 
+        // TODO can extensions have post parse code?
         out.println("    public void runPostParseCode(" + Object.class.getName() + " __root) {");
-        /* TODO fill runPostParseCode
-        if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
-        {
+        if (hostParser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(hostParser.getPostParseCode())) {
             out.println("      " + rootType + " root = (" + rootType + ") __root;");
-            out.println("      " + parser.getPostParseCode());
+            out.println("      " + hostParser.getPostParseCode());
         }
-        */
         out.println("    }");
 
         out.println("  }");
@@ -470,11 +535,11 @@ public class ParserFragmentEngineBuilder {
 
             out.println("    public int disambiguate_" + df + "(final String lexeme) throws " + errorType + " {");
             if (dfData.hasDisambiguateTo(fragmentIndex)) {
-                out.println("      return " + dfData.getDisambiguateTo(df) + ";"); // TODO symbolNames?
+                out.println("      return /* " + getScannerSymbolNameExclMT(fragment, dfData.getDisambiguateTo(df)) + " */ " + dfData.getDisambiguateTo(df) + ";");
             } else {
                 BitSet members = dfData.getMembers(fragmentIndex);
                 for (int t = members.nextSetBit(0); t >= 0; t = members.nextSetBit(t + 1)) {
-//                    out.println("      @SuppressWarnings(\"unused\") final int " + symbolNames[t] + " = " + t + ";"); // TODO symbolNames!
+                    out.println("      @SuppressWarnings(\"unused\") final int " + getScannerSymbolNameExclMT(fragment, t) + " = " + t + ";"); // TODO symbolNames!
                 }
                 PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
                 out.println("      " + symbolTable.getDisambiguationFunction(fragmentIndex).getCode());
@@ -497,14 +562,12 @@ public class ParserFragmentEngineBuilder {
         out.println("    return semantics.runSemanticTerminalAction(fragmentId, _pos, _terminal);");
         out.println("  }");
 
-        /* TODO getPostParseCode
-        if(parser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(parser.getPostParseCode()))
-        {
+        // TOOD can extensions have post parse code?
+        if (hostParser.getPostParseCode() != null && !QuotedStringFormatter.isJavaWhitespace(hostParser.getPostParseCode())) {
             out.println("  public void runPostParseCode(" + Object.class.getName() + " __root) {");
             out.println("    semantics.runPostParseCode(__root);");
             out.println("  }");
         }
-        */
 
         // Leaving in the fragmentId argument for now...
         out.println("  public int runFragmentDisambiguationAction(int fragmentId, " + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " matches)");
@@ -535,7 +598,8 @@ public class ParserFragmentEngineBuilder {
         out.println(packageDecl);
         out.println(importDecls);
 
-        String preambleCode = ""; // TODO fill -- used to be `symbolTable.getParser(spec.parser).getPreambleCode()`
+        // TODO do extensions have preamble code?
+        String preambleCode = hostParser.getPreambleCode();
         if (preambleCode != null) {
             out.println(preambleCode);
         }
@@ -568,7 +632,7 @@ public class ParserFragmentEngineBuilder {
 
     private void printFragmentMethods(PrintStream out) {
         out.println("  protected int getFragmentCount() {");
-        out.println("  return " + fragmentCount + ";");
+        out.println("    return " + fragmentCount + ";");
         out.println("  }");
 
         out.println("  protected int stateToFragmentId(int state) {");
@@ -1192,7 +1256,7 @@ public class ParserFragmentEngineBuilder {
         stringOut.reset();
         ObjectOutputStream outp = new ObjectOutputStream(stringOut);
         outp.writeObject(obj);
-        out.println("public static final byte[] " + prefix + "Hash = " + ByteArrayEncoder.class.getName() + ".literalToByteArray\n(new String[]{ " + ByteArrayEncoder.byteArrayToLiteral(16,stringOut.toByteArray()) + "});\n");
+        out.println("  public static final byte[] " + prefix + "Hash = " + ByteArrayEncoder.class.getName() + ".literalToByteArray\n(new String[]{ " + ByteArrayEncoder.byteArrayToLiteral(16,stringOut.toByteArray()) + "});\n");
     }
 
     private void writeStaticMemberInitializations(PrintStream out) {
@@ -1228,5 +1292,24 @@ public class ParserFragmentEngineBuilder {
             }
             out.print(");\n");
         }
+    }
+
+    private String generateVariableName(int fragment, int element) {
+        PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
+        if (symbolTable.get(element).getType() == CopperElementType.SPECIAL) {
+            ParserSpec spec = hostFragment.fullSpec;
+            if (element == spec.getEOFTerminal()) {
+                return "EOF";
+            } else if (element == spec.getStartNonterminal()) {
+                return "START";
+            } else if (element == spec.getStartProduction()) {
+                return "STARTP";
+            } else {
+                return null;
+            }
+        } else {
+            return "sym" + fragment + "$" + symbolTable.get(element).getName().toString();
+        }
+        // TODO confirm that no need to check isUnitary or that sort of thing
     }
 }
