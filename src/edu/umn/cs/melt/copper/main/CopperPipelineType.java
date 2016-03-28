@@ -51,7 +51,6 @@ public enum CopperPipelineType
 	 */
 	FRAGMENT
 	{
-		// TODO, maybe I don't need a special "ENGINE" -- just hard code the engine that is needed instead of forcing every CopperEngineType to have a method for it
 		@Override
 		StandardPipeline<ParserBean,FragmentGeneratorReturnData> getPipeline(ParserCompilerParameters args)
 		{
