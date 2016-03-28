@@ -66,6 +66,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     // New abstract functions
     protected abstract int getFragmentCount();
     protected abstract int stateToFragmentId(int state);
+    protected abstract int getMarkingTerminalOffset();
     protected abstract void reportSyntaxError(int fragmentId) throws EXCEPT;
     protected abstract String[] getSymbolNamesInclMT(int fragmentId);
     protected abstract String[] getSymbolDisplayNamesInclMT(int fragmentId);
@@ -394,6 +395,12 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         return finalMatches;
     }
 
+    protected static class MarkingTerminalMatchData extends SingleDFAMatchData {
+        public MarkingTerminalMatchData(SingleDFAMatchData data) {
+            super(data.terms, data.precedingPos, data.followingPos, data.lexeme, data.layouts);
+        }
+    }
+
     protected SingleDFAMatchData multiLayoutScan(int fragmentId) throws IOException,EXCEPT {
         // assumes fragmentId is an extension id (> 0)
 
@@ -401,9 +408,9 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         // TODO double check that this is handled by validLA -- "shiftable"?
         SingleDFAMatchData mtScanResult = parameterizedLayoutScan(false, null, markingTerminalScanner);
         if (mtScanResult.terms.cardinality() > 1) {
-            throw new RuntimeException("Ambiguous marking terminal match: " + bitVecToDisplayStringList(fragmentId, mtScanResult.terms)); // Should not happen
+            throw new RuntimeException("Ambiguous marking terminal match: " + bitVecToDisplayStringList(0, mtScanResult.terms)); // Should not happen
         } else if (!mtScanResult.terms.isEmpty()) {
-            return mtScanResult;
+            return new MarkingTerminalMatchData(mtScanResult);
         }
 
         ScannerParams extParams = fragmentScanners[fragmentId];
@@ -461,8 +468,8 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             // DEBUG-X-BEGIN
             //System.err.println(bitVecToString(fragmentId, scanResult.terms));
             // DEBUG-X-END
-            int action = getParseTable()[currentState.statenum][scanResult.firstTerm];
-            // TODO adjust here or in scanning method to account for case when result is a marking terminal! (offset)
+            int symbol = scanResult.firstTerm + (scanResult instanceof MarkingTerminalMatchData ? getMarkingTerminalOffset() : 0);
+            int action = getParseTable()[currentState.statenum][symbol];
             Object synthAttr;
             switch(actionType(action))
             {

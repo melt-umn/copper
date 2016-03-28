@@ -640,6 +640,10 @@ public class ParserFragmentEngineBuilder {
         out.println("      return " + extensionCount + ";");
         out.println("    }");
         out.println("  }");
+
+        out.println("  protected int getMarkingTerminalOffset() {");
+        out.println("    return " + markingTerminalOffset + ";");
+        out.println("  }");
     }
 
     private void printParserAncillaryDecls(PrintStream out) {
