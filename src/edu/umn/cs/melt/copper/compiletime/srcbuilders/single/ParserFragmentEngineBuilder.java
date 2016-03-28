@@ -234,10 +234,12 @@ public class ParserFragmentEngineBuilder {
             int fragmentIndex = entry.getValue().second();
 
             PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
-            String productionCode = symbolTable.getProduction(fragmentIndex).getCode();
             if (fragment == 0 && fragmentIndex == hostFragment.fullSpec.getStartProduction()) {
                 continue;
-            } else if (productionCode != null && !QuotedStringFormatter.isJavaWhitespace(productionCode)) {
+            }
+
+            String productionCode = symbolTable.getProduction(fragmentIndex).getCode();
+            if (productionCode != null && !QuotedStringFormatter.isJavaWhitespace(productionCode)) {
                 out.println("        case " + p + ":");
                 out.println("          RESULT = runSemanticAction_p" + p + "();");
                 out.println("          break;");
@@ -275,11 +277,13 @@ public class ParserFragmentEngineBuilder {
         out.println("      } else {");
         out.println("        switch(_terminal.firstTerm) {");
         for (int t = hostFragment.fullSpec.terminals.nextSetBit(0); t >= 0; t = hostFragment.fullSpec.terminals.nextSetBit(t + 1)) {
-            String code = hostFragment.symbolTable.getTerminal(t).getCode();
-            if (t != hostFragment.fullSpec.getEOFTerminal() && code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
-                out.println("          case " + t + ":");
-                out.println("            RESULT = runSemanticAction_th_" + t + "(lexeme);");
-                out.println("            break;");
+            if (t != hostFragment.fullSpec.getEOFTerminal()) {
+                String code = hostFragment.symbolTable.getTerminal(t).getCode();
+                if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                    out.println("          case " + t + ":");
+                    out.println("            RESULT = runSemanticAction_th_" + t + "(lexeme);");
+                    out.println("            break;");
+                }
             }
         }
         BitSet extensionTerminalUnion = new BitSet();
@@ -322,12 +326,14 @@ public class ParserFragmentEngineBuilder {
 
             ExtensionMappingSpec extSpec = isExtension ? extensionFragments.get(fragment - 1).extensionMappingSpec : null;
             PSSymbolTable symbolTable = isExtension ? extSpec.extensionSymbolTable : hostFragment.symbolTable;
-            String productionCode = symbolTable.getProduction(fragmentP).getCode();
             ParserSpec.ProductionData pr = isExtension ? extSpec.pr : hostFragment.fullSpec.pr;
 
             if (fragment == 0 && fragmentP == hostFragment.fullSpec.getStartProduction()) {
                 continue;
-            } else if (productionCode == null || QuotedStringFormatter.isJavaWhitespace(productionCode)) {
+            }
+
+            String productionCode = symbolTable.getProduction(fragmentP).getCode();
+            if (productionCode == null || QuotedStringFormatter.isJavaWhitespace(productionCode)) {
                 continue;
             }
 
@@ -396,15 +402,17 @@ public class ParserFragmentEngineBuilder {
             }
         }
         for (int t = hostFragment.fullSpec.terminals.nextSetBit(0); t >= 0; t = hostFragment.fullSpec.terminals.nextSetBit(t + 1)) {
-            String code = hostFragment.symbolTable.getTerminal(t).getCode();
-            String returnType = hostFragment.symbolTable.getTerminal(t).getReturnType();
-            if (t != hostFragment.fullSpec.getEOFTerminal() && code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
-                out.println("    public " + returnType + " runSemanticAction_th_" + t + "(final String lexeme)");
-                out.println("    throws " + errorType + " {");
-                out.println("      " + returnType + " RESULT = null;");
-                out.println("      " + code + "");
-                out.println("      return RESULT;");
-                out.println("    }");
+            if (t != hostFragment.fullSpec.getEOFTerminal()) {
+                String code = hostFragment.symbolTable.getTerminal(t).getCode();
+                String returnType = hostFragment.symbolTable.getTerminal(t).getReturnType();
+                if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                    out.println("    public " + returnType + " runSemanticAction_th_" + t + "(final String lexeme)");
+                    out.println("    throws " + errorType + " {");
+                    out.println("      " + returnType + " RESULT = null;");
+                    out.println("      " + code + "");
+                    out.println("      return RESULT;");
+                    out.println("    }");
+                }
             }
         }
         for (int e = 0; e < extensionCount; e++) {
