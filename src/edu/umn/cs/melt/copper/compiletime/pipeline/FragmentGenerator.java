@@ -56,6 +56,7 @@ public class FragmentGenerator extends ParserBeanCompiler<FragmentGeneratorRetur
         if (beanCompilationSucceeded) {
             FragmentGeneratorReturnData fragmentGeneratorReturnData = new FragmentGeneratorReturnData();
 
+            fragmentGeneratorReturnData.stats = this.stats;
             if (args.isRunMDA()) {
                 Map<Integer, Integer> hostPartitionMap = this.mdaResults.getHostStateMap();
                 BitSet extensionStatePartition = new BitSet();

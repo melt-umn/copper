@@ -164,7 +164,7 @@ public class ExtensionMappingSpec implements Serializable {
     }
 
     private void generateSymbolTable(PSSymbolTable fullSymbolTable) {
-        ArrayList<CopperASTBean> beans = new ArrayList<CopperASTBean>();
+        ArrayList<CopperASTBean> beans = new ArrayList<CopperASTBean>(composedToDecomposedSymbols.size());
 
         for (Map.Entry<Integer, Integer> entry : composedToDecomposedSymbols.entrySet()) {
             int decomposedIndex = entry.getValue();

@@ -4,6 +4,7 @@ import edu.umn.cs.melt.copper.compiletime.builders.*;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
+import edu.umn.cs.melt.copper.compiletime.pipeline.ParserFragments;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserAttribute;
@@ -96,21 +97,21 @@ public class ParserFragmentEngineBuilder {
 
     private List<ObjectToHash> objectsToHash;
 
-    public ParserFragmentEngineBuilder(HostFragmentData hostFragment, List<ExtensionFragmentData> extensionFragments) {
-        this.hostFragment = hostFragment;
-        this.extensionFragments = extensionFragments;
+    public ParserFragmentEngineBuilder(ParserFragments fragments) {
+        hostFragment = fragments.hostFragment;
+        extensionFragments = fragments.extensionFragments;
 
-        this.extensionCount = extensionFragments.size();
-        this.fragmentCount = this.extensionCount + 1;
+        extensionCount = extensionFragments.size();
+        fragmentCount = extensionCount + 1;
 
-        this.hostTerminalLength = hostFragment.fullSpec.terminals.length();
-        this.extTerminalLengths = new int[extensionCount];
-        for (int e = 0; e < this.extensionCount; e++) {
-            ExtensionMappingSpec spec = this.extensionFragments.get(e).extensionMappingSpec;
-            this.extTerminalLengths[e] = spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length());
+        hostTerminalLength = hostFragment.fullSpec.terminals.length();
+        extTerminalLengths = new int[extensionCount];
+        for (int e = 0; e < extensionCount; e++) {
+            ExtensionMappingSpec spec = extensionFragments.get(e).extensionMappingSpec;
+            extTerminalLengths[e] = spec.tableOffsetExtensionIndex(spec.extensionTerminalIndices.length());
         }
 
-        this.extTableOffset = Math.max(hostTerminalLength, hostFragment.fullSpec.nonterminals.length());
+        extTableOffset = Math.max(hostTerminalLength, hostFragment.fullSpec.nonterminals.length());
     }
 
     public void buildEngine(
@@ -721,6 +722,7 @@ public class ParserFragmentEngineBuilder {
 
         generateMarkingTerminalScanner();
 
+        deltas = new int[fragmentCount][][];
         deltas[0] = markingTerminalScannerDFA.getTransitions();
         for (int i = 0; i < extensionCount; i++) {
             deltas[i + 1] = extensionFragments.get(i).scannerDFA.getTransitions();

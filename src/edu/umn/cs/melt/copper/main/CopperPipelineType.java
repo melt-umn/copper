@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import edu.umn.cs.melt.copper.compiletime.pipeline.*;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment.ParserFragmentCompositionProcess;
 
 /**
  * Represents the parser compilation pipelines available in the Copper parser generator.
@@ -13,7 +14,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
- * Modified by Kevin to include FRAGMENT type
+ * Modified by Kevin to include FRAGMENT, FRAGMENT_COMPOSE type
  */
 public enum CopperPipelineType
 {
@@ -49,6 +50,7 @@ public enum CopperPipelineType
 	 */
 	FRAGMENT
 	{
+		// TODO, maybe I don't need a special "ENGINE" -- just hard code the engine that is needed instead of forcing every CopperEngineType to have a method for it
 		@Override
 		StandardPipeline<ParserBean,FragmentGeneratorReturnData> getPipeline(ParserCompilerParameters args)
 		{
@@ -65,6 +67,30 @@ public enum CopperPipelineType
 		String stringName()
 		{
 			return "fragment";
+		}
+	},
+	/**
+	 * This pipeline is meant to be used after the FRAGMENT pipeline.
+	 * It writes a ParserFragmentEngine java class from a set of given fragments.
+	 */
+	FRAGMENT_COMPOSE
+	{
+		@Override
+		StandardPipeline<ParserFragments, ParserFragments> getPipeline(ParserCompilerParameters args)
+		{
+			return new StandardPipeline<ParserFragments, ParserFragments>(new ParserFragmentsDeserializer(args), new ParserFragmentsPasser(args), new ParserFragmentCompositionProcess(args));
+		}
+
+		@Override
+		String usageMessage()
+		{
+			return "Generates parser and scanner fragments to be composed later.";
+		}
+
+		@Override
+		String stringName()
+		{
+			return "fragmentCompose";
 		}
 	},
 	// TODO: Rip this out when GrammarSource is gone. 

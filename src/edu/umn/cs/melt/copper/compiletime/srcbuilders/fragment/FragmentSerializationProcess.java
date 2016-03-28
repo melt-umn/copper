@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.FinalReportMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.FragmentGeneratorReturnData;
@@ -39,14 +40,17 @@ public class FragmentSerializationProcess implements SourceBuilder<FragmentGener
             out.writeObject(constructs.isExtensionFragmentData ? constructs.extensionFragmentData : constructs.hostFragmentData);
             out.close();
 
-            logger.log(new GenericMessage(CompilerLevel.REGULAR, "Successfully serialized fragment data"));
+            logger.log(new FinalReportMessage(constructs.stats));
+
+            String fragmentKind = constructs.isExtensionFragmentData ? "extension" : "host";
+            logger.log(new GenericMessage(CompilerLevel.REGULAR, "Successfully serialized " + fragmentKind + " fragment data"));
 
             return 0;
         } catch (IOException e) {
             if (logger.isLoggable(CompilerLevel.VERY_VERBOSE)) {
                 e.printStackTrace(System.err);
             }
-            logger.logError(new GenericMessage(CompilerLevel.QUIET,"I/O error in fragment serialization: " + e.getMessage(),true,true));
+            logger.logError(new GenericMessage(CompilerLevel.QUIET, "I/O error in fragment serialization: " + e.getMessage(),true,true));
             return 1;
         }
     }
@@ -58,11 +62,11 @@ public class FragmentSerializationProcess implements SourceBuilder<FragmentGener
 
     @Override
     public String customSwitchUsage() {
-        return null;
+        return "";
     }
 
     @Override
     public int processCustomSwitch(ParserCompilerParameters args, String[] cmdline, int index) {
-        return 0;
+        return -1;
     }
 }
