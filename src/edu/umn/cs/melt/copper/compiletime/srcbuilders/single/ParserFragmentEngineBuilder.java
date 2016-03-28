@@ -533,7 +533,7 @@ public class ParserFragmentEngineBuilder {
             } else {
                 BitSet members = dfData.getMembers(fragmentIndex);
                 for (int t = members.nextSetBit(0); t >= 0; t = members.nextSetBit(t + 1)) {
-                    out.println("      @SuppressWarnings(\"unused\") final int " + getSymbolNames(fragment)[t] + " = " + t + ";"); // TODO symbolNames!
+                    out.println("      @SuppressWarnings(\"unused\") final int " + getSymbolNames(fragment)[t] + " = " + t + ";");
                 }
                 PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
                 out.println("      " + symbolTable.getDisambiguationFunction(fragmentIndex).getCode());

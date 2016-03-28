@@ -53,13 +53,17 @@ public class ParserFragmentCompositionProcess implements SourceBuilder<ParserFra
         {
             long timeBefore;
 
-            // TODO initialize appropriately
-            String packageDecl = ""; // ((c.packageDecl == null || c.packageDecl.equals("")) ? "" : "package " + c.packageDecl + ";")
-            String importDecls = ""; // ""
-            String parserName = "Parser"; // c.parserName
+            String packageDecl = "";
+            if (args.getPackageName() == null || args.getPackageName().equals("")) {
+                packageDecl = args.getPackageName();
+            } else if (fragments.hostFragment.packageDecl == null || fragments.hostFragment.packageDecl.equals("")) {
+                packageDecl = fragments.hostFragment.packageDecl;
+            }
+            String importDecls = "";
+            String parserName = args.getParserName() == null || args.getParserName().equals("") ? "Parser" : args.getParserName();
             String scannerName = parserName + "Scanner";
-            String parserAncillaries = ""; // "public " + c.parserName + "() {}\n\n"
-            String scannerAncillaries = ""; // ""
+            String parserAncillaries = "  public " + parserName + "() {}\n";
+            String scannerAncillaries = "";
 
             ParserFragmentEngineBuilder engineBuilder = new ParserFragmentEngineBuilder(fragments);
             try {
