@@ -114,8 +114,6 @@ public class ExtensionFragmentDataBuilder {
         this.generateScannerDFAAnnotations(data, mappingSpec);
         this.generateMarkingTerminalMetadata(data, mappingSpec);
 
-        // TODO others
-
         return data;
     }
 

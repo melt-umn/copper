@@ -35,18 +35,4 @@ public class ExtensionFragmentData implements Serializable {
     public BitSet[] initNTs;
     // extension state indexed list of maps: (table offset nt -> set of decomposed (mixed +/-) productions)
     public Map<Integer, Map<Integer, Set<Integer>>> laSources;
-
-    public static ExtensionFragmentData deserialize(FileInputStream file) {
-        try {
-            ObjectInputStream in = new ObjectInputStream(file);
-            ExtensionFragmentData e = (ExtensionFragmentData) in.readObject();
-            in.close();
-            System.err.println("Successfully deserialized extension fragment data");
-            return e;
-        } catch (Exception e) {
-            System.err.println("Failed to deserialize extension fragment data");
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

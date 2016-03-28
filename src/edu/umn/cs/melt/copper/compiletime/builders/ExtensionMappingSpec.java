@@ -274,7 +274,6 @@ public class ExtensionMappingSpec implements Serializable {
 
     // TODO Are operator precedences just numbers? Can they be left alone?
 
-    // TODO make sure that these are being used correctly -- esp composedToDecomposed...
     public static int encodeExtensionIndex(int i) { return -1 * (i + 1); }
 
     public static int decodeExtensionIndex(int i) { return (-1 * i) - 1; }
