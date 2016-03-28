@@ -4,18 +4,13 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umn.cs.melt.copper.compiletime.pipeline.FragmentGeneratorReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilder;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment.FragmentSerializationProcess;
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.single.SingleDFACompilationProcess;
 
 /**
  * Represents the parse-engine targets available in the Copper parser generator.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
- * @author Kevin Viratyosin
- *
- * Modified by Kevin to include FRAGMENT type and getFragmentSerializer
  */
 public enum CopperEngineType
 {
@@ -30,16 +25,11 @@ public enum CopperEngineType
 		{
 			throw new UnsupportedOperationException();
 		}
-
-		@Override
-		SourceBuilder<FragmentGeneratorReturnData> getFragmentSerializer(ParserCompilerParameters args) {
-			throw new UnsupportedOperationException();
-		}
 		
 		@Override
 		String usageMessage() { return "The original JCF-based parsing engine.\n\t\t           DEPRECATED. Not included in 'CopperRuntime.jar'."; }
 	},
-	/**
+	/** 
 	 * Copper's primary parse engine, implementing the "single-DFA" context-aware scanning algorithm.
 	 * This is the default engine and should be used for all practical applications.
 	 */
@@ -49,34 +39,10 @@ public enum CopperEngineType
 		SingleDFACompilationProcess getStandardSourceBuilder(ParserCompilerParameters args)
 		{
 			return new SingleDFACompilationProcess(true);
-		}
-
-		@Override
-		SourceBuilder<FragmentGeneratorReturnData> getFragmentSerializer(ParserCompilerParameters args) {
-			throw new UnsupportedOperationException();
-		}
+		}	
 
 		@Override
 		String usageMessage() { return "(DEFAULT) A parsing engine with a single scanner for\n\t\t        all parsing contexts."; }
-	},
-	/**
-	 * Copper's primary parse engine, implementing the "single-DFA" context-aware scanning algorithm.
-	 * This is the default engine and should be used for all practical applications.
-	 */
-	FRAGMENT
-	{
-		@Override
-		SourceBuilder<StandardSpecCompilerReturnData> getStandardSourceBuilder(ParserCompilerParameters args) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		SourceBuilder<FragmentGeneratorReturnData> getFragmentSerializer(ParserCompilerParameters args) {
-			return new FragmentSerializationProcess();
-		}
-
-		@Override
-		String usageMessage() { return "(Not a java class engine) Generates parser and scanner fragments to be composed later."; }
 	},
 	/**
 	 * A parse engine implementing the "multiple-DFA" context-aware scanning algorithm. For experimental use only.
@@ -87,12 +53,7 @@ public enum CopperEngineType
 		SourceBuilder<StandardSpecCompilerReturnData> getStandardSourceBuilder(ParserCompilerParameters args)
 		{
 			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		SourceBuilder<FragmentGeneratorReturnData> getFragmentSerializer(ParserCompilerParameters args) {
-			throw new UnsupportedOperationException();
-		}
+		}		
 
 		@Override
 		String usageMessage() { return "An engine with a separate scanner for each different\n\t\t       parsing context. EXPERIMENTAL."; }
@@ -108,19 +69,12 @@ public enum CopperEngineType
 		{
 			throw new UnsupportedOperationException();
 		}
-
-		@Override
-		SourceBuilder<FragmentGeneratorReturnData> getFragmentSerializer(ParserCompilerParameters args) {
-			throw new UnsupportedOperationException();
-		}
-
+		
 		@Override
 		String usageMessage() { return "An engine made for assembling pieces of parse tables\n\t\t       on-the-fly. EXPERIMENTAL."; }
 	};
 	
-	abstract SourceBuilder<StandardSpecCompilerReturnData> getStandardSourceBuilder(ParserCompilerParameters args);
-
-	abstract SourceBuilder<FragmentGeneratorReturnData> getFragmentSerializer(ParserCompilerParameters args);
+	abstract SourceBuilder<StandardSpecCompilerReturnData> getStandardSourceBuilder(ParserCompilerParameters args); 
 	
 	private static Hashtable<String,CopperEngineType> fromStringTable = null;
 	
@@ -132,7 +86,6 @@ public enum CopperEngineType
 		fromStringTable.put("single",SINGLE);
 		fromStringTable.put("moded",MODED);
 		fromStringTable.put("split",SPLIT);
-		fromStringTable.put("fragment",FRAGMENT);
 	}
 	
 	static boolean contains(String s)

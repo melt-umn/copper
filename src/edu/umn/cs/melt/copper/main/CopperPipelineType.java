@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import edu.umn.cs.melt.copper.compiletime.pipeline.*;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment.FragmentSerializationProcess;
 import edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment.ParserFragmentCompositionProcess;
 
 /**
@@ -54,7 +55,7 @@ public enum CopperPipelineType
 		@Override
 		StandardPipeline<ParserBean,FragmentGeneratorReturnData> getPipeline(ParserCompilerParameters args)
 		{
-			return new StandardPipeline<ParserBean, FragmentGeneratorReturnData>(args.getUseSkin().getStandardSpecParser(args),new FragmentGenerator(),args.getUseEngine().getFragmentSerializer(args));
+			return new StandardPipeline<ParserBean, FragmentGeneratorReturnData>(args.getUseSkin().getStandardSpecParser(args),new FragmentGenerator(), new FragmentSerializationProcess());
 		}
 
 		@Override
