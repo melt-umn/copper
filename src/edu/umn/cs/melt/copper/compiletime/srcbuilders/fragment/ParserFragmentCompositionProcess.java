@@ -56,7 +56,7 @@ public class ParserFragmentCompositionProcess implements SourceBuilder<ParserFra
             // TODO initialize appropriately
             String packageDecl = ""; // ((c.packageDecl == null || c.packageDecl.equals("")) ? "" : "package " + c.packageDecl + ";")
             String importDecls = ""; // ""
-            String parserName = ""; // c.parserName
+            String parserName = "Parser"; // c.parserName
             String scannerName = parserName + "Scanner";
             String parserAncillaries = ""; // "public " + c.parserName + "() {}\n\n"
             String scannerAncillaries = ""; // ""

@@ -722,7 +722,7 @@ public class ParserFragmentEngineBuilder {
         out.println("  }");
 
 
-        out.println("  public BitSet[] getDisambiguationGroups() {");
+        out.println("  public " + BitSet.class.getName() + "[] getDisambiguationGroups() {");
         out.println("    return disambiguationGroups;");
         out.println("  }");
 
@@ -789,6 +789,7 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(prefixMaps, BitSet.class.getName() + "[][]", "prefixMaps"));
         objectsToHash.add(new ObjectToHash(markingTerminalEmptyPrefixMaps, BitSet.class.getName() + "[][]", "markingTerminalEmptyPrefixMaps"));
         objectsToHash.add(new ObjectToHash(shiftableSets, BitSet.class.getName() + "[]", "shiftableSets"));
+        objectsToHash.add(new ObjectToHash(markingTerminalShiftableSets, BitSet.class.getName() + "[]", "markingTerminalShiftableSets"));
         objectsToHash.add(new ObjectToHash(extShiftableUnion, BitSet.class.getName() + "[]", "extShiftableUnion"));
         objectsToHash.add(new ObjectToHash(markingTerminalShiftableUnion, BitSet.class.getName(), "markingTerminalShiftableUnion"));
 
@@ -876,21 +877,21 @@ public class ParserFragmentEngineBuilder {
         for (int e = 0; e < extensionCount; e++) {
             acceptSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.acceptSets;
         }
-        objectsToHash.add(new ObjectToHash(acceptSetss, "BitSet[][]", "acceptSetss"));
+        objectsToHash.add(new ObjectToHash(acceptSetss, BitSet.class.getName() + "[][]", "acceptSetss"));
 
         BitSet[][] rejectSetss = new BitSet[fragmentCount][];
         rejectSetss[0] = markingTerminalScannerDFAAnnotations.rejectSets;
         for (int e = 0; e < extensionCount; e++) {
             rejectSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.rejectSets;
         }
-        objectsToHash.add(new ObjectToHash(rejectSetss, "BitSet[][]", "rejectSetss"));
+        objectsToHash.add(new ObjectToHash(rejectSetss, BitSet.class.getName() + "[][]", "rejectSetss"));
 
         BitSet[][] possibleSetss = new BitSet[fragmentCount][];
         possibleSetss[0] = markingTerminalScannerDFAAnnotations.possibleSets;
         for (int e = 0; e < extensionCount; e++) {
             possibleSetss[e + 1] = extensionFragments.get(e).scannerDFAAnnotations.possibleSets;
         }
-        objectsToHash.add(new ObjectToHash(possibleSetss, "BitSet[][]", "possibleSetss"));
+        objectsToHash.add(new ObjectToHash(possibleSetss, BitSet.class.getName() + "[][]", "possibleSetss"));
     }
 
     private static class MarkingTerminalData implements Comparable {
