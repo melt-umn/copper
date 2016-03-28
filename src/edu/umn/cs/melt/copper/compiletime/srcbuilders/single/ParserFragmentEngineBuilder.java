@@ -306,6 +306,11 @@ public class ParserFragmentEngineBuilder {
         out.println("      return RESULT;");
         out.println("    }");
 
+        out.println("    public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos, " + SingleDFAMatchData.class.getName() + " _terminal)");
+        out.println("    throws " + IOException.class.getName() + "," + errorType + " {");
+        out.println("      throw new " + UnsupportedOperationException.class.getName() + "();");
+        out.println("    }");
+
         // TODO -- probably a good idea to make sure that this actually works...
         out.println("    public " + Object.class.getName() + " runSemanticTerminalAction(int fragmentId, " + InputPosition.class.getName() + " _pos, " + SingleDFAMatchData.class.getName() + " _terminal)");
         out.println("    throws " + IOException.class.getName() + "," + errorType + " {");
@@ -1325,8 +1330,9 @@ public class ParserFragmentEngineBuilder {
                 return null;
             }
         } else {
-            return "sym" + fragment + "$" + symbolTable.get(element).getName().toString();
+            return symbolTable.get(element).getName().toString();
         }
         // TODO confirm that no need to check isUnitary or that sort of thing
+        // need to differentiate non-unitary with <grammar>$...
     }
 }

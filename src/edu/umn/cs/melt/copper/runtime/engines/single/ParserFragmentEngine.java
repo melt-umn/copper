@@ -67,8 +67,8 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected abstract int getFragmentCount();
     protected abstract int stateToFragmentId(int state);
     protected abstract void reportSyntaxError(int fragmentId) throws EXCEPT;
-    public abstract String[] getSymbolNamesInclMT(int fragmentId);
-    public abstract String[] getSymbolDisplayNamesInclMT(int fragmentId);
+    protected abstract String[] getSymbolNamesInclMT(int fragmentId);
+    protected abstract String[] getSymbolDisplayNamesInclMT(int fragmentId);
     protected abstract int[] getProductionLengths();
     protected abstract int runFragmentDisambiguationAction(int fragmentId, InputPosition _pos,SingleDFAMatchData match) throws IOException,EXCEPT;
     protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, SingleDFAMatchData _terminal) throws IOException,EXCEPT;
