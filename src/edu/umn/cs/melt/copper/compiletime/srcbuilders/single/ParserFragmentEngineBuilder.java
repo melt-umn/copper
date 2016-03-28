@@ -82,10 +82,10 @@ public class ParserFragmentEngineBuilder {
     private int extTableOffset;
     private ParserBean hostParser;
 
-    private String[] markingTerminalScannerSymbolNames;
-    private String[] hostScannerSymbolNames;
-    private String[][] extScannerSymbolNames;
-    private String[][] grammarSymbolNames;
+    private String[] markingTerminalSymbolNames;
+    private String[][] symbolNames;
+    private String[] markingTerminalSymbolDisplayNames;
+    private String[][] symbolDisplayNames;
 
     private static class ObjectToHash {
         public Object obj;
@@ -139,7 +139,6 @@ public class ParserFragmentEngineBuilder {
         out.println("public class " + parserName + " extends " + ParserFragmentEngine.class.getName() + "<" + rootType + "," + errorType + "> {");
 
         makeObjectsToBeHashed();
-        generateSymbolNames();
 
         printFixedMethods(out);
 
@@ -163,59 +162,49 @@ public class ParserFragmentEngineBuilder {
     }
     
     private void generateSymbolNames() {
-        markingTerminalScannerSymbolNames = new String[markingTerminalCount];
-        hostScannerSymbolNames = new String[hostTerminalLength];
-        extScannerSymbolNames = new String[extensionCount][];
-        grammarSymbolNames = new String[fragmentCount][];
+        markingTerminalSymbolNames = new String[markingTerminalCount];
+        symbolNames = new String[fragmentCount][];
+        markingTerminalSymbolDisplayNames = new String[markingTerminalCount];
+        symbolDisplayNames = new String[fragmentCount][];
 
         for (int t = 0; t < markingTerminalCount; t++) {
             MarkingTerminalData data = markingTerminalDatas.get(t);
-            markingTerminalScannerSymbolNames[t] = generateVariableName(data.extensionId + 1, data.extensionTerminal);
+            markingTerminalSymbolNames[t] = generateVariableName(data.extensionId + 1, data.extensionTerminal);
+            markingTerminalSymbolDisplayNames[t] = data.terminal.getDisplayName();
         }
 
-        grammarSymbolNames[0] = new String[hostFragment.symbolTable.size()];
-        for (int s = 0; s < hostFragment.symbolTable.size(); s++) {
-            String name = generateVariableName(0, s);
-            if (hostFragment.fullSpec.terminals.get(s)) {
-                hostScannerSymbolNames[s] = name;
-            }
-            grammarSymbolNames[0][s] = name;
+        symbolNames[0] = new String[hostTerminalLength];
+        symbolDisplayNames[0] = new String[hostTerminalLength];
+        for (int t = hostFragment.fullSpec.terminals.nextSetBit(0); t >= 0; t = hostFragment.fullSpec.terminals.nextSetBit(t + 1)) {
+            symbolNames[0][t] = generateVariableName(0, t);
+            symbolDisplayNames[0][t] = hostFragment.symbolTable.get(t).getDisplayName();
         }
 
         for (int e = 0; e < extensionCount; e++) {
             ExtensionMappingSpec spec = extensionFragments.get(e).extensionMappingSpec;
-            grammarSymbolNames[e + 1] = new String[spec.extensionSymbolTable.size()];
-            extScannerSymbolNames[e] = new String[extTerminalLengths[e] - extTableOffset];
-            for (int s = 0; s < spec.extensionSymbolTable.size(); s++) {
-                String name = generateVariableName(e + 1, s);
-                if (spec.extensionTerminalIndices.get(s)) {
-                    extScannerSymbolNames[e][s] = name;
-                }
-                grammarSymbolNames[e + 1][s] = name;
+            symbolNames[e + 1] = new String[extTerminalLengths[e]];
+            symbolDisplayNames[e + 1] = new String[extTerminalLengths[e]];
+            System.arraycopy(symbolNames[0], 0, symbolNames[e + 1], 0, hostTerminalLength);
+            System.arraycopy(symbolDisplayNames[0], 0, symbolDisplayNames[e + 1], 0, hostTerminalLength);
+            for (int t = spec.extensionTerminalIndices.nextSetBit(0); t >= 0; t = spec.extensionTerminalIndices.nextSetBit(t + 1)) {
+                symbolNames[e + 1][spec.tableOffsetExtensionIndex(t)] = generateVariableName(e + 1, t);
+                symbolDisplayNames[e + 1][spec.tableOffsetExtensionIndex(t)] = spec.extensionSymbolTable.get(t).getDisplayName();
             }
         }
     }
 
-    private String getSymbolName(int fragmentId, int symbol) {
-        return grammarSymbolNames[fragmentId][symbol];
-    }
-
-    private String getScannerSymbolName(int fragmentId, int symbol) {
+    // fragmentId == 0 => MARKING TERMINAL
+    private String[] getSymbolNamesInclMT(int fragmentId) {
         if (fragmentId == MARKING_TERMINAL_FRAGMENT_ID) {
-            return markingTerminalScannerSymbolNames[symbol];
+            return markingTerminalSymbolNames;
         } else {
-            return getScannerSymbolNameExclMT(fragmentId, symbol);
+            return getSymbolNames(fragmentId);
         }
     }
 
-    // ExclMT = Excluding Marking Terminals
     // fragmentId == 0 => HOST symbol
-    private String getScannerSymbolNameExclMT(int fragmentId, int symbol) {
-        if (fragmentId == HOST_FRAGMENT_ID || symbol < extTableOffset) {
-            return hostScannerSymbolNames[symbol];
-        } else {
-            return extScannerSymbolNames[fragmentId - 1][symbol - extTableOffset];
-        }
+    private String[] getSymbolNames(int fragmentId) {
+        return symbolNames[fragmentId];
     }
 
     private void writeSemanticsClass(PrintStream out) {
@@ -535,11 +524,11 @@ public class ParserFragmentEngineBuilder {
 
             out.println("    public int disambiguate_" + df + "(final String lexeme) throws " + errorType + " {");
             if (dfData.hasDisambiguateTo(fragmentIndex)) {
-                out.println("      return /* " + getScannerSymbolNameExclMT(fragment, dfData.getDisambiguateTo(df)) + " */ " + dfData.getDisambiguateTo(df) + ";");
+                out.println("      return /* " + getSymbolNames(fragment)[dfData.getDisambiguateTo(df)] + " */ " + dfData.getDisambiguateTo(df) + ";");
             } else {
                 BitSet members = dfData.getMembers(fragmentIndex);
                 for (int t = members.nextSetBit(0); t >= 0; t = members.nextSetBit(t + 1)) {
-                    out.println("      @SuppressWarnings(\"unused\") final int " + getScannerSymbolNameExclMT(fragment, t) + " = " + t + ";"); // TODO symbolNames!
+                    out.println("      @SuppressWarnings(\"unused\") final int " + getSymbolNames(fragment)[t] + " = " + t + ";"); // TODO symbolNames!
                 }
                 PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
                 out.println("      " + symbolTable.getDisambiguationFunction(fragmentIndex).getCode());
@@ -621,11 +610,11 @@ public class ParserFragmentEngineBuilder {
         out.println("    throw new " + CopperParserException.class.getName() + "(message);");
         out.println("  }");
 
-        out.println("  protected void reportSyntaxError() throws " + errorType + " {");
-        out.println("    " + ArrayList.class.getName() + "<String> expectedTerminalsReal = bitVecToRealStringList(getShiftableSets()[currentState.statenum]);");
-        out.println("    " + ArrayList.class.getName() + "<String> expectedTerminalsDisplay = bitVecToDisplayStringList(getShiftableSets()[currentState.statenum]);");
-        out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsReal = bitVecToRealStringList(disjointMatch.terms);");
-        out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsDisplay = bitVecToDisplayStringList(disjointMatch.terms);");
+        out.println("  protected void reportSyntaxError(int fragmentId) throws " + errorType + " {");
+        out.println("    " + ArrayList.class.getName() + "<String> expectedTerminalsReal = bitVecToRealStringList(fragmentId, getShiftableSets()[currentState.statenum]);");
+        out.println("    " + ArrayList.class.getName() + "<String> expectedTerminalsDisplay = bitVecToDisplayStringList(fragmentId, getShiftableSets()[currentState.statenum]);");
+        out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsReal = bitVecToRealStringList(fragmentId, disjointMatch.terms);");
+        out.println("    " + ArrayList.class.getName() + "<String> matchedTerminalsDisplay = bitVecToDisplayStringList(fragmentId, disjointMatch.terms);");
         out.println("    throw new edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError(virtualLocation,currentState.pos,currentState.statenum,expectedTerminalsReal,expectedTerminalsDisplay,matchedTerminalsReal,matchedTerminalsDisplay);");
         out.println("  }");
     }
@@ -659,6 +648,22 @@ public class ParserFragmentEngineBuilder {
     private void printParserAncillaryMethods(PrintStream out) {
         out.println("  public int[][] getParseTable() {");
         out.println("    return parseTable;");
+        out.println("  }");
+
+        out.println("  protected String[] getSymbolNamesInclMT(int fragmentId) {");
+        out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("      return markingTerminalSymbolNames;");
+        out.println("    } else {");
+        out.println("      return symbolNames[fragmentId];");
+        out.println("    }");
+        out.println("  }");
+
+        out.println("  protected String[] getSymbolDisplayNamesInclMT(int fragmentId) {");
+        out.println("    if (fragmentId == " + MARKING_TERMINAL_FRAGMENT_ID + ") {");
+        out.println("      return markingTerminalSymbolDisplayNames;");
+        out.println("    } else {");
+        out.println("      return symbolDisplayNames[fragmentId];");
+        out.println("    }");
         out.println("  }");
 
         out.println("  protected int[] getProductionLengths() {");
@@ -810,6 +815,12 @@ public class ParserFragmentEngineBuilder {
         makeProductionLHSs();
         objectsToHash.add(new ObjectToHash(productionLHSs, "int[]", "productionLHSs"));
         // TODO finish
+
+        generateSymbolNames();
+        objectsToHash.add(new ObjectToHash(symbolNames, "String[][]", "symbolNames"));
+        objectsToHash.add(new ObjectToHash(markingTerminalSymbolNames, "String[]", "markingTerminalSymbolNames"));
+        objectsToHash.add(new ObjectToHash(symbolDisplayNames, "String[][]", "symbolDisplayNames"));
+        objectsToHash.add(new ObjectToHash(markingTerminalSymbolDisplayNames, "String[]", "markingTerminalSymbolDisplayNames"));
     }
 
     private void prepProductionIndices() {
@@ -1295,6 +1306,7 @@ public class ParserFragmentEngineBuilder {
         }
     }
 
+    // element is unoffset index
     private String generateVariableName(int fragment, int element) {
         PSSymbolTable symbolTable = fragment == 0 ? hostFragment.symbolTable : extensionFragments.get(fragment - 1).extensionMappingSpec.extensionSymbolTable;
         if (symbolTable.get(element).getType() == CopperElementType.SPECIAL) {

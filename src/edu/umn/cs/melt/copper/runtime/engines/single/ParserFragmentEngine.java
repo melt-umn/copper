@@ -1,11 +1,13 @@
 package edu.umn.cs.melt.copper.runtime.engines.single;
 
+import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
 import edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.LinkedList;
 
@@ -13,6 +15,27 @@ import java.util.LinkedList;
  * @author Kevin Viratyosin
  */
 public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> extends SingleDFAEngine<ROOT, EXCEPT> {
+
+
+    public String bitVecToString(int fragmentId, BitSet vec) {
+        return PrettyPrinter.bitSetPrettyPrint(vec, getSymbolDisplayNamesInclMT(fragmentId), "   ", 1);
+    }
+
+    public ArrayList<String> bitVecToRealStringList(int fragmentId, BitSet vec) {
+        ArrayList<String> stringList = new ArrayList<String>();
+        for(int i = vec.nextSetBit(0);i >= 0;i = vec.nextSetBit(i+1)) {
+            stringList.add(getSymbolNamesInclMT(fragmentId)[i]);
+        }
+        return stringList;
+    }
+
+    public ArrayList<String> bitVecToDisplayStringList(int fragmentId, BitSet vec) {
+        ArrayList<String> stringList = new ArrayList<String>();
+        for(int i = vec.nextSetBit(0);i >= 0;i = vec.nextSetBit(i+1)) {
+            stringList.add(getSymbolDisplayNamesInclMT(fragmentId)[i]);
+        }
+        return stringList;
+    }
 
     private static class ScannerParams {
         public int fragmentId;
@@ -34,7 +57,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
 
     // Function from SingleDFAEngine that still need to be implemented
     public abstract int[][] getParseTable();
-    protected abstract void reportSyntaxError() throws EXCEPT;
     public abstract int[] getProductionLHSs();
     public abstract BitSet[] getDisambiguationGroups();
     protected abstract Object runSemanticAction(InputPosition _pos, Object[] _children, int _prod) throws IOException,EXCEPT;
@@ -42,6 +64,9 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     // New abstract functions
     protected abstract int getFragmentCount();
     protected abstract int stateToFragmentId(int state);
+    protected abstract void reportSyntaxError(int fragmentId) throws EXCEPT;
+    public abstract String[] getSymbolNamesInclMT(int fragmentId);
+    public abstract String[] getSymbolDisplayNamesInclMT(int fragmentId);
     protected abstract int[] getProductionLengths();
     protected abstract int runFragmentDisambiguationAction(int fragmentId, InputPosition _pos,SingleDFAMatchData match) throws IOException,EXCEPT;
     protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, SingleDFAMatchData _terminal) throws IOException,EXCEPT;
@@ -62,9 +87,15 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected abstract BitSet[] getFragmentShiftableSets(int fragmentId);
 
     @Override
+    public void reportSyntaxError() throws EXCEPT { throw new UnsupportedOperationException(); }
+    @Override
     public int getTERMINAL_COUNT() { throw new UnsupportedOperationException(); }
     @Override
     public int getEOF_SYMNUM() { throw new UnsupportedOperationException(); }
+    @Override
+    public String[] getSymbolNames() { throw new UnsupportedOperationException(); }
+    @Override
+    public String[] getSymbolDisplayNames() { throw new UnsupportedOperationException(); }
     @Override
     public int[] getSymbolNumbers() { throw new UnsupportedOperationException(); }
     @Override
@@ -112,7 +143,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             LinkedList<SingleDFAMatchData> layouts,
             ScannerParams params
     ) throws IOException {
-        //System.err.println("Simple-shiftable " + bitVecToDisplayStringList(shiftable) + "; token buffer size: " + tokenBuffer.size());
+        //System.err.println("Simple-shiftable " + bitVecToDisplayStringList(params.fragmentId, shiftable) + "; token buffer size: " + tokenBuffer.size());
         if(!tokenBuffer.isEmpty())
         {
             SingleDFAMatchData tok = tokenBuffer.poll();
@@ -235,7 +266,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             if(finalMatches.terms.cardinality() > 1)
             {
                 // DEBUG-BEGIN
-                //System.err.println("Ambiguity: " + bitVecToString(finalMatches.terms) + "; runDisjoint = " + runDisjoint);
+                //System.err.println("Ambiguity: " + bitVecToString(params.fragmentId, finalMatches.terms) + "; runDisjoint = " + runDisjoint);
                 // DEBUG-END
                 if(finalMatches.terms.get(params.eofSymNum) && finalMatches.lexeme.isEmpty())
                 {
@@ -266,7 +297,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                     {
                         if(!runDisjoint)
                         {
-                            reportError(formatError("Lexical ambiguity between tokens:\n" + bitVecToString(finalMatches.terms)));
+                            reportError(formatError("Lexical ambiguity between tokens:\n" + bitVecToString(params.fragmentId, finalMatches.terms)));
                             return finalMatches;
                         }
                     }
@@ -353,7 +384,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         // TODO double check that this is handled by validLA -- "shiftable"?
         SingleDFAMatchData mtScanResult = parameterizedLayoutScan(false, null, markingTerminalScanner);
         if (mtScanResult.terms.cardinality() > 1) {
-            throw new RuntimeException("Ambiguous marking terminal match: " + bitVecToDisplayStringList(mtScanResult.terms)); // Should not happen
+            throw new RuntimeException("Ambiguous marking terminal match: " + bitVecToDisplayStringList(fragmentId, mtScanResult.terms)); // Should not happen
         } else if (!mtScanResult.terms.isEmpty()) {
             return mtScanResult;
         }
@@ -366,9 +397,9 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                 runFragmentSemanticAction(fragmentId, layout.precedingPos, layout);
                 virtualLocation.defaultUpdateAutomatic(layout.lexeme);
             }
-            reportSyntaxError();
+            reportSyntaxError(fragmentId);
         } else if (extScanResult.terms.cardinality() > 1) {
-            throw new RuntimeException("Ambiguous match: " + bitVecToDisplayStringList(extScanResult.terms)); // Should not happen.
+            throw new RuntimeException("Ambiguous match: " + bitVecToDisplayStringList(fragmentId, extScanResult.terms)); // Should not happen.
         }
 
         return extScanResult;
@@ -411,7 +442,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
 
             SingleDFAMatchData scanResult = multiLayoutScan(fragmentId);
             // DEBUG-X-BEGIN
-            //System.err.println(bitVecToString(scanResult.terms));
+            //System.err.println(bitVecToString(fragmentId, scanResult.terms));
             // DEBUG-X-END
             int action = getParseTable()[currentState.statenum][scanResult.firstTerm];
             // TODO adjust here or in scanning method to account for case when result is a marking terminal! (offset)
@@ -457,10 +488,10 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                     break;
                 default:
                     // DEBUG-X-BEGIN
-                    //System.err.println(bitVecToString(scanResult.terms));
+                    //System.err.println(bitVecToString(fragmentId, scanResult.terms));
                     // DEBUG-X-END
                     disjointMatch = scanResult;
-                    reportSyntaxError();
+                    reportSyntaxError(fragmentId);
             }
             lastAction = actionType(action);
         }
