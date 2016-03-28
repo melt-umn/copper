@@ -714,7 +714,11 @@ public class ParserFragmentEngineBuilder {
         out.println("    }");
         out.println("  }");
 
-        out.println("  protected int getFragmentEOFSymNum(int fragmentId) {");
+        out.println("  public int getPARSER_START_STATENUM() {");
+        out.println("    return 1;"); // Looking at SingleDFAEngineBuilder -- this is always 1
+        out.println("  }");
+
+        out.println("  public int getEOF_SYMNUM() {");
         out.println("    return " + hostFragment.fullSpec.getEOFTerminal() + ";");
         out.println("  }");
 

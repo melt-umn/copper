@@ -56,6 +56,8 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected ScannerParams markingTerminalScanner;
 
     // Function from SingleDFAEngine that still need to be implemented
+    public abstract int getPARSER_START_STATENUM();
+    public abstract int getEOF_SYMNUM();
     public abstract int[][] getParseTable();
     public abstract int[] getProductionLHSs();
     public abstract BitSet[] getDisambiguationGroups();
@@ -78,7 +80,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected abstract BitSet[] getFragmentPossibleSets(int fragmentId);
     protected abstract int getFragmentTerminalCount(int fragmentId);
     protected abstract int getFragmentStartState(int fragmentId);
-    protected abstract int getFragmentEOFSymNum(int fragmentId);
     protected abstract BitSet[][] getFragmentPrefixMaps(int fragmentId);
     protected abstract BitSet[] getFragmentLayoutSets(int fragmentId);
     protected abstract BitSet[] getFragmentPrefixSets(int fragmentId);
@@ -91,7 +92,19 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     @Override
     public int getTERMINAL_COUNT() { throw new UnsupportedOperationException(); }
     @Override
-    public int getEOF_SYMNUM() { throw new UnsupportedOperationException(); }
+    public int getGRAMMAR_SYMBOL_COUNT() { throw new UnsupportedOperationException(); }
+    @Override
+    public int getSYMBOL_COUNT() { throw new UnsupportedOperationException(); }
+    @Override
+    public int getPARSER_STATE_COUNT() { throw new UnsupportedOperationException(); }
+    @Override
+    public int getSCANNER_STATE_COUNT() { throw new UnsupportedOperationException(); }
+    @Override
+    public int getDISAMBIG_GROUP_COUNT() { throw new UnsupportedOperationException(); }
+    @Override
+    public int getSCANNER_START_STATENUM() { throw new UnsupportedOperationException(); }
+    @Override
+    public int getEPS_SYMNUM() { throw new UnsupportedOperationException(); }
     @Override
     public String[] getSymbolNames() { throw new UnsupportedOperationException(); }
     @Override
@@ -118,6 +131,10 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     public BitSet[] getRejectSets() { throw new UnsupportedOperationException(); }
     @Override
     public BitSet[] getPossibleSets() { throw new UnsupportedOperationException(); }
+    @Override
+    public int[][] getDelta() { throw new UnsupportedOperationException(); }
+    @Override
+    public int[] getCmap() { throw new UnsupportedOperationException(); }
     @Override
     protected int transition(int state, char ch) { throw new UnsupportedOperationException(); }
     @Override
@@ -417,7 +434,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             fragmentScannerParams.shiftableUnion = getFragmentShiftableUnion(fragmentId);
             fragmentScannerParams.prefixSets = getFragmentPrefixSets(fragmentId);
             fragmentScannerParams.prefixMaps = getFragmentPrefixMaps(fragmentId);
-            fragmentScannerParams.eofSymNum = getFragmentEOFSymNum(fragmentId);
+            fragmentScannerParams.eofSymNum = getEOF_SYMNUM();
             fragmentScannerParams.startState = getFragmentStartState(fragmentId);
             fragmentScannerParams.terminalCount = getFragmentTerminalCount(fragmentId);
             fragmentScannerParams.possibleSets = getFragmentPossibleSets(fragmentId);
