@@ -18,7 +18,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
 public class Terminal extends GrammarSymbol
 {
 	/** The regex represented by this terminal. */
-	transient protected Regex regex;
+	protected Regex regex;
 	/**
 	 * The terminal's operator precedence class. Shift-reduce conflicts can
 	 * only be resolved on operators within the same precedence class.

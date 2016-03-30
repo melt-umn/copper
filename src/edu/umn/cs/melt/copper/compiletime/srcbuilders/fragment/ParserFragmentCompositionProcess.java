@@ -54,9 +54,9 @@ public class ParserFragmentCompositionProcess implements SourceBuilder<ParserFra
             long timeBefore;
 
             String packageDecl = "";
-            if (args.getPackageName() == null || args.getPackageName().equals("")) {
+            if (args.getPackageName() != null && !args.getPackageName().equals("")) {
                 packageDecl = args.getPackageName();
-            } else if (fragments.hostFragment.packageDecl == null || fragments.hostFragment.packageDecl.equals("")) {
+            } else if (fragments.hostFragment.packageDecl != null && !fragments.hostFragment.packageDecl.equals("")) {
                 packageDecl = fragments.hostFragment.packageDecl;
             }
             String importDecls = "";

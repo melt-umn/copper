@@ -49,7 +49,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         public BitSet[] possibleSets;
         public BitSet[] acceptSets;
         public BitSet[] rejectSets;
-        public int[][] transitionTable;
     }
 
     protected ScannerParams[] fragmentScanners;
@@ -75,7 +74,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
     protected abstract Object runFragmentSemanticAction(int fragmentId, InputPosition _pos, SingleDFAMatchData _terminal) throws IOException,EXCEPT;
 
     // New abstract functions (scanner getters)
-    protected abstract int[][] getFragmentTransitionTable(int fragmentId);
+    protected abstract int transition(int fragmentId, int state, char ch);
     protected abstract BitSet[] getFragmentRejectSets(int fragmentId);
     protected abstract BitSet[] getFragmentAcceptSets(int fragmentId);
     protected abstract BitSet[] getFragmentPossibleSets(int fragmentId);
@@ -206,7 +205,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             {
                 break;
             }
-            currentState = params.transitionTable[currentState][symbol];
+            currentState = transition(params.fragmentId, currentState, symbol);
         }
         if(symbol == ScannerBuffer.EOFIndicator &&
                 p.equals(whence) &&
@@ -447,7 +446,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             fragmentScannerParams.possibleSets = getFragmentPossibleSets(fragmentId);
             fragmentScannerParams.acceptSets = getFragmentAcceptSets(fragmentId);
             fragmentScannerParams.rejectSets = getFragmentRejectSets(fragmentId);
-            fragmentScannerParams.transitionTable = getFragmentTransitionTable(fragmentId);
             fragmentScanners[fragmentId] = fragmentScannerParams;
         }
 
@@ -463,6 +461,11 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             // DEBUG-X-END
             currentState = parseStack.peek();
             int fragmentId = stateToFragmentId(currentState.statenum);
+            if (fragmentId == 0) {
+                // Because scanner fragment 0 is for marking terminals
+                // TODO what if there are no extensions? Does that case need to be handled?
+                fragmentId = 1;
+            }
 
             SingleDFAMatchData scanResult = multiLayoutScan(fragmentId);
             // DEBUG-X-BEGIN
