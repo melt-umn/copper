@@ -95,6 +95,6 @@ public class ParserFragmentCompositionProcess implements SourceBuilder<ParserFra
 
     @Override
     public int processCustomSwitch(ParserCompilerParameters args, String[] cmdline, int index) {
-        return 0;
+        return -1;
     }
 }
