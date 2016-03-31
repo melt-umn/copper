@@ -281,14 +281,16 @@ public class ExtensionFragmentDataBuilder {
                 int items = fullDFA.getItemSet(state).size();
                 for (int item = 0; item < items; item++) {
                     int production = fullDFA.getItemSet(state).getProduction(item);
-                    int decomposedProduction = mappingSpec.composedToDecomposedSymbols.get(production);
-                    BitSet sources = fullLookaheadAndLayoutSets.getItemLASources(state, item);
-                    for (int nt = sources.nextSetBit(0); nt >= 0; nt = sources.nextSetBit(nt + 1)) {
-                        int toNT = mappingSpec.translateAndTableOffsetComposedSymbol(nt);
-                        if (stateLASources.get(toNT) == null) {
-                            stateLASources.put(toNT, new HashSet<Integer>());
+                    if (fullSpec.pr.getRHSLength(production) == fullDFA.getItemSet(state).getPosition(item)) {
+                        int decomposedProduction = mappingSpec.composedToDecomposedSymbols.get(production);
+                        BitSet sources = fullLookaheadAndLayoutSets.getItemLASources(state, item);
+                        for (int nt = sources.nextSetBit(0); nt >= 0; nt = sources.nextSetBit(nt + 1)) {
+                            int toNT = mappingSpec.translateAndTableOffsetComposedSymbol(nt);
+                            if (stateLASources.get(toNT) == null) {
+                                stateLASources.put(toNT, new HashSet<Integer>());
+                            }
+                            stateLASources.get(toNT).add(decomposedProduction);
                         }
-                        stateLASources.get(toNT).add(decomposedProduction);
                     }
                 }
                 laSources.put(extensionState, stateLASources);

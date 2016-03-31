@@ -62,12 +62,14 @@ public class HostFragmentData implements Serializable {
             int items = parserDFA.getItemSet(state).size();
             for (int item = 0; item < items; item++) {
                 int production = parserDFA.getItemSet(state).getProduction(item);
-                BitSet sources = lookaheadSets.getItemLASources(state, item);
-                for (int nt = sources.nextSetBit(0); nt >= 0; nt = sources.nextSetBit(nt + 1)) {
-                    if (stateLASources.get(nt) == null) {
-                        stateLASources.put(nt, new HashSet<Integer>());
+                if (fullSpec.pr.getRHSLength(production) == parserDFA.getItemSet(state).getPosition(item)) {
+                    BitSet sources = lookaheadSets.getItemLASources(state, item);
+                    for (int nt = sources.nextSetBit(0); nt >= 0; nt = sources.nextSetBit(nt + 1)) {
+                        if (stateLASources.get(nt) == null) {
+                            stateLASources.put(nt, new HashSet<Integer>());
+                        }
+                        stateLASources.get(nt).add(production);
                     }
-                    stateLASources.get(nt).add(production);
                 }
             }
             laSources.put(state, stateLASources);
