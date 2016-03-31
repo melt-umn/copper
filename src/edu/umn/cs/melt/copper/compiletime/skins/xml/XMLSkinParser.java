@@ -56,6 +56,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
+// Modified by Kevin Viratyosin to handle layout for EXTENSION_GRAMMAR_ELEMENT
 public class XMLSkinParser extends DefaultHandler 
 {
 	private static class SAXStackElement
@@ -746,6 +747,10 @@ public class XMLSkinParser extends DefaultHandler
 			switch(peek().type)
 			{
 			case GRAMMAR_ELEMENT:
+				currentGrammar.setGrammarLayout(refSet);
+				refSet = null;
+				break;
+			case EXTENSION_GRAMMAR_ELEMENT:
 				currentGrammar.setGrammarLayout(refSet);
 				refSet = null;
 				break;
