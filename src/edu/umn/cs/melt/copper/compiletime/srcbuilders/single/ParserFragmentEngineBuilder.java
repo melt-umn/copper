@@ -1160,7 +1160,10 @@ public class ParserFragmentEngineBuilder {
             prefixSets[state + stateOffset].or(prefixes.getPrefixes(state));
             shiftableSets[state + stateOffset].or(prefixes.getPrefixes(state));
 
-            shiftableSets[state + stateOffset].andNot(isExtension ? offsetExtNonterminals : hostNonterminals);
+            shiftableSets[state + stateOffset].andNot(hostNonterminals);
+            if (isExtension) {
+                shiftableSets[state + stateOffset].andNot(offsetExtNonterminals);
+            }
 
             shiftableUnion.or(shiftableSets[state + stateOffset]);
 
