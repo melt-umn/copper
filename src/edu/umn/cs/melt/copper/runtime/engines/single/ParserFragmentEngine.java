@@ -454,6 +454,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
 
     @Override
     protected Object runEngine() throws IOException,EXCEPT {
+        System.out.println("Running Fragment Engine");
         while(true)
         {
             // DEBUG-X-BEGIN
@@ -471,7 +472,9 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
             // DEBUG-X-BEGIN
             //System.err.println(bitVecToString(fragmentId, scanResult.terms));
             // DEBUG-X-END
-            int symbol = scanResult.firstTerm + (scanResult instanceof MarkingTerminalMatchData ? getMarkingTerminalOffset() : 0);
+            boolean isMarkingTerminal = scanResult instanceof MarkingTerminalMatchData;
+            int symbol = scanResult.firstTerm + (isMarkingTerminal ? getMarkingTerminalOffset() : 0);
+            int terminalSemanticActionFragmentId = isMarkingTerminal ? 0 : fragmentId;
             int action = getParseTable()[currentState.statenum][symbol];
             Object synthAttr;
             switch(actionType(action))
@@ -479,7 +482,7 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                 case STATE_ACCEPT:
                     for(SingleDFAMatchData layout : scanResult.layouts)
                     {
-                        runFragmentSemanticAction(fragmentId, layout.precedingPos, layout);
+                        runFragmentSemanticAction(terminalSemanticActionFragmentId, layout.precedingPos, layout);
                         virtualLocation.defaultUpdateAutomatic(layout.lexeme);
                     }
                     return parseStack.peek().synthAttr;
@@ -487,10 +490,10 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                     int nextState = actionIndex(action);
                     for(SingleDFAMatchData layout : scanResult.layouts)
                     {
-                        runFragmentSemanticAction(fragmentId, layout.precedingPos, layout);
+                        runFragmentSemanticAction(terminalSemanticActionFragmentId, layout.precedingPos, layout);
                         virtualLocation.defaultUpdateAutomatic(layout.lexeme);
                     }
-                    synthAttr = runFragmentSemanticAction(fragmentId, scanResult.precedingPos, scanResult);
+                    synthAttr = runFragmentSemanticAction(terminalSemanticActionFragmentId, scanResult.precedingPos, scanResult);
                     virtualLocation.defaultUpdateAutomatic(scanResult.lexeme);
                     parseStack.push(new SingleDFAParseStackNode(nextState,scanResult.followingPos,synthAttr));
                     // DEBUG-X-BEGIN

@@ -371,11 +371,13 @@ public class ParserFragmentEngineBuilder {
             out.println("          case " + (t + extTableOffset) + ":");
             out.println("            switch (fragmentId - 1) {");
             for (int e = 0; e < extensionCount; e++) {
-                String code = extensionFragments.get(e).extensionMappingSpec.extensionSymbolTable.getTerminal(t).getCode();
-                if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
-                    out.println("              case " + e + ":");
-                    out.println("                RESULT = runSemanticAction_te" + e + "_" + t + "(lexeme);");
-                    out.println("                break;");
+                if (extensionFragments.get(e).extensionMappingSpec.extensionTerminalIndices.get(t)) {
+                    String code = extensionFragments.get(e).extensionMappingSpec.extensionSymbolTable.getTerminal(t).getCode();
+                    if (code != null && !QuotedStringFormatter.isJavaWhitespace(code)) {
+                        out.println("              case " + e + ":");
+                        out.println("                RESULT = runSemanticAction_te" + e + "_" + t + "(lexeme);");
+                        out.println("                break;");
+                    }
                 }
             }
             out.println("              default:");
