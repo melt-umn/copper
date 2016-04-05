@@ -39,7 +39,7 @@ public class ExtensionFragmentDataBuilder {
 
         ExtensionFragmentData data = builder.build();
 
-        if (logger.getLevel() == CompilerLevel.VERY_VERBOSE) {
+        if (logger.getLevel() == CompilerLevel.VERBOSE) {
             System.out.println("== BEGIN ExtensionLRParseTableBuilder ==");
             System.out.println("Indicies:");
             System.out.println("  host terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostTerminalIndices));
@@ -232,7 +232,7 @@ public class ExtensionFragmentDataBuilder {
             int oi = mappingSpec.translateAndTableOffsetComposedSymbol(i);
             for (int j = 0; j < composedTerminalsLength; j++) {
                 if (fullSpec.t.precedences.hasEdge(i, j)) {
-                    int oj = mappingSpec.translateAndOffsetComposedSymbol(j);
+                    int oj = mappingSpec.translateAndTableOffsetComposedSymbol(j);
                     precedenceGraph.addEdge(oi, oj);
                 }
             }
