@@ -159,7 +159,7 @@ public class ParserFragmentEngineBuilder {
         printParserAncillaryDecls(out);
         printParserAncillaryMethods(out);
 
-        System.out.println(scannerAncillaries);
+        System.out.println(scannerAncillaries); // TODO why is this here?
 
         writeStaticMemberInitializations(out);
 
@@ -1203,118 +1203,80 @@ public class ParserFragmentEngineBuilder {
             markingTerminalLayoutsByFragment.put(i, new TreeMap<Integer, Integer>());
         }
 
-        for (int state = 0; state < hostStateCount; state++) {
-            markingTerminalShiftableSets[state] = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
-            markingTerminalLayoutSets[state] = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
+        fillFragmentStatesWithMTData(-1, markingTerminalLayoutsByFragment.get(0)); // HOST
+        for (int extensionId = 0; extensionId < extensionCount; extensionId++) {
+            fillFragmentStatesWithMTData(extensionId, markingTerminalLayoutsByFragment.get(extensionId + 1));
+        }
 
-            BitSet stateInitNTs = hostFragment.initNTs[state];
+        markingTerminalShiftableUnion = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
+        markingTerminalShiftableUnion.set(0, markingTerminalCount + markingTerminalLayoutCount);
+    }
+
+    // extensionId = -1 for host
+    private void fillFragmentStatesWithMTData(int extensionId, Map<Integer, Integer> fragmentMarkingTerminalLayouts) {
+        boolean isExtension = extensionId >= 0;
+        LRParseTable table = isExtension ? extensionFragments.get(extensionId).appendedExtensionTable : hostFragment.parseTable;
+        BitSet[] initNTs = isExtension ? extensionFragments.get(extensionId).initNTs : hostFragment.initNTs;
+        Map<Integer, Map<Integer, Set<Integer>>> laSources = isExtension ? extensionFragments.get(extensionId).laSources : hostFragment.laSources;
+        int stateOffset = isExtension ? extStateOffset[extensionId] : 0;
+
+        for (int state = 0; state < table.size(); state++) {
+            int offsetState = state + stateOffset;
+
+            markingTerminalShiftableSets[offsetState] = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
+            markingTerminalLayoutSets[offsetState] = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
+
+            BitSet stateInitNTs = initNTs[state];
             for (int nt = stateInitNTs.nextSetBit(0); nt >= 0; nt = stateInitNTs.nextSetBit(nt + 1)) {
                 for (MarkingTerminalData mtData: markingTerminalDatas) {
                     if (nt == mtData.hostLHS) {
-                        parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_SHIFT, mtData.offsetTransitionState);
-                        markingTerminalShiftableSets[state].set(mtData.endIndex - markingTerminalOffset);
-                        BitSet layouts = hostFragment.lookaheadSets.getLayout(state);
-                        for (int l = layouts.nextSetBit(0); l >= 0; l = layouts.nextSetBit(l + 1)) {
-                            if (!markingTerminalLayoutsByFragment.get(0).containsKey(l)) {
-                                MarkingTerminalData layout = new MarkingTerminalData(-1, l, -1, -1, -1, hostFragment.symbolTable.getTerminal(l));
-                                markingTerminalLayouts.put(markingTerminalLayoutCount, layout);
-                                markingTerminalLayoutsByFragment.get(0).put(l, markingTerminalLayoutCount);
-                                markingTerminalLayoutCount += 1;
-                            }
-                            markingTerminalShiftableSets[state].set(markingTerminalLayoutsByFragment.get(0).get(l) + markingTerminalCount);
-                            markingTerminalLayoutSets[state].set(markingTerminalLayoutsByFragment.get(0).get(l) + markingTerminalCount);
-                        }
+                        parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_SHIFT, mtData.offsetTransitionState);
+                        fillMTLayoutData(state, offsetState, mtData, fragmentMarkingTerminalLayouts, extensionId);
                     }
                 }
             }
-            Map<Integer, Set<Integer>> stateLASources = hostFragment.laSources.get(state);
+            Map<Integer, Set<Integer>> stateLASources = laSources.get(state);
             for (MarkingTerminalData mtData: markingTerminalDatas) {
                 Set<Integer> productions = stateLASources.get(mtData.hostLHS);
                 if (productions != null && !productions.isEmpty()) {
                     for (int production: productions) {
-                        int newProductionIndex = productionMap.get(0).get(production);
-                        parseTable[state][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, newProductionIndex);
-                        markingTerminalShiftableSets[state].set(mtData.endIndex - markingTerminalOffset);
-                        BitSet layouts = hostFragment.lookaheadSets.getLayout(state);
-                        for (int l = layouts.nextSetBit(0); l >= 0; l = layouts.nextSetBit(l + 1)) {
-                            if (!markingTerminalLayoutsByFragment.get(0).containsKey(l)) {
-                                MarkingTerminalData layout = new MarkingTerminalData(-1, l, -1, -1, -1, hostFragment.symbolTable.getTerminal(l));
-                                markingTerminalLayouts.put(markingTerminalLayoutCount, layout);
-                                markingTerminalLayoutsByFragment.get(0).put(l, markingTerminalLayoutCount);
-                                markingTerminalLayoutCount += 1;
-                            }
-                            markingTerminalShiftableSets[state].set(markingTerminalLayoutsByFragment.get(0).get(l) + markingTerminalCount);
-                            markingTerminalLayoutSets[state].set(markingTerminalLayoutsByFragment.get(0).get(l) + markingTerminalCount);
+                        int newProductionIndex = 0;
+                        if (production < 0) { // ext production
+                            newProductionIndex = productionMap.get(extensionId + 1).get(ExtensionMappingSpec.decodeExtensionIndex(production));
+                        } else {
+                            newProductionIndex = productionMap.get(0).get(production);
                         }
+                        parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, newProductionIndex);
+                        fillMTLayoutData(state, offsetState, mtData, fragmentMarkingTerminalLayouts, extensionId);
                     }
                 }
             }
         }
+    }
 
-        for (int extensionId = 0; extensionId < extensionCount; extensionId++) {
-            ExtensionFragmentData fragment = extensionFragments.get(extensionId);
-            for (int state = 0; state < fragment.appendedExtensionTable.size(); state++) {
-                int offsetState = state + extStateOffset[extensionId];
+    private void fillMTLayoutData(int state, int offsetState, MarkingTerminalData mtData, Map<Integer, Integer> fragmentMarkingTerminalLayouts, int extensionId) {
+        boolean isExtension = extensionId >= 0;
+        PSSymbolTable symbolTable = isExtension ? extensionFragments.get(extensionId).extensionMappingSpec.extensionSymbolTable : hostFragment.symbolTable;
+        LRLookaheadAndLayoutSets fragmentLayoutSets = isExtension ? extensionFragments.get(extensionId).extensionLookaheadAndLayoutSets : hostFragment.lookaheadSets;
 
-                markingTerminalShiftableSets[offsetState] = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
-                markingTerminalLayoutSets[offsetState] = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
+        markingTerminalShiftableSets[offsetState].set(mtData.endIndex - markingTerminalOffset);
+        BitSet layouts = fragmentLayoutSets.getLayout(state);
 
-                BitSet stateInitNTs = fragment.initNTs[state];
-                for (int nt = stateInitNTs.nextSetBit(0); nt >= 0; nt = stateInitNTs.nextSetBit(nt + 1)) {
-                    for (MarkingTerminalData mtData: markingTerminalDatas) {
-                        if (nt == mtData.hostLHS) {
-                            parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_SHIFT, mtData.offsetTransitionState);
-                            markingTerminalShiftableSets[offsetState].set(mtData.endIndex - markingTerminalOffset);
-                            BitSet layouts = fragment.extensionLookaheadAndLayoutSets.getLayout(state);
-                            for (int l = layouts.nextSetBit(extTableOffset); l >= 0; l = layouts.nextSetBit(l + 1)) {
-                                int el = l - extTableOffset;
-                                if (!markingTerminalLayoutsByFragment.get(extensionId).containsKey(el)) {
-                                    MarkingTerminalData layout = new MarkingTerminalData(extensionId, el, -1, -1, -1, fragment.extensionMappingSpec.extensionSymbolTable.getTerminal(el));
-                                    markingTerminalLayouts.put(markingTerminalLayoutCount, layout);
-                                    markingTerminalLayoutsByFragment.get(extensionId).put(el, markingTerminalLayoutCount);
-                                    markingTerminalLayoutCount += 1;
-                                }
-                                markingTerminalShiftableSets[offsetState].set(markingTerminalLayoutsByFragment.get(extensionId).get(el) + markingTerminalCount);
-                                markingTerminalLayoutSets[offsetState].set(markingTerminalLayoutsByFragment.get(extensionId).get(el) + markingTerminalCount);
-                            }
-                        }
-                    }
+        for (int l = layouts.nextSetBit(0); l >= 0; l = layouts.nextSetBit(l + 1)) {
+            if (!fragmentMarkingTerminalLayouts.containsKey(l)) {
+                MarkingTerminalData layout;
+                if (l < extTableOffset) {
+                    layout = new MarkingTerminalData(-1, l, -1, -1, -1, hostFragment.symbolTable.getTerminal(l));
+                } else {
+                    layout = new MarkingTerminalData(extensionId, l - extTableOffset, -1, -1, -1, symbolTable.getTerminal(l - extTableOffset));
                 }
-                Map<Integer, Set<Integer>> stateLASources = fragment.laSources.get(state);
-                for (MarkingTerminalData mtData: markingTerminalDatas) {
-                    Set<Integer> productions = stateLASources.get(mtData.hostLHS);
-                    if (productions != null && !productions.isEmpty()) {
-                        for (int production: productions) {
-                            int newProductionIndex = 0;
-                            if (production < 0) { // ext production
-                                newProductionIndex = productionMap.get(extensionId + 1).get(ExtensionMappingSpec.decodeExtensionIndex(production));
-                            } else {
-                                newProductionIndex = productionMap.get(0).get(production);
-                            }
-                            parseTable[offsetState][mtData.endIndex] = SingleDFAEngine.newAction(SingleDFAEngine.STATE_REDUCE, newProductionIndex);
-                            markingTerminalShiftableSets[offsetState].set(mtData.endIndex - markingTerminalOffset);
-                            BitSet layouts = fragment.extensionLookaheadAndLayoutSets.getLayout(state);
-                            for (int l = layouts.nextSetBit(extTableOffset); l >= 0; l = layouts.nextSetBit(l + 1)) {
-                                int el = l - extTableOffset;
-                                if (!markingTerminalLayoutsByFragment.get(extensionId).containsKey(el)) {
-                                    MarkingTerminalData layout = new MarkingTerminalData(extensionId, el, -1, -1, -1, fragment.extensionMappingSpec.extensionSymbolTable.getTerminal(el));
-                                    markingTerminalLayouts.put(markingTerminalLayoutCount, layout);
-                                    markingTerminalLayoutsByFragment.get(extensionId).put(el, markingTerminalLayoutCount);
-                                    markingTerminalLayoutCount += 1;
-                                }
-                                markingTerminalShiftableSets[offsetState].set(markingTerminalLayoutsByFragment.get(extensionId).get(el) + markingTerminalCount);
-                                markingTerminalLayoutSets[offsetState].set(markingTerminalLayoutsByFragment.get(extensionId).get(el) + markingTerminalCount);
-                            }
-                        }
-                    }
-                }
+                markingTerminalLayouts.put(markingTerminalLayoutCount, layout);
+                fragmentMarkingTerminalLayouts.put(l, markingTerminalLayoutCount);
+                markingTerminalLayoutCount += 1;
             }
+            markingTerminalShiftableSets[offsetState].set(fragmentMarkingTerminalLayouts.get(l) + markingTerminalCount);
+            markingTerminalLayoutSets[offsetState].set(fragmentMarkingTerminalLayouts.get(l) + markingTerminalCount);
         }
-
-        // TODO reduce code dup
-
-        markingTerminalShiftableUnion = SingleDFAEngine.newBitVec(markingTerminalCount + markingTerminalLayoutCount);
-        markingTerminalShiftableUnion.set(0, markingTerminalCount + markingTerminalLayoutCount);
     }
 
     private boolean isHostFragment(int fragmentId) {
