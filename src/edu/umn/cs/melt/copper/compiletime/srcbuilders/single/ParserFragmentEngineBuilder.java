@@ -159,7 +159,7 @@ public class ParserFragmentEngineBuilder {
         printParserAncillaryDecls(out);
         printParserAncillaryMethods(out);
 
-        System.out.println(scannerAncillaries); // TODO why is this here?
+        out.println(scannerAncillaries);
 
         writeStaticMemberInitializations(out);
 
