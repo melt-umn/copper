@@ -55,7 +55,7 @@
 		</copper>
 	</target>
 
-	<target name='SelfTestingCupGrammar' depends='TestCupGrammar'>
+	<target name='SelfTestParser' depends='TestCupGrammar'>
         <java classname='${build_package}.${grammarName}Parser'
 			  fork='false'
               failonerror='yes'
@@ -118,28 +118,28 @@
 		<property name='grammarName' value='TestPrecedences01'/>
         <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='SelfTestingCupGrammar'/>
+		<ant target='SelfTestParser'/>
 	</target>
 
 	<target name='TestPrecedences02' depends=''>
 		<property name='grammarName' value='TestPrecedences02'/>
         <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='SelfTestingCupGrammar'/>
+		<ant target='SelfTestParser'/>
 	</target>
 
 	<target name='TestPrecedences03' depends=''>
 		<property name='grammarName' value='TestPrecedences03'/>
         <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='SelfTestingCupGrammar'/>
+		<ant target='SelfTestParser'/>
 	</target>
 
 	<target name='TestPrecedences04' depends=''>
 		<property name='grammarName' value='TestPrecedences04'/>
         <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='SelfTestingCupGrammar'/>
+		<ant target='SelfTestParser'/>
 	</target>
 
 	<target name='MDAPassing' depends=''>
