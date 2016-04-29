@@ -28,13 +28,14 @@
 	<!-- Auxiliary targets; not to be run directly -->
 	<target name='TestCupGrammar' depends='MakeBuildPackageDir'>
 		<property name='skin' value='CUP'/>
+		<property name='testGroup' value=''/>
 		<copper outputFile='${build_package}/${grammarName}Parser.java'
 				useSkin='${skin}'
 				useEngine='${engine}'
 				dump='ON'
 				dumpFile='${build_package}/${grammarName}.html'
 				dumpFormat='HTML'>
-		    <inputs dir='${grammars}' includes='${grammarName}.x'/>
+		    <inputs dir='${grammars}${testGroup}' includes='${grammarName}.x'/>
 		</copper>
 		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
 	</target>
@@ -54,7 +55,7 @@
 		</copper>
 	</target>
 
-	<target name='RunTestCupGrammar' depends='TestCupGrammar'>
+	<target name='SelfTestingCupGrammar' depends='TestCupGrammar'>
         <java classname='${build_package}.${grammarName}Parser'
 			  fork='false'
               failonerror='yes'
@@ -115,26 +116,30 @@
 
 	<target name='TestPrecedences01' depends=''>
 		<property name='grammarName' value='TestPrecedences01'/>
+        <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='RunTestCupGrammar'/>
+		<ant target='SelfTestingCupGrammar'/>
 	</target>
 
 	<target name='TestPrecedences02' depends=''>
 		<property name='grammarName' value='TestPrecedences02'/>
+        <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='RunTestCupGrammar'/>
+		<ant target='SelfTestingCupGrammar'/>
 	</target>
 
 	<target name='TestPrecedences03' depends=''>
 		<property name='grammarName' value='TestPrecedences03'/>
+        <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='RunTestCupGrammar'/>
+		<ant target='SelfTestingCupGrammar'/>
 	</target>
 
 	<target name='TestPrecedences04' depends=''>
 		<property name='grammarName' value='TestPrecedences04'/>
+        <property name='testGroup' value='/test_features'/>
 		<property name='engine' value='SINGLE'/>
-		<ant target='RunTestCupGrammar'/>
+		<ant target='SelfTestingCupGrammar'/>
 	</target>
 
 	<target name='MDAPassing' depends=''>
