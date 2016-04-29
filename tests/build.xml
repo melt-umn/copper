@@ -31,7 +31,7 @@
 		<copper outputFile='${build_package}/${grammarName}Parser.java'
 				useSkin='${skin}'
 				useEngine='${engine}'
-        dump='ON'
+				dump='ON'
 				dumpFile='${build_package}/${grammarName}.html'
 				dumpFormat='HTML'>
 		    <inputs dir='${grammars}' includes='${grammarName}.x'/>
@@ -107,8 +107,8 @@
 		<ant target='TestCupGrammar'/>
 	</target>
 
-	<target name='Tutorial01' depends=''>
-		<property name='grammarName' value='Tutorial01'/>
+	<target name='Tutorial_EBNF_to_Copper' depends=''>
+		<property name='grammarName' value='Tutorial_EBNF_to_Copper'/>
 		<property name='engine' value='SINGLE'/>
 		<ant target='TestCupGrammar'/>
 	</target>

@@ -20,7 +20,7 @@
 package parsers;
 
 %%
-%parser Tutorial01Parser
+%parser Tutorial_EBNF_to_CopperParser
 
 /*
 Scope
@@ -85,7 +85,8 @@ ant Tutorial01
 For running the resulting parser on some input file:
 
 ````
-java -classpath ../jar/CopperRuntime.jar:. edu.umn.cs.melt.copper.runtime.RunParser parsers.Tutorial01Parser -f SOME-INPUT-FILE
+cd tests
+java -classpath ../jar/CopperRuntime.jar:. edu.umn.cs.melt.copper.runtime.RunParser parsers.Tutorial_EBNF_to_CopperParser -f SOME-INPUT-FILE
 ````
 
 TODO evaluate to use annotations like `%prec left_to_right` in case the tests on associativity and precedence are correct.
