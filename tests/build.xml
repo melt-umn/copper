@@ -155,22 +155,6 @@
 		<ant target='SelfTestParser'/>
 	</target>
 
-	<target name='TestPrecedences03' depends=''>
-		<property name='grammarName' value='TestPrecedences03'/>
-		<property name='testGroup' value='/test_features'/>
-		<property name='dumpMode' value='HTML'/>
-		<property name='engine' value='SINGLE'/>
-		<ant target='SelfTestParser'/>
-	</target>
-
-	<target name='TestPrecedences04' depends=''>
-		<property name='grammarName' value='TestPrecedences04'/>
-		<property name='testGroup' value='/test_features'/>
-		<property name='engine' value='SINGLE'/>
-		<property name='dumpMode' value='HTML'/>
-		<ant target='SelfTestParser'/>
-	</target>
-
 	<target name='MDAPassing' depends=''>
 		<property name='grammarName' value='MDAPassing'/>
 		<property name='engine' value='SINGLE'/>

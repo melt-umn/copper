@@ -58,9 +58,9 @@ See "TODO" annotations, for discovered problems.
     tests.add("#rl");
     tests.add("~#rl");
 
-    // TODO: this test fails, because the parser does not accept "##rl" but only "#rl".
     tests.add("##rl");
-    tests.add("##rl");
+    tests.add(null);
+    // NOTE: this fails (correctly) because `#` terminal associate to left.
 
     boolean allOk = testAllInputStrings(tests);
 
@@ -68,12 +68,12 @@ See "TODO" annotations, for discovered problems.
       System.exit(1);
     }
 
-  } 
+  }
 
   /**
    * Execute tests, and report on stderr the problems.
    *
-   * @param inputString followed by expected result.
+   * @param inputStrings followed by expected result. Use null for no expected result (parsing error).
    * @return true if all tests are passed.
    */
   static public boolean testAllInputStrings(LinkedList<String> inputStrings) {
@@ -91,7 +91,11 @@ See "TODO" annotations, for discovered problems.
 
         if (result != null) {
           testIsOk = false;
-          System.err.println("Input string \"" + inputString + "\" returned parsing result \"" + result + "\" instead of expected result \"" + expectedResult + "\"\n");
+          if (expectedResult == null) {
+             System.err.println("Input string \"" + inputString + "\" returned parsing result \"" + result + "\", but it should no parse.\n");
+          } else {
+            System.err.println("Input string \"" + inputString + "\" returned parsing result \"" + result + "\" instead of expected result \"" + expectedResult + "\"\n");
+          }
         }
         allOk = allOk && testIsOk;
 
@@ -112,7 +116,7 @@ See "TODO" annotations, for discovered problems.
      TestPrecedences02Parser parser = new TestPrecedences02Parser();
      try {
        String result = parser.parse(inputString);
-       if (result.equals(expectedResult)) {
+       if (expectedResult != null && result.equals(expectedResult)) {
          return null;
        } else {
          return result;
@@ -120,7 +124,11 @@ See "TODO" annotations, for discovered problems.
      } catch(IOException e) {
        return "IO error: " + e.getMessage();
      } catch(CopperParserException e) {
-       return "Error during parsing: " + e.getMessage(); 
+       if (expectedResult == null) {
+         return null;
+       } else {
+         return "Error during parsing: " + e.getMessage();
+       }
      }
   }
 
@@ -163,20 +171,6 @@ See "TODO" annotations, for discovered problems.
     RL ::= PREFIX_RL:x PREFIX_RL:y t_rl:v
     {: RESULT = x + y + "rl"; :}
     ;
-    /*
-    TODO this rule has a syntax very similar to `LR`,
-    because the prefix token is always "_", and only the associativity
-    annotation differs. The only hint about the used variant is in the
-    lookahead token "lr" vs "rl".
-
-    These are difficult rules, and also a little artificial.
-
-    In this case the parser reject to compile the rule.
-    I'm not sure this is the correct way, but I suspect yes.
-
-    On the contrary on TestePrecedences04, using slightly different rules, the parser compile
-    them in a bad way. After deciding the correct behavior this test can be completely removed.
-    */
 
     PREFIX_LR ::=
       t_prefix_lr

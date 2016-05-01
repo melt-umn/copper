@@ -114,7 +114,7 @@ TODO evaluate to use annotations like `%prec left_to_right` in case the tests on
     Copper is a bottom-up parser, but it uses a context-aware scanning. So also
     in Copper, like in case of top-down parsers, the type of recognized tokens
     depends from the parsing state, and from the production rules, and there are
-    less conflicts respect a traditional bottom-up parser.
+    less conflicts respect traditional bottom-up parsers.
     */
 
     class keyword;
@@ -243,13 +243,15 @@ TODO evaluate to use annotations like `%prec left_to_right` in case the tests on
       generate the parser. So the grammar is validated/checked from
       the parser compiler at compile-time. In many top-down parsers these errors
       are not signaled, and so they are discovered only during testing or in
-      production. In case of input strings like:
+      production.
+
+      This is an example of dangling-else ambiguity:
 
       ````
       if x > 10 then if x < 20 then s := 10 else s := 20 
       ````
 
-      it is not clear for the parser if the last `else` is part of the first
+      It is not clear for the parser if the last `else` is part of the first
       `if` or of the last `if`. So if it a code like this:
 
       ````
@@ -316,7 +318,8 @@ TODO evaluate to use annotations like `%prec left_to_right` in case the tests on
     ````
 
     The parse tree can be both `+(1,+(2,3))` or `+(+(1,2),3)`. Copper will
-    generate the TODO tree because we declarated `+` has left associative.
+    generate the `+(+(1,2),3)` tree because we declared `+` has left associative,
+    and so the `+` rule is reduced whenever possible.
     */
 
     COND ::=
@@ -355,6 +358,9 @@ TODO evaluate to use annotations like `%prec left_to_right` in case the tests on
     We had to specify `%prec t_protected` because otherwise there is an
     ambiguity in the grammar, because the input string "_var" can be "_~var" or
     "~_var".
+
+    It is mandatory that the associativity of `t_protected` token is `right`,
+    otherwise this transformation pattern will not work.
 
     A more verbose way for expanding the rule, for removing the ambiguity, can be
 

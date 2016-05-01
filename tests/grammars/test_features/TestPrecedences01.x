@@ -30,7 +30,6 @@ import java.util.LinkedList;
 
 This grammar is only used for testing Copper implementation.
 
-See "TODO" annotations, for discovered problems.
 */
 
 %aux{
@@ -46,14 +45,9 @@ See "TODO" annotations, for discovered problems.
     tests.add("lr1");
     tests.add("~~lr");
 
-    // TODO: fail because it is associated `left`, into "~_lr", instead of `right` as expected.
     tests.add("_lr1");
     tests.add("_~lr");
 
-    // TODO: fail because it is not able to parse "__lr", but only "_lr".
-    // This is a recurring problem, also in other tests involving `left`.
-    // associations. Maybe inspect on other simpler tests involving only this particular behavior.
-    // TODO: I should study better LALR theory, maybe this is the correct behavior.
     tests.add("__lr1");
     tests.add("__lr");
 
@@ -136,7 +130,6 @@ See "TODO" annotations, for discovered problems.
     terminal t_prefix1 ::= /_/ in (), < (), > ();
     terminal t_lr1 ::= /lr1/ in (), < (), > ();
     terminal left_to_right ::= // in (), < (), > ();
-
     terminal t_prefix2 ::= /#/ in (), < (), > ();
     terminal t_lr2 ::= /lr2/ in (), < (), > ();
 
@@ -152,9 +145,16 @@ See "TODO" annotations, for discovered problems.
 
     start with EXPR;
 
-    precedence left t_prefix1;
     precedence right left_to_right;
+    /*
+    NOTE: it is important that this terminal has less priority than other terminals,
+    because it is a pseudo terminal, it is never used as look-ahead token,
+    but only in `%prec left_to_right` annotations.
+    In case it has a greater priority than other look-ahead tokens, then the rule precedence is preferred,
+    and it is performed a reduce instead of shift, as intended by its `right` annotation.
+    */
 
+    precedence left t_prefix1;
     precedence right t_prefix2;
 
     EXPR ::=
@@ -175,10 +175,8 @@ See "TODO" annotations, for discovered problems.
       %prec left_to_right
     ;
     /*
-    TODO: we are using the `%prec left_to_right` instead
-    of the default `t_prefix` associativity.
-    But the compiler will use in this case the left associativity of `t_prefix`,
-    instead of the right associativity of `left_to_right`.
+    NOTE: we are using the `%prec left_to_right` instead
+    of the default `t_prefix` `right` associativity of the terminal.
     */
 
     LR2 ::= PREFIX_LR2:x PREFIX_LR2:y t_lr2:v
@@ -188,10 +186,10 @@ See "TODO" annotations, for discovered problems.
     PREFIX_LR2 ::=
       t_prefix2
       {: RESULT = "#"; :}
-      %prec left_to_right
     |
       {: RESULT = "~"; :}
       %prec t_prefix2
     ;
-    /* NOTE: in this case the behavior is correct. */
+
+
 %cf}
