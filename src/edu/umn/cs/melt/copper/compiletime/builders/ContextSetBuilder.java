@@ -10,7 +10,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
  * using the procedure specified in Algorithm 3.13 of Appel's "Modern Compiler Implementation
  * in Java," 2nd ed.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  * @see ContextSets
+ *
+ * Modified by Kevin to compute firstNTs
  */
 public class ContextSetBuilder
 {
@@ -25,6 +28,10 @@ public class ContextSetBuilder
 		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
 		{
 			c.getFirst(t).set(t);
+		}
+		for(int nt = spec.nonterminals.nextSetBit(0); nt >= 0; nt = spec.nonterminals.nextSetBit(nt+1))
+		{
+			c.getFirstNTs(nt).set(nt);
 		}
 		// Repeat until first, follow, and nullable did not change in an iteration:
 		boolean setsChanged = true;
@@ -71,7 +78,8 @@ public class ContextSetBuilder
 			    		if(frontNullableIndex == -1 || i <= frontNullableIndex)
 			    		{
 			    			// first(X) := union(first(X),first(Y[i]))
-			    			setsChanged |= ParserSpec.union(c.getFirst(x),c.getFirst(spec.pr.getRHSSym(p,i)));
+							setsChanged |= ParserSpec.union(c.getFirst(x), c.getFirst(spec.pr.getRHSSym(p, i)));
+							setsChanged |= ParserSpec.union(c.getFirstNTs(x), c.getFirstNTs(spec.pr.getRHSSym(p, i)));
 			    		}
 			    		// If Y[i+1]...Y[k] are all nullable:
 			    		if(rearNullableIndex == -1 || i >= rearNullableIndex)

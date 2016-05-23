@@ -1,17 +1,21 @@
 package edu.umn.cs.melt.copper.compiletime.scannerdfa;
 
+import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Hashtable;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 
-public abstract class GeneralizedFA
+/**
+ * Modified by Kevin to allow serialization
+ */
+public abstract class GeneralizedFA implements Serializable
 {
 	protected int alphabetSize;
 	protected int nextNewStateNumber;
 	protected int nextNewCharRangeNumber;
 	protected int nextAcceptSymbolNumber;
-	
+
 	protected Hashtable<SetOfCharsSyntax,Integer> charRangeNumbers;
 	protected SetOfCharsSyntax[] charRanges;
 	protected BitSet[] acceptStates;

@@ -6,7 +6,9 @@ import java.util.BitSet;
  * Holds lookahead sets (LALR(1) or otherwise) for each item in an LR DFA, and valid layout sets
  * for each DFA state. 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to allow building without a full DFA
  */
 public class LRLookaheadAndLayoutSets extends LRLookaheadSets
 {
@@ -15,9 +17,18 @@ public class LRLookaheadAndLayoutSets extends LRLookaheadSets
 	public LRLookaheadAndLayoutSets(LR0DFA dfa)
 	{
 		super(dfa);
-		layoutSets = new BitSet[dfa.size()];
-		
-		for(int i = 0;i < dfa.size();i++)
+		initLayoutSets(dfa.size());
+	}
+
+	public LRLookaheadAndLayoutSets(int dfaSize, int maxItemCount) {
+		super(dfaSize, maxItemCount);
+		initLayoutSets(dfaSize);
+	}
+
+	private void initLayoutSets(int dfaSize) {
+		layoutSets = new BitSet[dfaSize];
+
+		for(int i = 0;i < dfaSize;i++)
 		{
 			layoutSets[i] = new BitSet();
 		}

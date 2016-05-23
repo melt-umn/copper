@@ -1,7 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.builders;
 
-import java.util.BitSet;
-import java.util.HashSet;
+import java.util.*;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
@@ -17,44 +16,60 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
+/**
+ * Modified by Kevin Viratyosin to take Regexes, terminals BitSet, and eof terminal instead of ParserSpec
+ */
 public class SingleScannerDFABuilder
 {
-	private ParserSpec spec;
+	private TreeMap<Integer, Regex> regexes;
+	private BitSet terminals;
+	private int eofTerminal;
 	
 	private TransitionLabelCalculator transitionLabelCalculator;
 	private AutomatonGenerator automatonGenerator;
 
 	private GeneralizedNFA nfa;
 	
-	private SingleScannerDFABuilder(ParserSpec spec)
+	private SingleScannerDFABuilder(TreeMap<Integer, Regex> regexes, BitSet terminals, int eofTerminal)
 	{
-		this.spec = spec;
+		this.regexes = regexes;
+		this.terminals = terminals;
+		this.eofTerminal = eofTerminal;
 		
 		this.transitionLabelCalculator = new TransitionLabelCalculator();
 		this.automatonGenerator = new AutomatonGenerator();
 	}
-	
+
 	public static GeneralizedDFA build(ParserSpec spec)
 	{
-		return new SingleScannerDFABuilder(spec).buildScannerDFA();
+		TreeMap<Integer, Regex> regexes = new TreeMap<Integer, Regex>();
+		for (int t = spec.terminals.nextSetBit(0); t >= 0; t = spec.terminals.nextSetBit(t + 1)) {
+			regexes.put(t, spec.t.getRegex(t));
+		}
+		return new SingleScannerDFABuilder(regexes, spec.terminals, spec.getEOFTerminal()).buildScannerDFA();
+	}
+
+	public static GeneralizedDFA build(TreeMap<Integer, Regex> regexes, BitSet terminals, int eofTerminal)
+	{
+		return new SingleScannerDFABuilder(regexes, terminals, eofTerminal).buildScannerDFA();
 	}
 	
 	private GeneralizedDFA buildScannerDFA()
 	{
 		// Collect the sub-NFAs for all regexes.
 		HashSet<SetOfCharsSyntax> allCharRanges = new HashSet<SetOfCharsSyntax>();
-		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
+		for(int t = terminals.nextSetBit(0);t >= 0;t = terminals.nextSetBit(t+1))
 		{
-			if(t == spec.getEOFTerminal()) continue;
-			allCharRanges.addAll(spec.t.getRegex(t).acceptVisitor(transitionLabelCalculator));
+			if(t == eofTerminal) continue;
+			allCharRanges.addAll(regexes.get(t).acceptVisitor(transitionLabelCalculator));
 		}
-		nfa = new GeneralizedNFA(spec.terminals.cardinality(),allCharRanges.size());
+		nfa = new GeneralizedNFA(terminals.cardinality(),allCharRanges.size());
 		BitSet allStartStates = new BitSet();
 		// Add accept symbols and gather start states for individual regexes.
-		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
+		for(int t = terminals.nextSetBit(0);t >= 0;t = terminals.nextSetBit(t+1))
 		{
-			if(t == spec.getEOFTerminal()) continue;
-			Pair<Integer,BitSet> states = spec.t.getRegex(t).acceptVisitor(automatonGenerator);
+			if(t == eofTerminal) continue;
+			Pair<Integer,BitSet> states = regexes.get(t).acceptVisitor(automatonGenerator);
 			allStartStates.set(states.first());
 			for(int j = states.second().nextSetBit(0);j >= 0;j = states.second().nextSetBit(j+1))
 			{

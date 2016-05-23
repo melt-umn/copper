@@ -1,13 +1,16 @@
 package edu.umn.cs.melt.copper.compiletime.parsetable;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
 /**
  * Holds information about an LR parse table conflict. 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to allow for serialization
  */
-public class LRParseTableConflict
+public class LRParseTableConflict implements Serializable
 {
 	private int state;
 	private int symbol;

@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVisitor;
@@ -7,9 +8,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
 /**
  * Represents a regular expression.
  * @author schwerdf
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to implement Serializable
  */
-public abstract class Regex
+public abstract class Regex implements Serializable
 {
 	protected Regex()
 	{

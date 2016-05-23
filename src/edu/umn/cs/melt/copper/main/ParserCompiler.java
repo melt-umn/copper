@@ -71,7 +71,7 @@ public class ParserCompiler
 		rv += "\t-version\tDisplay version information.\n";
 		rv += "\t-package [package]\tThe package of the generated parser.\n\t\tDefaults to the default package or what is set in\n\t\tthe parser specification.\n";
 		rv += "\t-parser [class]\tThe class name of the generated parser.\n\t\tDefaults to 'Parser' or what is set in\n\t\tthe parser specification.\n";
-		rv += "\t-o [out]\tOutput the generated parser to the file 'out'.\n\t\tUse '-' to redirect to standard output, or no parameter\n\t\tto suppress output altogether.\n";
+		rv += "\t-o [out]\tOutput the generated parser or fragment to the file 'out'.\n\t\tUse '-' to redirect to standard output, or no parameter\n\t\tto suppress output altogether.\n";
 		rv += "\t-q\t\tRun the compiler quietly.\n";
 		rv += "\t-v\t\tRun the compiler with extra verbosity.\n";
 		rv += "\t-vv\t\tRun the compiler with even more extra verbosity.\n";

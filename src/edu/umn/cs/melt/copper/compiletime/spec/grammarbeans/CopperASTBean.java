@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,9 +11,11 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
 /**
  * The superclass of all Copper grammar objects.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to allow serialization
  */
-public abstract class CopperASTBean
+public abstract class CopperASTBean implements Serializable
 {
 	/** The grammar object's type. */
 	protected CopperElementType type;

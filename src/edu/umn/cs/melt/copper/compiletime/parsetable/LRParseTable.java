@@ -1,14 +1,17 @@
 package edu.umn.cs.melt.copper.compiletime.parsetable;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
 /**
  * Holds a parse table in the form of two matrices, one holding an action's "type" (error, shift, reduce, etc.)
  * and one holding its parameter (destination state, production to reduce on, etc.) 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified by Kevin to include a print function, serialization
  */
-public abstract class LRParseTable
+public abstract class LRParseTable implements Serializable
 {
 	// SHIFT and GOTO are assumed to be identical in the class LRParseTableBuilder.
 	
@@ -55,4 +58,54 @@ public abstract class LRParseTable
 	public abstract LRParseTableConflict getConflict(int index);
 	
 	public int size() { return validLA.length; }
+
+	public void print() {
+		int rows = actionType.length;
+		int cols = actionType[0].length;
+
+		int entryWidth = 4;
+
+		System.out.print("State | ");
+		for (int i = 0; i < cols; i++) {
+			System.out.print(fixString(String.valueOf(i), entryWidth) + " ");
+		}
+		System.out.println();
+
+		for (int i = 0; i < rows; i++) {
+			System.out.print(fixString(String.valueOf(i), 6) + "| ");
+			for (int j = 0; j < cols; j++) {
+				String entry = "";
+				switch (actionType[i][j]) {
+					case ERROR:
+						entry += 'e';
+						break;
+					case SHIFT:
+						entry += 's';
+						break;
+					case REDUCE:
+						entry += 'r';
+						break;
+					default:
+						entry += 'x';
+						break;
+				}
+				entry += actionParameters[i][j];
+				System.out.print(fixString(entry, entryWidth) + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	private String fixString(String str, int size) {
+		int len = str.length();
+		if (len < size) {
+			String ret = str;
+			for (int i = 0; i < size - len; i++) {
+				ret = ret + " ";
+			}
+			return ret;
+		} else {
+			return str;
+		}
+	}
 }

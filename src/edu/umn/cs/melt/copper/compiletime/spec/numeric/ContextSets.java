@@ -13,10 +13,12 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 public class ContextSets
 {
 	protected BitSet[] first;
+	protected BitSet[] firstNTs;
 	protected BitSet[] follow;
 	protected boolean[] nullable;
-	
+
 	public final BitSet getFirst(int s) { return first[s]; }
+	public final BitSet getFirstNTs(int s) { return firstNTs[s]; }
 	public final BitSet getFollow(int s) { return follow[s]; }
 	public final boolean isNullable(int s) { return nullable[s]; }
 	public final void setNullable(int s,boolean n) { nullable[s] = n; }
@@ -24,12 +26,14 @@ public class ContextSets
 	public ContextSets(int symbolCount)
 	{
 		first = new BitSet[symbolCount];
+		firstNTs = new BitSet[symbolCount];
 		follow = new BitSet[symbolCount];
 		nullable = new boolean[symbolCount];
 		
 		for(int i = 0;i < symbolCount;i++)
 		{
 			first[i] = new BitSet();
+			firstNTs[i] = new BitSet();
 			follow[i] = new BitSet();
 		}
 	}
@@ -41,6 +45,7 @@ public class ContextSets
 		for(int i = 0;i < first.length;i++)
 		{
 			rv.append("first(").append(symbolTable.get(i).getDisplayName()).append(") = ").append(PSSymbolTable.bitSetPrettyPrint(first[i],symbolTable, "  ",80)).append("\n");
+			rv.append("firstNTs(").append(symbolTable.get(i).getDisplayName()).append(") = ").append(PSSymbolTable.bitSetPrettyPrint(firstNTs[i],symbolTable, "  ",80)).append("\n");
 			rv.append("follow(" + symbolTable.get(i).getDisplayName() + ") = " + PSSymbolTable.bitSetPrettyPrint(follow[i],symbolTable, "  ",80)).append("\n");
 			rv.append(symbolTable.get(i).getDisplayName()).append(" is");
 			if(!nullable[i]) rv.append(" NOT");

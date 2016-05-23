@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.auxiliary;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -9,10 +10,13 @@ import java.util.Iterator;
 /**
  * Implements a constant-time bidirectional mapping between objects and integers.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
+ *
+ * Modified by Kevin to allow serialization
  *
  * @param <T>
  */
-public class SymbolTable<T> implements Iterable<T>
+public class SymbolTable<T> implements Iterable<T>, Serializable
 {
 	private Hashtable<T,Integer> forward;
 	private Object[] reverse;

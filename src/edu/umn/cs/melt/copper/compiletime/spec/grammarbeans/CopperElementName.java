@@ -1,13 +1,17 @@
 package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.regex.Pattern;
 
 /**
  * Represents the name of a CopperASTBean.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
+ *
+ * Modified by Kevin to allow serialization
  */
-public class CopperElementName implements Comparable<CopperElementName>
+public class CopperElementName implements Comparable<CopperElementName>, Serializable
 {
 	private static final Pattern validNames = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*");
 	
