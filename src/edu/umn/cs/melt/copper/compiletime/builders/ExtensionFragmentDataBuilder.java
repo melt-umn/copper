@@ -41,7 +41,7 @@ public class ExtensionFragmentDataBuilder {
 
         if (logger.getLevel() == CompilerLevel.VERBOSE) {
             System.out.println("== BEGIN ExtensionLRParseTableBuilder ==");
-            System.out.println("Indicies:");
+            System.out.println("Indices:");
             System.out.println("  host terminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostTerminalIndices));
             System.out.println("  host nonterminals: " + builder.bitSetIndicesToString(builder.mappingSpec.hostNonterminalIndices));
             System.out.println("  host productions: " + builder.bitSetIndicesToString(builder.mappingSpec.hostProductionIndices));
