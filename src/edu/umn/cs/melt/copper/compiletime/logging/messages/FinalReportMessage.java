@@ -41,11 +41,11 @@ public class FinalReportMessage implements CompilerLogMessage
 	public String toString()
 	{
 		StringBuffer rv = new StringBuffer();
-		rv.append("===== FINAL REPORT =====\n");
+		rv.append("----------\nFinal report.\n");
 		
-		rv.append(stats.terminalCount + " terminal" + ((stats.terminalCount == 1) ? "" : "s") + ", " + stats.nonterminalCount + " nonterminal" + ((stats.nonterminalCount == 1) ? "" : "s") + ",\n" + stats.productionCount + " productions, and " + stats.disambiguationFunctionCount + " disambiguation function" + ((stats.disambiguationFunctionCount == 1) ? "" : "s") + " declared,\n");
-		rv.append("producing " + stats.parseStateCount + " unique parse state" + ((stats.parseStateCount == 1) ? "" : "s") + "\n");
-		rv.append("and " + stats.scannerStateCount + " unique scanner state" + ((stats.scannerStateCount == 1) ? "" : "s") + ".\n");
+		rv.append("Grammar has " + stats.terminalCount + " terminal" + ((stats.terminalCount == 1) ? "" : "s") + ", " + stats.nonterminalCount + " nonterminal" + ((stats.nonterminalCount == 1) ? "" : "s") + ", " + stats.productionCount + " productions,\n   and " + stats.disambiguationFunctionCount + " disambiguation function" + ((stats.disambiguationFunctionCount == 1) ? "" : "s") + " declared,\n");
+		rv.append("   producing " + stats.parseStateCount + " unique parse state" + ((stats.parseStateCount == 1) ? "" : "s") + "\n");
+		rv.append("   and " + stats.scannerStateCount + " unique scanner state" + ((stats.scannerStateCount == 1) ? "" : "s") + ".\n");
 		rv.append(stats.uselessNTs.cardinality() + " useless nonterminal" + ((stats.uselessNTs.cardinality() == 1) ? "" : "s") + ".\n");
 		if(stats.parseTableConflictCount == 0)
 		{
@@ -53,7 +53,7 @@ public class FinalReportMessage implements CompilerLogMessage
 		}
 		else
 		{
-			rv.append(stats.parseTableConflictCount + " parse table conflict" + ((stats.parseTableConflictCount == 1) ? "" : "s") + " detected\n   (" + stats.shiftReduceParseTableConflictCount + " shift/reduce, " + stats.reduceReduceParseTableConflictCount + " reduce/reduce); " + (stats.parseTableConflictCount - stats.unresolvedParseTableConflictCount) + " resolved.\n");
+			rv.append(stats.unresolvedParseTableConflictCount + " unresolved parse table conflict" + ((stats.unresolvedParseTableConflictCount == 1) ? "" : "s") + "\n   " + stats.shiftReduceParseTableConflictCount + " shift/reduce conflicts, " + stats.reduceReduceParseTableConflictCount + " reduce/reduce, " + (stats.parseTableConflictCount - stats.unresolvedParseTableConflictCount) + " resolved.\n");
 		}
 		if(stats.lexicalAmbiguityCount == 0)
 		{
@@ -61,8 +61,8 @@ public class FinalReportMessage implements CompilerLogMessage
 		}
 		else
 		{
-			rv.append(stats.lexicalAmbiguityCount + " lexical ambiguit" + ((stats.lexicalAmbiguityCount == 1) ? "y" : "ies") + " detected; " + (stats.contextResolvedLexicalAmbiguityCount + stats.disambiguationFunctionResolvedLexicalAmbiguityCount) + " resolved,\n");
-			rv.append("   " + stats.contextResolvedLexicalAmbiguityCount + " by context, " + stats.disambiguationFunctionResolvedLexicalAmbiguityCount + " by disambiguation function/group.");
+			rv.append((stats.lexicalAmbiguityCount - (stats.contextResolvedLexicalAmbiguityCount + stats.disambiguationFunctionResolvedLexicalAmbiguityCount)) + " unresolved lexical ambiguit" + ((stats.lexicalAmbiguityCount == 1) ? "y" : "ies") + "\n" );
+			rv.append("   " + stats.contextResolvedLexicalAmbiguityCount + " resolved by context, " + stats.disambiguationFunctionResolvedLexicalAmbiguityCount + " by disambiguation function/group.");
 		}
 		if(stats.codeOutput)
 		{
