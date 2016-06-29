@@ -199,7 +199,6 @@ public class ExtensionFragmentDataBuilder {
     private int translateActionParameter(byte actionType, int composedActionParameter) {
         switch (actionType) {
             case LRParseTable.CONFLICT:
-                // TODO Covert conflict number?
                 return 0;
             case LRParseTable.REDUCE: // convert production
                 return mappingSpec.composedToDecomposedSymbols.get(composedActionParameter);

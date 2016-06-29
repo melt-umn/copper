@@ -321,7 +321,6 @@ public class ParserFragmentEngineBuilder {
         out.println("      throw new " + UnsupportedOperationException.class.getName() + "();");
         out.println("    }");
 
-        // TODO -- probably a good idea to make sure that this actually works...
         out.println("    public " + Object.class.getName() + " runSemanticTerminalAction(int fragmentId, " + InputPosition.class.getName() + " _pos, " + SingleDFAMatchData.class.getName() + " _terminal)");
         out.println("    throws " + IOException.class.getName() + "," + errorType + " {");
         out.println("      this._pos = _pos;");
@@ -575,7 +574,6 @@ public class ParserFragmentEngineBuilder {
     }
 
     private void writeSemanticsClassUse(PrintStream out) {
-        // TODO are these functions right in the interface ? Are the Fragment* functions correct?
         out.println("  public Semantics semantics;");
 
         out.println("  public " + Object.class.getName() + " runSemanticAction(" + InputPosition.class.getName() + " _pos," + Object.class.getName() + "[] _children,int _prod)");

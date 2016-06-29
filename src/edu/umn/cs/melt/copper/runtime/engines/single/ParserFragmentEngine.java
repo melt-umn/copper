@@ -404,7 +404,6 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         // assumes fragmentId is an extension id (> 0)
 
         // marking terminals take precedence
-        // TODO double check that this is handled by validLA -- "shiftable"?
         SingleDFAMatchData mtScanResult = parameterizedLayoutScan(false, null, markingTerminalScanner);
         if (mtScanResult.terms.cardinality() > 1) {
             throw new RuntimeException("Ambiguous marking terminal match: " + bitVecToDisplayStringList(0, mtScanResult.terms)); // Should not happen

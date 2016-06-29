@@ -210,7 +210,7 @@ public class ExtensionMappingSpec implements Serializable {
             t.setTransparentPrefix(i, convertValidIndex(fullSpec.t.getTransparentPrefix(composedIndex)));
             t.setOperatorClass(i, convertValidIndex(fullSpec.t.getOperatorClass(composedIndex)));
 
-            t.setOperatorPrecedence(i, fullSpec.t.getOperatorPrecedence(composedIndex)); // TODO translate?
+            t.setOperatorPrecedence(i, fullSpec.t.getOperatorPrecedence(composedIndex));
             t.setOperatorAssociativity(i, fullSpec.t.getOperatorAssociativity(composedIndex));
 
             // t.precedences is ignored here, but
@@ -271,8 +271,6 @@ public class ExtensionMappingSpec implements Serializable {
     private int convertValidIndexWithTableOffset(int index) {
         return index < 0 ? index : translateAndTableOffsetComposedSymbol(index);
     }
-
-    // TODO Are operator precedences just numbers? Can they be left alone?
 
     public static int encodeExtensionIndex(int i) { return -1 * (i + 1); }
 
