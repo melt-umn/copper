@@ -218,7 +218,7 @@ public class CopperAntTask extends Task
 			params.setCustomSwitch(customSwitch,customSwitches.get(customSwitch));
 		}
 		
-		System.out.println("------------------------------------------------------------\nCompiling " + inputs.size() + " input file" + (inputs.size() == 1 ? "" : "s") + ":");
+		System.out.println("============================================================\nCompiling " + inputs.size() + " input file" + (inputs.size() == 1 ? "" : "s") + ":");
 		for(Pair<String,Object> input : inputs) System.out.println("\t" + input.first());
 		
 		int errorlevel = 1;
