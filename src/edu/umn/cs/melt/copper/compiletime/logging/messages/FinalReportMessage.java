@@ -43,7 +43,7 @@ public class FinalReportMessage implements CompilerLogMessage
 		StringBuffer rv = new StringBuffer();
 		rv.append("-------------\nFinal report:\n-------------\n");
 		
-		rv.append("Parser and scanner specifcation\n   has " + stats.terminalCount + " terminal" + ((stats.terminalCount == 1) ? "" : "s") + ", " + stats.nonterminalCount + " nonterminal" + ((stats.nonterminalCount == 1) ? "" : "s") + ", " + stats.productionCount + " productions,\n   and " + stats.disambiguationFunctionCount + " disambiguation function" + ((stats.disambiguationFunctionCount == 1) ? "" : "s") + " declared,\n");
+		rv.append("Parser and scanner specification\n   has " + stats.terminalCount + " terminal" + ((stats.terminalCount == 1) ? "" : "s") + ", " + stats.nonterminalCount + " nonterminal" + ((stats.nonterminalCount == 1) ? "" : "s") + ", " + stats.productionCount + " productions,\n   and " + stats.disambiguationFunctionCount + " disambiguation function" + ((stats.disambiguationFunctionCount == 1) ? "" : "s") + " declared,\n");
 		rv.append("   producing " + stats.parseStateCount + " unique parse state" + ((stats.parseStateCount == 1) ? "" : "s") + "\n");
 		rv.append("   and " + stats.scannerStateCount + " unique scanner state" + ((stats.scannerStateCount == 1) ? "" : "s") + ".\n");
 		rv.append(stats.uselessNTs.cardinality() + " useless nonterminal" + ((stats.uselessNTs.cardinality() == 1) ? "" : "s") + ".\n");
