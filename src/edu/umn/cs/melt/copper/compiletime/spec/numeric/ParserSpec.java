@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.spec.numeric;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
@@ -13,8 +14,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
  * with all nomenclature being relegated to a symbol table (see {@link SymbolTable}). 
  *
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
+ *
+ * Modified by Kevin to allow serialization
  */
-public class ParserSpec
+public class ParserSpec implements Serializable
 {
 	/**
 	 * A wrapper around {@link java.util.BitSet.or} that returns <code>true</code>
@@ -30,7 +34,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on terminals.
 	 */
-	public final class TerminalData
+	public static final class TerminalData
 	{
 		/** Regexes for each terminal. */
 		protected Regex[] regexes;
@@ -81,7 +85,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on nonterminals.
 	 */
-	public final class NonterminalData
+	public static final class NonterminalData
 	{
 		/** For each nonterminal, the set of productions with that nonterminal as their left hand side. */
 		protected BitSet[] productions;
@@ -102,7 +106,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on productions.
 	 */
-	public final class ProductionData
+	public static final class ProductionData implements Serializable
 	{
 		/** Each production's left hand side. */
 		protected int[] LHSs;
@@ -160,7 +164,7 @@ public class ParserSpec
 	 * Holds attributes on disambiguation functions/groups.
 	 *
 	 */
-	public final class DisambiguationFunctionData
+	public static final class DisambiguationFunctionData implements Serializable
 	{
 		/** The members of each disambiguation function/group. */
 		protected BitSet[] members;
@@ -188,7 +192,7 @@ public class ParserSpec
 	/**
 	 * Holds attributes on terminal classes.
 	 */
-	public final class TerminalClassData
+	public static final class TerminalClassData
 	{
 		/** The members of each terminal class. */
 		protected BitSet[] members;
@@ -210,7 +214,7 @@ public class ParserSpec
 	 * Holds attributes on grammars.
 	 *
 	 */
-	public final class GrammarData
+	public static final class GrammarData
 	{
 		/** Grammar layout for each grammar. */
 		protected BitSet[] layouts;
@@ -229,7 +233,7 @@ public class ParserSpec
 	}
 	
 	/** Holds attributes on parser specs. */
-	public final class ParserData
+	public static final class ParserData
 	{
 		/** Start layout. */
 		protected BitSet layout;
@@ -251,20 +255,22 @@ public class ParserSpec
 	public BitSet parserAttributes;
 	public BitSet grammars;
 	public int parser;
+
+	public SymbolTable<CopperASTBean> symbolTable;
 	
 	/** The grammar in which each grammar element was declared. */
 	public int[] owners;
 	
 	/** Marking terminals and bridge productions. */
 	public BitSet bridgeConstructs;
-	
-	public TerminalData t;
-	public NonterminalData nt;
+
+	transient public TerminalData t;
+	transient public NonterminalData nt;
 	public ProductionData pr;
 	public DisambiguationFunctionData df;
-	public TerminalClassData tc;
-	public GrammarData g;
-	public ParserData p;
+	transient public TerminalClassData tc;
+	transient public GrammarData g;
+	transient public ParserData p;
 	
 	/** Returns the number for the special "end-of-file" or "end-of-input" terminal, {@code $}. */
 	public int getEOFTerminal() { return terminals.nextSetBit(0); }
@@ -283,6 +289,7 @@ public class ParserSpec
 	 */
 	public ParserSpec(SymbolTable<CopperASTBean> symbolTable)
 	{
+		this.symbolTable = symbolTable;
 		int symbolCount = symbolTable.size();
 		terminals = new BitSet(symbolCount);
 		nonterminals = new BitSet(symbolCount);

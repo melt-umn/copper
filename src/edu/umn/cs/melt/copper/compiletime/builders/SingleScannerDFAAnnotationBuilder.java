@@ -9,21 +9,30 @@ import java.util.Queue;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PrecedenceGraph;
 
+/**
+ * Modified by Kevin Viratyosin to take PrecedenceGraph instead of the whole ParserSpec
+ */
 public class SingleScannerDFAAnnotationBuilder
 {
-	private ParserSpec spec;
+	private PrecedenceGraph precedences;
 	private GeneralizedDFA dfa;
 	
-	private SingleScannerDFAAnnotationBuilder(ParserSpec spec,GeneralizedDFA dfa)
+	private SingleScannerDFAAnnotationBuilder(PrecedenceGraph precedences, GeneralizedDFA dfa)
 	{
-		this.spec = spec;
+		this.precedences = precedences;
 		this.dfa = dfa;
 	}
-	
-	public static SingleScannerDFAAnnotations build(ParserSpec spec,GeneralizedDFA dfa)
+
+	public static SingleScannerDFAAnnotations build(ParserSpec spec, GeneralizedDFA dfa)
 	{
-		return new SingleScannerDFAAnnotationBuilder(spec,dfa).buildAnnotations();
+		return new SingleScannerDFAAnnotationBuilder(spec.t.precedences, dfa).buildAnnotations();
+	}
+
+	public static SingleScannerDFAAnnotations build(PrecedenceGraph precedences, GeneralizedDFA dfa)
+	{
+		return new SingleScannerDFAAnnotationBuilder(precedences, dfa).buildAnnotations();
 	}
 	
 	private SingleScannerDFAAnnotations buildAnnotations()
@@ -46,7 +55,7 @@ public class SingleScannerDFAAnnotationBuilder
 			BitSet accF = dfa.getAcceptSymbols(state);
 			
 			stateCircularDependencies.clear();
-			BitSet rej = spec.t.precedences.partitionAcceptSet(stateCircularDependencies,accF);
+			BitSet rej = precedences.partitionAcceptSet(stateCircularDependencies,accF);
 			if(!stateCircularDependencies.isEmpty())
 			{
 				circularDependencies.addAll(stateCircularDependencies);

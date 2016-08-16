@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
 
+import java.io.Serializable;
 import java.text.ParseException;
 
 import edu.umn.cs.melt.copper.runtime.io.Location;
@@ -7,8 +8,11 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
 /**
  * Holds a reference to a Copper grammar element. 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
+ *
+ * Modified by Kevin to allow serialization
  */
-public class CopperElementReference implements Comparable<CopperElementReference>
+public class CopperElementReference implements Comparable<CopperElementReference>, Serializable
 {
 	/**
 	 * The grammar in which the element being referred to is located.

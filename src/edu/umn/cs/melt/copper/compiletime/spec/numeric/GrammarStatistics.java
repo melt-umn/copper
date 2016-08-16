@@ -1,8 +1,12 @@
 package edu.umn.cs.melt.copper.compiletime.spec.numeric;
 
+import java.io.Serializable;
 import java.util.BitSet;
 
-public class GrammarStatistics
+/**
+ * Modified by Kevin Viratyosin to implement Serializable
+ */
+public class GrammarStatistics implements Serializable
 {
 	public GrammarStatistics(ParserSpec spec)
 	{

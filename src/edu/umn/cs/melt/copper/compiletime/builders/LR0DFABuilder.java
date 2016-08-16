@@ -11,7 +11,9 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 /**
  * Builds an LR(0) DFA (without any lookahead sets on items). 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
  *
+ * Modified to compute initNTs
  */
 public class LR0DFABuilder
 {
@@ -72,6 +74,20 @@ public class LR0DFABuilder
 				setsChanged = true;
 			}
 		}
+
+		/* populate initNTs */
+		BitSet[] initNTs = new BitSet[itemSets.size()];
+		for (int i = 0; i < itemSets.size(); i++) {
+			LR0ItemSet itemSet = itemSets.get(i);
+			initNTs[i] = new BitSet();
+			for (int j = 0; j < itemSet.size(); j++) {
+				int position = itemSet.getPosition(j);
+				int production = itemSet.getProduction(j);
+				if (position < spec.pr.getRHSLength(production)) {
+					initNTs[i].set(spec.pr.getRHSSym(production, position));
+				}
+			}
+		}
 		
 		LR0ItemSet[] statesA = new LR0ItemSet[itemSets.size()];
 		itemSets.toArray(statesA);
@@ -82,7 +98,7 @@ public class LR0DFABuilder
 		BitSet[][] gotoItemsA = new BitSet[gotoItems.size()][transitionArraySize];
 		gotoItems.toArray(gotoItemsA);
 		
-		return new LR0DFA(statesA,transitionLabelsA,transitionsA,gotoItemsA);
+		return new LR0DFA(statesA,transitionLabelsA,transitionsA,gotoItemsA,initNTs);
 	}
 	
 	public int closure(LR0ItemSet seed)

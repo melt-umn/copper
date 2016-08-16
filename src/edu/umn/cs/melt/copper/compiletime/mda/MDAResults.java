@@ -1,7 +1,11 @@
 package edu.umn.cs.melt.copper.compiletime.mda;
 
 import java.util.BitSet;
+import java.util.Map;
 
+/**
+ * Modified by Kevin Viratyosin to include hostPartition
+ */
 public class MDAResults
 {
 	/** Error type code for lookahead spillage. */
@@ -29,14 +33,15 @@ public class MDAResults
 	// For lookahead spillage, these are item numbers.
 	// For I_SUBSET_ONLY conditions, these contain one number, that of the I-superset host state.
 	protected BitSet[] locations;
-	
+
+	protected Map<Integer,Integer> hostStateMap;
 	protected BitSet hostPartition;
 	protected BitSet extPartition;
 	protected BitSet newHostPartition;
 	
 	public MDAResults(byte[] errorType, BitSet[] hostSets, BitSet[] fullSets,
 			int[] hostStates, int[] fullStates, BitSet[] locations,
-			BitSet hostPartition, BitSet extPartition, BitSet newHostPartition)
+			Map<Integer, Integer> hostStateMap, BitSet hostPartition, BitSet extPartition, BitSet newHostPartition)
 	{
 		this.errorType = errorType;
 		this.hostSets = hostSets;
@@ -44,6 +49,7 @@ public class MDAResults
 		this.hostStates = hostStates;
 		this.fullStates = fullStates;
 		this.locations = locations;
+		this.hostStateMap = hostStateMap;
 		this.hostPartition = hostPartition;
 		this.extPartition = extPartition;
 		this.newHostPartition = newHostPartition;
@@ -65,7 +71,8 @@ public class MDAResults
 	public BitSet getItems(int error) { return locations[error]; }
 	
 	public int getISuperset(int error) { return locations[error].nextSetBit(0); }
-	
+
+	public Map<Integer, Integer> getHostStateMap()    { return hostStateMap; }
 	public BitSet getHostPartition()    { return hostPartition; }
 	public BitSet getExtPartition()     { return extPartition; }
 	public BitSet getNewHostPartition() { return newHostPartition; }

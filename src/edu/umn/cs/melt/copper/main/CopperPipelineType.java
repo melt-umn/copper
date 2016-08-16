@@ -4,16 +4,18 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompilerReturnData;
-import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
-import edu.umn.cs.melt.copper.compiletime.pipeline.StandardPipeline;
-import edu.umn.cs.melt.copper.compiletime.pipeline.StandardSpecCompiler;
+import edu.umn.cs.melt.copper.compiletime.pipeline.*;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment.FragmentSerializationProcess;
+import edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment.ParserFragmentCompositionProcess;
 
 /**
  * Represents the parser compilation pipelines available in the Copper parser generator.
  * @see edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Kevin Viratyosin
+ *
+ * Modified by Kevin to include FRAGMENT, FRAGMENT_COMPOSE type
  */
 public enum CopperPipelineType
 {
@@ -40,6 +42,55 @@ public enum CopperPipelineType
 		String stringName()
 		{
 			return "default";
+		}
+	},
+	/**
+	 * This pipeline first converts a parser specification into the class of objects in the
+	 * {@link edu.umn.cs.melt.copper.compiletime.spec.grammarbeans} package,
+	 * from which a parser fragment is compiled and serialized.
+	 */
+	FRAGMENT
+	{
+		@Override
+		StandardPipeline<ParserBean,FragmentGeneratorReturnData> getPipeline(ParserCompilerParameters args)
+		{
+			return new StandardPipeline<ParserBean, FragmentGeneratorReturnData>(args.getUseSkin().getStandardSpecParser(args),new FragmentGenerator(), new FragmentSerializationProcess());
+		}
+
+		@Override
+		String usageMessage()
+		{
+			return "Generates parser and scanner fragments to be composed later.";
+		}
+
+		@Override
+		String stringName()
+		{
+			return "fragment";
+		}
+	},
+	/**
+	 * This pipeline is meant to be used after the FRAGMENT pipeline.
+	 * It writes a ParserFragmentEngine java class from a set of given fragments.
+	 */
+	FRAGMENT_COMPOSE
+	{
+		@Override
+		StandardPipeline<ParserFragments, ParserFragments> getPipeline(ParserCompilerParameters args)
+		{
+			return new StandardPipeline<ParserFragments, ParserFragments>(new ParserFragmentsDeserializer(args), new ParserFragmentsPasser(args), new ParserFragmentCompositionProcess(args));
+		}
+
+		@Override
+		String usageMessage()
+		{
+			return "Generates parser and scanner fragments to be composed later.";
+		}
+
+		@Override
+		String stringName()
+		{
+			return "fragmentCompose";
 		}
 	},
 	// TODO: Rip this out when GrammarSource is gone. 
