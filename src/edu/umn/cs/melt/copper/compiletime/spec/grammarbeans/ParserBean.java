@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -53,6 +54,11 @@ public class ParserBean extends CopperASTBean
 	 * N.B.: <code>className</code> must not be a fully qualified name.
 	 */
 	protected String className;
+	/**
+	 * The (optionally fully-qualified) names of Java interfaces to be
+	 * implemented by this parser.
+	 */
+	protected Set<String> interfaceNames;
 	/** Code to run at parser start time. */
 	protected String parserInitCode;
 	/** Code to run after the conclusion of a parse. */
@@ -84,6 +90,7 @@ public class ParserBean extends CopperASTBean
 		startSymbol = null;
 		packageDecl = null;
 		className = null;
+		interfaceNames = new HashSet<String>();
 		parserInitCode = null;
 		postParseCode = null;
 		preambleCode = null;
@@ -222,6 +229,22 @@ public class ParserBean extends CopperASTBean
 	public void setClassName(String className)
 	{
 		this.className = className;
+	}
+
+	/**
+	 * @see ParserBean#interfaceNames
+	 */
+	public Set<String> getInterfaceNames()
+	{
+		return interfaceNames;
+	}
+
+	/**
+	 * @see ParserBean#interfaceNames
+	 */
+	public void setInterfaceNames(Set<String> interfaceNames)
+	{
+		this.interfaceNames = interfaceNames;
 	}
 
 	/**

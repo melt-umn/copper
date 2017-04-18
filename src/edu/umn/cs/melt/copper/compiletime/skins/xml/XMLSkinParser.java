@@ -203,6 +203,7 @@ public class XMLSkinParser extends DefaultHandler
 	private ParserAttribute currentParserAttribute = null;
 	private ArrayList<CopperElementReference> refList = null;
 	private Set<CopperElementReference> refSet = null;
+	private Set<String> interfaceNames = null;
 	private ArrayList<String> varNames = null;
 	private String nodeText = null;
 	private SAXStackElement lastTextNode = null;
@@ -357,6 +358,12 @@ public class XMLSkinParser extends DefaultHandler
 			break;
 		case IN_CLASSES_ELEMENT:
 			refSet = new HashSet<CopperElementReference>();
+			break;
+		case INTERFACE_NAME_ELEMENT:
+			// Empty; all work is done in endElement() after the element's text content is known.
+			break;
+		case INTERFACE_NAMES_ELEMENT:
+			interfaceNames = new HashSet<String>();
 			break;
 		case KLEENE_STAR_ELEMENT:
 			peek().regexChildren = new ArrayList<Regex>();
@@ -553,6 +560,7 @@ public class XMLSkinParser extends DefaultHandler
 		{
 		case CODE_ELEMENT:
 		case CLASS_NAME_ELEMENT:
+		case INTERFACE_NAME_ELEMENT:
 		case PACKAGE_ELEMENT:
 		case PP_ELEMENT:
 		case PRECEDENCE_ELEMENT:
@@ -739,6 +747,13 @@ public class XMLSkinParser extends DefaultHandler
 		case IN_CLASSES_ELEMENT:
 			currentTerminal.setTerminalClasses(refSet);
 			refSet = null;
+			break;
+		case INTERFACE_NAME_ELEMENT:
+			interfaceNames.add(nodeText);
+			break;
+		case INTERFACE_NAMES_ELEMENT:
+			currentParser.setInterfaceNames(interfaceNames);
+			interfaceNames = null;
 			break;
 		case KLEENE_STAR_ELEMENT:
 			peek().regexChildren.add(new KleeneStarRegex((Regex) element.regexChildren.get(0)));

@@ -32,6 +32,8 @@ class XMLSkinElements
 		GRAMMAR_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Grammar"; } },
 		GRAMMAR_REF_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "GrammarRef"; } },
 		IN_CLASSES_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "InClasses"; } },
+		INTERFACE_NAME_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "InterfaceName"; } },
+		INTERFACE_NAMES_ELEMENT					{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "InterfaceNames"; } },
 		KLEENE_STAR_ELEMENT						{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "KleeneStar"; } },
 		LAYOUT_ELEMENT							{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "Layout"; } },
 		LEFT_ASSOCIATIVE_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "LeftAssociative"; } },

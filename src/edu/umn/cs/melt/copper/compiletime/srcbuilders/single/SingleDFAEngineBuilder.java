@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
@@ -257,7 +258,21 @@ public class SingleDFAEngineBuilder
 
 		out.print("\n");
 		
-		out.print("public class " + parserName + " extends " + SingleDFAEngine.class.getName() + "<" + rootType + "," + errorType + ">\n");
+		out.print("public class " + parserName + " extends " + SingleDFAEngine.class.getName() + "<" + rootType + "," + errorType + ">");
+		if(!parser.getInterfaceNames().isEmpty())
+		{
+			out.print(" implements ");
+			boolean first = true;
+			TreeSet<String> interfaceNames = new TreeSet<String>(parser.getInterfaceNames());
+			for(String interfaceName : interfaceNames)
+			{
+				if(first) first = false;
+				else out.print(",");
+				
+				out.print(interfaceName);
+			}
+		}
+		out.print("\n");
 		out.print("{\n");
 		out.print("    protected String formatError(String error)\n");
 		out.print("    {\n");

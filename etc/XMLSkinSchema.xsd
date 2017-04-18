@@ -452,7 +452,17 @@
 		</xs:sequence>
 	</xs:complexType>
 	
-	
+	<xs:complexType name="InterfaceNames">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A set of Java typenames representing the interfaces to be
+				implemented by a parser class.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="InterfaceName" type="JavaTypename" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
 
 
 
@@ -624,6 +634,7 @@
 			<xs:element name="StartLayout" type="TerminalOrClassRefSet" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Package" type="JavaFQN" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="ClassName" type="JavaName" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="InterfaceNames" type="InterfaceNames" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="ClassAuxiliaryCode" type="Code" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="DefaultProductionCode" type="Code" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="DefaultTerminalCode" type="Code" minOccurs="0" maxOccurs="1"/>
