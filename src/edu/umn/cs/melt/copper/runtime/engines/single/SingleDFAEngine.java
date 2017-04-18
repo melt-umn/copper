@@ -472,7 +472,12 @@ public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements 
 					runSemanticAction(layout.precedingPos,layout);
 					virtualLocation.defaultUpdateAutomatic(layout.lexeme);
 				}
+				
+				parseStack.push(new SingleDFAParseStackNode(currentState.statenum, scanResult.followingPos, null));
+				currentState = parseStack.peek();
 				reportSyntaxError();
+				parseStack.pop();
+				currentState = parseStack.peek();
 			}
 			else if(scanResult.terms.cardinality() > 1)
 			{

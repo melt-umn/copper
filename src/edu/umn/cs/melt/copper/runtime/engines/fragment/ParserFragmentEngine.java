@@ -421,7 +421,11 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
                 runFragmentSemanticAction(fragmentId, layout.precedingPos, layout);
                 virtualLocation.defaultUpdateAutomatic(layout.lexeme);
             }
+			parseStack.push(new SingleDFAParseStackNode(currentState.statenum, extScanResult.followingPos, null));
+			currentState = parseStack.peek();
             reportSyntaxError(fragmentId);
+			parseStack.pop();
+			currentState = parseStack.peek();
         } else if (extScanResult.terms.cardinality() > 1) {
             throw new RuntimeException("Ambiguous match: " + bitVecToDisplayStringList(fragmentId, extScanResult.terms)); // Should not happen.
         }
