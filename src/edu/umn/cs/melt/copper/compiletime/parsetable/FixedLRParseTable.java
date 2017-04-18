@@ -9,6 +9,10 @@ import java.util.BitSet;
  */
 public class FixedLRParseTable extends LRParseTable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8623403485857573167L;
 	public FixedLRParseTable(BitSet[] validLA, byte[][] actionType,	int[][] actionParameters, LRParseTableConflict[] conflicts)
 	{
 		super(validLA, actionType, actionParameters, conflicts);

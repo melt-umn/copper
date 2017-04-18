@@ -8,7 +8,6 @@ import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.ParserFragments;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilder;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
-import edu.umn.cs.melt.copper.compiletime.srcbuilders.single.ParserFragmentEngineBuilder;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 

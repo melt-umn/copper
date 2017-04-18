@@ -22,6 +22,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.TerminalClass;
  */
 public class PSSymbolTable extends SymbolTable<CopperASTBean>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1943120111250659661L;
+
 	public PSSymbolTable(Collection<CopperASTBean> objects)
 	{
 		super(objects);

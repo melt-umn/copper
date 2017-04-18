@@ -6,8 +6,6 @@ import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Terminal;
-import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 
 import java.io.*;
 import java.util.*;
@@ -16,7 +14,11 @@ import java.util.*;
  * @author Kevin Viratyosin
  */
 public class ExtensionFragmentData implements Serializable {
-    public LRParseTable appendedExtensionTable; // columns are table offset symbols
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3157469499066944639L;
+	public LRParseTable appendedExtensionTable; // columns are table offset symbols
     //  No PSSymbolTable since it's generated in ExtensionMappingSpec
     public LRLookaheadAndLayoutSets extensionLookaheadAndLayoutSets;
     public ExtensionMappingSpec extensionMappingSpec;

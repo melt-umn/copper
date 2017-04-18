@@ -10,6 +10,12 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
  */
 public abstract class InputPosition implements Location
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2525774701288495668L;
+
+
 	/** 
 	 * Tests whether this position is before another.
 	 * @param rhs The position against which to test.

@@ -14,6 +14,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
  */
 public abstract class Regex implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5753105739767763666L;
+
 	protected Regex()
 	{
 	}

@@ -7,6 +7,10 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 
 public class GeneralizedDFABuilder extends GeneralizedFA
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7625516700670638786L;
 	// TODO: Add a new addState() method that adds state, transitions, and accept symbols
 	//       all in one go. If a state exists with the same set of transitions and accept symbols,
 	//       return the number of this existing state.

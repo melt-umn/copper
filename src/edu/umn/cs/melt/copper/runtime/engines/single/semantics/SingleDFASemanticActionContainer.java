@@ -56,6 +56,7 @@ public abstract class SingleDFASemanticActionContainer<EXCEPT extends Exception>
 	 * @param elements The elements.
 	 * @return The list (array shallow-copied).
 	 */
+	@SuppressWarnings("unchecked")
 	public static <A> LinkedList<A> newList(A... elements)
 	{
 		LinkedList<A> rv = new LinkedList<A>();

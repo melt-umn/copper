@@ -9,6 +9,10 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
  */
 class InputPositionFull extends InputPosition
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 487378816987742808L;
 	private String fileName;
 	private int line;
     private long pos;

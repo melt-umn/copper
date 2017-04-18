@@ -13,6 +13,10 @@ import java.util.BitSet;
  */
 public class SingleScannerDFAAnnotations implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8644249517473433823L;
 	public BitSet[] acceptSets;
 	public BitSet[] rejectSets;
 	public BitSet[] possibleSets;

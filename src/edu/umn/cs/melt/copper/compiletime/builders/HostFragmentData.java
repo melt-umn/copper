@@ -19,7 +19,11 @@ import java.util.*;
  */
 public class HostFragmentData implements Serializable {
 
-    public PSSymbolTable symbolTable;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8369557919554024105L;
+	public PSSymbolTable symbolTable;
     public ParserSpec fullSpec;
     public String packageDecl;
     public String parserName;

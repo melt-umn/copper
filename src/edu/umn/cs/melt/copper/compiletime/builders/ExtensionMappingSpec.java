@@ -17,7 +17,11 @@ import java.util.TreeMap;
  */
 public class ExtensionMappingSpec implements Serializable {
 
-    public Map<Integer, Integer>
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6737324814615857778L;
+	public Map<Integer, Integer>
             composedToDecomposedStates, // non-neg composed indexes -> non-neg (host) or neg (ext) indices
             extensionToComposedStates, // non-neg ext indices -> non-neg composed indices
             composedToDecomposedSymbols, // non-neg composed indexes -> non-neg (host) or neg (ext) indices

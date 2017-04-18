@@ -1,45 +1,13 @@
 package edu.umn.cs.melt.copper.compiletime.pipeline;
 
-import edu.umn.cs.melt.copper.compiletime.builders.*;
-import edu.umn.cs.melt.copper.compiletime.checkers.*;
-import edu.umn.cs.melt.copper.compiletime.dumpers.Dumper;
-import edu.umn.cs.melt.copper.compiletime.dumpers.DumperFactory;
-import edu.umn.cs.melt.copper.compiletime.dumpers.PlainTextParserDumper;
-import edu.umn.cs.melt.copper.compiletime.dumpers.XHTMLParserDumper;
-import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
+import edu.umn.cs.melt.copper.compiletime.builders.ExtensionFragmentDataBuilder;
+import edu.umn.cs.melt.copper.compiletime.builders.HostFragmentData;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
-import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericLocatedMessage;
-import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
-import edu.umn.cs.melt.copper.compiletime.logging.messages.TimingMessage;
-import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
-import edu.umn.cs.melt.copper.compiletime.lrdfa.LRDFAPrinter;
-import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
-import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
-import edu.umn.cs.melt.copper.compiletime.mda.MDAResults;
-import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
-import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
-import edu.umn.cs.melt.copper.compiletime.scannerdfa.LexicalAmbiguities;
-import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperElementType;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ExtendedParserBean;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.NumericParserSpecBuilder;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.SymbolTableBuilder;
-import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
-import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
-import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
-import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
-import edu.umn.cs.melt.copper.main.CopperDumpControl;
-import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.BitSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Kevin Viratyosin

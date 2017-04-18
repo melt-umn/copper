@@ -15,6 +15,11 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public class ParserBean extends CopperASTBean
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7605756443022606139L;
+	
 	/** The grammars to include in this parser. */
 	protected Hashtable<CopperElementName,Grammar> grammars;
 	/**

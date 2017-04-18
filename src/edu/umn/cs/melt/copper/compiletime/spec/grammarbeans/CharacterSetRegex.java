@@ -13,6 +13,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
  */
 public class CharacterSetRegex extends Regex
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -966161834565953355L;
+
 	public static CharacterSetRegex union(CharacterSetRegex left,CharacterSetRegex right)
 	{
 		CharacterSetRegex rv = new CharacterSetRegex();

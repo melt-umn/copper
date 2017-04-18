@@ -15,6 +15,11 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
 public class CopperElementReference implements Comparable<CopperElementReference>, Serializable
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3611269639124084387L;
+
+	/**
 	 * The grammar in which the element being referred to is located.
 	 */
 	protected CopperElementName grammarName;

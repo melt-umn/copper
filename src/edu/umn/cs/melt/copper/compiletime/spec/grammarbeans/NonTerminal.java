@@ -9,6 +9,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  */
 public class NonTerminal extends GrammarSymbol
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 127917288537652493L;
+
 	public NonTerminal()
 	{
 		super(CopperElementType.NON_TERMINAL);

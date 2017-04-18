@@ -11,6 +11,10 @@ import java.util.BitSet;
  */
 public class MutableLRParseTable extends LRParseTable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4673403975745918896L;
 	private ArrayList<LRParseTableConflict> buildingConflicts;
 	
 	private static BitSet[] newValidLA(int stateCount)

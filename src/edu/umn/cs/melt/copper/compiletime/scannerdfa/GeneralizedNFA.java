@@ -10,6 +10,10 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SetTiling;
 
 public class GeneralizedNFA extends GeneralizedFA
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6346939067775842570L;
 	private BitSet[][] transitions;
 	
 	@Override

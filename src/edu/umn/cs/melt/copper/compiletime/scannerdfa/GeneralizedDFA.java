@@ -6,6 +6,10 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 
 public class GeneralizedDFA extends GeneralizedFA
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3407854286295700768L;
 	protected int[][] transitions;
 	int startState;
 	

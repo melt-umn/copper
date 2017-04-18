@@ -8,6 +8,10 @@ import java.util.BitSet;
  */
 public class GrammarStatistics implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 556990014330666619L;
 	public GrammarStatistics(ParserSpec spec)
 	{
 		terminalCount = spec.terminals.cardinality();

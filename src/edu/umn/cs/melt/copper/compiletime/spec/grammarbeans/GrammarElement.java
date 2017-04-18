@@ -7,6 +7,11 @@ package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
  */
 public abstract class GrammarElement extends CopperASTBean
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7002650799932829601L;
+
 	protected GrammarElement(CopperElementType type)
 	{
 		super(type);

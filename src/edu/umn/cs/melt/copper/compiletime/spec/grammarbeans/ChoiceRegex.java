@@ -14,6 +14,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
  */
 public class ChoiceRegex extends Regex
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2036651562483581293L;
 	/** The regex's constituents. */
 	private List<Regex> subexps;
 	

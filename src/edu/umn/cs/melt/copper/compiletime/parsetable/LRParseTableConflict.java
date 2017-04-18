@@ -12,6 +12,10 @@ import java.util.BitSet;
  */
 public class LRParseTableConflict implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7814639360867425739L;
 	private int state;
 	private int symbol;
 	

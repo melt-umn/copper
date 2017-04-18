@@ -16,6 +16,10 @@ import java.util.TreeSet;
  */
 public class SetOfCharsSyntax implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7073107634038068176L;
 	private String stringRep = null;
 	private int size = -1;
 	// TODO: This is used to sort ranges when constructing a SetOfCharsSyntax

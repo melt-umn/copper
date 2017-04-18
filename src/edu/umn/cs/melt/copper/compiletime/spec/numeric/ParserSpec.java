@@ -21,6 +21,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
 public class ParserSpec implements Serializable
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5024964891089039358L;
+
+	/**
 	 * A wrapper around {@link java.util.BitSet.or} that returns <code>true</code>
 	 * if the operation changes the LHS.
 	 */
@@ -108,6 +113,10 @@ public class ParserSpec implements Serializable
 	 */
 	public static final class ProductionData implements Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5306191791546758652L;
 		/** Each production's left hand side. */
 		protected int[] LHSs;
 		/** For each production, the count of the symbols on its right hand side. */
@@ -166,6 +175,10 @@ public class ParserSpec implements Serializable
 	 */
 	public static final class DisambiguationFunctionData implements Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6379317437173398929L;
 		/** The members of each disambiguation function/group. */
 		protected BitSet[] members;
 		/** The terminal to which the disambiguation group disambiguates, or -1 for disambiguation functions that disambiguate using code. */

@@ -15,6 +15,10 @@ public abstract class LRParseTable implements Serializable
 {
 	// SHIFT and GOTO are assumed to be identical in the class LRParseTableBuilder.
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9036145167742108891L;
 	/** Action type code for an "error" action. The parameter will be disregarded. */
 	public static final byte ERROR = 0;
 	/** Action type code for a shift action. The parameter is taken to be the number of the destination state. */

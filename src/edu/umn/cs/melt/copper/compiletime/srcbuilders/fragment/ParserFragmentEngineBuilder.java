@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.srcbuilders.single;
+package edu.umn.cs.melt.copper.compiletime.srcbuilders.fragment;
 
 import edu.umn.cs.melt.copper.compiletime.builders.*;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
@@ -15,8 +15,8 @@ import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.ByteArrayEncoder;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
+import edu.umn.cs.melt.copper.runtime.engines.fragment.ParserFragmentEngine;
 import edu.umn.cs.melt.copper.runtime.engines.semantics.SpecialParserAttributes;
-import edu.umn.cs.melt.copper.runtime.engines.single.ParserFragmentEngine;
 import edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine;
 import edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData;
 import edu.umn.cs.melt.copper.runtime.engines.single.semantics.SingleDFASemanticActionContainer;
@@ -36,7 +36,7 @@ import java.util.*;
 public class ParserFragmentEngineBuilder {
 
     private static final int MARKING_TERMINAL_FRAGMENT_ID = 0;
-    private static final int HOST_FRAGMENT_ID = 0;
+    //private static final int HOST_FRAGMENT_ID = 0;
     private HostFragmentData hostFragment;
     private List<ExtensionFragmentData> extensionFragments;
 
@@ -204,13 +204,13 @@ public class ParserFragmentEngineBuilder {
     }
 
     // fragmentId == 0 => MARKING TERMINAL
-    private String[] getSymbolNamesInclMT(int fragmentId) {
+    /*private String[] getSymbolNamesInclMT(int fragmentId) {
         if (fragmentId == MARKING_TERMINAL_FRAGMENT_ID) {
             return markingTerminalSymbolNames;
         } else {
             return getSymbolNames(fragmentId);
         }
-    }
+    }*/
 
     // fragmentId == 0 => HOST symbol
     private String[] getSymbolNames(int fragmentId) {
@@ -221,7 +221,7 @@ public class ParserFragmentEngineBuilder {
         out.println("  public class Semantics extends " + SingleDFASemanticActionContainer.class.getName() + "<" + errorType + "> {");
 
         // TODO do extensions have semantic action aux code?
-        String semanticActionAuxCode = hostParser.getSemanticActionAuxCode();
+        //String semanticActionAuxCode = hostParser.getSemanticActionAuxCode();
         // TODO do extensions have parser attributes? -- probably...
         for(int attrN = hostFragment.fullSpec.parserAttributes.nextSetBit(0); attrN >= 0; attrN = hostFragment.fullSpec.parserAttributes.nextSetBit(attrN + 1)) {
             ParserAttribute attr = hostFragment.symbolTable.getParserAttribute(attrN);
@@ -529,8 +529,8 @@ public class ParserFragmentEngineBuilder {
         boolean first = true;
         for (Map.Entry<Integer, Pair<Integer, Integer>> entry : disambiguationFunctionMapBack.entrySet()) {
             int df = entry.getKey();
-            int fragment = entry.getValue().first();
-            int fragmentIndex = entry.getValue().second();
+            //int fragment = entry.getValue().first();
+            //int fragmentIndex = entry.getValue().second();
 
             String elseStr = "} else ";
             if (first) {
@@ -949,7 +949,7 @@ public class ParserFragmentEngineBuilder {
         objectsToHash.add(new ObjectToHash(possibleSetss, BitSet.class.getName() + "[][]", "possibleSetss"));
     }
 
-    private static class MarkingTerminalData implements Comparable {
+    private static class MarkingTerminalData implements Comparable<MarkingTerminalData> {
         public int extensionId;
         public int extensionTerminal;
         public int hostLHS;
@@ -966,8 +966,11 @@ public class ParserFragmentEngineBuilder {
         }
 
         @Override
-        public int compareTo(Object o) {
-            return this.endIndex - ((MarkingTerminalData) o).endIndex;
+        public int compareTo(MarkingTerminalData o) {
+        	if(o == null) {
+        		return -1;
+        	}
+            return this.endIndex - o.endIndex;
         }
     }
 
@@ -1037,8 +1040,8 @@ public class ParserFragmentEngineBuilder {
         extTerminalUses = new int[extensionCount][];
         extShiftableUnion = new BitSet[extensionCount];
         for (int i = 0; i < extensionCount; i++) {
-            ExtensionFragmentData fragment = extensionFragments.get(i);
-            ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
+            //ExtensionFragmentData fragment = extensionFragments.get(i);
+            //ExtensionMappingSpec spec = extensionFragments.get(i).extensionMappingSpec;
 
             extTerminalUses[i] = new int[extTerminalLengths[i]];
             extShiftableUnion[i] = SingleDFAEngine.newBitVec(extTerminalLengths[i]);
@@ -1066,7 +1069,7 @@ public class ParserFragmentEngineBuilder {
         BitSet hostNonterminals = hostFragment.fullSpec.nonterminals;
         ExtensionFragmentData extensionFragmentData = null;
         ExtensionMappingSpec extSpec = null;
-        BitSet extTerminals = null;
+        //BitSet extTerminals = null;
         BitSet extNonterminals = null;
         BitSet offsetExtNonterminals = null;
         LRLookaheadAndLayoutSets layouts = null;
@@ -1079,7 +1082,7 @@ public class ParserFragmentEngineBuilder {
             extensionFragmentData = extensionFragments.get(extensionId);
             table = extensionFragmentData.appendedExtensionTable;
             extSpec = extensionFragmentData.extensionMappingSpec;
-            extTerminals = extSpec.extensionTerminalIndices;
+            //extTerminals = extSpec.extensionTerminalIndices;
             extNonterminals = extSpec.extensionNonterminalIndices;
 
             offsetExtNonterminals = new BitSet();
@@ -1277,7 +1280,7 @@ public class ParserFragmentEngineBuilder {
         }
     }
 
-    private boolean isHostFragment(int fragmentId) {
+    /*private boolean isHostFragment(int fragmentId) {
         return fragmentId == 0;
     }
 
@@ -1291,7 +1294,7 @@ public class ParserFragmentEngineBuilder {
             }
         }
         return fragmentId;
-    }
+    }*/
 
     private void makeProductionLengths() {
         productionLengths = new int[totalProductionCount];

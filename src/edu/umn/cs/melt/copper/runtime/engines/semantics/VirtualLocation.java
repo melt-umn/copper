@@ -12,6 +12,10 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
  */
 public class VirtualLocation implements Location
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4262577268165715268L;
 	private boolean isModified;
 	private String hash;
 	

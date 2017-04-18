@@ -10,6 +10,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  */
 public class OperatorClass extends GrammarElement
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8135242635858659756L;
+
 	public OperatorClass()
 	{
 		super(CopperElementType.OPERATOR_CLASS);

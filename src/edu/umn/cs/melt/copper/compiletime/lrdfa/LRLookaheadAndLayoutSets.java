@@ -12,6 +12,10 @@ import java.util.BitSet;
  */
 public class LRLookaheadAndLayoutSets extends LRLookaheadSets
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6681835095260667272L;
 	protected BitSet[] layoutSets;
 	
 	public LRLookaheadAndLayoutSets(LR0DFA dfa)

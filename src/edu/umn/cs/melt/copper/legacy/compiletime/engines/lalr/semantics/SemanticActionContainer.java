@@ -70,6 +70,7 @@ public abstract class SemanticActionContainer implements edu.umn.cs.melt.copper.
 	 * @param elements The elements.
 	 * @return The list (array shallow-copied).
 	 */
+	@SuppressWarnings("unchecked")
 	public static <A> LinkedList<A> newList(A... elements)
 	{
 		LinkedList<A> rv = new LinkedList<A>();

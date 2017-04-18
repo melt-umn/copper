@@ -11,6 +11,10 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
  */
 public abstract class GeneralizedFA implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2799946400786722788L;
 	protected int alphabetSize;
 	protected int nextNewStateNumber;
 	protected int nextNewCharRangeNumber;

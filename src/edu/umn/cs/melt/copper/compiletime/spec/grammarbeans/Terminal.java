@@ -17,6 +17,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  */
 public class Terminal extends GrammarSymbol
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5277483830424954644L;
 	/** The regex represented by this terminal. */
 	protected Regex regex;
 	/**

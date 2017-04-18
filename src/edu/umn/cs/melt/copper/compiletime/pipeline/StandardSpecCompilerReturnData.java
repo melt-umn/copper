@@ -20,6 +20,10 @@ import java.io.*;
  */
 public class StandardSpecCompilerReturnData implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 36758451293844968L;
 	public boolean succeeded;
 	public int errorlevel;
 	public PSSymbolTable symbolTable;

@@ -13,6 +13,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
 public class MacroHoleRegex extends Regex
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3639691635307536151L;
+	/**
 	 * A reference to the regex that will be brought in for the substitution
 	 * (usually the name of a terminal whose regex will be used).
 	 */

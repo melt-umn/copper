@@ -1,12 +1,13 @@
-package edu.umn.cs.melt.copper.runtime.engines.single;
+package edu.umn.cs.melt.copper.runtime.engines.fragment;
 
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
+import edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAEngine;
+import edu.umn.cs.melt.copper.runtime.engines.single.SingleDFAParseStackNode;
 import edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData;
 import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.LinkedList;
@@ -146,13 +147,14 @@ public abstract class ParserFragmentEngine<ROOT, EXCEPT extends Exception> exten
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    /*@Override
     public ROOT parse(Reader input,String inputName) throws IOException,EXCEPT {
         this.charBuffer = ScannerBuffer.instantiate(input);
         startEngine(InputPosition.initialPos(inputName));
-        ROOT parseTree = (ROOT) runEngine();
+        @SuppressWarnings("unchecked")
+		ROOT parseTree = (ROOT) runEngine();
         return parseTree;
-    }
+    }*/
 
     protected SingleDFAMatchData parameterizedSimpleScan(
             InputPosition whence,

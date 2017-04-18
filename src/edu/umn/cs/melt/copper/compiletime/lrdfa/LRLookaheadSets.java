@@ -12,6 +12,10 @@ import java.util.BitSet;
  */
 public class LRLookaheadSets implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3394007021635535719L;
 	protected int maxItemCount;
 	protected BitSet[][] lookahead;
 	protected BitSet[][] itemLASources; // state -> item -> BitSet<nt>

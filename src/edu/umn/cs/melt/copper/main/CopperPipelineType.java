@@ -84,7 +84,7 @@ public enum CopperPipelineType
 		@Override
 		String usageMessage()
 		{
-			return "Generates parser and scanner fragments to be composed later.";
+			return "Compose parser and scanner fragments generated in the 'compose' pipeline.";
 		}
 
 		@Override

@@ -14,6 +14,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
  */
 public class ConcatenationRegex extends Regex
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3491379141256944154L;
 	/** The regex's constituents. */
 	private List<Regex> subexps;
 	

@@ -18,6 +18,10 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public class Grammar extends CopperASTBean
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 881954662689009409L;
 	/** The elements of the grammar. */
 	protected Hashtable<CopperElementName,GrammarElement> grammarElements;
 	/** The layout (e.g., whitespace, comments) that may appear between the right-hand-side symbols of productions

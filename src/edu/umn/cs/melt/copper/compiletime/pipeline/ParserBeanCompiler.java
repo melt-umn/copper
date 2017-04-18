@@ -35,8 +35,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.BitSet;
-import java.util.Map;
 import java.util.Set;
 
 /**

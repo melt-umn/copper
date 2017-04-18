@@ -8,7 +8,6 @@ import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.MutableLRParseTable;
-import edu.umn.cs.melt.copper.compiletime.scannerdfa.GeneralizedDFA;
 import edu.umn.cs.melt.copper.compiletime.scannerdfa.SingleScannerDFAAnnotations;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
@@ -25,7 +24,7 @@ public class ExtensionFragmentDataBuilder {
     private ParserSpec fullSpec;
     private LR0DFA fullDFA;
     private LRParseTable fullParseTable;
-    private PSSymbolTable fullSymbolTable;
+    //private PSSymbolTable fullSymbolTable;
     private LRLookaheadAndLayoutSets fullLookaheadAndLayoutSets;
     private TransparentPrefixes fullPrefixes;
 
@@ -94,7 +93,7 @@ public class ExtensionFragmentDataBuilder {
         this.fullSpec = fullSpec;
         this.fullDFA = fullDFA;
         this.fullParseTable = fullParseTable;
-        this.fullSymbolTable = fullSymbolTable;
+        //this.fullSymbolTable = fullSymbolTable;
         this.fullLookaheadAndLayoutSets = fullLookaheadAndLayoutSets;
         this.fullPrefixes = fullPrefixes;
         this.extensionStateCount = extensionStatePartition.cardinality();
@@ -169,7 +168,7 @@ public class ExtensionFragmentDataBuilder {
     //   -1        | extension 0
     //   -2        | extension 1
     private void generateExtensionParseTables(ExtensionFragmentData data, ExtensionMappingSpec mappingSpec) {
-        int fullSpecSymbolCount = Math.max(fullSpec.terminals.length(), fullSpec.nonterminals.length());
+        //int fullSpecSymbolCount = Math.max(fullSpec.terminals.length(), fullSpec.nonterminals.length());
         int extensionStateCount = mappingSpec.composedExtensionStates.cardinality();
 
         int hostColumnCount = mappingSpec.extensionSymbolTableOffset;

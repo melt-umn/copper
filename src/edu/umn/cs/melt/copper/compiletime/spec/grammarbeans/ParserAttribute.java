@@ -15,6 +15,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  */
 public class ParserAttribute extends GrammarElement
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7191716890349062886L;
 	/** The Java type of the parser attribute. */
 	protected String attributeType;
 	/** The code block executed at parser start time to initialize the parser attribute. */

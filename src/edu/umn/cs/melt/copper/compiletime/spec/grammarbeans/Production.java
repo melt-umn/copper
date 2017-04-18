@@ -17,6 +17,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  */
 public class Production extends GrammarElement
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6787553884250152258L;
 	/** The production's left-hand-side nonterminal. */
 	protected CopperElementReference lhs;
 	/** The production's right-hand-side symbols. */

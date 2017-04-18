@@ -8,6 +8,10 @@ package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
 public abstract class GrammarSymbol extends GrammarElement
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7471724644896786766L;
+	/**
 	 * The type of the value returned by semantic actions involving this symbol:
 	 * if a terminal, on the symbol itself; if a nonterminal, on productions with
 	 * the symbol on their left-hand side.

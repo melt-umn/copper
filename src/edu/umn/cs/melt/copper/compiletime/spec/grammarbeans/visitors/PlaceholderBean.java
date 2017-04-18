@@ -6,12 +6,20 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperElementType;
 
 class PlaceholderBean extends CopperASTBean
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8781739370328940259L;
 	static PlaceholderBean EOF = new PlaceholderBean(PlaceholderName.EOFName(),"$");
 	static PlaceholderBean STARTPRIME = new PlaceholderBean(PlaceholderName.StartPrimeName(),"^");
 	static PlaceholderBean STARTPROD = new PlaceholderBean(PlaceholderName.StartProdName(),"^^");
 	
 	private static class PlaceholderName extends CopperElementName
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 9070144929519865611L;
 		protected PlaceholderName(String name)
 		{
 			super(name);

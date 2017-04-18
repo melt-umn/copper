@@ -13,6 +13,11 @@ import java.util.regex.Pattern;
  */
 public class CopperElementName implements Comparable<CopperElementName>, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5913886908075922957L;
+
 	private static final Pattern validNames = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*");
 	
 	// TODO: Remove this class's dependence on grammar.Symbol.

@@ -17,6 +17,10 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
  */
 public abstract class CopperASTBean implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -418152045341686348L;
 	/** The grammar object's type. */
 	protected CopperElementType type;
 	/** The grammar object's name. */

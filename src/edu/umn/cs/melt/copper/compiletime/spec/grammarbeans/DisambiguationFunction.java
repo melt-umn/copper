@@ -19,6 +19,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  */
 public class DisambiguationFunction extends GrammarElement
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -416303633455783676L;
 	/** The disambiguation function's code. */
 	protected String code;
 	/**

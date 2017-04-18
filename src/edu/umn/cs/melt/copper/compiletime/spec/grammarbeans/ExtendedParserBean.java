@@ -28,6 +28,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
 public class ExtendedParserBean extends ParserBean
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5887330782909185801L;
+	/**
 	 * A reference to the extended parser's host grammar.
 	 */
 	private CopperElementName hostGrammar;

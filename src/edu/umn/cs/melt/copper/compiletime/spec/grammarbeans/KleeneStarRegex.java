@@ -12,6 +12,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
  */
 public class KleeneStarRegex extends Regex
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2779499885430761422L;
 	/** The regex's constituent. */
 	private Regex subexp;
 	

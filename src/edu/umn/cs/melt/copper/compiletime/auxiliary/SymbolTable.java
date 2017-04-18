@@ -18,6 +18,10 @@ import java.util.Iterator;
  */
 public class SymbolTable<T> implements Iterable<T>, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7596662020503434417L;
 	private Hashtable<T,Integer> forward;
 	private Object[] reverse;
 	

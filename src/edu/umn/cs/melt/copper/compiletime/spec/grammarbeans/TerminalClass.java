@@ -12,6 +12,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  */
 public class TerminalClass extends GrammarElement
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1520741468435456239L;
 	private Set<CopperElementReference> members;
 	
 	public TerminalClass()

@@ -12,6 +12,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
  */
 public class EmptyStringRegex extends Regex
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7647682317354970523L;
+
 	public EmptyStringRegex()
 	{
 	}

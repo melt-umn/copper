@@ -20,6 +20,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
 public class ExtensionGrammar extends Grammar
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6113945522624561641L;
+	/**
 	 * The grammar's marking terminals. Each production in {@code bridgeProductions}
 	 * must have one of these as their first right-hand-side symbol, and they may
 	 * not be used anywhere else.

@@ -18,6 +18,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
  */
 public class TransparentPrefixes implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 253855265720270297L;
 	protected BitSet[] prefixSets;
 	protected BitSet[][] prefixMaps;
 

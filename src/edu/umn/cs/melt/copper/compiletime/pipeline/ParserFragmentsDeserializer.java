@@ -5,7 +5,6 @@ import edu.umn.cs.melt.copper.compiletime.builders.HostFragmentData;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
