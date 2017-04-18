@@ -523,9 +523,9 @@ public class SingleDFAEngineBuilder
 		boolean lexemeUsed = false;
 		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
 		{
-			if(t == spec.getEOFTerminal() ||
-			   symbolTable.getTerminal(t).getCode() == null ||
-			   QuotedStringFormatter.isJavaWhitespace(symbolTable.getTerminal(t).getCode()))
+			if(!(t == spec.getEOFTerminal() ||
+			     symbolTable.getTerminal(t).getCode() == null ||
+			     QuotedStringFormatter.isJavaWhitespace(symbolTable.getTerminal(t).getCode())))
 			{
 				lexemeUsed = true;
 				break;
