@@ -681,7 +681,7 @@
 					<xs:element name="BridgeProductions" minOccurs="1" maxOccurs="1">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="ProductionRef" type="ProductionRef"/>
+								<xs:element name="ProductionRef" type="ProductionRef" minOccurs="1" maxOccurs="unbounded"/>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
