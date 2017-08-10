@@ -203,16 +203,11 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 	}
 
 	@Override
-	public int processCustomSwitch(ParserCompilerParameters args,
-			String[] cmdline, int index)
+	public boolean processCustomSwitch(ParserCompilerParameters args, Pair<String,String> flag)
 	{
-		int rv;
-		rv = specParser.processCustomSwitch(args,cmdline,index);
-		if(rv != -1) return rv;
-		rv = specCompiler.processCustomSwitch(args,cmdline,index);
-		if(rv != -1) return rv;
-		rv = sourceBuilder.processCustomSwitch(args,cmdline,index);
-		if(rv != -1) return rv;
-		return -1;
+		if (specParser.processCustomSwitch(args,flag)) return true;
+		if (specCompiler.processCustomSwitch(args,flag)) return true;
+		if (sourceBuilder.processCustomSwitch(args,flag)) return true;
+		return false;
 	}
 }
