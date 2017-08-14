@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
@@ -13,12 +12,12 @@ import edu.umn.cs.melt.copper.compiletime.logging.messages.InterfaceErrorMessage
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParser;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
+import edu.umn.cs.melt.copper.compiletime.pipeline.ZeroSwitcher;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
-public class XMLParsingProcess implements SpecParser<ParserBean>
+public class XMLParsingProcess extends ZeroSwitcher implements SpecParser<ParserBean>
 {
 	@Override
 	public ParserBean parseSpec(SpecParserParameters args)
@@ -69,24 +68,5 @@ public class XMLParsingProcess implements SpecParser<ParserBean>
 		}
 		
 		return spec;
-	}
-
-	@Override
-	public Set<String> getCustomSwitches()
-	{
-		return null;
-	}
-
-	@Override
-	public String customSwitchUsage()
-	{
-		return "";
-	}
-
-	@Override
-	public int processCustomSwitch(ParserCompilerParameters args,
-			String[] cmdline, int index)
-	{
-		return -1;
 	}
 }

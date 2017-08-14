@@ -509,19 +509,17 @@ public class LegacyPipeline implements Pipeline
 	@Override
 	public boolean processCustomSwitch(ParserCompilerParameters args, Pair<String,String> flag)
 	{
-		switch (flag.first()) {
-			case "-pretty":
-				args.setCustomSwitch("isPretty",true);
-				return true;
-			case "-gatherstats":
-				if(args.getCustomSwitch("gatherStatistics",String.class,"ERROR").equals("ERROR")) args.setCustomSwitch("runtimeQuietLevel","NOTA_BENE");
-				args.setCustomSwitch("gatherStatistics",true);
-				return true;
-			case "-runv":
-				args.setCustomSwitch("runtimeQuietLevel","INFO");
-				return true;
+		if (flag.first() == "-pretty") {
+			args.setCustomSwitch("isPretty",true);
+		} else if (flag.first() == "-gatherstats") {
+			if(args.getCustomSwitch("gatherStatistics",String.class,"ERROR").equals("ERROR")) args.setCustomSwitch("runtimeQuietLevel","NOTA_BENE");
+			args.setCustomSwitch("gatherStatistics",true);
+		} else if (flag.first() == "-runv") {
+			args.setCustomSwitch("runtimeQuietLevel","INFO");
+		} else {
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	@Override

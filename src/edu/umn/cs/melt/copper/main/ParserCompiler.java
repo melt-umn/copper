@@ -5,8 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
@@ -59,26 +58,26 @@ public class ParserCompiler
 		VERSION = (version == null || !version.matches("[0-9\\.]+")) ? "unknown" : version; 
 		BUILD = (build == null || !build.matches("[0-9]{8}-[0-9]{4}")) ? "unknown" : build; 
 		
-		Map<String,String> flags = new HashMap<>();
+		ArrayList<String> flags = new ArrayList<String>();
 		// Todo: bake usage into flag parser
-		flags.put("-?", null);
-		flags.put("-version", null);
-		flags.put("-o", null);
-		flags.put("-q", null);
-		flags.put("-v", null);
-		flags.put("-vv", null);
-		flags.put("-dump", null);
-		flags.put("-errordump", null);
-		flags.put("-skin", null);
-		flags.put("-engine", null);
-		flags.put("-pipeline", null);
-		flags.put("-mda", null);
-		flags.put("-logfile", null);
-		flags.put("-dumpfile",null);
-		flags.put("-dumptype", null);
-		flags.put("-avoidRecompile", null);
-		flags.put("-package", null);
-		flags.put("-parser", null);
+		flags.add("-?");
+		flags.add("-version");
+		flags.add("-o");
+		flags.add("-q");
+		flags.add("-v");
+		flags.add("-vv");
+		flags.add("-dump");
+		flags.add("-errordump");
+		flags.add("-skin");
+		flags.add("-engine");
+		flags.add("-pipeline");
+		flags.add("-mda");
+		flags.add("-logfile");
+		flags.add("-dumpfile");
+		flags.add("-dumptype");
+		flags.add("-avoidRecompile");
+		flags.add("-package");
+		flags.add("-parser");
 		flagParser = new FlagParser(flags);
 	}
 	private static void versionMessage(ParserCompilerParameters args)

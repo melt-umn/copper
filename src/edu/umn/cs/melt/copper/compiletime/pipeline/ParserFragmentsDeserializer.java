@@ -13,12 +13,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * @author Kevin Viratyosin
  */
-public class ParserFragmentsDeserializer implements SpecParser<ParserFragments> {
+public class ParserFragmentsDeserializer extends ZeroSwitcher implements SpecParser<ParserFragments> {
     public ParserFragmentsDeserializer(ParserCompilerParameters args) {
     }
 
@@ -81,20 +80,5 @@ public class ParserFragmentsDeserializer implements SpecParser<ParserFragments> 
             logger.logError(new GenericMessage(CompilerLevel.QUIET, "Error in deserialization fragment in \"" + filename + "\": " + e.getMessage(), true, true));
             return null;
         }
-    }
-
-    @Override
-    public Set<String> getCustomSwitches() {
-        return null;
-    }
-
-    @Override
-    public String customSwitchUsage() {
-        return "";
-    }
-
-    @Override
-    public int processCustomSwitch(ParserCompilerParameters args, String[] cmdline, int index) {
-        return -1;
     }
 }

@@ -20,18 +20,18 @@ public class FlagParser
     public FlagParser(Map<String,String> map)
     {
         this.flagMap = map;
-        this.customFlags = new ArrayList<>();
-        this.inputs = new ArrayList<>();
+        this.customFlags = new ArrayList<Pair<String,String>>();
+        this.inputs = new ArrayList<Pair<String,Object>>();
     }
 
     public FlagParser(List<String> list) 
     {
-        this.flagMap = new HashMap<>();
+        this.flagMap = new HashMap<String,String>();
         for (String flag : list) {
             this.flagMap.put(flag, null);
         }
-        this.customFlags = new ArrayList<>();
-        this.inputs = new ArrayList<>();
+        this.customFlags = new ArrayList<Pair<String,String>>();
+        this.inputs = new ArrayList<Pair<String,Object>>();
     }
 
     /**

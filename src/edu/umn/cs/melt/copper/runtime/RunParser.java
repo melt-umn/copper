@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Method;
 
 import edu.umn.cs.melt.copper.runtime.engines.CopperParser;
 import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;

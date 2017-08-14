@@ -8,18 +8,18 @@ import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.ParserFragments;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilder;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
+import edu.umn.cs.melt.copper.compiletime.pipeline.ZeroSwitcher;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Set;
 
 /**
  * @author Kevin Viratyosin
  */
-public class ParserFragmentCompositionProcess implements SourceBuilder<ParserFragments> {
+public class ParserFragmentCompositionProcess extends ZeroSwitcher implements SourceBuilder<ParserFragments> {
     public ParserFragmentCompositionProcess(ParserCompilerParameters args) {
     }
 
@@ -80,20 +80,5 @@ public class ParserFragmentCompositionProcess implements SourceBuilder<ParserFra
         logger.flush();
 
         return 0;
-    }
-
-    @Override
-    public Set<String> getCustomSwitches() {
-        return null;
-    }
-
-    @Override
-    public String customSwitchUsage() {
-        return null;
-    }
-
-    @Override
-    public int processCustomSwitch(ParserCompilerParameters args, String[] cmdline, int index) {
-        return -1;
     }
 }
