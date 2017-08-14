@@ -28,21 +28,19 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.main.CopperDumpControl;
-import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Set;
 
 /**
  * @author Kevin Viratyosin
  *
  * Extracted from StandardSpecCompiler
  */
-public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<ParserBean,RETURNDATA> {
+public abstract class ParserBeanCompiler<RETURNDATA> extends ZeroSwitcher implements SpecCompiler<ParserBean,RETURNDATA> {
     protected boolean succeeded;
     protected int errorlevel;
     protected PSSymbolTable symbolTable;
@@ -295,20 +293,5 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
                 }
             }
         }
-    }
-
-    @Override
-    public Set<String> getCustomSwitches() {
-        return null;
-    }
-
-    @Override
-    public String customSwitchUsage() {
-        return null;
-    }
-
-    @Override
-    public int processCustomSwitch(ParserCompilerParameters args, String[] cmdline, int index) {
-        return -1;
     }
 }
