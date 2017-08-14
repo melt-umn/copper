@@ -1,6 +1,7 @@
 package edu.umn.cs.melt.copper.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,25 +15,47 @@ public class FlagParser
 
     private Map<String,String> flagMap;
     public List<Pair<String,String>> customFlags;
-    public ArrayList<Pair<String,Object>> files;
+    public ArrayList<Pair<String,Object>> inputs;
 
     public FlagParser(Map<String,String> map)
     {
         this.flagMap = map;
         this.customFlags = new ArrayList<>();
-        this.files = new ArrayList<>();
+        this.inputs = new ArrayList<>();
     }
 
-    public boolean IsFlag(String key)
+    public FlagParser(List<String> list) 
+    {
+        this.flagMap = new HashMap<>();
+        for (String flag : list) {
+            this.flagMap.put(flag, null);
+        }
+        this.customFlags = new ArrayList<>();
+        this.inputs = new ArrayList<>();
+    }
+
+    /**
+     * isFlag returns whether the input key is part of the expected flags for
+     * this parser.
+     * @param key the flag
+     * @return whether the input is an expected flag for this parser
+     */
+    public boolean isFlag(String key)
     {
         return flagMap.containsKey(key);
     }
 
-    public boolean Parse(String[] args) {
+    /**
+     * parse processes input strings as flags and inputs. Inputs are expected
+     * to follow flags, and flags are all expected to begin with '-'.
+     * @param args The arguments to parse
+     * @return boolean success of the parse 
+     */
+    public boolean parse(String[] args) {
         int i = 0;
         
         while (i < args.length) {
-            // At this point, if we see something that is not a flag, we're at files
+            // At this point, if we see something that is not a flag, we're at inputs
             if (args[i].charAt(0) != '-') {
                 break;
             }
@@ -45,7 +68,10 @@ public class FlagParser
                 val = args[i+1];
                 i++;
             }
-            if (IsFlag(key)) {
+            // We have known and custom flags. If we know about this flag 
+            // (this parser was initialized with the flag), then we set the
+            // known flag, else we set it as a custom flag.
+            if (isFlag(key)) {
                 flagMap.put(key, val);
             } else {
                 customFlags.add(Pair.cons(key,val));
@@ -53,18 +79,23 @@ public class FlagParser
         }
 
         while (i < args.length) {
-            files.add(Pair.cons(args[i], (Object) args[i]));
+            inputs.add(Pair.cons(args[i], (Object) args[i]));
             i++;
         }
 
         return true;
     }
 
-    public Pair<Boolean,String> Get(String key) 
+    /**
+     * get returns whether this parser has seen the input in its
+     * known flags. 
+     * @param key The flag to check
+     * @return Pair<IsSet,value>. If the value sent back is null, IsSet will be false
+     */
+    public Pair<Boolean,String> get(String key) 
     {
         String val = flagMap.get(key);
-        boolean isSet = val != null;
-        return Pair.cons(isSet,val);
+        return Pair.cons(val != null,val);
     }
 
 }

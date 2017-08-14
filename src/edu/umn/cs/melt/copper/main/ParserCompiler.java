@@ -257,36 +257,36 @@ public class ParserCompiler
 		{
 			usageMessageNoError(null);
 		}
-
-		boolean success = flagParser.Parse(args);
+		
+		boolean success = flagParser.parse(args);
 		if (!success) {
 			usageMessageError(null);
 		}
 	
-		boolean displayHelp = flagParser.Get("-?").first();
-		boolean displayVersion = flagParser.Get("-version").first();
-		boolean runMDA = flagParser.Get("-mda").first();;
-		boolean avoidRecompile = flagParser.Get("-avoidRecompile").first();
+		boolean displayHelp = flagParser.get("-?").first();
+		boolean displayVersion = flagParser.get("-version").first();
+		boolean runMDA = flagParser.get("-mda").first();;
+		boolean avoidRecompile = flagParser.get("-avoidRecompile").first();
 
-		String logFile = flagParser.Get("-logfile").second();
-		String packageDecl = flagParser.Get("-package").second();
-		String parserName = flagParser.Get("-parser").second();
-		String output = flagParser.Get("-o").second();
-		String dumpFile = flagParser.Get("-dumpfile").second();
+		String logFile = flagParser.get("-logfile").second();
+		String packageDecl = flagParser.get("-package").second();
+		String parserName = flagParser.get("-parser").second();
+		String output = flagParser.get("-o").second();
+		String dumpFile = flagParser.get("-dumpfile").second();
 
 		CompilerLevel quietLevel = getDefaultQuietLevel();
-		if (flagParser.Get("-vv").first()) {
+		if (flagParser.get("-vv").first()) {
 			quietLevel = CompilerLevel.VERY_VERBOSE;
-		} else if (flagParser.Get("-v").first()) {
+		} else if (flagParser.get("-v").first()) {
 			quietLevel = CompilerLevel.VERBOSE;
-		} else if ((flagParser.Get("-q").first())) {
+		} else if ((flagParser.get("-q").first())) {
 			quietLevel = CompilerLevel.QUIET;
 		}
 
 		CopperDumpControl dumpControl = CopperDumpControl.OFF;
-		if (flagParser.Get("-dump").first()) {
+		if (flagParser.get("-dump").first()) {
 			dumpControl = CopperDumpControl.ON;
-		} else if (flagParser.Get("-errordump").first()) {
+		} else if (flagParser.get("-errordump").first()) {
 			dumpControl = CopperDumpControl.ERROR_ONLY;
 		}
 
@@ -298,7 +298,7 @@ public class ParserCompiler
 		CopperPipelineType.initTable();
 		CopperPipelineType usePipeline = getDefaultPipeline();
 
-		Pair<Boolean,String> skin = flagParser.Get("-skin");
+		Pair<Boolean,String> skin = flagParser.get("-skin");
 		if (skin.first()) {
 			if (!CopperSkinType.contains(skin.second())) {
 				usageMessageError(null);
@@ -306,7 +306,7 @@ public class ParserCompiler
 			useSkin = CopperSkinType.fromString(skin.second());
 		}
 
-		Pair<Boolean,String> pipe = flagParser.Get("-pipeline");
+		Pair<Boolean,String> pipe = flagParser.get("-pipeline");
 		if (skin.first()) {
 			if (!CopperPipelineType.contains(pipe.second())) {
 				usageMessageError(null);
@@ -314,7 +314,7 @@ public class ParserCompiler
 			usePipeline = CopperPipelineType.fromString(pipe.second());
 		}
 
-		Pair<Boolean,String> engine = flagParser.Get("-engine");
+		Pair<Boolean,String> engine = flagParser.get("-engine");
 		if (engine.first()) {
 			if (!CopperEngineType.contains(engine.second())) {
 				usageMessageError(null);
@@ -322,7 +322,7 @@ public class ParserCompiler
 			useEngine = CopperEngineType.fromString(engine.second());
 		}
 
-		Pair<Boolean,String> dumpF = flagParser.Get("-dumptype");
+		Pair<Boolean,String> dumpF = flagParser.get("-dumptype");
 		if (engine.first()) {
 			if (!CopperDumpType.contains(dumpF.second())) {
 				usageMessageError(null);
@@ -394,7 +394,7 @@ public class ParserCompiler
 			if (!pipeline.processCustomSwitch(argTable,flag)) break;
 		}
 
-		argTable.setInputs(flagParser.files);
+		argTable.setInputs(flagParser.inputs);
 				
 		int errorlevel = 1;
 		
