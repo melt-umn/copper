@@ -8,7 +8,9 @@ import java.util.Map;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
- * FlagParser takes in 
+ * FlagParser processes []String args flags and inputs
+ * and stores them in three lists: inputs, known flags, and unknown flags.
+ * @author Patrick Stephen
  */
 public class FlagParser
 {
