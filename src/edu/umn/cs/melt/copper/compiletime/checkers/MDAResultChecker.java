@@ -65,6 +65,7 @@ public class MDAResultChecker
 				logger.log(new FollowSpillageMessage(symbolTable,results.getNonterminal(i),diff));
 				break;
 			case MDAResults.LOOKAHEAD_SPILLAGE:
+			case MDAResults.LOOKAHEAD_SPILLAGE_MASKED:
 				diff = new BitSet();
 				diff.or(results.getFullLookaheadSet(i));
 				diff.andNot(results.getHostLookaheadSet(i));
@@ -72,7 +73,7 @@ public class MDAResultChecker
 				unpartitionableStates.set(results.getFullState(i));
 				for(int item = results.getItems(i).nextSetBit(0);item >= 0;item = results.getItems(i).nextSetBit(item+1))
 				{
-					logger.log(new LookaheadSpillageMessage(symbolTable, spec, fullDFA, results.getFullState(i), item, diff));
+					logger.log(new LookaheadSpillageMessage(symbolTable, spec, fullDFA, results.getFullState(i), item, diff, results.getErrorType(i) == MDAResults.LOOKAHEAD_SPILLAGE_MASKED));
 				}
 				break;
 			case MDAResults.NON_IL_SUBSET:

@@ -19,21 +19,23 @@ public class LookaheadSpillageMessage implements CompilerLogMessage
 	private int state;
 	private int item;
 	private BitSet diff;
+	private final boolean isMasked;
 
-	public LookaheadSpillageMessage(SymbolTable<CopperASTBean> symbolTable,
-			ParserSpec spec, LR0DFA dfa, int state, int item, BitSet diff) {
+	public LookaheadSpillageMessage(SymbolTable<CopperASTBean> symbolTable, 
+			ParserSpec spec, LR0DFA dfa, int state, int item, BitSet diff, boolean isMasked) {
 		this.symbolTable = symbolTable;
 		//this.spec = spec;
 		//this.dfa = dfa;
 		this.state = state;
 		this.item = item;
 		this.diff = diff;
+		this.isMasked = isMasked;
 	}
 
 	@Override
 	public CompilerLevel getLevel()
 	{
-		return CompilerLevel.QUIET;
+		return isMasked ? CompilerLevel.VERBOSE : CompilerLevel.QUIET;
 	}
 
 	@Override

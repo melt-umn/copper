@@ -10,12 +10,14 @@ public class MDAResults
 {
 	/** Error type code for lookahead spillage. */
 	public static final byte LOOKAHEAD_SPILLAGE = 0;
+	/** Error type code for lookahead spillage "masked" by follow spillage on its item's left-hand side (the vast majority). */
+	public static final byte LOOKAHEAD_SPILLAGE_MASKED = 1;
 	/** Error type code for follow spillage. */
-	public static final byte FOLLOW_SPILLAGE = 1;
+	public static final byte FOLLOW_SPILLAGE = 2;
 	/** Error type code for new-host states that are not I-subsets of any host state. */
-	public static final byte NON_IL_SUBSET = 2;
+	public static final byte NON_IL_SUBSET = 3;
 	/** Error type code for new-host states that is an I-subset of some host state but is not an IL-subset of any. */
-	public static final byte I_SUBSET_ONLY = 3;
+	public static final byte I_SUBSET_ONLY = 4;
 	
 	protected byte[] errorType;
 	

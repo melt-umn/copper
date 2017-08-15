@@ -66,6 +66,8 @@ public class ModularDeterminismAnalyzer
 		
 		BitSet spillage = new BitSet();
 		
+		BitSet ntsWithFollowSpillage = new BitSet();
+		
 		for(int nt = hostSpec.nonterminals.nextSetBit(0);nt >= 0;nt = hostSpec.nonterminals.nextSetBit(nt+1))
 		{
 			spillage.clear();
@@ -74,9 +76,13 @@ public class ModularDeterminismAnalyzer
 			spillage.andNot(fullSpec.bridgeConstructs);
 			if(!spillage.isEmpty())
 			{
+				ntsWithFollowSpillage.set(nt);
 				errorTypes.add(MDAResults.FOLLOW_SPILLAGE);
 				hostSets.add(hostContextSets.getFollow(nt));
-				fullSets.add(fullContextSets.getFollow(nt));
+				BitSet fullSetWithoutBridgeConstructs = new BitSet();
+				fullSetWithoutBridgeConstructs.or(fullContextSets.getFollow(nt));
+				fullSetWithoutBridgeConstructs.andNot(fullSpec.bridgeConstructs);
+				fullSets.add(fullSetWithoutBridgeConstructs);
 				hostStates.add(nt);
 				fullStates.add(nt);
 				locations.add(new BitSet());
@@ -129,9 +135,19 @@ public class ModularDeterminismAnalyzer
 				
 				if(!spillage.isEmpty())
 				{
-					errorTypes.add(MDAResults.LOOKAHEAD_SPILLAGE);
+					if(!ntsWithFollowSpillage.get(hostSpec.pr.getLHS(hostItems.getProduction(hostItemCounter))))
+					{
+						errorTypes.add(MDAResults.LOOKAHEAD_SPILLAGE);
+					}
+					else
+					{
+						errorTypes.add(MDAResults.LOOKAHEAD_SPILLAGE_MASKED);
+					}
 					hostSets.add(hostLookaheadSets.getLookahead(hostStatenum,hostItemCounter));
-					fullSets.add(fullLookaheadSets.getLookahead(statenum,fullItemCounter));
+					BitSet fullSetWithoutBridgeConstructs = new BitSet();
+					fullSetWithoutBridgeConstructs.or(fullLookaheadSets.getLookahead(statenum,fullItemCounter));
+					fullSetWithoutBridgeConstructs.andNot(fullSpec.bridgeConstructs);
+					fullSets.add(fullSetWithoutBridgeConstructs);
 					hostStates.add(hostStatenum);
 					fullStates.add(statenum);
 					locations.add(new BitSet());
