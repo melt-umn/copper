@@ -8,6 +8,7 @@
   <property name='etcbase' location='.'/>
   <property file='Build.properties' prefix='ext'/>
   <property name='doc' location='doc'/>
+  <property name='antPath' location='/usr/share/ant/lib/ant.jar'/>
   <property name='debug' value='false'/>
   
   <target name='init'>
@@ -27,7 +28,7 @@
   <target name='javadoc'>
     <javadoc access='protected'
              author='true'
-             classpath='tests:/usr/share/ant/lib/ant.jar'
+             classpath='tests:${antPath}'
              destdir='${javadoc}'
              doctitle='Copper ${ext.Version} Javadoc'
              nodeprecated='false'
