@@ -33,6 +33,8 @@ public class ParserCompiler
 	public static final String VERSION;
 	/** If running from a JAR, the timestamp recording when the JAR was built. */
 	public static final String BUILD;
+
+	public static FlagParser flagParser;
 	
 	static
 	{
@@ -55,6 +57,28 @@ public class ParserCompiler
 		String build = p.getProperty("Build");
 		VERSION = (version == null || !version.matches("[0-9\\.]+")) ? "unknown" : version; 
 		BUILD = (build == null || !build.matches("[0-9]{8}-[0-9]{4}")) ? "unknown" : build; 
+		
+		ArrayList<String> flags = new ArrayList<String>();
+		// Todo: bake usage into flag parser
+		flags.add("-?");
+		flags.add("-version");
+		flags.add("-o");
+		flags.add("-q");
+		flags.add("-v");
+		flags.add("-vv");
+		flags.add("-dump");
+		flags.add("-errordump");
+		flags.add("-skin");
+		flags.add("-engine");
+		flags.add("-pipeline");
+		flags.add("-mda");
+		flags.add("-logfile");
+		flags.add("-dumpfile");
+		flags.add("-dumptype");
+		flags.add("-avoidRecompile");
+		flags.add("-package");
+		flags.add("-parser");
+		flagParser = new FlagParser(flags);
 	}
 	private static void versionMessage(ParserCompilerParameters args)
 	{
@@ -218,13 +242,6 @@ public class ParserCompiler
 	}
 
 
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * Copper's command-line interface.
 	 * @param args Run this class with a single parameter, "-?", to see a list of parameters and switches.
@@ -239,13 +256,39 @@ public class ParserCompiler
 		{
 			usageMessageNoError(null);
 		}
+		
+		boolean success = flagParser.parse(args);
+		if (!success) {
+			usageMessageError(null);
+		}
+	
+		boolean displayHelp = flagParser.get("-?").first();
+		boolean displayVersion = flagParser.get("-version").first();
+		boolean runMDA = flagParser.get("-mda").first();;
+		boolean avoidRecompile = flagParser.get("-avoidRecompile").first();
+
+		String logFile = flagParser.get("-logfile").second();
+		String packageDecl = flagParser.get("-package").second();
+		String parserName = flagParser.get("-parser").second();
+		String output = flagParser.get("-o").second();
+		String dumpFile = flagParser.get("-dumpfile").second();
+
 		CompilerLevel quietLevel = getDefaultQuietLevel();
-		boolean displayHelp = false;
-		boolean displayVersion = false;
-		boolean runMDA = false;
-		boolean avoidRecompile = false;
+		if (flagParser.get("-vv").first()) {
+			quietLevel = CompilerLevel.VERY_VERBOSE;
+		} else if (flagParser.get("-v").first()) {
+			quietLevel = CompilerLevel.VERBOSE;
+		} else if ((flagParser.get("-q").first())) {
+			quietLevel = CompilerLevel.QUIET;
+		}
+
 		CopperDumpControl dumpControl = CopperDumpControl.OFF;
-		CopperDumpType.initTable();
+		if (flagParser.get("-dump").first()) {
+			dumpControl = CopperDumpControl.ON;
+		} else if (flagParser.get("-errordump").first()) {
+			dumpControl = CopperDumpControl.ERROR_ONLY;
+		}
+
 		CopperDumpType dumpFormat = getDefaultDumpType();
 		CopperEngineType.initTable();
 		CopperEngineType useEngine = getDefaultEngine();
@@ -253,104 +296,37 @@ public class ParserCompiler
 		CopperSkinType useSkin = getDefaultSkin();
 		CopperPipelineType.initTable();
 		CopperPipelineType usePipeline = getDefaultPipeline();
-		Pipeline pipeline;
-		String logFile = null;
-		String dumpFile = "";
-		String packageDecl = null;
-		String parserName = null;
-		String output = null;
-		int i;
-		for(i = 0;i < args.length;i++)
-		{
-			if(args[i].charAt(0) != '-') break;
-			else if(args[i].equals("-?"))
-			{
-				displayHelp = true;
+
+		Pair<Boolean,String> skin = flagParser.get("-skin");
+		if (skin.first()) {
+			if (!CopperSkinType.contains(skin.second())) {
+				usageMessageError(null);
 			}
-			else if(args[i].equals("-version"))
-			{
-				displayVersion = true;
+			useSkin = CopperSkinType.fromString(skin.second());
+		}
+
+		Pair<Boolean,String> pipe = flagParser.get("-pipeline");
+		if (skin.first()) {
+			if (!CopperPipelineType.contains(pipe.second())) {
+				usageMessageError(null);
 			}
-			else if(args[i].equals("-o"))
-			{
-				if(++i == args.length) usageMessageError(null);
-				else output = args[i];
+			usePipeline = CopperPipelineType.fromString(pipe.second());
+		}
+
+		Pair<Boolean,String> engine = flagParser.get("-engine");
+		if (engine.first()) {
+			if (!CopperEngineType.contains(engine.second())) {
+				usageMessageError(null);
 			}
-			else if(args[i].equals("-q"))
-			{
-				quietLevel = CompilerLevel.QUIET;
+			useEngine = CopperEngineType.fromString(engine.second());
+		}
+
+		Pair<Boolean,String> dumpF = flagParser.get("-dumptype");
+		if (engine.first()) {
+			if (!CopperDumpType.contains(dumpF.second())) {
+				usageMessageError(null);
 			}
-			else if(args[i].equals("-v"))
-			{
-				quietLevel = CompilerLevel.VERBOSE;
-			}
-			else if(args[i].equals("-vv"))
-			{
-				quietLevel = CompilerLevel.VERY_VERBOSE;
-			}
-			else if(args[i].equals("-dump"))
-			{
-				dumpControl = CopperDumpControl.ON;
-			}
-			else if(args[i].equals("-errordump"))
-			{
-				dumpControl = CopperDumpControl.ERROR_ONLY;
-			}
-			else if(args[i].equals("-skin"))
-			{
-				if(++i == args.length || !CopperSkinType.contains(args[i])) usageMessageError(null);
-				else useSkin = CopperSkinType.fromString(args[i]);
-			}
-			else if(args[i].equals("-engine"))
-			{
-				if(++i == args.length || !CopperEngineType.contains(args[i])) usageMessageError(null);
-				else useEngine = CopperEngineType.fromString(args[i]);
-			}
-			else if(args[i].equals("-pipeline"))
-			{
-				if(++i == args.length || !CopperPipelineType.contains(args[i])) usageMessageError(null);
-				else usePipeline = CopperPipelineType.fromString(args[i]);
-			}
-			else if(args[i].equals("-mda"))
-			{
-				runMDA = true;
-			}
-			else if(args[i].equals("-logfile"))
-			{
-				if(++i == args.length) usageMessageError(null);
-				else logFile = args[i];
-			}
-			else if(args[i].equals("-dumpfile"))
-			{
-				if(++i == args.length) usageMessageError(null);
-				else dumpFile = args[i];
-			}
-			else if(args[i].equals("-dumptype"))
-			{
-				if(++i == args.length || !CopperDumpType.contains(args[i])) usageMessageError(null);
-				else
-				{
-					dumpFormat = CopperDumpType.fromString(args[i]);
-				}
-			}
-			else if(args[i].equals("-avoidRecompile"))
-			{
-				avoidRecompile = true;
-			}
-			else if(args[i].equals("-package"))
-			{
-				if(++i == args.length) usageMessageError(null);
-				else packageDecl = args[i]; 
-			}
-			else if(args[i].equals("-parser"))
-			{
-				if(++i == args.length) usageMessageError(null);
-				else parserName = args[i]; 
-			}
-			else
-			{
-				break;
-			}
+			dumpFormat = CopperDumpType.fromString(dumpF.second());
 		}
 		
 		ParserCompilerParameters argTable = new ParserCompilerParameters();
@@ -364,6 +340,7 @@ public class ParserCompiler
 		argTable.setDumpFormat(dumpFormat);
 		argTable.setPackageName(packageDecl);
 		argTable.setParserName(parserName);
+
 		if(output == null)
 		{
 			argTable.setOutputType(null);
@@ -390,7 +367,7 @@ public class ParserCompiler
 			argTable.setLogFile(new File(logFile));			
 		}
 
-		if(dumpFile == null || dumpFile.equals(""))
+		if(dumpFile == null)
 		{
 			argTable.setDumpOutputType(argTable.getLogType());
 			argTable.setDumpStream(argTable.getLogStream());
@@ -407,28 +384,16 @@ public class ParserCompiler
 			argTable.setDumpFile(new File(dumpFile));			
 		}
 
-		pipeline = argTable.getPipeline();
+		Pipeline pipeline = argTable.getPipeline();
 		
 		if(displayHelp) usageMessageNoError(argTable);
 		else if(displayVersion) versionMessage(argTable);
-		else if(i >= args.length) usageMessageError(null);
 				
-		if(args[i].startsWith("-"))
-		{
-			while(i >= 0 && i < args.length)
-			{
-				if(args[i].charAt(0) != '-') break;
-				i = pipeline.processCustomSwitch(argTable,args,i);
-			}
+		for (Pair<String,String> flag : flagParser.customFlags) {
+			if (!pipeline.processCustomSwitch(argTable,flag)) break;
 		}
-		
-		if(i == -1 || i >= args.length) usageMessageError(argTable);
 
-		ArrayList< Pair<String,Object> > files = new ArrayList< Pair<String,Object> >();
-		
-		for(;i < args.length;i++) files.add(Pair.cons(args[i],(Object) args[i]));
-		
-		argTable.setInputs(files);
+		argTable.setInputs(flagParser.inputs);
 				
 		int errorlevel = 1;
 		
