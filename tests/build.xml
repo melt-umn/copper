@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name='copper_tests' basedir='.'>
+<project name='copper_tests'
+		 basedir='.'
+		 xmlns:if="ant:if"
+		 xmlns:unless="ant:unless">
 	<property environment='env'/>
 	<property name='src_src' location='../src'/>
 	<property name='src' location='../bin'/>
@@ -24,21 +27,48 @@
 	<target name='MakeBuildPackageDir' depends=''>
 	  <mkdir dir='${build_package}'/>
 	</target>
-		
 
 	<!-- Auxiliary targets; not to be run directly -->
 	<target name='TestCupGrammar' depends='MakeBuildPackageDir'>
 		<property name='skin' value='CUP'/>
-		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}'>
-		    <inputs dir='${grammars}' includes='${grammarName}.x'/>
+
+		<!-- Call the target with a value like '/test_features' for specifying a subdirectory of 'grammars'. -->
+		<property name='testGroup' value=''/>
+
+		<!-- Call the target with a value like
+			 'HTML', 'XML', 'XML_SPEC', 'PLAIN',
+			 for activating the dump mode.
+		-->
+		<property name='dumpMode' value='NONE'/>
+		<condition property='activateDumpMode'>
+			<not>
+				<equals arg1='${dumpMode}' arg2='NONE'/>
+			</not>
+		</condition>
+
+		<copper if:set='activateDumpMode'
+				outputFile='${build_package}/${grammarName}Parser.java'
+				useSkin='${skin}'
+				useEngine='${engine}'
+				dump='ON'
+				dumpFile='${build_package}/${grammarName}.html'
+				dumpFormat='${dumpMode}'>
+			<inputs dir='${grammars}${testGroup}' includes='${grammarName}.x'/>
 		</copper>
+		<copper unless:set='activateDumpMode'
+				outputFile='${build_package}/${grammarName}Parser.java'
+				useSkin='${skin}'
+				useEngine='${engine}'>
+			<inputs dir='${grammars}${testGroup}' includes='${grammarName}.x'/>
+		</copper>
+
 		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
 	</target>
 
 	<target name='TestXMLGrammar' depends='MakeBuildPackageDir'>
 		<property name='skin' value='XML'/>
 		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}'>
-		    <inputs dir='${grammars}' includes='${grammarName}.xml'/>
+			<inputs dir='${grammars}' includes='${grammarName}.xml'/>
 		</copper>
 		<javac includeantruntime='false' source='1.5' target='1.5' debug='${debug}' srcdir='${build}' destdir='${build}' includes='${build_package}/${grammarName}Parser.java' classpathref='tests_and_src'/>
 	</target>
@@ -46,10 +76,17 @@
 	<target name='TestMDA' depends=''>
 		<property name='skin' value='XML'/>
 		<copper outputFile='${build_package}/${grammarName}Parser.java' useSkin='${skin}' useEngine='${engine}' runMDA='true'>
-		    <inputs dir='${grammars}/mda' includes='${grammarName}.xml'/>
+			<inputs dir='${grammars}/mda' includes='${grammarName}.xml'/>
 		</copper>
 	</target>
 
+	<target name='SelfTestParser' depends='TestCupGrammar'>
+		<java classname='${build_package}.${grammarName}Parser'
+			  fork='false'
+			  failonerror='yes'
+			  classpathref='tests_and_src'>
+		</java>
+	</target>
 	
 	<!-- Test grammar targets; to be run directly -->
 	
@@ -95,7 +132,29 @@
 		<property name='engine' value='SINGLE'/>
 		<ant target='TestCupGrammar'/>
 	</target>
-	
+
+	<target name='Tutorial_EBNF_to_Copper' depends=''>
+		<property name='grammarName' value='Tutorial_EBNF_to_Copper'/>
+		<property name='engine' value='SINGLE'/>
+		<ant target='TestCupGrammar'/>
+	</target>
+
+	<target name='TestPrecedences01' depends=''>
+		<property name='grammarName' value='TestPrecedences01'/>
+		<property name='testGroup' value='/test_features'/>
+		<property name='engine' value='SINGLE'/>
+		<property name='dumpMode' value='HTML'/>
+		<ant target='SelfTestParser'/>
+	</target>
+
+	<target name='TestPrecedences02' depends=''>
+		<property name='grammarName' value='TestPrecedences02'/>
+		<property name='testGroup' value='/test_features'/>
+		<property name='engine' value='SINGLE'/>
+		<property name='dumpMode' value='HTML'/>
+		<ant target='SelfTestParser'/>
+	</target>
+
 	<target name='MDAPassing' depends=''>
 		<property name='grammarName' value='MDAPassing'/>
 		<property name='engine' value='SINGLE'/>
@@ -127,7 +186,7 @@
 	</target>
 
 	<target name='clean' depends=''>
-	    <delete verbose='true'>
+		<delete verbose='true'>
 			<fileset dir='${build_package}' includes='*Parser*.java'/>
 			<fileset dir='${build_package}' includes='*Parser*.class'/>
 		</delete>
