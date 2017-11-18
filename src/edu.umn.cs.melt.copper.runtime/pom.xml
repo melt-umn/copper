@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>copper-runtime</artifactId>
+  <packaging>jar</packaging>
+
+  <name>copper-runtime</name>
+  <url>https://github.com/melt-umn/copper</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+     <sourceDirectory>src/main/java</sourceDirectory>
+  </build>
+  <organization>
+    <name>Minnesota Extensible Language Tools</name>
+    <url>http://melt.cs.umn.edu</url>
+  </organization>
+  
+  <description>Classes needed to run parsers created using the Copper parser generator.</description>
+  <parent>
+    <relativePath>../../build/parent/pom.xml</relativePath>
+    <version>0.7.2-SNAPSHOT</version>
+    <artifactId>copper-parent</artifactId>
+    <groupId>edu.umn.cs.melt</groupId>
+  </parent>
+</project>

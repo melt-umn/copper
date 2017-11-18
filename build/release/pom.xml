@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.umn.cs.melt</groupId>
+  <artifactId>copper-release</artifactId>
+  <version>0.7.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>../../src/edu.umn.cs.melt.copper.ant</module>
+    <module>../../src/edu.umn.cs.melt.copper.compiletime</module>
+    <module>../../src/edu.umn.cs.melt.copper.legacy</module>
+    <module>../../src/edu.umn.cs.melt.copper.runtime</module>
+    <module>../aggregate</module>
+    <!--  <module>../../edu.umn.cs.melt.copper.test</module> -->
+  </modules>
+</project>
