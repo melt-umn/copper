@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2015 Adventium Labs -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>copper-parent</artifactId>
+  <packaging>pom</packaging>
+
+  <!-- This info is all inherited by child poms -->
+  <groupId>edu.umn.cs.melt</groupId>
+  <version>0.7.2-SNAPSHOT</version>
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License, version 3 or later</name>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <organization>
+    <name>Minnesota Extensible Language Tools</name>
+    <url>http://melt.cs.umn.edu</url>
+  </organization>
+  <url>https://github.com/melt-umn/copper</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+  </properties>
+
+  <modules>
+    <module>src/edu.umn.cs.melt.copper.ant</module>
+    <module>src/edu.umn.cs.melt.copper.compiletime</module>
+    <module>src/edu.umn.cs.melt.copper.legacy</module>
+    <module>src/edu.umn.cs.melt.copper.runtime</module>
+    <module>src/edu.umn.cs.melt.copper.test</module>
+    <module>build/aggregate</module>
+  </modules>
+</project>

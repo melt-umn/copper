@@ -1,15 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>edu.umn.cs.melt</groupId>
+
   <artifactId>copper-aggregate</artifactId>
   <packaging>jar</packaging>
   
-  <properties>
-  	<releasedir>../../jar</releasedir>
-  </properties>
-
   <build>
     <plugins>
       <plugin>
@@ -24,31 +18,32 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-            <finalName>CopperCompiler</finalName>
-            <outputDirectory>${releasedir}</outputDirectory>
+              <finalName>CopperCompiler</finalName>
+              <outputDirectory>${project.parent.build.directory}</outputDirectory>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>edu.umn.cs.melt.copper.main.ParserCompiler</mainClass>
                 </transformer>
               </transformers>
               <filters>
-            		<filter>
-            			<artifact>*:*</artifact>
-            			<excludes>
-            				<exclude>META-INF/**</exclude>
-            			</excludes>
-            		</filter>
-            </filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <artifactSet>
-              	<includes>
-              		<include>edu.umn.cs.melt:copper-ant</include>
-              		<include>edu.umn.cs.melt:copper-compiler</include>
-              		<include>edu.umn.cs.melt:copper-legacy</include>
-              		<include>edu.umn.cs.melt:copper-runtime</include>
-              	</includes>
+                <includes>
+                  <include>edu.umn.cs.melt:copper-ant</include>
+                  <include>edu.umn.cs.melt:copper-compiler</include>
+                  <include>edu.umn.cs.melt:copper-legacy</include>
+                  <include>edu.umn.cs.melt:copper-runtime</include>
+                </includes>
               </artifactSet>
             </configuration>
           </execution>
+
           <execution>
             <id>CopperRuntime</id>
             <phase>package</phase>
@@ -56,12 +51,12 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-            <outputDirectory>${releasedir}</outputDirectory>
-            <finalName>CopperRuntime</finalName>
+              <outputDirectory>${project.parent.build.directory}</outputDirectory>
+              <finalName>CopperRuntime</finalName>
               <artifactSet>
-              	<includes>
-              		<include>edu.umn.cs.melt:copper-runtime</include>
-              	</includes>
+                <includes>
+                  <include>edu.umn.cs.melt:copper-runtime</include>
+                </includes>
               </artifactSet>
             </configuration>
           </execution>
@@ -69,30 +64,32 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
-  	<dependency>
-  		<groupId>edu.umn.cs.melt</groupId>
-  		<artifactId>copper-ant</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>edu.umn.cs.melt</groupId>
-  		<artifactId>copper-compiler</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>edu.umn.cs.melt</groupId>
-  		<artifactId>copper-legacy</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>edu.umn.cs.melt</groupId>
-  		<artifactId>copper-runtime</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-ant</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-compiler</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-legacy</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-runtime</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
+
   <parent>
-    <relativePath>../parent/pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
     <version>0.7.2-SNAPSHOT</version>
     <artifactId>copper-parent</artifactId>
     <groupId>edu.umn.cs.melt</groupId>

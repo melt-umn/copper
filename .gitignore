@@ -1,6 +1,7 @@
 .DS_Store
 .idea
 jar
+target
 src/**/target
 src/**/dependency-reduced-pom.xml
 build/**/target

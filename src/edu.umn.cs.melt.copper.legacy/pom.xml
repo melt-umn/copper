@@ -1,46 +1,38 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>copper-legacy</artifactId>
   <packaging>jar</packaging>
 
   <name>copper-legacy</name>
-  <url>https://github.com/melt-umn/copper</url>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
   <description>Classes for the legacy parser compilers from Copper 0.5.</description>
-  <organization>
-  	<name>Minnesota Extensible Language Tools</name>
-  	<url>http://melt.cs.umn.edu</url>
-  </organization>
-  <dependencies>
-  	<dependency>
-  		<groupId>edu.umn.cs.melt</groupId>
-  		<artifactId>copper-compiler</artifactId>
-  		<version>0.7.2-SNAPSHOT</version>
-  	</dependency>
-	<dependency>
-	    <groupId>org.apache.ant</groupId>
-	    <artifactId>ant</artifactId>
-	    <version>1.7.0</version>
-	</dependency>  	
-  </dependencies>
+
   <build>
-  	<resources>
-  		<resource>
-  			<directory>resources/main</directory>
-  			<includes>
-  				<include>resources/edu/umn/cs/melt/copper/legacy/dumpformat.xslt</include>
-  			</includes>
-  		</resource>
-  	</resources>
+    <resources>
+      <resource>
+        <directory>resources/main</directory>
+        <includes>
+          <include>resources/edu/umn/cs/melt/copper/legacy/dumpformat.xslt</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-compiler</artifactId>
+      <version>0.7.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.0</version>
+    </dependency>    
+  </dependencies>
+
   <parent>
-    <relativePath>../../build/parent/pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
     <version>0.7.2-SNAPSHOT</version>
     <artifactId>copper-parent</artifactId>
     <groupId>edu.umn.cs.melt</groupId>

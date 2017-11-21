@@ -1,74 +1,58 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>copper-compiler</artifactId>
   <packaging>jar</packaging>
-  <licenses>
-  	<license>
-  		<name>GNU Lesser General Public License, version 3 or later</name>
-  		<distribution>repo</distribution>
-  	</license>
-  	<license>
-  		<name>Apache License version 2.0</name>
-  		<distribution>repo</distribution>
-  	</license>
-  </licenses>
-  
 
   <name>copper-compiler</name>
-  <url>https://github.com/melt-umn/copper</url>
+  <description>Classes needed to compile parser specifications for the Copper parser generator.</description>
+
+  <!-- The compiler has more licenses? -->
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License, version 3 or later</name>
+      <distribution>repo</distribution>
+    </license>
+    <license>
+      <name>Apache License version 2.0</name>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
   </properties>
   
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  	<sourceDirectory>src/main/java</sourceDirectory>
-  	<resources>
-  		<resource>
-  			<directory>resources/main</directory>
-  			<includes>
-  				<include>resources/edu/umn/cs/melt/copper/compiletime/Copper.properties</include>
-  			</includes>
-  			<filtering>true</filtering>
-  		</resource>
-  		<resource>
-  			<directory>resources/main</directory>
-  			<includes>
-  				<include>resources/edu/umn/cs/melt/copper/compiletime/dumpformat.xslt</include>
-  				<include>resources/edu/umn/cs/melt/copper/compiletime/XMLSkinSchema.xsd</include>
-  			</includes>
-  		</resource>
-  	</resources>
+    <resources>
+      <resource>
+        <directory>resources/main</directory>
+        <includes>
+          <include>resources/edu/umn/cs/melt/copper/compiletime/Copper.properties</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>resources/main</directory>
+        <includes>
+          <include>resources/edu/umn/cs/melt/copper/compiletime/dumpformat.xslt</include>
+          <include>resources/edu/umn/cs/melt/copper/compiletime/XMLSkinSchema.xsd</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
 
-  <description>Classes needed to compile parser specifications for the Copper parser generator.</description>
-  <organization>
-  	<name>Minnesota Extensible Language Tools</name>
-  	<url>http://melt.cs.umn.edu</url>
-  </organization>
   <dependencies>
-  	<dependency>
-  		<groupId>edu.umn.cs.melt</groupId>
-  		<artifactId>copper-runtime</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-runtime</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
+
   <parent>
-    <relativePath>../../build/parent/pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
     <version>0.7.2-SNAPSHOT</version>
     <artifactId>copper-parent</artifactId>
     <groupId>edu.umn.cs.melt</groupId>
