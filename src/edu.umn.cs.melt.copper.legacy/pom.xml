@@ -10,7 +10,7 @@
   <build>
     <resources>
       <resource>
-        <directory>resources/main</directory>
+        <directory>src/main</directory>
         <includes>
           <include>resources/edu/umn/cs/melt/copper/legacy/dumpformat.xslt</include>
         </includes>

@@ -27,14 +27,14 @@
   <build>
     <resources>
       <resource>
-        <directory>resources/main</directory>
+        <directory>src/main</directory>
         <includes>
           <include>resources/edu/umn/cs/melt/copper/compiletime/Copper.properties</include>
         </includes>
         <filtering>true</filtering>
       </resource>
       <resource>
-        <directory>resources/main</directory>
+        <directory>src/main</directory>
         <includes>
           <include>resources/edu/umn/cs/melt/copper/compiletime/dumpformat.xslt</include>
           <include>resources/edu/umn/cs/melt/copper/compiletime/XMLSkinSchema.xsd</include>
