@@ -42,7 +42,7 @@ public class QuotedStringFormatter
 	/**
 	 * Gets the character represented by a quote.
 	 * @param quoted The quoted representation.
-	 * @return The character quoted, or <CODE>QScannerBuffer.EOFIndicator</CODE> if <CODE>quoted</CODE> be not a quoted character.
+	 * @return The character quoted.
 	 */
 	public static char getRepresentedCharacter(String quoted)
 	{

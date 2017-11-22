@@ -89,6 +89,7 @@ public abstract class InputPosition implements Location
     /**
      * Returns a position one character past the given.
      * @param curPos A reference position.
+     * @param pastChar The character that will be passed.
      * @return A position one character past <CODE>curPos</CODE>.
      */
     public static InputPosition advance(InputPosition curPos,char pastChar)

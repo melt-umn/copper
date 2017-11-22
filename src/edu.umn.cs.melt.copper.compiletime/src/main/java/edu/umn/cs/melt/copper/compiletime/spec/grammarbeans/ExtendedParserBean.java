@@ -5,7 +5,7 @@ import java.util.Set;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBeanVisitor;
 
 /**
- * Represents an extended Copper parser &#8210; i.e., a parser
+ * Represents an extended Copper parser &ndash; i.e., a parser
  * suitable to be run through Copper's modular determinism
  * analysis.
  * 

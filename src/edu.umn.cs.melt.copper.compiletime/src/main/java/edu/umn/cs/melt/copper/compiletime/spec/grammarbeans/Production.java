@@ -44,7 +44,7 @@ public class Production extends GrammarElement
 	 * be resolved on productions within the same precedence class.
 	 * If this is not set, the production will be placed into an anonymous
 	 * "default" class.
-	 * <br/>
+	 * 
 	 * <b>N.B.:</b> This precedence class is not used when resolving <em>shift</em>-reduce conflicts.
 	 * The operator class (see {@link Terminal#operatorClass}) of the production's operator
 	 * (see {@link #operator}) is used for that.

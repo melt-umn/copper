@@ -7,7 +7,6 @@
   <name>copper-compiler</name>
   <description>Classes needed to compile parser specifications for the Copper parser generator.</description>
 
-  <!-- The compiler has more licenses? -->
   <licenses>
     <license>
       <name>GNU Lesser General Public License, version 3 or later</name>
@@ -25,6 +24,39 @@
   </properties>
   
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        <configuration>
+	  <author>true</author>
+	  <doctitle>Copper ${project.version} Javadoc</doctitle>
+	  <doclint>none</doclint>
+	  <source>1.6</source>
+	  <splitindex>true</splitindex>
+	  <groups>
+	    <group>
+	      <title>Copper ANT task</title>
+	      <packages>edu.umn.cs.melt.copper.ant</packages>
+	    </group>
+	    <group>
+	      <title>Copper compiler API</title>
+	      <packages>edu.umn.cs.melt.copper.main:edu.umn.cs.melt.copper.compiletime.spec.grammarbeans</packages>
+	    </group>
+	    <group>
+	      <title>Copper parser API</title>
+	      <packages>edu.umn.cs.melt.copper.runtime:edu.umn.cs.melt.copper.runtime.engines</packages>
+	    </group>
+	    <group>
+	      <title>Other packages</title>
+	      <packages>edu.umn.cs.melt.copper.runtime.io:edu.umn.cs.melt.copper.runtime.auxiliary:edu.umn.cs.melt.copper.runtime.engines.semantics:edu.umn.cs.melt.copper.compiletime.logging:edu.umn.cs.melt.copper.runtime.logging</packages>
+	    </group>
+	  </groups>
+	  <excludePackageNames>edu.umn.cs.melt.copper.compiletime.auxiliary:edu.umn.cs.melt.copper.compiletime.auxiliary.xml:edu.umn.cs.melt.copper.compiletime.builders:edu.umn.cs.melt.copper.compiletime.checkers:edu.umn.cs.melt.copper.compiletime.dumpers:edu.umn.cs.melt.copper.compiletime.logging.messages:edu.umn.cs.melt.copper.compiletime.lrdfa:edu.umn.cs.melt.copper.compiletime.mda:edu.umn.cs.melt.copper.compiletime.parsetable:edu.umn.cs.melt.copper.compiletime.pipeline:edu.umn.cs.melt.copper.compiletime.scannerdfa:edu.umn.cs.melt.copper.compiletime.skins.*:edu.umn.cs.melt.copper.compiletime.spec.numeric:edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors:edu.umn.cs.melt.copper.compiletime.srcbuilders.*</excludePackageNames>
+        </configuration>
+      </plugin>
+    </plugins>
     <resources>
       <resource>
         <directory>src/main</directory>

@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.runtime.io;
+package edu.umn.cs.melt.copper.runtime.io.internal;
 
 /**
  * A "double-ended queue" that supports four operations
@@ -7,7 +7,7 @@ package edu.umn.cs.melt.copper.runtime.io;
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  *
  */
-class CircleBuffer
+public class CircleBuffer
 {
 	private static final double defaultTrimFactor = 1.1;
 	private static final int defaultInitialCapacity = 20;

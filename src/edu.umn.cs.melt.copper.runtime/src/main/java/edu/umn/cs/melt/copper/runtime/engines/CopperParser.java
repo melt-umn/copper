@@ -48,6 +48,7 @@ public interface CopperParser<ROOT,EXCEPT extends Exception>
 	/**
 	 * Runs the parser on input provided in the form of a string, with custom input labeling.
 	 * @param text Contains the text to parse.
+	 * @param inputName The label attached to the text (filename or similar).
 	 * @return The synthesized attribute of the root node of the input's derivative parse tree.
 	 * @throws IOException If an I/O error occurs.
 	 * @throws EXCEPT If a parse error occurs.

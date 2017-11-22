@@ -6,7 +6,7 @@ import java.util.Set;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBeanVisitor;
 
 /**
- * Represents an "extension grammar" &#8210; a grammar that is meant to be
+ * Represents an "extension grammar" &ndash; a grammar that is meant to be
  * attached to another grammar and that matches the form to be passed
  * to Copper's composability checker (modular determinism analysis).
  * 
@@ -53,7 +53,7 @@ public class ExtensionGrammar extends Grammar
 	 * extensions from a single grammar, as when a single extension is used
 	 * with several host languages.
 	 *  
-	 * N.B.: This will make a shallow copy &#8210; any changes to the elements
+	 * N.B.: This will make a shallow copy &ndash; any changes to the elements
 	 * of the original grammar will carry over to this grammar,
 	 * and vice versa.
 	 */

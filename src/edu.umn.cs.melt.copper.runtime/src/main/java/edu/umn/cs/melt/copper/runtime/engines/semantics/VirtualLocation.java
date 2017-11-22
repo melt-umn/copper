@@ -171,6 +171,8 @@ public class VirtualLocation implements Location
 	/**
 	 * This function is meant to be called automatically from
 	 * the parser.
+	 * @see #defaultUpdate(String)
+	 * @param lexeme The lexeme to move past.
 	 */
 	public void defaultUpdateAutomatic(String lexeme)
 	{

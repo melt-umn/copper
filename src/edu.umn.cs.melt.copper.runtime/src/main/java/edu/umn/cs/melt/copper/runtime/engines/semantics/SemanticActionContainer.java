@@ -38,6 +38,7 @@ public interface SemanticActionContainer<MATCHDATA,EXCEPT extends Exception>
 	 * @param _pos The input position at the reduction.
 	 * @param _children The parse tree produced by the reduction.
 	 * @param _prod The production being reduced.
+	 * @return The result of this semantic action.
 	 * @throws IOException When the code requires.
 	 * @throws EXCEPT When the code requires.
 	 */
@@ -49,6 +50,7 @@ public interface SemanticActionContainer<MATCHDATA,EXCEPT extends Exception>
 	 * @param _pos The input position before the shift.
 	 * @param _terminal The terminal being shifted.
 	 * @throws IOException When the code requires.
+	 * @return The result of this semantic action.
 	 * @throws EXCEPT When the code requires.
 	 */
 	public Object runSemanticAction(InputPosition _pos,

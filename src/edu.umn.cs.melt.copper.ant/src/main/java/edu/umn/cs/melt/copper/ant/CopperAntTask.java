@@ -25,7 +25,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
  * This bean allows Copper to be run via ANT. It matches, as closely
  * as possible, the parameters used in {@link ParserCompilerParameters}.
  * {@code inputs} is represented as a nested file-set element, <em>e.g.</em>
- * <br/>
+ * 
  * {@code <copper ...><inputs dir='dir' includes='specfile'/></copper>}.
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
  *

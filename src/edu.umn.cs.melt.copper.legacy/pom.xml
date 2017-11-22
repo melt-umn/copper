@@ -7,6 +7,10 @@
   <name>copper-legacy</name>
   <description>Classes for the legacy parser compilers from Copper 0.5.</description>
 
+  <properties>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
+
   <build>
     <resources>
       <resource>

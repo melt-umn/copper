@@ -22,6 +22,7 @@ public class CompilerLogger
 	
 	/**
 	 * Initializes a CompilerLogger with the given handler and the level {@link CompilerLevel#REGULAR}.
+	 * @param handler The handler to attach to this logger.
 	 */
 	public CompilerLogger(CompilerLogHandler handler)
 	{
@@ -36,6 +37,7 @@ public class CompilerLogger
 
 	/**
 	 * Sends the given message through to the logger's handler.
+	 * @param message The message to log.
 	 */
 	public void log(CompilerLogMessage message)
 	{
@@ -45,6 +47,7 @@ public class CompilerLogger
 	/**
 	 * Sends the given message, which is understood to be an error message,
 	 * through to the logger's handler.
+	 * @param message The message to log.
 	 * @throws CopperException If a fatal error is among the messages flushed.
 	 */
 	public void logError(CompilerLogMessage message)
@@ -63,8 +66,10 @@ public class CompilerLogger
 	
 	/**
 	 * Determines if a message of the given level will be passed through to the
-	 * handler (i.e., if the given level is at or greater than the level of the
-	 * logger).
+	 * handler.
+	 * @param level The level to check.
+	 * @return {@code true} if {@code level} is at or greater than the level of the
+	 * logger
 	 */
 	public boolean isLoggable(CompilerLevel level)
 	{

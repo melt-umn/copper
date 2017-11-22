@@ -5,9 +5,9 @@ import java.util.Set;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBeanVisitor;
 
 /**
- * Represents a disambiguation function &#8210; a method for resolving a specific
- * lexical ambiguity. This is done by specifying either a "declarative target" &#8210; one of
- * the disambiguation group's members to which the ambiguity always disambiguates &#8210;
+ * Represents a disambiguation function &ndash; a method for resolving a specific
+ * lexical ambiguity. This is done by specifying either a "declarative target" &ndash; one of
+ * the disambiguation group's members to which the ambiguity always disambiguates &ndash;
  * or (for the more general case) a block of code that returns one of the members.
  * 
  * The field <code>members</code>, as well as either the field <code>code</code> or

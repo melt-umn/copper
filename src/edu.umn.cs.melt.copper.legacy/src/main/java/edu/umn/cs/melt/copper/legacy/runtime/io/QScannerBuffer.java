@@ -1,7 +1,10 @@
-package edu.umn.cs.melt.copper.runtime.io;
+package edu.umn.cs.melt.copper.legacy.runtime.io;
 
 import java.io.IOException;
 import java.io.Reader;
+
+import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
+import edu.umn.cs.melt.copper.runtime.io.internal.CircleBuffer;
 
 /**
  * Represents a buffer capable of holding as few input characters

@@ -7,6 +7,41 @@
   <name>copper-runtime</name>
   <description>Classes needed to run parsers created using the Copper parser generator.</description>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        <configuration>
+	  <author>true</author>
+	  <doctitle>Copper ${project.version} Javadoc</doctitle>
+	  <source>1.6</source>
+	  <splitindex>true</splitindex>
+	  <groups>
+	    <group>
+	      <title>Copper ANT task</title>
+	      <packages>edu.umn.cs.melt.copper.ant</packages>
+	    </group>
+	    <group>
+	      <title>Copper compiler API</title>
+	      <packages>edu.umn.cs.melt.copper.main:edu.umn.cs.melt.copper.compiletime.spec.grammarbeans</packages>
+	    </group>
+	    <group>
+	      <title>Copper parser API</title>
+	      <packages>edu.umn.cs.melt.copper.runtime:edu.umn.cs.melt.copper.runtime.engines</packages>
+	    </group>
+	    <group>
+	      <title>Other packages</title>
+	      <packages>edu.umn.cs.melt.copper.runtime.io:edu.umn.cs.melt.copper.runtime.auxiliary:edu.umn.cs.melt.copper.runtime.engines.semantics:edu.umn.cs.melt.copper.compiletime.logging:edu.umn.cs.melt.copper.runtime.logging</packages>
+	    </group>
+	  </groups>
+	  <excludePackageNames>edu.umn.cs.melt.copper.runtime.auxiliary.internal:edu.umn.cs.melt.copper.runtime.engines.fragment:edu.umn.cs.melt.copper.runtime.engines.single:edu.umn.cs.melt.copper.runtime.engines.single.scanner:edu.umn.cs.melt.copper.runtime.engines.single.semantics:edu.umn.cs.melt.copper.runtime.io.internal</excludePackageNames>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
   <parent>
     <relativePath>../../pom.xml</relativePath>
     <version>0.7.2-SNAPSHOT</version>

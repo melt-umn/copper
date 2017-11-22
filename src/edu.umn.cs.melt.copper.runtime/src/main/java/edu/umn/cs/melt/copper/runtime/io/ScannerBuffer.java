@@ -37,6 +37,7 @@ public abstract class ScannerBuffer
 	 * Once the buffer be advanced past a point, a character at
 	 * that point may not be obtained.
 	 * @param newBufferBegin The new beginning point of the buffer.
+	 * @throws IOException If an error occurred advancing the buffer.
 	 */
 	public abstract void advanceBufferTo(long newBufferBegin) throws IOException;
 

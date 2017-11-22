@@ -5,7 +5,7 @@ import java.util.Set;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBeanVisitor;
 
 /**
- * Represents a "parser attribute" &#8210; a field specified within the parser class.
+ * Represents a "parser attribute" &ndash; a field specified within the parser class.
  * 
  * The field <code>attributeType</code> must be set to a non-null value
  * before a parser attribute is passed to the compiler. 

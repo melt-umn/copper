@@ -31,7 +31,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  *
  * @param <SCIN> The type used to hold the input specification in structured form (e.g., {@link ParserBean}).
  * @param <SCOUT> The type used to hold the compiled parser information prior to conversion to source code
- *                (e.g., {@link StandardSpecCompilerReturnData).
+ *                (e.g., {@link StandardSpecCompilerReturnData}).
  */
 public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,SpecCompiler<SCIN,SCOUT>,SourceBuilder<SCOUT>
 {
