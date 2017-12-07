@@ -43,7 +43,7 @@ try {
   stage("Silver integration") {
     // Let's test against the current, (though possibly unstable!), development version of Silver
     // (We need scripts like 'deep-rebuild' so we can't use silver-latest.tar.gz.)
-    sh "cp -r $MELT_SILVER_WORKSPACE silver-latest"
+    sh "cp -r $MELT_SILVER_WORKSPACE/* silver-latest"
     
     sh "cp target/Copper*.jar silver-latest/jars/"
     
