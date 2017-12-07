@@ -16,7 +16,9 @@ properties([
 ])
 
 // Location where we dump stable artifacts: jars, tarballs
-def MELT_ARTIFACTS = '/export/scratch/melt-jenkins/custom-stable-dump/'
+def MELT_ARTIFACTS = '/export/scratch/melt-jenkins/custom-stable-dump'
+// Location of a Silver checkout (w/ jars)
+def MELT_SILVER_WORKSPACE = '/export/scratch/melt-jenkins/custom-silver'
 
 node {
 
@@ -39,18 +41,18 @@ try {
   }
   
   stage("Silver integration") {
-    // Let's test against the current, stable, development version of Silver
-    // TODO: maybe we should test against current non-stable version?
-    // i.e. /export/scratch/melt-jenkins/custom-silver ?
-    def SILVER_LATEST = "$MELT_ARTIFACTS/silver-latest.tar.gz"
-    // Unpacks to 'silver-latest/'
-    sh "tar zxvf $SILVER_LATEST"
+    // Let's test against the current, (though possibly unstable!), development version of Silver
+    // (We need scripts like 'deep-rebuild' so we can't use silver-latest.tar.gz.)
+    sh "cp -r $MELT_SILVER_WORKSPACE silver-latest"
     
     sh "cp target/Copper*.jar silver-latest/jars/"
     
     dir('silver-latest') {
       sh "./deep-rebuild"
     }
+
+    // Common case: clean up if successful
+    sh "rm -rf ./silver-latest"
   }
   
   if (env.BRANCH_NAME == 'develop') {
