@@ -26,6 +26,9 @@ try {
 
   stage("Build") {
 
+    // Immediate failure for notification testing
+    sh "false"
+
     // Checks out this repo and branch
     checkout scm
 
@@ -61,10 +64,30 @@ try {
     }
   }
 
+} catch(e) {
+
+  // JENKINS-28822. Not sure if this works exactly as intended or not
+  if(currentBuild.result == null) {
+    echo "Setting failure flag"
+    currentBuild.result = 'FAILURE'
+  }
+
 } finally {
   
-  // TODO: Possibly send emails to culprits? Or notify slack.
-
+  // testing...
+  if( (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master' || true) &&
+      currentBuild.result == 'FAILURE') {
+    def subject = "Build failed: '${env.JOB_NAME}' (${env.BRANCH_NAME}) [${env.BUILD_NUMBER}]"
+    //def body = """<a href='${env.BUILD_URL}'>${env.BUILD_URL}</a>"""
+    def body = """${env.BUILD_URL}"""
+    emailext(
+      subject: subject,
+      //mimeType: 'text/html',
+      body: body,
+      to: 'tedinski@cs.umn.edu',
+      recipientProviders: [[$class: 'CulpritsRecipientProvider']]
+    )
+  }
 }
 
 } // end node
