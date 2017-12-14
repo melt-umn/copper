@@ -26,10 +26,6 @@ try {
 
   stage("Build") {
 
-    // Immediate failure for notification testing
-    sh "printenv"
-    sh "false"
-
     // Checks out this repo and branch
     checkout scm
 
@@ -75,17 +71,16 @@ try {
 
 } finally {
   
-  // testing...
-  if( (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master' || true) &&
+  // August requests email notifications only for develop/master, not feature branches.
+  if( (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master') &&
       currentBuild.result == 'FAILURE') {
-    def subject = "Build failed: '${env.JOB_NAME}' (${env.BRANCH_NAME}) [${env.BUILD_NUMBER}]"
-    //def body = """<a href='${env.BUILD_URL}'>${env.BUILD_URL}</a>"""
+    // env.JOB_NAME gives things like 'melt-umn/copper/feature%2Fjenkins' which is ugly
+    def job = "copper"
+    def subject = "Build failed: '${job}' (${env.BRANCH_NAME}) [${env.BUILD_NUMBER}]"
     def body = """${env.BUILD_URL}"""
     emailext(
       subject: subject,
-      //mimeType: 'text/html',
       body: body,
-      to: 'tedinski@cs.umn.edu',
       recipientProviders: [[$class: 'CulpritsRecipientProvider']]
     )
   }
