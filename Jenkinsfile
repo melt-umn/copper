@@ -27,6 +27,7 @@ try {
   stage("Build") {
 
     // Immediate failure for notification testing
+    sh "printenv"
     sh "false"
 
     // Checks out this repo and branch
