@@ -29,13 +29,16 @@ try {
     // Checks out this repo and branch
     checkout scm
 
-    def M2_REPO = pwd() + "/.m2repo"
     // -B  Run in non-interactive (batch) mode
     // -e  Produce execution error messages
     // -fae  Only fail the build afterwards; allow all non-impacted builds to continue
     // -Dmaven.test.failure.ignore=true  Ignore test failures (We look at them with the junit command later)
+    sh "mvn clean verify -B -e -fae -Dmaven.test.failure.ignore=true"
+
+    // I decided to remove this.
+    // This means our cache is persistent, but also that it might grow unbounded, since nothing prunes it.
+    //def M2_REPO = pwd() + "/.m2repo"
     // -Dmaven.repo.local=$M2_REPO  Use a local maven repo instead of in the homedir.
-    sh "mvn clean verify -B -e -fae -Dmaven.test.failure.ignore=true -Dmaven.repo.local=$M2_REPO"
 
     junit allowEmptyResults: true, testResults:"**/target/*-reports/*.xml"
   }
@@ -43,7 +46,8 @@ try {
   stage("Silver integration") {
     // Let's test against the current, (though possibly unstable!), development version of Silver
     // (We need scripts like 'deep-rebuild' so we can't use silver-latest.tar.gz.)
-    sh "cp -r $MELT_SILVER_WORKSPACE/* silver-latest"
+    sh "rm -rf ./silver-latest || true"
+    sh "cp -r $MELT_SILVER_WORKSPACE silver-latest"
     
     sh "cp target/Copper*.jar silver-latest/jars/"
     
