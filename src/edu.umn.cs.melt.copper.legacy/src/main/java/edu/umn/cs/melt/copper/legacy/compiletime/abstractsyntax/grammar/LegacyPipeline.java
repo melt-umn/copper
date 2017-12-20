@@ -502,7 +502,6 @@ public class LegacyPipeline implements Pipeline
 
 	@Override
 	public Set<String> getCustomSwitches() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

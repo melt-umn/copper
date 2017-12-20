@@ -114,8 +114,9 @@ public enum CopperPipelineType
 			return "fragmentCompose";
 		}
 	},
-	// TODO: Rip this out when GrammarSource is gone. 
-	/** This pipeline uses Copper 0.5/0.6's parser compilation classes and methods. */
+	/** This pipeline uses Copper 0.5/0.6's parser compilation classes and methods.
+	  * Removing this enum element will completely sever the legacy bundle from
+	  * the Copper compile-time. */
 	LEGACY
 	{
 		@Override

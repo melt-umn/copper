@@ -16,7 +16,6 @@ import edu.umn.cs.melt.copper.runtime.io.InputPosition;
  */
 public class GrammarSource
 {
-	// TODO: Remove this class, its dependencies and dependents.
 	private HashSet<NonTerminal> nt;
 	private HashSet<Terminal> t;
 	private Hashtable< NonTerminal,HashSet<Production> > p;

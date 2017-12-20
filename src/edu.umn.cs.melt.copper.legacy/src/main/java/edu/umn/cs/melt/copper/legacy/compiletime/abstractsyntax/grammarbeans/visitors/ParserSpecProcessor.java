@@ -6,7 +6,6 @@ import edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.GrammarS
 
 public class ParserSpecProcessor {
 
-	// TODO: Remove this when the other skins can produce ParserBeans instead of GrammarSource objects.
 	public static GrammarSource buildGrammarSource(ParserBean spec,CompilerLogger logger)
 	{
 		GrammarSourceBuilder builder = new GrammarSourceBuilder();
