@@ -3,6 +3,7 @@ package edu.umn.cs.melt.copper.test;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,13 +19,22 @@ import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
+/**
+ * Copper tests involving the compilation of a Copper parser.
+ * @author August Schwerdfeger
+ */
 public class CopperCompilerTests {
 	
-	private void runCopperCompilerAPI(boolean shouldFail, CopperSkinType skin, String... specs) {
+	public static void runCopperCompilerAPI(boolean shouldFail, CopperSkinType skin, File outputFile, String... specs) {
 		ParserCompilerParameters args = new ParserCompilerParameters();
 		args.setUseSkin(skin);
-		args.setOutputType(CopperIOType.STREAM);
-		args.setOutputStream(new PrintStream(new ByteArrayOutputStream()));
+		if(outputFile == null) {
+			args.setOutputType(CopperIOType.STREAM);
+			args.setOutputStream(new PrintStream(new ByteArrayOutputStream()));
+		} else {
+			args.setOutputType(CopperIOType.FILE);
+			args.setOutputFile(outputFile);
+		}
 		ArrayList<Pair<String,Object>> inputs = new ArrayList<Pair<String,Object>>();
 		for(String spec : specs) {
 			InputStream str = CopperCompilerTests.class.getClassLoader().getResourceAsStream("grammars/" + spec);
@@ -49,67 +59,67 @@ public class CopperCompilerTests {
 
 	@Test
 	public void testWrongSkin1() {
-		runCopperCompilerAPI(true, CopperSkinType.XML, "BlazonGrammar.x");
+		runCopperCompilerAPI(true, CopperSkinType.XML, null, "BlazonGrammar.x");
 	}
 	
 	@Test
 	public void testWrongSkin2() {
-		runCopperCompilerAPI(true, CopperSkinType.CUP, "Grammar3p23XML.xml");
+		runCopperCompilerAPI(true, CopperSkinType.CUP, null, "Grammar3p23XML.xml");
 	}
 	
 	@Test
 	public void testBlazonGrammar() {
-		runCopperCompilerAPI(false, CopperSkinType.CUP, "BlazonGrammar.x");
+		runCopperCompilerAPI(false, CopperSkinType.CUP, null, "BlazonGrammar.x");
 	}
 
 	@Test
 	public void testCLangGrammar() {
-		runCopperCompilerAPI(false, CopperSkinType.XML, "CLangGrammar.xml");
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "CLangGrammar.xml");
 	}
 
 	@Test
 	public void testGrammar3p23() {
-		runCopperCompilerAPI(false, CopperSkinType.CUP, "Grammar3p23.x");
+		runCopperCompilerAPI(false, CopperSkinType.CUP, null, "Grammar3p23.x");
 	}
 
 	@Test
 	public void testGrammar3p23XML() {
-		runCopperCompilerAPI(false, CopperSkinType.XML, "Grammar3p23XML.xml");
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "Grammar3p23XML.xml");
 	}
 
 	@Test
 	public void testGrammar3p26() {
-		runCopperCompilerAPI(false, CopperSkinType.CUP, "Grammar3p26.x");
+		runCopperCompilerAPI(false, CopperSkinType.CUP, null, "Grammar3p26.x");
 	}
 
 	@Test
 	public void testJava14AllTheFruit() {
-		runCopperCompilerAPI(false, CopperSkinType.XML, "Java14AllTheFruit.xml");
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "Java14AllTheFruit.xml");
 	}
 
 	@Test
 	public void testJava14GrammarHost() {
-		runCopperCompilerAPI(false, CopperSkinType.XML, "Java14GrammarHost.xml");
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "Java14GrammarHost.xml");
 	}
 
 	@Test
 	public void testMathGrammar() {
-		runCopperCompilerAPI(false, CopperSkinType.CUP, "MathGrammar.x");
+		runCopperCompilerAPI(false, CopperSkinType.CUP, null, "MathGrammar.x");
 	}
 
 	@Test
 	public void testMathGrammarXML() {
-		runCopperCompilerAPI(false, CopperSkinType.XML, "MathGrammar.xml");
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "MathGrammar.xml");
 	}
 
 	@Test
 	public void testMiniJavaGrammar() {
-		runCopperCompilerAPI(false, CopperSkinType.CUP, "MiniJavaGrammar.x");
+		runCopperCompilerAPI(false, CopperSkinType.CUP, null, "MiniJavaGrammar.x");
 	}
 
 	@Test
 	public void testSilverGrammar() {
-		runCopperCompilerAPI(false, CopperSkinType.XML, "SilverGrammar.xml");
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "SilverGrammar.xml");
 	}
 
 }

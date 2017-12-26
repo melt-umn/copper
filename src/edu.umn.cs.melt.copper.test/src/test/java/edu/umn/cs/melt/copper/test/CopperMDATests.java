@@ -15,6 +15,10 @@ import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
+/**
+ * Copper tests involving the execution of the modular determinism analysis.
+ * @author August Schwerdfeger
+ */
 public class CopperMDATests {
 	private void runCopperMDAAPI(boolean shouldFail, String... specs) {
 		ParserCompilerParameters args = new ParserCompilerParameters();
