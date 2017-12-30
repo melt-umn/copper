@@ -38,6 +38,8 @@ import edu.umn.cs.melt.copper.main.CopperDumpType;
 
 public class XHTMLParserDumper extends FullParserDumper
 {
+	private static final String COPPER_DUMP_NAMESPACE = "http://melt.cs.umn.edu/copper/xmlns/xmldump/0.8";
+	
 	public XHTMLParserDumper(PSSymbolTable symbolTable, ParserSpec spec,
 			LR0DFA dfa, LRLookaheadAndLayoutSets lookahead,
 			LRParseTable parseTable, TransparentPrefixes prefixes)
@@ -48,6 +50,7 @@ public class XHTMLParserDumper extends FullParserDumper
 
 	private static interface XMLOutputWriter<EX extends Exception> {
 		public void writeStartElement(String name) throws EX;
+		public void writeDefaultNamespace(String namespaceURI) throws EX;		
 		public void writeCharacters(String text) throws EX;
 		public void writeAttribute(String key, String value) throws EX;
 		public void writeEndElement() throws EX;
@@ -68,12 +71,16 @@ public class XHTMLParserDumper extends FullParserDumper
 		@Override
 		public void writeStartElement(String name) {
 			if(currentElement == null) {
-				currentElement = (Element) document.appendChild(document.createElement(name));
+				currentElement = (Element) document.appendChild(document.createElementNS(COPPER_DUMP_NAMESPACE, name));
 			} else {
-				currentElement = (Element) currentElement.appendChild(document.createElement(name));				
+				currentElement = (Element) currentElement.appendChild(document.createElementNS(COPPER_DUMP_NAMESPACE, name));				
 			}
 		}
-
+		
+		@Override
+		public void writeDefaultNamespace(String namespaceURI) {
+		}
+		
 		@Override
 		public void writeCharacters(String text) {
 			currentElement.setTextContent(text);
@@ -104,7 +111,12 @@ public class XHTMLParserDumper extends FullParserDumper
 
 		@Override
 		public void writeStartElement(String name) throws XMLStreamException {
-			sw.writeStartElement("", name, "");
+			sw.writeStartElement(name);
+		}
+
+		@Override
+		public void writeDefaultNamespace(String namespaceURI) throws XMLStreamException {
+			sw.writeDefaultNamespace(namespaceURI);
 		}
 
 		@Override
@@ -171,6 +183,7 @@ public class XHTMLParserDumper extends FullParserDumper
 	
 	private <EX extends Exception> void generateXMLDump(XMLOutputWriter<EX> xmlout) throws EX {
 		xmlout.writeStartElement("copper_spec");
+		xmlout.writeDefaultNamespace(COPPER_DUMP_NAMESPACE);
 		
 		// GRAMMARS
 		for(int i = spec.grammars.nextSetBit(0);i >= 0;i = spec.grammars.nextSetBit(i+1))
