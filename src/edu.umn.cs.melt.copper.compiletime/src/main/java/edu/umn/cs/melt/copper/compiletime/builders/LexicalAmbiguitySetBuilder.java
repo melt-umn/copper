@@ -96,6 +96,10 @@ public class LexicalAmbiguitySetBuilder
 							break;
 						}
 					}
+					if(type != LRParseTable.REDUCE)
+					{
+						allOneReduceAction = false;
+					}
 					if(!allOneReduceAction)
 					{
 						if(!ambiguities.containsKey(acceptSet))
