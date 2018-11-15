@@ -28,7 +28,7 @@ try {
     // Test against the current silver 'develop' workspace that last successfully built:
     // (We need scripts like 'deep-rebuild' so we can't use silver-latest.tar.gz.)
     sh "rm -rf ./silver-latest || true"
-    sh "cp -r ${melt.SILVER_WORKSPACE} silver-latest"
+    sh "cp -r ${silver.SILVER_WORKSPACE} silver-latest"
     
     sh "cp target/Copper*.jar silver-latest/jars/"
     
