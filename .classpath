@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/edu.umn.cs.melt.copper.ant/src/main/java"/>
+	<classpathentry kind="src" path="src/edu.umn.cs.melt.copper.compiletime/src/main/java"/>
+	<classpathentry kind="src" path="src/edu.umn.cs.melt.copper.legacy/src/main/java"/>
+	<classpathentry kind="src" path="src/edu.umn.cs.melt.copper.runtime/src/main/java"/>
+	<classpathentry kind="src" path="src/edu.umn.cs.melt.copper.test/src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
