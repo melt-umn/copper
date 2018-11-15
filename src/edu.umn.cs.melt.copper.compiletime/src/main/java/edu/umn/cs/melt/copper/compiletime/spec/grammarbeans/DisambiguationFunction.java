@@ -13,8 +13,12 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  * The field <code>members</code>, as well as either the field <code>code</code> or
  * the field <code>disambiguateTo</code>, must be set to non-null values before a
  * disambiguation function is passed to the compiler. 
-
+ * 
+ * If the applicableToSubsets field is set, then this disambiguation function should be applied
+ * to any ambiguity that is a subset of <code>members</code>.
+ * 
  * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author Lucas Kramer
  *
  */
 public class DisambiguationFunction extends GrammarElement
@@ -34,6 +38,11 @@ public class DisambiguationFunction extends GrammarElement
 	protected CopperElementReference disambiguateTo;
 	/** The ambiguity to be resolved by the disambiguation function. */
 	protected Set<CopperElementReference> members;
+	/**
+	 * If true, this disambiguation function should be applied for any
+	 * subset of members.
+	 */
+	protected boolean applicableToSubsets;
 	
 	public DisambiguationFunction()
 	{
@@ -78,6 +87,22 @@ public class DisambiguationFunction extends GrammarElement
 	{
 		this.code = code;
 	}
+	
+	/**
+	 * @see DisambiguationFunction#disambiguateTo
+	 */
+	public CopperElementReference getDisambiguateTo()
+	{
+		return disambiguateTo;
+	}
+	
+	/**
+	 * @see DisambiguationFunction#disambiguateTo
+	 */
+	public void setDisambiguateTo(CopperElementReference disambiguateTo)
+	{
+		this.disambiguateTo = disambiguateTo;
+	}
 
 	/**
 	 * @see DisambiguationFunction#members
@@ -94,21 +119,19 @@ public class DisambiguationFunction extends GrammarElement
 	{
 		this.members = members;
 	}
-		
+
 	/**
-	 * @see DisambiguationFunction#disambiguateTo
+	 * @see DisambiguationFunction#applicableToSubsets
 	 */
-	public CopperElementReference getDisambiguateTo()
-	{
-		return disambiguateTo;
+	public boolean isApplicableToSubsets() {
+		return applicableToSubsets;
 	}
 
 	/**
-	 * @see DisambiguationFunction#disambiguateTo
+	 * @see DisambiguationFunction#applicableToSubsets
 	 */
-	public void setDisambiguateTo(CopperElementReference disambiguateTo)
-	{
-		this.disambiguateTo = disambiguateTo;
+	public void setApplicableToSubsets(boolean applicableToSubsets) {
+		this.applicableToSubsets = applicableToSubsets;
 	}
 
 	public <RT,E extends Exception> RT acceptVisitor(CopperASTBeanVisitor<RT,E> visitor)
