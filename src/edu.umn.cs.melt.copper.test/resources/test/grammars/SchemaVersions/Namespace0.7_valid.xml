@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+   This tests the XML skin parser's automatic detection of namespaces
+   for different versions of Copper's XML skin schema. Implicitly
+   declared operators are only valid in version 0.7 of the schema.
+-->
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+  <Parser id="NamespaceTest" isUnitary="true">
+    <PP>NamespaceTest</PP>
+    <Grammars>
+      <GrammarRef id="NamespaceTest_1"/>
+    </Grammars>
+    <StartSymbol>
+      <NonterminalRef grammar="NamespaceTest_1" id="S"/>
+    </StartSymbol>
+  </Parser>
+  
+  <Grammar id="NamespaceTest_1">			
+    <Declarations>
+      <Nonterminal id="S"/>
+      
+      <Terminal id="s">
+	<Regex><CharacterSet><SingleCharacter char="s"/></CharacterSet></Regex>
+	<Operator>
+	  <!-- This implicitly declared operator class is valid in schema version 0.7 only. -->
+	  <Class>main_o</Class>
+	  <Precedence>1</Precedence>
+	  <RightAssociative/>
+	</Operator>
+      </Terminal>
+      
+      <Production id="StoS">
+	<!-- This implicitly declared operator class is valid in schema version 0.7 only. -->
+	<Class>main_o</Class>
+	<LHS><NonterminalRef id="S"/></LHS>
+	<RHS>
+	  <TerminalRef id="s"/>
+	</RHS>
+      </Production>
+    </Declarations>
+  </Grammar>
+</CopperSpec>

@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.skins.xml;
+package edu.umn.cs.melt.copper.compiletime.skins.xml.v0p8;
 
 import java.io.PrintStream;
 import java.util.TreeSet;

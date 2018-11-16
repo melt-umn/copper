@@ -22,7 +22,7 @@
     parser attribute declarations have only superficial changes.
   -->
 
-<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns/skins/xml/0.8">
 	<!-- 
 	     A parser element contains a set of grammars, a start symbol, and
 	     all the other ancillary data about the parser (class name, package

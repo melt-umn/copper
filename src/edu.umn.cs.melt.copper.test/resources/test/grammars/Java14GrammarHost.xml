@@ -1,4 +1,4 @@
-<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns/skins/xml/0.8">
     <Parser id="Module_edu_umn_cs_melt_ableJ14_host_Grammar" isUnitary="true">
         <Grammars>
             <GrammarRef id="S"/>

@@ -1,10 +1,11 @@
-package edu.umn.cs.melt.copper.compiletime.skins.xml;
+package edu.umn.cs.melt.copper.compiletime.skins.xml.v0p8;
 
 import java.util.Hashtable;
 
-class XMLSkinElements
+public class XMLSkinElements
 {
-
+	public static final String COPPER_NAMESPACE = "http://melt.cs.umn.edu/copper/xmlns/skins/xml/0.8";
+	
 	static enum Type
 	{
 		BRIDGE_PRODUCTIONS_ELEMENT				{ public String getNamespace() { return COPPER_NAMESPACE; } public String getName() { return "BridgeProductions"; } },
@@ -78,8 +79,6 @@ class XMLSkinElements
 		public String toString() { return getName(); }
 	}
 
-	static final String COPPER_NAMESPACE = "http://melt.cs.umn.edu/copper/xmlns";
-	
 	static Hashtable<String,Type> nodeTypes;
 	
 	static
