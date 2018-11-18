@@ -1,3 +1,8 @@
+Copper User Manual version 0.8
+==============================
+
+_There is also a PDF version of this manual available with each Copper release._
+
 Introduction.
 =============
 
@@ -20,6 +25,8 @@ The other two, an XML schema and an API, are meant for use with machine-generate
 Input to Copper consists, loosely, of preamble materials (package and import declarations, *etc.*), lexical syntax (terminal symbols and regexes used to build the scanner) and context-free syntax (nonterminal symbols and productions used to build the parser). Semantic actions may optionally be supplied with productions and terminals.
 
 Here is an example of a grammar specification written for the CUP skin of Copper, both with and without semantic actions.
+
+### Recognizer (without semantic actions)
 
     package math;
     /* This is a RECOGNIZER for a simple arithmetic
@@ -67,6 +74,8 @@ Here is an example of a grammar specification written for the CUP skin of Copper
         | NUMBER
         ;
     %cf}
+
+### Parser (with semantic actions)
 
     package math;
     /* This is a PARSER for a simple arithmetic
@@ -266,7 +275,7 @@ Parser name.
 
 The name of the parser class is provided by a line of the form
 
-> `%parser [classname]`
+`%parser [classname]`
 
 occurring on the line directly after the `%%` ending the preamble.
 
@@ -275,11 +284,11 @@ Lexical syntax blocks.
 
 Lexical syntax blocks are enclosed in the markers
 
-> `%lex{`
+`%lex{`
 
 and
 
-> `%lex}`
+`%lex}`
 
 They may include any number of declarations of terminals, disambiguation functions, and disambiguation groups.
 
@@ -287,7 +296,7 @@ They may include any number of declarations of terminals, disambiguation functio
 
 For convenience, terminals may be classified into one or more (non-disjoint) sets known as *terminal classes*. Terminal classes are declared with a line of this form:
 
-> `class tclass1[,tclass2,...];`
+`class tclass1[,tclass2,...];`
 
 Note that such a line only declares the classes, as opposed to specifying which terminals a class contains. That is done in terminal declarations.
 
@@ -295,16 +304,15 @@ Note that such a line only declares the classes, as opposed to specifying which 
 
 The simplest terminal declaration is of this form:
 
-> `terminal [termname] ::= /[regex]/;`
+`terminal [termname] ::= /[regex]/;`
 
 This declares a terminal with a specified regex that is a member of no terminal classes, does not specify any precedence relations with other terminals (although another terminal may include it on its dominate- or submit-list), and does not have a transparent prefix or semantic action.
 
 A terminal declaration specifying all optional attributes is of this form:
 
-> `ignore terminal [termtype] [termname] ::= /[regex]/`
-> > `in ([terminal classes]), < ([submit-list]), > ([dominate-list])`
-> >
-> > `{: ... :} %prefix [prefixname];`
+    ignore terminal [termtype] [termname] ::= /[regex]/
+       in ([terminal classes]), < ([submit-list]), > ([dominate-list])
+       {: ... :} %prefix [prefixname];
 
 This declares a terminal that is a member of all terminal classes on the list following `in`, with submit- and dominate-lists containing at least the terminals provided on the lists following `<` and `>` respectively, a semantic action returning a designated type, and a transparent prefix. It also includes the `ignore` modifier, designating it as grammar layout.
 
@@ -344,15 +352,15 @@ Consider a language with two keywords, `INT` and `FLOAT`, and identifiers define
 
 A disambiguation function takes this form:
 
-> `disambiguate [groupname]:(term1,term2[,term3,...])`
-> `{:`
-> > `[body of Java method returning one of term1, term2, ...]`
-> `:};`
+    disambiguate [groupname]:(term1,term2[,term3,...])
+    {:
+        [body of Java method returning one of term1, term2, ...]
+    :};
 
 A disambiguation group takes this form:
 
-> `disambiguate [groupname]:(term1,term2[,term3,...])`
-> > `::= [one of term1, term2, ...];`
+    disambiguate [groupname]:(term1,term2[,term3,...])
+        ::= [one of term1, term2, ...];
 
 ##### Example.
 
@@ -376,11 +384,11 @@ Context-free syntax blocks.
 
 Context-free syntax blocks are enclosed in the markers
 
-> `%cf{`
+`%cf{`
 
 and
 
-> `%cf}`
+`%cf}`
 
 They may include one declaration of a start symbol, and any number of declarations of nonterminals, operator precedence relations, and productions. With very few exceptions, these take the same form as in CUP.
 
@@ -388,19 +396,19 @@ They may include one declaration of a start symbol, and any number of declaratio
 
 Nonterminal declarations take the familiar form:
 
-> `non terminal [nttype] ntname1[,ntname2,...];`
+`non terminal [nttype] ntname1[,ntname2,...];`
 
 This declares one or more grammar nonterminals. If a type (`nttype`) is provided, the variable `RESULT` declared in the semantic action of any production with one of these nonterminals on its left-hand side will be of type `nttype`. If a type is not provided, the default is `Object`.
 
 The declaration of a grammar’s start symbol takes the self-explanatory form
 
-> `start with [ntname];`
+`start with [ntname];`
 
 ### Operator precedence/associativity declarations.
 
 Operator precedence and associativity declarations take the familiar form:
 
-> `precedence (left/right/nonassoc) term1[,term2,...];`
+`precedence (left/right/nonassoc) term1[,term2,...];`
 
 Terminals listed on the same line have identical *operator precedence*, while terminals listed on successive lines have successively higher precedence; *e.g.*, in the arithmetic grammar, `TIMES` has a higher precedence than `PLUS`, while `PLUS` and `BINARY_MINUS` have equal precedence. All terminals on a line have the *operator associativity* specified on that line.
 
@@ -428,17 +436,15 @@ These precedences and associativities are used to resolve shift-reduce conflicts
 
 Production declarations take the form:
 
-> `[ntname] ::=`
-> >   `  [sym1[:label1] ...]`
-> > > `{:`
-> > > > `/* Semantic action for [ntname] ::= RHS1 */`
-> > >
-> > > `:}`
-> > >
-> > > `[%prec [termname]] [%layout ([term1,..])]`
-> > `[ | RHS2 ...`
-> > `...]`
-> > `;`
+    [ntname] ::=
+           [sym1[:label1] ...]
+           {:
+               /* Semantic action for [ntname] ::= RHS1 */
+           :}
+              [%prec [termname]] [%layout ([term1,..])]
+           [ | RHS2 ...
+           ...]
+           ;
 
 This form is identical in most respects to that used in CUP. The declaration starts with a nonterminal, giving the left-hand side of the productions to follow, followed by `::=`. Then come one or more sequences of zero or more terminals and nonterminals (right-hand sides), separated by vertical bars. Each right-hand side may optionally have a semantic action and two attributes:
 
@@ -467,11 +473,9 @@ Auxiliary code is inserted in the body of the parser class. It is meant to hold 
 
 An auxiliary code block takes this form:
 
-> `%aux{`
->
-> > `[code block]`
->
-> `%aux}`
+    %aux{
+       [code block]
+    %aux}
 
 ### Initialization.
 
@@ -479,11 +483,9 @@ Initialization code is inserted in the body of a method run when the parser is s
 
 An initialization code block takes this form:
 
-> `%init{`
->
-> > `[code block]`
->
-> `%init}`
+    %init{
+       [code block]
+    %init}
 
 Parser attributes.
 ------------------
@@ -492,7 +494,7 @@ A *parser attribute* is a variable meant for use *exclusively* in semantic actio
 
 A parser attribute is declared as follows:
 
-> `%attr [attrtype] [attrname];`
+`%attr [attrtype] [attrname];`
 
 Both type and name are mandatory.
 
@@ -513,11 +515,12 @@ Command-line interface.
 
 Copper’s full command-line syntax is
 
-> `java -jar [location/]CopperCompiler.jar [ -? ] [ -version ]`
-> `[ -package packagename ] [ -parser classname ] [ -o outputfile ]`
-> `([ -q ] | [ -v ] | [ -vv ]) [ -mda ] [ -logfile file ]`
-> `([ -dump ] | [ -errordump ]) [ -dumpfile file ] [ -dumptype type ]`
-> `[ -skin skinname ] [ -engine enginename ] [ -pipeline pipelinename ] [custom-switches] spec-file1 spec-file2 ... spec-filen`
+     java -jar [location/]CopperCompiler.jar [ -? ] [ -version ]
+         [ -package packagename ] [ -parser classname ] [ -o outputfile ]
+         ([ -q ] | [ -v ] | [ -vv ]) [ -mda ] [ -logfile file ]
+         ([ -dump ] | [ -errordump ]) [ -dumpfile file ] [ -dumptype type ]
+         [ -skin skinname ] [ -engine enginename ] [ -pipeline pipelinename ]
+         [custom-switches] spec-file1 spec-file2 ... spec-filen
 
 All switches are optional. Most of the parameter-bearing switches have default values for when the switch is omitted.
 
@@ -525,7 +528,7 @@ All switches are optional. Most of the parameter-bearing switches have default v
 
 The simplest usage of Copper is
 
-> `java -jar [location/]CopperCompiler.jar [ -o parserfile ] specfile`
+     java -jar [location/]CopperCompiler.jar [ -o parserfile ] specfile
 
 This command takes a grammar specification in `specfile`, written in the CUP skin, and compiles it to a parser class of the package and class name specified in the specification itself; if the `-o` switch was specified, the source code of this parser class is output to `parserfile`. The other settings are at defaults.
 
@@ -641,9 +644,9 @@ A disambiguation function or group is identified by its name and the set of term
 
 The format of this dump is identical to CUP’s with regard to all constructs that appear in parse tables made by that parser generator. Copper adds more information to each state about layout and transparent prefixes:
 
-> `[layout term X]`
->
-> `[prefix term Y -> terms Z,A,...]`
+    [layout term X]
+
+    [prefix term Y -> terms Z,A,...]
 
 Constructs of this form mean that terminal `X` is valid as layout in the given state, while `Y` is valid as a transparent prefix and terminals `Z`, `A`, *etc.* may validly occur following `Y`.
 
@@ -668,9 +671,9 @@ The `-Xmx` switch is “nonstandard and subject to change without notice.”
 
 On occasion Copper will give an error of this form:
 
-> `Cyclic precedence relation involving terminals`
->
-> `[...,]`
+    Cyclic precedence relation involving terminals
+
+    [...,]
 
 This means that (1) there is a cyclic precedence relation among the listed terminals (*i.e.* there is no way to say that one of the terminals has the *maximum* precedence) and (2) they can all occur in the same context.
 
@@ -686,13 +689,11 @@ The `default` pipeline suppresses output of parser code in the event of an unres
 
 Copper is able to guarantee that there is no lexical ambiguity in its scanners, if certain compile-time checks pass. When any such checks fail, it is reported as a compilation error, of this form:
 
-> `Unresolvable lexical ambiguity at parser states`
->
-> > `[...]` `(between/among) terminals:`
-> >
-> > > `[...,`
-> > >
-> > > `...]`
+     Unresolvable lexical ambiguity at parser states`
+         [...] (between/among) terminals:
+
+         [...,
+         ...]
 
 This means that the the set of terminals given are not on each other’s dominate- or submit-lists, and there is no disambiguation function or group assigned to the set. There are three ways to resolve the ambiguity:
 
@@ -749,11 +750,9 @@ The Copper parser runtime includes a runnable class `edu.umn.cs.melt.copper.runt
 
 Its full command-line syntax is:
 
-> `java -classpath [location/]CopperRuntime.jar:[parser-classpath]`
->
-> `      edu.umn.cs.melt.copper.runtime.RunParser`
->
-> `      parser-class-name [-v] [-f input-file]`
+     java -classpath [location/]CopperRuntime.jar:[parser-classpath]
+           edu.umn.cs.melt.copper.runtime.RunParser
+           parser-class-name [-v] [-f input-file]
 
 -   `-f` tells the parser to read from the given `input-file` instead of from standard input.
 
