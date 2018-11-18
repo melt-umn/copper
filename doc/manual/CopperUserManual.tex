@@ -40,12 +40,11 @@
 \makeatother
 \begin{document}
 
-\title{\textbf{Copper version 0.7\\
+\title{\textbf{Copper version 0.8\\
 User Manual}}
 
 
 \author{August Schwerdfeger\\
-(\texttt{schwerdf@cs.umn.edu})\\
 Minnesota Extensible Language Tools\\
 University of Minnesota}
 
@@ -91,7 +90,7 @@ grammar writers.
 The other two, an XML schema and an API, are meant for use with
 machine-generated grammar specifications. They are not covered in this
 manual, but are instead documented in Copper's Javadoc
-(\texttt{http://melt.cs.umn.edu/copper/0.7/javadoc/}).
+(\url{http://melt.cs.umn.edu/copper/current/javadoc/}).
 
 Input to Copper consists, loosely, of preamble materials (package and
 import declarations, \emph{etc.}), lexical syntax (terminal symbols
@@ -105,215 +104,113 @@ of Copper, see Algorithms \ref{alg:Arithmetic-recognizer} (no semantic
 actions) and \ref{alg:Arithmetic-parser} (with semantic actions).
 %
 \begin{algorithm}
-\begin{codeblock}
-{\small package~math;}{\small \par}
+  {\small
+\begin{verbatim}
+package math;
+/* This is a RECOGNIZER for a simple arithmetic
+ * language; it will give errors when invalid
+ * strings are entered, but takes no action on valid
+ * strings. */
+%%
+%parser ArithmeticParser
 
-{\small /{*}~This~is~a~RECOGNIZER~for~a~simple~arithmetic}{\small \par}
+/* Lexical syntax */
+%lex{
+  /* Whitespace */
+    ignore terminal WS ::= /[ ]+/;
 
-~{\small {*}~language;~it~will~give~errors~when~invalid}{\small \par}
+  /* Grammar terminals */
+    terminal PLUS           ::= /\+/;
+    terminal UNARY_MINUS    ::= /-/;
+    terminal BINARY_MINUS   ::= /-/;
+    terminal TIMES          ::= /\*/;
+    terminal DIVIDE         ::= /\//;
+    terminal LPAREN         ::= /\(/;
+    terminal RPAREN         ::= /\)/;
+    terminal NUMBER         ::= /0|([1-9][0-9]*)/;
+%lex}
 
-~{\small {*}~strings~are~entered,~but~takes~no~action~on~valid}{\small \par}
+/* Context-free syntax */
+%cf{
+  /* Nonterminals */
+    non terminal expr;
+  /* Start symbol */
+    start with expr;
+  /* Precedences */
+    precedence left PLUS, BINARY_MINUS;
+    precedence left TIMES, DIVIDE;
+    precedence left UNARY_MINUS;
+  /* Production */
+    expr ::=
+      expr PLUS expr
+    | expr BINARY_MINUS expr
+    | expr TIMES expr
+    | expr DIVIDE expr
+    | UNARY_MINUS expr
+           %layout ()
+    | LPAREN expr RPAREN
+    | NUMBER
+    ;
+%cf}
 
-~{\small {*}~strings.~{*}/}{\small \par}
-
-{\small \%\%}{\small \par}
-
-{\small \%parser~ArithmeticParser}{\small \par}
-
-
-
-{\small /{*}~Lexical~syntax~{*}/}{\small \par}
-
-{\small \%lex\{}{\small \par}
-\begin{codeblock}
-{\small /{*}~Whitespace~{*}/}{\small \par}
-
-{\small ignore~terminal~WS~::=~/{[}~]+/;}{\small \par}
-
-
-
-{\small /{*}~Grammar~terminals~{*}/}{\small \par}
-
-{\small terminal~PLUS~~~~~~~~~~~::=~/\textbackslash{}+/;}{\small \par}
-
-{\small terminal~UNARY\_MINUS~~~~::=~/-/;}{\small \par}
-
-{\small terminal~BINARY\_MINUS~~~::=~/-/;}{\small \par}
-
-{\small terminal~TIMES~~~~~~~~~~::=~/\textbackslash{}{*}/;}{\small \par}
-
-{\small terminal~DIVIDE~~~~~~~~~::=~/\textbackslash{}//;}{\small \par}
-
-{\small terminal~LPAREN~~~~~~~~~::=~/\textbackslash{}(/;}{\small \par}
-
-{\small terminal~RPAREN~~~~~~~~~::=~/\textbackslash{})/;}{\small \par}
-
-{\small terminal~NUMBER~~~~~~~~~::=~/0|({[}1-9]{[}0-9]{*})/;}{\small \par}
-\end{codeblock}
-{\small \%lex\}}{\small \par}
-
-
-
-{\small /{*}~Context-free~syntax~{*}/}{\small \par}
-
-{\small \%cf\{}{\small \par}
-\begin{codeblock}
-{\small /{*}~Nonterminals~{*}/}{\small \par}
-
-{\small non~terminal~expr;}{\small \par}
-
-
-
-{\small /{*}~Start~symbol~{*}/}{\small \par}
-
-{\small start~with~expr;}{\small \par}
-
-
-
-{\small /{*}~Precedences~{*}/}{\small \par}
-
-{\small precedence~left~PLUS,~BINARY\_MINUS;}{\small \par}
-
-{\small precedence~left~TIMES,~DIVIDE;}{\small \par}
-
-{\small precedence~left~UNARY\_MINUS;}{\small \par}
-
-
-
-{\small expr~::=}{\small \par}
-\begin{codeblock}
-~{\small ~expr~PLUS~expr}{\small \par}
-
-{\small |~expr~BINARY\_MINUS~expr}{\small \par}
-
-{\small |~expr~TIMES~expr}{\small \par}
-
-{\small |~expr~DIVIDE~expr}{\small \par}
-
-{\small |~UNARY\_MINUS~expr}{\small \par}
-\begin{codeblock}
-{\small \%layout~()}{\small \par}
-\end{codeblock}
-{\small |~LPAREN~expr~RPAREN}{\small \par}
-
-{\small |~NUMBER}{\small \par}
-
-{\small ;}{\small \par}
-\end{codeblock}
-\end{codeblock}
-{\small \%cf\}}{\small \par}
-\end{codeblock}
-
+\end{verbatim}
+}
 \caption{\label{alg:Arithmetic-recognizer}Recognizer for simple arithmetic
 grammar.}
 \end{algorithm}
- %
+
 \begin{algorithm}
-\begin{codeblock}
-{\small package~math;}{\small \par}
+  {\small
+\begin{verbatim}
+package math;
+/* This is a PARSER for a simple arithmetic
+ * language; when run on a valid string, it
+ * will return the value of the expression
+ * represented by that string. */
+%%
+%parser ArithmeticParser
 
-{\small /{*}~This~is~a~PARSER~for~a~simple~arithmetic}{\small \par}
+/* Lexical syntax */
+%lex{
+  /* Whitespace */
+    ignore terminal WS ::= /[ ]+/;
+  /* Grammar terminals */
+    terminal PLUS           ::= /\+/;
+    terminal UNARY_MINUS    ::= /-/;
+    terminal BINARY_MINUS   ::= /-/;
+    terminal TIMES          ::= /\*/;
+    terminal DIVIDE         ::= /\//;
+    terminal LPAREN         ::= /\(/;
+    terminal RPAREN         ::= /\)/;
+    terminal Integer NUMBER ::= /0|([1-9][0-9]*)/
+      {: RESULT = Integer.parseInt(lexeme); :};
+%lex}
 
-~{\small {*}~language;~when~run~on~a~valid~string,~it}{\small \par}
+/* Context-free syntax */
+%cf{
+  /* Nonterminals */
+    non terminal Integer expr;
+  /* Start symbol */
+    start with expr;
+  /* Precedences */
+    precedence left PLUS, BINARY_MINUS;
+    precedence left TIMES, DIVIDE;
+    precedence left UNARY_MINUS;
+  /* Production */  
+    expr ::=
+      expr:l PLUS expr:r         {: RESULT = l + r; :}
+    | expr:l BINARY_MINUS expr:r {: RESULT = l - r; :}
+    | expr:l TIMES expr:r        {: RESULT = l * r; :}
+    | expr:l DIVIDE expr:r       {: RESULT = l / r; :}
+    | UNARY_MINUS expr:e         {: RESULT = -1 * e; :}
+           %layout ();           
+    | LPAREN expr:e RPAREN       {: RESULT = e; :};
+    | NUMBER:n                   {: RESULT = n; :};
+    ;
+%cf}
 
-~{\small {*}~will~return~the~value~of~the~expression}{\small \par}
-
-~{\small {*}~represented~by~that~string.~{*}/}{\small \par}
-
-{\small \%\%}{\small \par}
-
-{\small \%parser~ArithmeticParser}{\small \par}
-
-
-
-{\small /{*}~Lexical~syntax~{*}/}{\small \par}
-
-{\small \%lex\{}{\small \par}
-\begin{codeblock}
-{\small /{*}~Whitespace~{*}/}{\small \par}
-
-{\small ignore~terminal~WS~::=~/{[}~]+/;}{\small \par}
-
-
-
-{\small /{*}~Grammar~terminals~{*}/}{\small \par}
-
-{\small terminal~PLUS~~~~~~~~~~~::=~/\textbackslash{}+/;}{\small \par}
-
-{\small terminal~UNARY\_MINUS~~~~::=~/-/;}{\small \par}
-
-{\small terminal~BINARY\_MINUS~~~::=~/-/;}{\small \par}
-
-{\small terminal~TIMES~~~~~~~~~~::=~/\textbackslash{}{*}/;}{\small \par}
-
-{\small terminal~DIVIDE~~~~~~~~~::=~/\textbackslash{}//;}{\small \par}
-
-{\small terminal~LPAREN~~~~~~~~~::=~/\textbackslash{}(/;}{\small \par}
-
-{\small terminal~RPAREN~~~~~~~~~::=~/\textbackslash{})/;}{\small \par}
-
-{\small terminal~Integer~NUMBER~::=~/0|({[}1-9]{[}0-9]{*})/}{\small \par}
-
-{\small \{:}{\small \par}
-\begin{codeblock}
-{\small RESULT~=~Integer.parseInt(lexeme);}{\small \par}
-\end{codeblock}
-{\small :\};}{\small \par}
-\end{codeblock}
-{\small \%lex\}}{\small \par}
-
-
-
-{\small /{*}~Context-free~syntax~{*}/}{\small \par}
-
-{\small \%cf\{}{\small \par}
-\begin{codeblock}
-{\small /{*}~Nonterminals~{*}/}{\small \par}
-
-{\small non~terminal~Integer~expr;}{\small \par}
-
-
-
-{\small /{*}~Start~symbol~{*}/}{\small \par}
-
-{\small start~with~expr;}{\small \par}
-
-
-
-{\small /{*}~Precedences~{*}/}{\small \par}
-
-{\small precedence~left~PLUS,~BINARY\_MINUS;}{\small \par}
-
-{\small precedence~left~TIMES,~DIVIDE;}{\small \par}
-
-{\small precedence~left~UNARY\_MINUS;}{\small \par}
-
-
-
-{\small expr~::=}{\small \par}
-\begin{codeblock}
-~{\small ~expr:l~PLUS~expr:r~~~~~~~~~~~\{:~RESULT~=~l~+~r;~:\}}{\small \par}
-
-{\small |~expr:l~BINARY\_MINUS~expr:r~\{:~RESULT~=~l~-~r;~:\}}{\small \par}
-
-{\small |~expr:l~TIMES~expr:r~~~~~~~~\{:~RESULT~=~l~{*}~r;~:\}}{\small \par}
-
-{\small |~expr:l~DIVIDE~expr:r~~~~~~~\{:~RESULT~=~l~/~r;~:\}}{\small \par}
-
-{\small |~UNARY\_MINUS~expr:e~~~~~~~~~\{:~RESULT~=~-1~{*}~e;~:\}}{\small \par}
-\begin{codeblock}
-{\small \%layout~()}{\small \par}
-\end{codeblock}
-{\small |~LPAREN~expr:e~RPAREN~~~~~~~\{:~RESULT~=~e;~:\}}{\small \par}
-
-{\small |~NUMBER:n~~~~~~~~~~~~~~~~~~~\{:~RESULT~=~n;~:\}}{\small \par}
-
-{\small ;}{\small \par}
-\end{codeblock}
-\end{codeblock}
-{\small \%cf\}}{\small \par}
-\end{codeblock}
-
+\end{verbatim}
+}
 \caption{\label{alg:Arithmetic-parser}Parser for simple arithmetic grammar.}
 \end{algorithm}
  The parser compiled for this grammar will recognize arithmetic operations
@@ -388,17 +285,13 @@ layout.}
 With a scanner generator such as Lex or JLex, the specification consists
 of a list of regexes, optionally with semantic actions attached:
 
-\begin{codeblock}
-regex1~\{~return~tok(sym.TERM1,yytext());~\}
+\begin{verbatim}
+  regex1 { return tok(sym.TERM1,yytext()); }
+  regex2 { return tok(sym.TERM2,yytext()); }
+  layout_regex { /* No semantic action. */ }
+  regex3 { ...
+\end{verbatim}
 
-regex2~\{~return~tok(sym.TERM2,yytext());~\}
-
-layout\_regex~\{~/{*}~No~semantic~action.~{*}/~\}
-
-regex3~\{~...
-
-
-\end{codeblock}
 When the scanner runs on an input, it will check its list of regexes
 in downward order until it finds one that matches the head of the
 input. It will then dequeue the matching part of the input (the {}``lexeme,''
@@ -719,7 +612,8 @@ This declares a terminal that is a member of all terminal classes
 on the list following \texttt{in}, with submit- and dominate-lists
 containing at least the terminals provided on the lists following
 \texttt{<} and \texttt{>} respectively, a semantic action returning
-a designated type, and a transparent prefix.
+a designated type, and a transparent prefix. It also includes the
+\texttt{ignore} modifier, designating it as grammar layout.
 
 Submit- and dominate-lists may contain the names of terminal classes
 as well as the names of terminals. Placing a terminal class on the
@@ -729,10 +623,10 @@ list.
 
 \paragraph{N.B.:}
 
-Line comments are not allowed to be placed between the \texttt{::=}
-and the regex in terminal declarations, because the double-slash of
-the line comment is indistinguishable from a regex for the empty string
-(as in \texttt{terminal ws ::= //;}).
+Line comments are not allowed between the \texttt{::=} and the regex
+in terminal declarations, because the double-slash of the line comment
+is indistinguishable from a regex for the empty string (as in
+\texttt{terminal ws ::= //;}).
 
 
 \subsubsection{Semantic actions on terminals.}
@@ -764,35 +658,21 @@ This language is defined by the lexical syntax block in Algorithm
 
 %
 \begin{algorithm}
-\begin{codeblock}
-\%lex\{
-\begin{codeblock}
-class~keywords;
+\begin{verbatim}
+%lex{
+  class keywords;
 
-~
-
-terminal~INT~::=~/int/
-\begin{codeblock}
-in~(keywords),~<~(),~>~();
-\end{codeblock}
-terminal~FLOAT~::=~/float/
-\begin{codeblock}
-in~(keywords),~<~(),~>~();
-\end{codeblock}
-/{*}~Return~a~String:~the~token's~lexeme~{*}/
-
-terminal~String~IDENTIFIER~::=~/{[}a-z]+/
-\begin{codeblock}
-in~(),~<~(keywords),~>~()
-\end{codeblock}
-\{:
-\begin{codeblock}
-RESULT~=~lexeme;
-\end{codeblock}
-:\};
-\end{codeblock}
-\%lex\}
-\end{codeblock}
+  terminal INT ::= /int/
+    in (keywords), < (), > ();
+  terminal FLOAT ::= /float/
+    in (keywords), < (), > ();
+  
+  /* Return a String: the token's lexeme */
+  terminal String IDENTIFIER ::= /[a-z]+/
+    in (), < (keywords), > ()
+  {: RESULT = lexeme; :};
+%lex}
+\end{verbatim}
 
 \caption{\label{alg:Terminal-declaration-example.}Terminal declaration example.}
 \end{algorithm}
@@ -835,30 +715,18 @@ to implement this, as shown in Algorithm \ref{alg:Disambiguation-group-example.}
 
 %
 \begin{algorithm}
-\begin{codeblock}
-\%lex\{
-\begin{codeblock}
-terminal~INT~::=~/int/;
+\begin{verbatim}
+%lex{
+  terminal INT ::= /int/;
+  terminal FLOAT ::= /float/;
+  terminal String IDENTIFIER ::= /{[}a-z]+/
+    {: RESULT = lexeme; :};
 
-terminal~FLOAT~::=~/float/;
+  disambiguate ID_FLOAT:(FLOAT,IDENTIFIER) ::= FLOAT;
 
-terminal~String~IDENTIFIER~::=~/{[}a-z]+/
-
-\{:
-\begin{codeblock}
-RESULT~=~lexeme;
-\end{codeblock}
-:\};
-
-~
-
-disambiguate~ID\_FLOAT:(FLOAT,IDENTIFIER)~::=~FLOAT;
-
-disambiguate~ID\_INT:(INT,IDENTIFIER)~::=~INT;
-\end{codeblock}
-\%lex\}
-\end{codeblock}
-
+  disambiguate ID_INT:(INT,IDENTIFIER) ::= INT;
+%lex}
+\end{verbatim}
 \caption{\label{alg:Disambiguation-group-example.}Disambiguation group example.}
 \end{algorithm}
 
@@ -1066,8 +934,7 @@ Both type and name are mandatory.
 To compile a Copper parser, you need:
 
 \begin{itemize}
-\item Java Runtime Environment v.1.5 or greater.
-\item 256MB of memory (512--768 recommended if compiling large grammars).
+\item Java Runtime Environment version 6 or greater.
 \item \texttt{CopperCompiler.jar} on the classpath.
 \end{itemize}
 
@@ -1212,13 +1079,12 @@ two main dump formats.
 
 Copper is designed to support several compilation ``pipelines,'' or routines for compilation. These may compile using different algorithms or implementations, or to different output formats.
 
-There are two pipelines currently supported in Copper,
-\texttt{default} (a practically-oriented compiler implementation
-introduced in Copper 0.7) and \texttt{legacy} (the research-oriented
-implementation from versions 0.6 and earlier, which supports the
-experimental features of Copper).
+There are several pipelines currently supported in Copper. Most
+grammar writers will use the \texttt{default} pipeline, a
+practically-oriented implementation.
 
-Unless grammar writers are using the experimental features of Copper,
+The other pipelines support experimental features not covered by this
+manual. Unless grammar writers are using these experimental features,
 they should use the \texttt{default} pipeline.
 
 \subsubsection{\texttt{-skin}, \texttt{-engine}.}
@@ -1232,14 +1098,14 @@ On the input side, as mentioned, there are several input formats or
 phase. Most grammar writers will use the default skin, \texttt{cup}.
 The XML schema is also provided as a skin, \texttt{xml}. Additionally,
 one can specify a grammar using the Java API and pass it directly to
-the compiler without parsing (see the method
+the compiler (see the method
 \texttt{ParserCompiler.compile(ParserBean,ParserCompilerParameters)}
 in Copper's Javadoc).
 
 On the output side, there are different ``engines,'' or parser
 implementations, into which the compiled LR DFA can be placed. Most
 grammar writers will use the default \texttt{single} engine, which is
-the only engine supported outside the \texttt{legacy} pipeline.
+the only engine supported in the \texttt{default} pipeline.
 
 \section{Copper ANT task and API.}
 
@@ -1320,9 +1186,9 @@ in Copper are discussed.
 On larger grammars, Copper's memory requirements sometimes exceed the
 JVM's default maximum heap size, at which point compilation will terminate with an \texttt{OutOfMemoryError}. If this occurs, allocate more memory to the JVM by increasing the maximum heap size with the \texttt{-Xmx} switch, \emph{e.g.}:
 
-\begin{codeblock}
-java~-Xmx1024m~-jar~...
-\end{codeblock}
+\begin{verbatim}
+java -Xmx1024m -jar ...
+\end{verbatim}
 The \texttt{-Xmx} switch is {}``nonstandard and subject to change
 without notice.''
 
@@ -1355,8 +1221,9 @@ skin, reduce-reduce conflicts are automatically resolved by the order
 in which conflicting productions appear in the file, as is done in
 CUP. Any shift-reduce conflicts are reported as compilation errors.
 
-The \texttt{default} pipeline suppresses output of parser code , but
-the \texttt{legacy} pipeline may not. Undefined behavior occurs if a
+The \texttt{default} pipeline suppresses output of parser code in the
+event of an unresolved conflict, but the \texttt{legacy} pipeline or
+other experimental pipelines may not. Undefined behavior occurs if a
 parser compiled from a conflicting table is run.
 
 \subsection{Lexical ambiguity.}
@@ -1396,7 +1263,7 @@ in the same context.
 To run a Copper parser, you need:
 
 \begin{itemize}
-\item Java Runtime Environment v.1.5 or greater.
+\item Java Runtime Environment version 6 or greater.
 \item \texttt{CopperRuntime.jar} or \texttt{CopperCompiler.jar} on the classpath.
 \end{itemize}
 
@@ -1416,9 +1283,9 @@ the interface
 
 \begin{itemize}
 \item \texttt{parse(Reader input)}
-\item \texttt{parse(Reader input,String inputName)}
+\item \texttt{parse(Reader input, String inputName)}
 \item \texttt{parse(String text)}
-\item \texttt{parse(String text,String inputName)}
+\item \texttt{parse(String text, String inputName)}
 \end{itemize}
 Each function returns an \texttt{Object} that is the \texttt{RESULT}
 of the last production reduced in the parse (\emph{i.e.}, the root
@@ -2146,13 +2013,13 @@ exprests~::=
 
 \chapter{\label{cha:License.}License.}
 
-Portions of Copper are \copyright{} 2005--2006, 2012, 2015 August
-Schwerdfeger, \copyright{} 2006--2010 Regents of the University of
+Portions of Copper are \copyright{} 2005--2018 August
+Schwerdfeger, \copyright{} 2006--2010 and 2016 Regents of the University of
 Minnesota, and \copyright{} 2011--2012 Adventium Enterprises LLC.
 
 Licensing information for Copper can be found in the files
-\texttt{CREDITS.txt} and \texttt{LICENSE.txt}, which are in the Copper
-source tree and both of the Copper JARs.
+\texttt{CREDITS.txt} and \texttt{LICENSE.txt} in the Copper source
+tree.
 
 This user manual is licensed under the Creative
 Commons Attribution-ShareAlike license, version 4.0 or later, the text

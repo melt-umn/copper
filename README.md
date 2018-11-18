@@ -10,7 +10,7 @@ This site offers the following downloads:
 
   * JARs for Copper versions 0.6.0 and greater (see CHANGELOG.md for detailed Copper version information).
   * Copper's source code, including example parser specifications.
-  * A PDF user manual intended for those who use Copper directly.
+  * A user manual (in online and PDF formats) intended for those who use Copper directly.
   * Javadoc for the APIs of Copper's parser compiler and parsers, intended primarily for developers who wish to use Copper as a back-end.
 
 [MELT's Copper website](http://melt.cs.umn.edu/copper) contains:
@@ -24,3 +24,4 @@ This site offers the following downloads:
   * Schwerdfeger, A. and Van Wyk, E. _[Verifiable Composition of Deterministic Grammars](http://www.umsec.umn.edu/publications/Verifiable-Composition-Deterministic-Grammars)_. In _Proceedings of the ACM SIGPLAN Conference on Programming Language Design and Implementation_ (PLDI). ACM Press, June 2009.
   * Schwerdfeger, A. and Van Wyk, E. _[Verifiable Parse Table Composition for Deterministic Parsing](http://www.umsec.umn.edu/publications/Verifiable-Parse-Table-Composition-Deterministic-P)_. In _Proceedings of the International Conference on Software Language Engineering_. LNCS, Springer-Verlag, February 2010.
   * Schwerdfeger, A. _[Context-Aware Scanning and Determinism-Preserving Grammar Composition, in Theory and Practice](http://purl.umn.edu/95605)_. Ph.D. thesis, University of Minnesota, July 2010.
+  
