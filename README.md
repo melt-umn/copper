@@ -8,9 +8,9 @@ Copper employs a modified scanning algorithm, [context-aware scanning](http://ww
 
 This site offers the following downloads:
 
-  * JARs for Copper versions 0.6.0 and greater (see CHANGELOG.md for detailed Copper version information).
-  * Copper's source code, including example parser specifications.
-  * A user manual (in online and PDF formats) intended for those who use Copper directly.
+  * JARs for Copper versions 0.6.0 and greater (see [CHANGELOG.md](CHANGELOG.md) for detailed Copper version information).
+  * Copper's source code, including [example parser specifications](src/edu.umn.cs.melt.copper.test/resources/test/grammars)
+  * A user manual (in [online](doc/manual/CopperUserManual.md) and PDF formats) intended for those who use Copper directly.
   * Javadoc for the APIs of Copper's parser compiler and parsers, intended primarily for developers who wish to use Copper as a back-end.
 
 [MELT's Copper website](http://melt.cs.umn.edu/copper) contains:
