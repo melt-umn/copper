@@ -2,7 +2,9 @@
 
 Copper is a Java-based integrated scanner and parser generator developed by the [Minnesota Extensible Language Tools (MELT) research group](http://melt.cs.umn.edu) at the University of Minnesota with assistance from the National Science Foundation, IBM, the McKnight Foundation, and [Adventium Labs](http://www.adventiumlabs.com). It serves as the parsing back-end of [Silver](http://melt.cs.umn.edu/silver), another MELT tool.
 
-Copper employs a modified scanning algorithm, [context-aware scanning](http://www.umsec.umn.edu/publications/Context-Aware-Scanning-Parsing-Extensible-Language), which uses parsing context to resolve lexical ambiguities. This allows for more declarative parser specifications, especially of embedded and extensible languages.
+Copper employs the LALR(1) parsing algorithm in conjunction with a modified scanning algorithm, [context-aware scanning](http://www.umsec.umn.edu/publications/Context-Aware-Scanning-Parsing-Extensible-Language), which uses parsing context to resolve lexical ambiguities. This allows for more declarative parser specifications, especially of embedded and extensible languages.
+
+It also provides [an analysis](http://www.umsec.umn.edu/publications/Verifiable-Composition-Deterministic-Grammars) for use with extensible languages. The pass/fail analysis is applied independently to each language extension, and any combination of passing extensions is guaranteed to compile without parse-table conflicts. This lets any end-user pick and choose extensions in the same manner as libraries.
 
 ### Downloads and documentation ###
 
