@@ -8,6 +8,8 @@
 
 ## 0.8.0 ##
 
+_Released November 28, 2018._
+
 Some bug fixes and minor improvements, coupled with a significant refactoring of the build system and major new experimental functionality.
 
 ### Bug fixes ###
