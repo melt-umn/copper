@@ -1,8 +1,12 @@
-bin
-jar
-etc/Copper\.properties
+.DS_Store
+.idea
+target
+src/**/target
+src/**/dependency-reduced-pom.xml
+build/**/target
+build/**/dependency-reduced-pom.xml
 doc/javadoc/**
 doc/manual/**
 !doc/manual/*.tex
-tests/parsers
+!doc/manual/*.md
 !doc/javadoc/README.txt

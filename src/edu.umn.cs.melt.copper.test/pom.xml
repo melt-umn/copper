@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>copper-test</artifactId>
+  <packaging>jar</packaging>
+
+  <name>copper-test</name>
+  <description>Classes containing examples, unit and regression tests for the Copper parser generator.</description>
+
+  <build>
+    <plugins>
+      <!--
+      Evidentally, you just configure surefire to find the unit tests,
+      and failsafe to find the integration tests.
+      
+      By default, it seems surefire does not spot anything?
+      This is unexpected. I thought it'd include "**/*Tests.java" by default.
+      I've explicitly configured it to exclude everything just to be certain,
+      but apparently you can drop surefire configuration and everything works,
+      not sure why.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.20.1</version>
+        <configuration>
+          <!-- Defaults: **/*Test.java, **/*Tests.java, **/Test*.java, **/*TestCase.java -->
+          <excludes>
+            <exclude>**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.20.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- Defaults: **/IT*.java, **/*IT.java, **/*ITCase.java -->
+          <includes>
+              <include>**/*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+    </plugins>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <testResources>
+      <testResource>
+        <directory>resources/test</directory>
+        <includes>
+          <include>**</include>
+        </includes>
+      </testResource>
+    </testResources>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-compiler</artifactId>
+      <version>0.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <parent>
+    <relativePath>../../pom.xml</relativePath>
+    <version>0.8.0</version>
+    <artifactId>copper-parent</artifactId>
+    <groupId>edu.umn.cs.melt</groupId>
+  </parent>
+</project>

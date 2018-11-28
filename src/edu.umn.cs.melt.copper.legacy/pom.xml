@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>copper-legacy</artifactId>
+  <packaging>jar</packaging>
+
+  <name>copper-legacy</name>
+  <description>Classes for the legacy parser compilers from Copper 0.5.</description>
+
+  <properties>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main</directory>
+        <includes>
+          <include>resources/edu/umn/cs/melt/copper/legacy/dumpformat.xslt</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.umn.cs.melt</groupId>
+      <artifactId>copper-compiler</artifactId>
+      <version>0.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.0</version>
+    </dependency>    
+  </dependencies>
+
+  <parent>
+    <relativePath>../../pom.xml</relativePath>
+    <version>0.8.0</version>
+    <artifactId>copper-parent</artifactId>
+    <groupId>edu.umn.cs.melt</groupId>
+  </parent>
+</project>
