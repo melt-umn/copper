@@ -27,7 +27,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  * To perform these tasks, the StandardPipeline holds objects of type {@link SpecParser},
  * {@link SpecCompiler}, and {@link SourceBuilder} respectively.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  * @param <SCIN> The type used to hold the input specification in structured form (e.g., {@link ParserBean}).
  * @param <SCOUT> The type used to hold the compiled parser information prior to conversion to source code

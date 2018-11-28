@@ -7,7 +7,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVi
 
 /**
  * Represents a regular expression.
- * @author schwerdf
+ * @author @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified by Kevin to implement Serializable

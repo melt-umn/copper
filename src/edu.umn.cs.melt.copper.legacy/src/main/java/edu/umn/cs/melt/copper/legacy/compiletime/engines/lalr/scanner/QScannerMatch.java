@@ -5,7 +5,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.auxiliary.Mergable;
 
 /* (non-Javadoc)
  * Holds a set of matches for a given token.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class QScannerMatch implements Mergable<QScannerMatch>

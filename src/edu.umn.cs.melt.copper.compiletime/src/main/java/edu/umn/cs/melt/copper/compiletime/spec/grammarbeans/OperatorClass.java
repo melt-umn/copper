@@ -5,7 +5,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
 /**
  * Represents an operator class, used to create separate scopes of precedence when resolving
  * shift-reduce or reduce-reduce conflicts.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class OperatorClass extends GrammarElement

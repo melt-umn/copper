@@ -20,7 +20,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /* (non-Javadoc)
  * Functions as a container for semantic actions --- modifications to
  * parser attributes and such.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class SemanticActionContainer implements edu.umn.cs.melt.copper.runtime.engines.semantics.SemanticActionContainer<QScannerMatchData,CopperException>

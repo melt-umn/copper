@@ -20,7 +20,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
  * If {@code -v} is specified, any exceptions thrown will have their full stack trace displayed instead of just their
  * message.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt; 
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt; 
  *
  */
 public class RunParser

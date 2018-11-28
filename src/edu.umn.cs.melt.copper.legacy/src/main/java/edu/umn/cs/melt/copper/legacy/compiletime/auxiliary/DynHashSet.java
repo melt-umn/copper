@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
  * (1) <code>get()</code>ting of elements;
  * (2) merging when elements are added.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public class DynHashSet<E extends Mergable<? super E>> implements Iterable<E>,Mergable< DynHashSet<E> >
 {

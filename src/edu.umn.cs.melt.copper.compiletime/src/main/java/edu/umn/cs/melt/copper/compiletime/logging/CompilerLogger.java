@@ -12,7 +12,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  * if the message has a level at or above the logger's level (see {@link CompilerLogMessage#getLevel()}
  * the logger will send it on to the handler.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class CompilerLogger

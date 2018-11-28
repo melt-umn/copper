@@ -24,7 +24,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.TerminalClass;
 
 /**
  * Prints out a parser spec in plaintext.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class ParserSpecPlaintextPrinter implements CopperASTBeanVisitor<Boolean,RuntimeException>,RegexBeanVisitor<Boolean,RuntimeException>

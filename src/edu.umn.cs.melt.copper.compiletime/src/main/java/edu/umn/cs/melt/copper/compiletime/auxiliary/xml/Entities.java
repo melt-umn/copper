@@ -39,7 +39,7 @@ import java.util.TreeMap;
  * 
  * @author <a href="mailto:alex@purpletech.com">Alexander Day Chaffee</a>
  * @author <a href="mailto:ggregory@seagullsw.com">Gary Gregory</a>
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @since 2.0
  * @version $Id: Entities.java 911986 2010-02-19 21:19:05Z niallp $
  * Modified by August Schwerdfeger to function independent of the Apache Commons.

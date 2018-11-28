@@ -13,7 +13,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
  * Contains a static method for converting a general NFA to a DFA.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class NFA2DFA

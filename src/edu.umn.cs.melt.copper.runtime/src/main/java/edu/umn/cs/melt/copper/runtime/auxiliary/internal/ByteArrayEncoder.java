@@ -9,7 +9,7 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  * Compresses arrays of bytes and encodes them as Java string literals.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class ByteArrayEncoder

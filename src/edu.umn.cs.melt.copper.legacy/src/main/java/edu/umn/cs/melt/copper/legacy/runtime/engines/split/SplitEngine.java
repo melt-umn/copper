@@ -18,7 +18,7 @@ import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 /**
  * An experimental engine built to implement the runtime side of
  * parsers built by parse table composition.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class SplitEngine<ROOT,EXCEPT extends Exception> implements CopperParser<ROOT,EXCEPT>

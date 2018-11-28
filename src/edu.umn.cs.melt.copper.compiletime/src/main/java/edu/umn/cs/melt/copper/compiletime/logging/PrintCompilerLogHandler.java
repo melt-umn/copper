@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * The default handler for log messages: simply holds a buffer of them and prints the contents
  * of the buffer when it is "flushed."
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class PrintCompilerLogHandler implements CompilerLogHandler

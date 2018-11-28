@@ -10,7 +10,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  * This class contains methods to prepare a Copper specification for compilation by checking
  * its consistency and converting it into a normal form. These methods are called automatically
  * by {@link ParserCompiler#compile(ParserBean, edu.umn.cs.melt.copper.main.ParserCompilerParameters)}.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public class ParserSpecProcessor
 {

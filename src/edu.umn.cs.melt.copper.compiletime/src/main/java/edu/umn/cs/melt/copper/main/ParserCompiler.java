@@ -25,7 +25,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  * The <code>main()</code> method contains the command-line interface,
  * while the <code>compile()</code> methods provide a Java API
  * usable by ANT tasks or other Java methods.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public class ParserCompiler
 {

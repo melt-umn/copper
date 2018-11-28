@@ -10,7 +10,7 @@ import edu.umn.cs.melt.copper.main.CopperDumpType;
  * of a grammar and/or parser. It is deliberately agnostic as to the parameters
  * passed in, to allow different implementing classes to produce different sorts
  * of dumps.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public interface Dumper

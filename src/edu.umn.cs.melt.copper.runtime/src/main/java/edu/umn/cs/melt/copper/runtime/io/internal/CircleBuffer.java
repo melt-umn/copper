@@ -4,7 +4,7 @@ package edu.umn.cs.melt.copper.runtime.io.internal;
  * A "double-ended queue" that supports four operations
  * (offer, poll, indexed access, and element count)
  * each in amortized constant time.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class CircleBuffer

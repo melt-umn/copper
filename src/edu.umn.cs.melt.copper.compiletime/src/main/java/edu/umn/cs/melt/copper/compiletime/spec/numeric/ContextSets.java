@@ -7,7 +7,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 
 /**
  * Holds a grammar's "context sets," {@code first}, {@code follow}, and {@code nullable}.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class ContextSets

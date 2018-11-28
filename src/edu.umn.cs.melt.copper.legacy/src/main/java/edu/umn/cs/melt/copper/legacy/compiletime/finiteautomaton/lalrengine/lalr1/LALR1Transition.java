@@ -5,7 +5,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.finiteautomaton.lalrengine.LALR
 
 /**
  * Represents a transition in a LALR(1) DFA.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class LALR1Transition implements LALRTransition<LALR1StateItem,LALR1State>

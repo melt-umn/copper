@@ -13,7 +13,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
  * Holds a representation of a parser that is (1) flat and non-hierarchical; (2) entirely numeric,
  * with all nomenclature being relegated to a symbol table (see {@link SymbolTable}). 
  *
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified by Kevin to allow serialization

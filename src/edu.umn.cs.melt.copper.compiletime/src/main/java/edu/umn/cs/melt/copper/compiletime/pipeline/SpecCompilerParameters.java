@@ -10,7 +10,7 @@ import edu.umn.cs.melt.copper.main.CopperIOType;
 /**
  * Copper input arguments relevant to the parser compilation task.
  * @see StandardPipeline
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public interface SpecCompilerParameters extends UniversalProcessParameters

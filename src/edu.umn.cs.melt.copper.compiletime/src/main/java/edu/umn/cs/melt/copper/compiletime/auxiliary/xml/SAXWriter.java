@@ -11,7 +11,7 @@ import org.xml.sax.SAXException;
  * This code is &copy; 2012 August Schwerdfeger and licensed under the
  * terms of the GNU Lesser General Public License, version 3 or later.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public interface SAXWriter extends ContentHandler

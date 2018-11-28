@@ -12,7 +12,7 @@ import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 /* (non-Javadoc)
  * A type of QScannerMatch retaining a record of only the
  * longest match encountered.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class QScannerMatchLongest extends QScannerMatch
@@ -98,7 +98,7 @@ public class QScannerMatchLongest extends QScannerMatch
 
 	/* (non-Javadoc)
 	 * Class to generate instances of QScannerMatchLongest.
-	 * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+	 * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
 	 *
 	 */
 	public static class Generator implements QScannerMatchGenerator

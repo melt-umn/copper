@@ -36,7 +36,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexSimpli
 
 /**
  * Prints out a parser spec in XML.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXException>,RegexBeanVisitor<Boolean,SAXException>

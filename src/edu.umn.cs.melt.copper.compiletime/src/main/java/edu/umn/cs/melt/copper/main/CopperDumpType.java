@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 /**
  * Represents the formats for grammar dumps available in Copper.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public enum CopperDumpType
 {

@@ -13,7 +13,7 @@ import edu.umn.cs.melt.copper.runtime.io.InputPosition;
  * match a specific regex (e.g. QScannerMatchLongest for
  * identifier regexes).
  * @see edu.umn.cs.melt.copper.compiletime.engines.lalr.scanner.QScannerMatchMap
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public interface QScannerMatchGenerator

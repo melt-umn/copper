@@ -2,7 +2,7 @@ package edu.umn.cs.melt.copper.legacy.compiletime.parsetable;
 
 /**
  * Interface for visitors to a parse action.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  * @param <RT> The type of values returned by the visitor's methods.
  * @param <E> The type of exceptions thrown by the visitor's methods.

@@ -10,7 +10,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  * Encapsulates a "pipeline": a process that takes a set of input arguments, processes it
  * (e.g., by compiling a parser and outputting its source code), and outputs a return
  * code.  
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public interface Pipeline

@@ -9,7 +9,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * The interface for classes performing the specification-parsing task ("skins").
  * @see StandardPipeline
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public interface SpecParser<OUT>
 {

@@ -4,7 +4,7 @@ import java.util.BitSet;
 
 /**
  * Holds item sets (without lookahead) and transitions for an LR DFA. 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified by Kevin to included initNTs

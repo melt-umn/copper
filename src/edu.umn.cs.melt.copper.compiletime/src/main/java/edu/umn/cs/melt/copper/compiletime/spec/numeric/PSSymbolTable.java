@@ -17,7 +17,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.TerminalClass;
 
 /**
  * Extends {@link SymbolTable} with methods specifically related to {@link CopperASTBean}-derived objects.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class PSSymbolTable extends SymbolTable<CopperASTBean>

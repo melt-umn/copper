@@ -15,7 +15,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
  * Represents an "empty string" regex.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class EmptyString extends ParsedRegex

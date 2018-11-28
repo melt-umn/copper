@@ -12,7 +12,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 /**
  * Counts the parse table conflicts in a compiled parser specification, and checks if they have all been resolved.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class ParseTableConflictChecker

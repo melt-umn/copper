@@ -11,7 +11,7 @@ import edu.umn.cs.melt.copper.runtime.io.InputPosition;
  * Class to represent the "source" of a context free grammar: nonterminals,
  * terminals, productions, and the start symbol, as well as terminal regexes, nullable,
  * first and follow sets.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class GrammarSource

@@ -37,7 +37,7 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
  * 2. That all references in the parser or grammar are defined.
  * 3. That all references are to elements of the correct type (e.g., nonterminals on the
  *    left-hand side of a production, terminals or terminal classes in a submit list).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 class GrammarConsistencyChecker implements CopperASTBeanVisitor<Boolean, RuntimeException>, RegexBeanVisitor<Boolean, RuntimeException>
 {

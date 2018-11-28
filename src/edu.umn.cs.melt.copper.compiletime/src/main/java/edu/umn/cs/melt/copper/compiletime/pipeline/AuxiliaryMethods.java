@@ -9,7 +9,7 @@ import edu.umn.cs.melt.copper.compiletime.logging.PrintCompilerLogHandler;
 
 /**
  * Auxiliary methods commonly used in pipelines. 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class AuxiliaryMethods

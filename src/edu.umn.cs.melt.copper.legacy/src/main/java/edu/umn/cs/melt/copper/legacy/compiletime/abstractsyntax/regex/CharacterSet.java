@@ -4,7 +4,7 @@ import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 
 /**
  * Represents the base regex: a set of characters.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class CharacterSet extends ParsedRegex

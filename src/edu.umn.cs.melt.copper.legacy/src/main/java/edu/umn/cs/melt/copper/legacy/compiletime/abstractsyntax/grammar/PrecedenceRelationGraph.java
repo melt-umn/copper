@@ -15,7 +15,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * A graph to specify precedence relations among terminals.
  * Also used to specify macro dependencies among regexes.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class PrecedenceRelationGraph
