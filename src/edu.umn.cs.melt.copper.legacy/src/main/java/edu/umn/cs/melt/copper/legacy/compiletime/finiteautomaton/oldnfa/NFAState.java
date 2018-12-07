@@ -15,7 +15,7 @@ import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 
 /**
  * Represents a state in a finite automaton.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class NFAState implements Iterable< Pair<CharacterRange,NFAState> >,Mergable<NFAState>

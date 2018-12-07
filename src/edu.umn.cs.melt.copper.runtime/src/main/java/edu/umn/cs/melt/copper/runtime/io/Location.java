@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * This interface represents parsing locations (can be real or virtual).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified by Kevin to allow serialization

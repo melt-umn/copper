@@ -4,7 +4,7 @@ import java.io.PrintStream;
 
 /**
  * Represents the types of input/output nodes available (e.g., for outputting the source code of a generated parser).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public enum CopperIOType

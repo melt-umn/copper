@@ -7,7 +7,7 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
 
 /**
  * A container in which a parser's semantic actions are executed.
- * @author schwerdf
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public interface SemanticActionContainer<MATCHDATA,EXCEPT extends Exception>
 {

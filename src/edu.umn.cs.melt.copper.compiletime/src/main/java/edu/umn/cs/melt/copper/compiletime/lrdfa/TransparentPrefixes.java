@@ -11,7 +11,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 /**
  * Holds maps of valid transparent prefixes for each state in a parse table. 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified to allowing construction without a spec or parsetable, serialization

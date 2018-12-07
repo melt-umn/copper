@@ -7,7 +7,7 @@
   - spillage (which usually occurs in tandem with
   - lookahead spillage).
   -->
-<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns/skins/xml/0.8">
 	<ExtendedParser id="MDAFollowSpillageOnly">
 		<HostGrammar>
 			<GrammarRef id="Host"/>

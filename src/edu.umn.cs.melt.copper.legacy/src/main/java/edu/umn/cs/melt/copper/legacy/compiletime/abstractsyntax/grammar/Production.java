@@ -86,7 +86,7 @@ class ProductionData
 
 /**
  * A class to store productions, replacing them with integers for more efficient storage.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class Production

@@ -12,7 +12,7 @@ import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 
 /* (non-Javadoc)
  * Map to hold information about match types for terminals (use longest, shortest, all, etc.)
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class QScannerMatchMap implements QScannerMatchGenerator

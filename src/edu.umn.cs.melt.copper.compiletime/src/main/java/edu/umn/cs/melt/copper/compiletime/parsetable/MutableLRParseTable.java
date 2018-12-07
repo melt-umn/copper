@@ -6,7 +6,7 @@ import java.util.BitSet;
 /**
  * A subclass of {@link LRParseTable} with mutator methods to change action types and parameters
  * and add new objects to represent parse table conflicts.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class MutableLRParseTable extends LRParseTable

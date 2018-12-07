@@ -9,7 +9,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.Terminal
 /**
  * Tables carrying all of an item's lookahead information: lookahead sets, beginning
  * layout, lookahead layout, and lookahead info (precedence classes "causing" a lookahead token).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class LALR1LookaheadTables

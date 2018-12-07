@@ -2,7 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.logging;
 
 /**
  * An interface for log messages.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public interface CompilerLogMessage
 {

@@ -5,7 +5,7 @@ import java.util.Queue;
 
 /**
  * Extends {@link Digraph} with methods specifically related to lexical precedence
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class PrecedenceGraph extends Digraph

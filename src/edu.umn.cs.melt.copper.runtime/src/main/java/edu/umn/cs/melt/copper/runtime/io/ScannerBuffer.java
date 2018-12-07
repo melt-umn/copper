@@ -6,7 +6,7 @@ import java.io.Reader;
 /**
  * A "sliding window" scanner buffer to hold the portion of the parser's
  * input presently being used (usually one token).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public abstract class ScannerBuffer
 {

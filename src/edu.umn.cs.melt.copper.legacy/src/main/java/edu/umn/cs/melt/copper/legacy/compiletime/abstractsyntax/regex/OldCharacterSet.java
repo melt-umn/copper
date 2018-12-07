@@ -18,7 +18,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
  * Represents the base regex: a set of characters.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class OldCharacterSet extends CharacterSet

@@ -18,7 +18,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * Represents the parser compilation pipelines available in the Copper parser generator.
  * @see edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified by Kevin to include FRAGMENT, FRAGMENT_COMPOSE type

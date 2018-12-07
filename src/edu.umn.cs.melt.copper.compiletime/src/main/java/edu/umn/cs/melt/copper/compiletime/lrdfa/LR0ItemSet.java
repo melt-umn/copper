@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 /**
  * Holds a single LR item set (without lookahead). 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class LR0ItemSet

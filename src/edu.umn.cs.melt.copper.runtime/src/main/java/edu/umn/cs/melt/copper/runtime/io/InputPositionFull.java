@@ -4,7 +4,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
  * Holds a position in an input stream (offset from beginning).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 class InputPositionFull extends InputPosition

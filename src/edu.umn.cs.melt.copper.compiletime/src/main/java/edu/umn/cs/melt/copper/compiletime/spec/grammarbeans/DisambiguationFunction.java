@@ -17,9 +17,8 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  * If the applicableToSubsets field is set, then this disambiguation function should be applied
  * to any ambiguity that is a subset of <code>members</code>.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Lucas Kramer
- *
  */
 public class DisambiguationFunction extends GrammarElement
 {

@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.Terminal
 
 /**
  * Holds secondary information for a DFA state in a QScanner.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class QScannerStateInfo

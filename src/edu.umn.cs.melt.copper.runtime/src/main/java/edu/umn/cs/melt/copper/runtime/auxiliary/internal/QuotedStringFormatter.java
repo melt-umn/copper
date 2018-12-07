@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  * Contains methods to format strings for appearance in Java source files,
  * and for the semantic analysis of concrete syntax trees for regexes.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class QuotedStringFormatter

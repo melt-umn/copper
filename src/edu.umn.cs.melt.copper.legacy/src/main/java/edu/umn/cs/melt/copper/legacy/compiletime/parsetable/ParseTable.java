@@ -7,7 +7,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.Terminal
 /**
  * Represents a "full" parse table, with read and update methods. This is
  * meant only for use with actual (dynamic) tables, such as <CODE>GLRParseTable</CODE>.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public interface ParseTable extends ReadOnlyParseTable

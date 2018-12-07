@@ -12,7 +12,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.CopperASTBe
  * <code>lhs</code> and <code>rhs</code> must be set to non-null values,
  * and field <code>rhsVarNames</code> must either be set to null or be equal
  * in length to <code>rhs</code>.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class Production extends GrammarElement

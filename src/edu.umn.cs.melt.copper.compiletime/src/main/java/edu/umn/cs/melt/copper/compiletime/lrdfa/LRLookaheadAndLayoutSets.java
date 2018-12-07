@@ -5,7 +5,7 @@ import java.util.BitSet;
 /**
  * Holds lookahead sets (LALR(1) or otherwise) for each item in an LR DFA, and valid layout sets
  * for each DFA state. 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified by Kevin to allow building without a full DFA

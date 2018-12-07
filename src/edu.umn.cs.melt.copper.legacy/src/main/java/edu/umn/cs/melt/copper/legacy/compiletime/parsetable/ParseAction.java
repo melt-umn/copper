@@ -2,7 +2,7 @@ package edu.umn.cs.melt.copper.legacy.compiletime.parsetable;
 
 /**
  * Superclass for all types of parse actions.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class ParseAction implements Comparable<ParseAction>

@@ -70,6 +70,7 @@
         <includes>
           <include>resources/edu/umn/cs/melt/copper/compiletime/dumpformat.xslt</include>
           <include>resources/edu/umn/cs/melt/copper/compiletime/XMLSkinSchema.xsd</include>
+          <include>resources/edu/umn/cs/melt/copper/compiletime/XMLSkin/**</include>
         </includes>
       </resource>
     </resources>
@@ -85,7 +86,7 @@
 
   <parent>
     <relativePath>../../pom.xml</relativePath>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.8.1-SNAPSHOT</version>
     <artifactId>copper-parent</artifactId>
     <groupId>edu.umn.cs.melt</groupId>
   </parent>

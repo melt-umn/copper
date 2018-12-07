@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
 
 /* (non-Javadoc)
  * Holds information about productions: layout and precedence class.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class ProductionAttributes

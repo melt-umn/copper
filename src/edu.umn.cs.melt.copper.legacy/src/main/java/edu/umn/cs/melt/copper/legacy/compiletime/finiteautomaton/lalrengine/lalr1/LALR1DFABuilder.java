@@ -31,7 +31,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * Contains code for building a LALR(1) DFA, by first building an LR(0) DFA
  * and then adding lookahead information and layout maps.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class LALR1DFABuilder

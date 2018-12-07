@@ -10,7 +10,7 @@ import edu.umn.cs.melt.copper.runtime.io.internal.CircleBuffer;
  * Represents a buffer capable of holding as few input characters
  * as a context-aware scanner for a GLR parser requires, supporting constant
  * time access to a character already read in.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 class QScannerBuffer extends ScannerBuffer

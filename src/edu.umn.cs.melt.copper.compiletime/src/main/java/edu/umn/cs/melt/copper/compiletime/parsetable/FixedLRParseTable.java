@@ -4,7 +4,7 @@ import java.util.BitSet;
 
 /**
  * A subclass of {@link LRParseTable} with no mutator methods.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class FixedLRParseTable extends LRParseTable

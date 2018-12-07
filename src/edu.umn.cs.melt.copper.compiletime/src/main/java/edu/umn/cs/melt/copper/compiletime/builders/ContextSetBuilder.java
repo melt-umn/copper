@@ -9,7 +9,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
  * A method for computing the "context sets," {@code first}, {@code follow}, and {@code nullable},
  * using the procedure specified in Algorithm 3.13 of Appel's "Modern Compiler Implementation
  * in Java," 2nd ed.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  * @see ContextSets
  *

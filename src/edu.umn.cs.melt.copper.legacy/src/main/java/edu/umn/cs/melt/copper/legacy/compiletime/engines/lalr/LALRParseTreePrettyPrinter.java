@@ -17,7 +17,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
  * "Pretty prints" a deterministic parse tree, with child nodes indented one space
  * ahead of their parents -- or, if the "non-pretty" mode is selected, a non-pretty-
  * printed format palatable to the Haskell read() function.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class LALRParseTreePrettyPrinter implements ParseTreeVisitor<String,Object,CopperParserException>

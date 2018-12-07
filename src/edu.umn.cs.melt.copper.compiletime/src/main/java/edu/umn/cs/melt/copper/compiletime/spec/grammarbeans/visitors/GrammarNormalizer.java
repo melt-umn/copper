@@ -25,7 +25,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.TerminalClass;
  * 2. Adds to all terminals in the members list of each terminal class a declaration of membership in that class.
  * 3. Replaces all references to terminal classes in submit lists, dominate lists, and disambiguation functions
  *    with references to the individual terminals comprising the class.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 class GrammarNormalizer implements CopperASTBeanVisitor<Boolean,RuntimeException>

@@ -13,7 +13,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 /**
  * Represents a regular expression in AST form (after its
  * string representation has been parsed).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class ParsedRegex implements Cloneable

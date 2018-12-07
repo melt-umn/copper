@@ -1,7 +1,45 @@
 ### Versions ###
 
+---
 
+# 0.8 #
 
+---
+
+## 0.8.0 ##
+
+_Released November 28, 2018._
+
+Some bug fixes and minor improvements, coupled with a significant refactoring of the build system and major new experimental functionality.
+
+### Bug fixes ###
+
+* Lexical ambiguities between layout terminals are now properly detected.
+* Several confusions of singular and plural nouns in the final report generator have been corrected.
+* The "real" character location reported at a syntax error is now consistent with the reported line-and-column location.
+* Parse errors in XML specs are handled without an exception.
+* The `lexeme` variable in terminal semantic actions is now generated correctly.
+
+### Improvements ###
+
+* XML parser dumps are now produced using a more efficient SAX process.
+* Modular determinism analysis reports have been made more concise by
+  showing only lookahead spillage that does not have the same cause as
+  some follow spillage.
+* Extension grammars are no longer restricted to only one bridge production.
+* A new attribute `interfaceNames` has been added on parser specs, allowing
+  them to specify a list of Java interfaces that their classes are to implement.
+* The final report displayed at the end of parser compilation has been restructured to a more intuitive layout.
+
+### Build refactoring ###
+
+* Copper is now built using [Apache Maven](http://maven.apache.org), with separate bundles for Copper's compile time, runtime, and ANT task.
+* A regression test harness has been introduced, and the example grammars moved [into it](https://github.com/melt-umn/copper/tree/master/src/edu.umn.cs.melt.copper.test/resources/test/grammars).
+* Copper now requires Java version 6 to build and run.
+
+### New experimental functionality ###
+
+* Two new pipelines, `fragment` and `fragmentCompose`, have been added to implement the ideas of runtime parser composition laid out in our paper, _[Verifiable Parse Table Composition for Deterministic Parsing](http://www.umsec.umn.edu/publications/Verifiable-Parse-Table-Composition-Deterministic-P)_.
 
 ---
 

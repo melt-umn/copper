@@ -18,7 +18,7 @@ import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 /**
  * An engine containing mechanisms of both parser and scanner, following the
  * multiple-DFA algorithm of context-aware scanning.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class ModedEngine<ROOT,EXCEPT extends Exception> implements CopperParser<ROOT,EXCEPT>

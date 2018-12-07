@@ -10,7 +10,7 @@ import edu.umn.cs.melt.copper.compiletime.srcbuilders.single.SingleDFACompilatio
 
 /**
  * Represents the parse-engine targets available in the Copper parser generator.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public enum CopperEngineType
 {

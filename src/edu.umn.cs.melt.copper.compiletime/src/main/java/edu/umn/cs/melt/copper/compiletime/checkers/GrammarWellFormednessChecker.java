@@ -14,7 +14,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * Checks that a grammar is "well-formed;" i.e., that it contains no nonterminals with no terminal
  * derivations, and, if specified, that it contains no "useless" nonterminals.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class GrammarWellFormednessChecker

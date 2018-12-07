@@ -4,7 +4,7 @@ package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans;
  * Represents the associativity of an operator. Operator associativity
  * is used to resolve shift-reduce conflicts between a terminal <code>t</code>
  * and a production with <code>t</code> as an operator.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public enum OperatorAssociativity

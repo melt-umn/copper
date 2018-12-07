@@ -122,4 +122,18 @@ public class CopperCompilerTests {
 		runCopperCompilerAPI(false, CopperSkinType.XML, null, "SilverGrammar.xml");
 	}
 
+	@Test
+	public void testSchemaVersion0p7() {
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "SchemaVersions/Namespace0.7_valid.xml");
+	}
+
+	@Test
+	public void testSchemaVersion0p8Valid() {
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "SchemaVersions/Namespace0.8_valid.xml");
+	}
+
+	@Test
+	public void testSchemaVersion0p8Invalid() {
+		runCopperCompilerAPI(true, CopperSkinType.XML, null, "SchemaVersions/Namespace0.8_invalid.xml");
+	}
 }

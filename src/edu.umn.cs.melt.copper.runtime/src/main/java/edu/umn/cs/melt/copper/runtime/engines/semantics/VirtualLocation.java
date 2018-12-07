@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.runtime.io.Location;
  * Holds a "virtual" location -- a location that may not represent
  * a "real" location in an input file (e.g., a location specified in
  * C preprocessor tags).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
 public class VirtualLocation implements Location
 {

@@ -5,7 +5,7 @@ package edu.umn.cs.melt.copper.runtime.engines.semantics;
  * Holds "special parser attributes" reset before performing each
  * semantic action, meant for carrying information back to the core parser
  * for use.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class SpecialParserAttributes

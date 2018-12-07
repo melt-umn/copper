@@ -6,7 +6,7 @@ import java.util.BitSet;
 /**
  * Holds annotations on states in a scanner DFA: partitioned accept sets and reject sets, and possible sets,
  * as well as a list of circular precedence dependencies (e.g., if A and B are on each other's submit-lists).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
  *
  * Modified to allow serialization

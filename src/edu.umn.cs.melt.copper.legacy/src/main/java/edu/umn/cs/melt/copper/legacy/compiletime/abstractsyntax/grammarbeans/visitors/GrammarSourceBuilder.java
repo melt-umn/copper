@@ -51,7 +51,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.regex.ParsedRege
 
 /**
  * This visitor builds a GrammarSource object out of a spec represented by a ParserBean object.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class GrammarSourceBuilder implements CopperASTBeanVisitor<Boolean, RuntimeException>

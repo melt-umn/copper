@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.skins.xml;
+package edu.umn.cs.melt.copper.compiletime.skins.xml.v0p7;
 
 import java.io.PrintStream;
 import java.util.TreeSet;
@@ -36,10 +36,10 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexSimpli
 
 /**
  * Prints out a parser spec in XML.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
-public class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXException>,RegexBeanVisitor<Boolean,SAXException>
+class ParserSpecXMLPrinter implements CopperASTBeanVisitor<Boolean,SAXException>,RegexBeanVisitor<Boolean,SAXException>
 {
 	private ParserBean currentParser;
 	private Grammar currentGrammar;

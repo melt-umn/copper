@@ -13,7 +13,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.Producti
  * <p>This class is now immutable: it already was in effect, but we made frequent copies 
  * just in case it wasn't.  Now these copies can be avoided.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;, Ted Kaminski &lt;<a href="mailto:tedinski@cs.umn.edu">tedinski@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;, Ted Kaminski &lt;<a href="mailto:tedinski@cs.umn.edu">tedinski@cs.umn.edu</a>&gt;
  */
 public class LALR1StateItem
 {

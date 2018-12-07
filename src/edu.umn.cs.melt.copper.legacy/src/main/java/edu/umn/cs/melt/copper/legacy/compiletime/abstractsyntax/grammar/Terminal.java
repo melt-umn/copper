@@ -4,7 +4,7 @@ package edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar;
 /* (non-Javadoc)
  * A terminal token. May be used to hold a terminal symbol
  * alone (symbol), or a terminal symbol with a matching lexeme (token).
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class Terminal extends GrammarSymbol

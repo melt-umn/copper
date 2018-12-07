@@ -5,7 +5,7 @@
   - modular determinism analysis. It shares a common host grammar with
   - 'MDAFailing.xml'.
   -->
-<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns">
+<CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns/skins/xml/0.8">
     <ExtendedParser id="CompositionTest">
         <HostGrammar>
             <GrammarRef id="host"/>

@@ -3,7 +3,7 @@ package edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar;
 
 /**
  * Holds types of operator precedence and associativity for terminals.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class OperatorAttributes

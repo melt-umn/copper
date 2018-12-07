@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 /**
  * Holds the information appertaining to a lexical disambiguation group.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class LexicalDisambiguationGroup extends TerminalClassDirectory

@@ -10,7 +10,7 @@ import edu.umn.cs.melt.copper.legacy.compiletime.abstractsyntax.grammar.Terminal
  * Represents a "read-only" parse table object, implementing the read methods
  * but not the construction methods. This may be used to implement static
  * tables as classes.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public interface ReadOnlyParseTable

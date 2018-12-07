@@ -24,7 +24,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * Checks the composability of grammars according to the
  * necessary constraints.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class ComposabilityChecker

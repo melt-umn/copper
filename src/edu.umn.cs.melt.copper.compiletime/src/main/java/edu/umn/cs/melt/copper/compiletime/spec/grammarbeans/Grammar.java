@@ -13,7 +13,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  * The field <code>startSymbol</code> must be set to a non-null
  * values before a grammar is passed to the compiler.
  * 
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class Grammar extends CopperASTBean

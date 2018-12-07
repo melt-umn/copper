@@ -13,7 +13,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 /**
  * Checks that there are no cyclic precedence relations (e.g., A and B are on each other's submit lists)
  * in a parser specification.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class PrecedenceCycleChecker

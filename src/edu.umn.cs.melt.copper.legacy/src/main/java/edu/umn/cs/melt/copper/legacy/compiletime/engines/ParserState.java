@@ -4,7 +4,7 @@ import edu.umn.cs.melt.copper.runtime.io.InputPosition;
 
 /**
  * Holds information relating to a parse state.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class ParserState implements Comparable<ParserState>

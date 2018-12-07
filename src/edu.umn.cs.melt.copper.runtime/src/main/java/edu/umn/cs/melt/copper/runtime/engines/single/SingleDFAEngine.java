@@ -22,7 +22,7 @@ import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
  * single-DFA algorithm of context-aware scanning, built with a minimum of
  * auxiliary classes and a maximum of functionality implemented in arrays and
  * bit sets.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class SingleDFAEngine<ROOT,EXCEPT extends Exception> implements CopperParser<ROOT,EXCEPT>,CopperScanner<SingleDFAParseStackNode,SingleDFAMatchData,EXCEPT>

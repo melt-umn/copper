@@ -42,7 +42,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  * <LI><CODE>logger</CODE> represents a logger that could be invoked
  * in the event of a lexical syntax error.
  *   
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public abstract class QScanner

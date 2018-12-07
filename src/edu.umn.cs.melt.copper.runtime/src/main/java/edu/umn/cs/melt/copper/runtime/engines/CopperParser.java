@@ -6,7 +6,7 @@ import java.io.Reader;
 /**
  * This is an interface for Copper parser classes, specifying the methods that
  * are called to run them.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  * @param <ROOT> The type of the root of a parse tree produced by the parser.
  * @param <EXCEPT> The type of the syntax-error exceptions thrown by the parser.

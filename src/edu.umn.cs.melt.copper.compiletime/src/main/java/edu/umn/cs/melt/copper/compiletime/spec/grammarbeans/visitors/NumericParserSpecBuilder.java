@@ -21,7 +21,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 /**
  * This visitor builds a {@link edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec}
  * out of a spec represented by a ParserBean object.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, RuntimeException>

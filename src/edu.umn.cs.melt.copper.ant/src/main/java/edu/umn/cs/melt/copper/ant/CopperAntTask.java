@@ -27,7 +27,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
  * {@code inputs} is represented as a nested file-set element, <em>e.g.</em>
  * 
  * {@code <copper ...><inputs dir='dir' includes='specfile'/></copper>}.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class CopperAntTask extends Task

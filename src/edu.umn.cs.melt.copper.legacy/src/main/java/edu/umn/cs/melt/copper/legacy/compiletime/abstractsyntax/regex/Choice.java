@@ -17,7 +17,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
 /**
  * Holds a "choice" or union between several regexes.
- * @author August Schwerdfeger &lt;<a href="mailto:schwerdf@cs.umn.edu">schwerdf@cs.umn.edu</a>&gt;
+ * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
 public class Choice extends ParsedRegex
