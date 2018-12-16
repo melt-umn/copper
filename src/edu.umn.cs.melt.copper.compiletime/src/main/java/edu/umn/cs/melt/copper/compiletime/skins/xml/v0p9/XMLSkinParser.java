@@ -183,6 +183,9 @@ public class XMLSkinParser extends VersionSpecificXMLSkinParser {
 				currentDisambiguationFunction = new DisambiguationFunction();
 				currentDisambiguationFunction.setName(currentDisambiguationFunctionName);
 				currentDisambiguationFunction.setLocation(peek().startLocation);
+				String applicableToSubsets = attributes.getValue("applicableToSubsets");
+				if(applicableToSubsets != null && (applicableToSubsets.equals("true") || applicableToSubsets.equals("1")))
+					currentDisambiguationFunction.setApplicableToSubsets(true);
 				currentGrammar.addGrammarElement(currentDisambiguationFunction);
 			}
 			break;

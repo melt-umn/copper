@@ -799,6 +799,7 @@
 						<xs:element name="Code" type="xs:string"/>
 					</xs:choice>
 				</xs:sequence>
+				<xs:attribute name="applicableToSubsets" type="xs:boolean" use="optional" default="false"/>
 			</xs:extension>
 		</xs:complexContent> 
 	</xs:complexType>
