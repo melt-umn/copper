@@ -19,6 +19,7 @@ public abstract class VersionSpecificXMLSkinParser extends DefaultHandler {
 	static {
 		versionSpecificParsers.put(edu.umn.cs.melt.copper.compiletime.skins.xml.v0p7.XMLSkinElements.COPPER_NAMESPACE, edu.umn.cs.melt.copper.compiletime.skins.xml.v0p7.XMLSkinParser.class);
 		versionSpecificParsers.put(edu.umn.cs.melt.copper.compiletime.skins.xml.v0p8.XMLSkinElements.COPPER_NAMESPACE, edu.umn.cs.melt.copper.compiletime.skins.xml.v0p8.XMLSkinParser.class);
+		versionSpecificParsers.put(edu.umn.cs.melt.copper.compiletime.skins.xml.v0p9.XMLSkinElements.COPPER_NAMESPACE, edu.umn.cs.melt.copper.compiletime.skins.xml.v0p9.XMLSkinParser.class);
 	}
 
 	public CompilerLogger logger;
