@@ -38,7 +38,7 @@ import edu.umn.cs.melt.copper.main.CopperDumpType;
 
 public class XHTMLParserDumper extends FullParserDumper
 {
-	private static final String COPPER_DUMP_NAMESPACE = "http://melt.cs.umn.edu/copper/xmlns/xmldump/0.8";
+	private static final String COPPER_DUMP_NAMESPACE = "http://melt.cs.umn.edu/copper/xmlns/xmldump/0.9";
 	
 	public XHTMLParserDumper(PSSymbolTable symbolTable, ParserSpec spec,
 			LR0DFA dfa, LRLookaheadAndLayoutSets lookahead,

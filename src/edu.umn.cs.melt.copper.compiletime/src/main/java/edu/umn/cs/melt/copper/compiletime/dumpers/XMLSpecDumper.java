@@ -5,7 +5,7 @@ import java.io.PrintStream;
 
 import org.xml.sax.SAXException;
 
-import edu.umn.cs.melt.copper.compiletime.skins.xml.v0p8.ParserSpecXMLPrinter;
+import edu.umn.cs.melt.copper.compiletime.skins.xml.v0p9.ParserSpecXMLPrinter;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
 
