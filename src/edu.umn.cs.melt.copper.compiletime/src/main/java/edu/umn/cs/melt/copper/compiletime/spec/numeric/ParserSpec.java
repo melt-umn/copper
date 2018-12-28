@@ -15,6 +15,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
  *
  * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  * @author Kevin Viratyosin
+ * @author Lucas Kramer &lt;<a href="mailto:krame505@umn.edu">krame505@umn.edu</a>&gt;
  *
  * Modified by Kevin to allow serialization
  */
@@ -183,17 +184,22 @@ public class ParserSpec implements Serializable
 		protected BitSet[] members;
 		/** The terminal to which the disambiguation group disambiguates, or -1 for disambiguation functions that disambiguate using code. */
 		protected int[] disambiguateTos; // -1 for all but disambiguation groups.
+		/** If true, this disambiguation function should be applied for any subset of members. */
+		protected boolean[] applicableToSubsets;
 		
 		public final BitSet getMembers(int dg) { return members[dg]; }
 		public final int getDisambiguateTo(int dg) { return disambiguateTos[dg]; }
 		public final boolean hasDisambiguateTo(int dg) { return disambiguateTos[dg] != -1; }
-		
+		public final boolean getApplicableToSubsets(int dg) { return applicableToSubsets[dg]; }
+
 		public final void setDisambiguateTo(int dg,int t) { disambiguateTos[dg] = t; }
+		public final void setApplicableToSubsets(int dg, boolean a) { applicableToSubsets[dg] = a; }
 		
 		public DisambiguationFunctionData(int count)
 		{
 			members = new BitSet[count];
 			disambiguateTos = new int[count];
+			applicableToSubsets = new boolean[count];
 			
 			for(int i = 0;i < count;i++)
 			{
