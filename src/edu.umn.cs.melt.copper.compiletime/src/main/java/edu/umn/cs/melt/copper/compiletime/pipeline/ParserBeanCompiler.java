@@ -135,6 +135,13 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
 
         timeBefore = System.currentTimeMillis();
 
+        succeeded &= DisambiguationFunctionConflictChecker.check(logger, symbolTable, fullSpec);
+
+        if(logger.isLoggable(TimingMessage.TIMING_LEVEL)) logger.log(new TimingMessage("Checking for conflicting disambiguation functions",System.currentTimeMillis() - timeBefore));
+        logger.flush();
+
+        timeBefore = System.currentTimeMillis();
+
         ContextSets hostContextSets = (hostSpec != null) ? ContextSetBuilder.build(hostSpec) : null;
         ContextSets contextSets = ContextSetBuilder.build(fullSpec);
 
