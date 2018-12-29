@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map.Entry;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
@@ -44,18 +45,18 @@ public class DisambiguationFunctionConflictChecker
 		{
 			BitSet members = spec.df.getMembers(i);
 			if (spec.df.getApplicableToSubsets(i)) {
-				for (BitSet df : subsetDisambiguationFunctions.keySet()) {
-					if (df.intersects(members)) {
+				for (Entry<BitSet,Integer> df : subsetDisambiguationFunctions.entrySet()) {
+					if (df.getKey().intersects(members)) {
 						BitSet intersect = (BitSet)members.clone();
-						intersect.and(df);
-						logger.log(new OverlappingDisambiguationFunctionMessage(symbolTable,intersect));
+						intersect.and(df.getKey());
+						logger.log(new OverlappingDisambiguationFunctionMessage(symbolTable,i,df.getValue(),intersect));
 						passed = false;
 					}
 				}
 				subsetDisambiguationFunctions.put(members, i);
 			} else {
 				if (regularDisambiguationFunctions.containsKey(members)) {
-					logger.log(new DuplicateDisambiguationFunctionMessage(symbolTable,members));
+					logger.log(new DuplicateDisambiguationFunctionMessage(symbolTable,i,regularDisambiguationFunctions.get(members),members));
 					passed = false;
 				}
 				regularDisambiguationFunctions.put(members, i);

@@ -12,12 +12,15 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 public class DuplicateDisambiguationFunctionMessage implements CompilerLogMessage
 {
 	private SymbolTable<CopperASTBean> symbolTable;
+	private int function1, function2;
 	private BitSet members;
 
 	public DuplicateDisambiguationFunctionMessage(SymbolTable<CopperASTBean> symbolTable,
-			BitSet members)
+			int function1, int function2, BitSet members)
 	{
 		this.symbolTable = symbolTable;
+		this.function1 = function1;
+		this.function2 = function2;
 		this.members = members;
 	}
 
@@ -47,7 +50,9 @@ public class DuplicateDisambiguationFunctionMessage implements CompilerLogMessag
 	
 	public String toString()
 	{
-		return "Multiple disambiguation functions for\n" + PSSymbolTable.bitSetPrettyPrint(members,symbolTable,"   ",80);		
+		return "Disambiguation function " + symbolTable.get(function1).getDisplayName() +
+				" conflicts with " + symbolTable.get(function2).getDisplayName() +
+				" for ambiguity\n" + PSSymbolTable.bitSetPrettyPrint(members,symbolTable,"   ",80);
 	}
 
 }

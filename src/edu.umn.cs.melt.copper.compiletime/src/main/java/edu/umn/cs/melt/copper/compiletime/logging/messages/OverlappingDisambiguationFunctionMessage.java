@@ -12,12 +12,15 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 public class OverlappingDisambiguationFunctionMessage implements CompilerLogMessage
 {
 	private SymbolTable<CopperASTBean> symbolTable;
+	private int function1, function2;
 	private BitSet intersect;
 
 	public OverlappingDisambiguationFunctionMessage(SymbolTable<CopperASTBean> symbolTable,
-			BitSet intersect)
+			int function1, int function2, BitSet intersect)
 	{
 		this.symbolTable = symbolTable;
+		this.function1 = function1;
+		this.function2 = function2;
 		this.intersect = intersect;
 	}
 
@@ -47,7 +50,9 @@ public class OverlappingDisambiguationFunctionMessage implements CompilerLogMess
 	
 	public String toString()
 	{
-		return "Multiple disambiguation functions applicable to subsets contain members\n" + PSSymbolTable.bitSetPrettyPrint(intersect,symbolTable,"   ",80);		
+		return "Disambiguation function " + symbolTable.get(function1).getDisplayName() +
+				" (applicable to subsets) overlaps with " + symbolTable.get(function2).getDisplayName() +
+				" for terminals\n" + PSSymbolTable.bitSetPrettyPrint(intersect,symbolTable,"   ",80);
 	}
 
 }
