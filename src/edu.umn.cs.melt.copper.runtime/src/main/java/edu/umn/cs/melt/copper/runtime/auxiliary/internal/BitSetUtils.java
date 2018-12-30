@@ -9,8 +9,8 @@ import java.util.BitSet;
  */
 public class BitSetUtils {
 	public static boolean subset(final BitSet s1, final BitSet s2) {
-		BitSet s1Copy = (BitSet)s1.clone();
-		s1Copy.and(s2);
-		return s1Copy.equals(s1);
+		BitSet s2Copy = (BitSet)s2.clone();
+		s2Copy.andNot(s1);
+		return s2Copy.cardinality() == 0;
 	}
 }
