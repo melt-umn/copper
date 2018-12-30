@@ -123,6 +123,11 @@ public class CopperCompilerTests {
 	}
 
 	@Test
+	public void testDisambiguationFunctionsValid() {
+		runCopperCompilerAPI(false, CopperSkinType.XML, null, "DisambiguateSubset.xml");
+	}
+
+	@Test
 	public void testDisambiguationFunctionsInvalid() {
 		runCopperCompilerAPI(true, CopperSkinType.XML, null, "DisambiguateErrors.xml");
 	}
