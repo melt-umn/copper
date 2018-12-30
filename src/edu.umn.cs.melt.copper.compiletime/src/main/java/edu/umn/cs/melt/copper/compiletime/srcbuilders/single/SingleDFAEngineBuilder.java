@@ -648,10 +648,25 @@ public class SingleDFAEngineBuilder
 		first = true;
 	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
 		{
-			out.print("            ");
-			if(!first) out.print("else ");
-			else first = false;
-			out.print("if(match.terms.equals(disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "])) return disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme);\n");
+	    	if (!spec.df.getApplicableToSubsets(group)) {
+	    		out.print("            ");
+	    		if(!first) out.print("else ");
+	    		else first = false;
+	    		out.print("if(match.terms.equals(disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "])) return disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme);\n");
+	    	}
+		}
+	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
+		{
+	    	if (spec.df.getApplicableToSubsets(group)) {
+	    		out.print("            ");
+	    		if(!first) out.print("else ");
+	    		else first = false;
+	    		out.print("if(BitSetUtils.subset(match.terms,disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "]))\n");
+	    		out.print("            {\n");
+	    		out.print("                int result = disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme);\n");
+				out.print("                return match.terms.get(result)? result : -1;\n");
+	    		out.print("            }\n");
+	    	}
 		}
 		out.print("            ");
 		if(!first) out.print("else ");

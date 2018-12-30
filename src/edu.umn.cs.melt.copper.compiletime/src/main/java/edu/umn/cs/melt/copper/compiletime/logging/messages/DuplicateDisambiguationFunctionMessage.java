@@ -52,7 +52,7 @@ public class DuplicateDisambiguationFunctionMessage implements CompilerLogMessag
 	{
 		return "Disambiguation function " + symbolTable.get(function1).getDisplayName() +
 				" conflicts with " + symbolTable.get(function2).getDisplayName() +
-				" for ambiguity\n" + PSSymbolTable.bitSetPrettyPrint(members,symbolTable,"   ",80);
+				" for group\n" + PSSymbolTable.bitSetPrettyPrint(members,symbolTable,"   ",80);
 	}
 
 }
