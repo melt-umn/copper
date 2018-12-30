@@ -185,21 +185,22 @@ public class ParserSpec implements Serializable
 		/** The terminal to which the disambiguation group disambiguates, or -1 for disambiguation functions that disambiguate using code. */
 		protected int[] disambiguateTos; // -1 for all but disambiguation groups.
 		/** If true, this disambiguation function should be applied for any subset of members. */
-		protected boolean[] applicableToSubsets;
+		protected BitSet applicableToSubsets;
 		
 		public final BitSet getMembers(int dg) { return members[dg]; }
 		public final int getDisambiguateTo(int dg) { return disambiguateTos[dg]; }
 		public final boolean hasDisambiguateTo(int dg) { return disambiguateTos[dg] != -1; }
-		public final boolean getApplicableToSubsets(int dg) { return applicableToSubsets[dg]; }
+		public final boolean getApplicableToSubsets(int dg) { return applicableToSubsets.get(dg); }
+		public final BitSet getApplicableToSubsets() { return applicableToSubsets; }
 
 		public final void setDisambiguateTo(int dg,int t) { disambiguateTos[dg] = t; }
-		public final void setApplicableToSubsets(int dg, boolean a) { applicableToSubsets[dg] = a; }
+		public final void setApplicableToSubsets(int dg, boolean a) { applicableToSubsets.set(dg, a); }
 		
 		public DisambiguationFunctionData(int count)
 		{
 			members = new BitSet[count];
 			disambiguateTos = new int[count];
-			applicableToSubsets = new boolean[count];
+			applicableToSubsets = new BitSet();
 			
 			for(int i = 0;i < count;i++)
 			{
