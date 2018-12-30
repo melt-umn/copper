@@ -39,18 +39,26 @@ public class DisambiguationFunctionConflictChecker
 	{
 		boolean passed = true;
 
+		int numSubsetDisambiguationMembers = 0;
+		BitSet subsetDisambiguationMembers = new BitSet();
 		Hashtable<BitSet,Integer> subsetDisambiguationFunctions = new Hashtable<BitSet,Integer>();
 		Hashtable<BitSet,Integer> regularDisambiguationFunctions = new Hashtable<BitSet,Integer>();
 		for(int i = spec.disambiguationFunctions.nextSetBit(0);i >= 0;i = spec.disambiguationFunctions.nextSetBit(i+1))
 		{
 			BitSet members = spec.df.getMembers(i);
 			if (spec.df.getApplicableToSubsets(i)) {
-				for (Entry<BitSet,Integer> df : subsetDisambiguationFunctions.entrySet()) {
-					if (df.getKey().intersects(members)) {
-						BitSet intersect = (BitSet)members.clone();
-						intersect.and(df.getKey());
-						logger.log(new OverlappingDisambiguationFunctionMessage(symbolTable,i,df.getValue(),intersect));
-						passed = false;
+				// Optimization: track the total size of all subset disambiguation functions and the union of their members.
+				// If the sizes match, we know they are all disjoint so we don't need to do any more detailed error checking.
+				numSubsetDisambiguationMembers += members.cardinality();
+				subsetDisambiguationMembers.or(members);
+				if (subsetDisambiguationMembers.cardinality() != numSubsetDisambiguationMembers) {
+					for (Entry<BitSet,Integer> df : subsetDisambiguationFunctions.entrySet()) {
+						if (df.getKey().intersects(members)) {
+							BitSet intersect = (BitSet)members.clone();
+							intersect.and(df.getKey());
+							logger.log(new OverlappingDisambiguationFunctionMessage(symbolTable,i,df.getValue(),intersect));
+							passed = false;
+						}
 					}
 				}
 				subsetDisambiguationFunctions.put(members, i);
