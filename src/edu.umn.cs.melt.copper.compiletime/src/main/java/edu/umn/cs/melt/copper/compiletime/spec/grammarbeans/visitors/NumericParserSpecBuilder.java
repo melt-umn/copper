@@ -22,6 +22,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
  * This visitor builds a {@link edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec}
  * out of a spec represented by a ParserBean object.
  * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
+ * @author Lucas Kramer &lt;<a href="mailto:krame505@umn.edu">krame505@umn.edu</a>&gt;
  *
  */
 public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, RuntimeException>
@@ -70,6 +71,7 @@ public class NumericParserSpecBuilder implements CopperASTBeanVisitor<Boolean, R
 			newSpec.owners[beanId] = symbolTable.get(currentGrammar);
 			if(bean.getDisambiguateTo() != null) newSpec.df.setDisambiguateTo(beanId,dereference(bean.getDisambiguateTo()));
 			else newSpec.df.setDisambiguateTo(beanId,-1);
+			newSpec.df.setApplicableToSubsets(beanId, bean.isApplicableToSubsets());
 			
 			for(CopperElementReference ref : bean.getMembers()) newSpec.df.getMembers(beanId).set(dereference(ref));
 		}

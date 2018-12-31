@@ -8,7 +8,7 @@ import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.PrintCompilerLogHandler;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.GenericMessage;
-import edu.umn.cs.melt.copper.compiletime.skins.xml.v0p8.ParserSpecXMLPrinter;
+import edu.umn.cs.melt.copper.compiletime.skins.xml.v0p9.ParserSpecXMLPrinter;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CharacterSetRegex;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ChoiceRegex;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ConcatenationRegex;
