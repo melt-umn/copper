@@ -1,330 +1,269 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <CopperSpec xmlns="http://melt.cs.umn.edu/copper/xmlns/skins/xml/0.9">
-	<Parser id="MathGrammarParser" isUnitary="true">
-		<Grammars>
-			<GrammarRef id="MathGrammar"/>
-		</Grammars>
-		<StartSymbol>
-			<NonterminalRef grammar="MathGrammar" id="E"/>
-		</StartSymbol>
-		<!-- All elements below are optional. -->
-		<!--
-		     Start layout. If not specified, defaults to the grammar layout
-		     of the start symbol's grammar.
-		  -->
-		<StartLayout/>
-		<!--<StartLayout>
-			<TerminalRef grammar="MathGrammar" id="spaces"/>
-		</StartLayout>-->
-		<Package>parsers</Package>
-		<ClassName>MathGrammarParser</ClassName>
-		<PostParseCode>
-			<Code><![CDATA[ System.out.println(root + "\nParser has finished."); ]]></Code>
-		</PostParseCode>
-	</Parser>
-	
-	<Grammar id="MathGrammar">
-		<Layout>
-			<TerminalRef id="spaces"/>
-		</Layout>		
-		<Declarations>
-			<Terminal id="spaces">
-				<Regex>
-					<Concatenation>
-						<CharacterSet><SingleCharacter char=" "/></CharacterSet>
-						<KleeneStar>
-							<CharacterSet><SingleCharacter char=" "/></CharacterSet>
-						</KleeneStar>
-					</Concatenation>
-				</Regex>
-			</Terminal>
-			
-			<Terminal id="plus">
-				<Regex>
-					<CharacterSet><SingleCharacter char="+"/></CharacterSet>
-				</Regex>
-				<Operator>
-					<Precedence>1</Precedence>
-					<LeftAssociative/>
-				</Operator>
-			</Terminal>
+  <Parser id="copper_features_disambiguation_class_dcparse" isUnitary="true">
+    <PP>copper_features:disambiguation_class:dcparse</PP>
+    <Grammars><GrammarRef id="host"/></Grammars>
+    <StartSymbol><NonterminalRef id="copper_features_disambiguation_class_DCRoot" grammar="host" /></StartSymbol>
+    <StartLayout><TerminalRef id="copper_features_disambiguation_class_Space" grammar="host" /></StartLayout>
+    <ClassAuxiliaryCode><Code><![CDATA[
+          protected List<common.Terminal> tokenList = null;
 
-			<Terminal id="minus">
-				<Regex>
-					<CharacterSet><SingleCharacter char="-"/></CharacterSet>
-				</Regex>
-				<Operator>
-					<Precedence>1</Precedence>
-					<LeftAssociative/>
-				</Operator>
-			</Terminal>
+          public void reset() {
+            tokenList = new ArrayList<common.Terminal>();
+          }
 
-			<Terminal id="times">
-				<Regex>
-					<CharacterSet><SingleCharacter char="*"/></CharacterSet>
-				</Regex>
-				<Operator>
-					<Precedence>2</Precedence>
-					<LeftAssociative/>
-				</Operator>
-			</Terminal>
+          public List<common.Terminal> getTokens() {
+            return tokenList; // The way we reset this iterator when parsing again is to create a new list, so this is defacto immutable
+          }
+        ]]></Code></ClassAuxiliaryCode>
+    <ParserInitCode>
+      <Code><![CDATA[
+        reset();
+      ]]></Code>
+    </ParserInitCode>
+    <Preamble>
+<Code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+]]></Code>
+    </Preamble>
+  </Parser>
 
-			<Terminal id="slash">
-				<Regex>
-					<CharacterSet><SingleCharacter char="/"/></CharacterSet>
-				</Regex>
-				<Operator>
-					<Precedence>2</Precedence>
-					<LeftAssociative/>
-				</Operator>
-			</Terminal>
+  <Grammar id="host">
 
-			<Terminal id="lp">
-				<Regex>
-					<CharacterSet><SingleCharacter char="("/></CharacterSet>
-				</Regex>
-			</Terminal>
+    <PP>host</PP>
 
-			<Terminal id="rp">
-				<Regex>
-					<CharacterSet><SingleCharacter char=")"/></CharacterSet>
-				</Regex>
-			</Terminal>
+    <Layout><TerminalRef id="copper_features_disambiguation_class_Space" grammar="host" /></Layout>
+    <Declarations>
+      <ParserAttribute id="context">
+        <Type><![CDATA[common.DecoratedNode]]></Type>
+        <Code><![CDATA[context = common.TopNode.singleton;]]></Code>
+      </ParserAttribute>
+         <TerminalClass id="copper_features_disambiguation_class_Identifier" />
 
-			<Terminal id="lb">
-				<Regex>
-					<CharacterSet><SingleCharacter char="["/></CharacterSet>
-				</Regex>
-			</Terminal>
+  <DisambiguationFunction id="disambiguate_copper_features_disambiguation_class_Identifier" applicableToSubsets="true">
+    <Members><TerminalRef id="copper_features_disambiguation_class_Id3" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id2" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id1" grammar="host" /></Members>
+    <Code><![CDATA[
+return (Integer)copper_features_disambiguation_class_selectedId;
 
-			<Terminal id="rb">
-				<Regex>
-					<CharacterSet><SingleCharacter char="]"/></CharacterSet>
-				</Regex>
-			</Terminal>
+    ]]></Code>
+  </DisambiguationFunction>
+  <ParserAttribute id="copper_features_disambiguation_class_selectedId">
+    <Type><![CDATA[Integer]]></Type>
+    <Code><![CDATA[
+copper_features_disambiguation_class_selectedId = Terminals.copper_features_disambiguation_class_Id3.num();
+]]></Code>
+  </ParserAttribute>
+  <Terminal id="copper_features_disambiguation_class_Bar">
+    <PP>'bar'</PP>
+    <Regex><Concatenation><CharacterSet><SingleCharacter char="b"/></CharacterSet><CharacterSet><SingleCharacter char="a"/></CharacterSet><CharacterSet><SingleCharacter char="r"/></CharacterSet></Concatenation></Regex>
+    <Type>copper_features.disambiguation_class.TBar</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TBar(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_Baz">
+    <PP>'baz'</PP>
+    <Regex><Concatenation><CharacterSet><SingleCharacter char="b"/></CharacterSet><CharacterSet><SingleCharacter char="a"/></CharacterSet><CharacterSet><SingleCharacter char="z"/></CharacterSet></Concatenation></Regex>
+    <Type>copper_features.disambiguation_class.TBaz</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TBaz(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_Foo">
+    <PP>'foo'</PP>
+    <Regex><Concatenation><CharacterSet><SingleCharacter char="f"/></CharacterSet><CharacterSet><SingleCharacter char="o"/></CharacterSet><CharacterSet><SingleCharacter char="o"/></CharacterSet></Concatenation></Regex>
+    <Type>copper_features.disambiguation_class.TFoo</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TFoo(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_Id1">
+    <PP>copper_features:disambiguation_class:Id1</PP>
+    <Regex><KleeneStar><CharacterSet><CharacterRange lower="a" upper="z"/></CharacterSet></KleeneStar></Regex>
+    <Type>copper_features.disambiguation_class.TId1</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TId1(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses><TerminalClassRef id="copper_features_disambiguation_class_Identifier" grammar="host" /></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_Id2">
+    <PP>copper_features:disambiguation_class:Id2</PP>
+    <Regex><KleeneStar><CharacterSet><CharacterRange lower="a" upper="z"/></CharacterSet></KleeneStar></Regex>
+    <Type>copper_features.disambiguation_class.TId2</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TId2(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses><TerminalClassRef id="copper_features_disambiguation_class_Identifier" grammar="host" /></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_Id3">
+    <PP>copper_features:disambiguation_class:Id3</PP>
+    <Regex><KleeneStar><CharacterSet><CharacterRange lower="a" upper="z"/></CharacterSet></KleeneStar></Regex>
+    <Type>copper_features.disambiguation_class.TId3</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TId3(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses><TerminalClassRef id="copper_features_disambiguation_class_Identifier" grammar="host" /></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_SelectId1">
+    <PP>'id1'</PP>
+    <Regex><Concatenation><CharacterSet><SingleCharacter char="i"/></CharacterSet><CharacterSet><SingleCharacter char="d"/></CharacterSet><CharacterSet><SingleCharacter char="1"/></CharacterSet></Concatenation></Regex>
+    <Type>copper_features.disambiguation_class.TSelectId1</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TSelectId1(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_SelectId2">
+    <PP>'id2'</PP>
+    <Regex><Concatenation><CharacterSet><SingleCharacter char="i"/></CharacterSet><CharacterSet><SingleCharacter char="d"/></CharacterSet><CharacterSet><SingleCharacter char="2"/></CharacterSet></Concatenation></Regex>
+    <Type>copper_features.disambiguation_class.TSelectId2</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TSelectId2(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_SelectId3">
+    <PP>'id3'</PP>
+    <Regex><Concatenation><CharacterSet><SingleCharacter char="i"/></CharacterSet><CharacterSet><SingleCharacter char="d"/></CharacterSet><CharacterSet><SingleCharacter char="3"/></CharacterSet></Concatenation></Regex>
+    <Type>copper_features.disambiguation_class.TSelectId3</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TSelectId3(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
+  <Terminal id="copper_features_disambiguation_class_Space">
+    <PP>' '</PP>
+    <Regex><CharacterSet><SingleCharacter char=" "/></CharacterSet></Regex>
+    <Type>copper_features.disambiguation_class.TSpace</Type>
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.TSpace(lexeme,virtualLocation,(int)getStartRealLocation().getPos(),(int)getEndRealLocation().getPos());
+  tokenList.add(RESULT);
+]]></Code>
+    <InClasses></InClasses>
+    <Submits></Submits>
+    <Dominates></Dominates>
+  </Terminal>
 
-			<Terminal id="min">
-				<Regex>
-					<CharacterSet><SingleCharacter char="m"/></CharacterSet>
-				</Regex>
-				<Operator>
-					<Precedence>3</Precedence>
-					<LeftAssociative/>
-				</Operator>
-			</Terminal>
+  <Nonterminal id="copper_features_disambiguation_class_Body">
+    <PP>copper_features:disambiguation_class:Body</PP>
+    <Type><![CDATA[copper_features.disambiguation_class.NBody]]></Type>
+  </Nonterminal>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_49_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_49_0(_children[0], _children[1]);
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Body" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_Baz" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id1" grammar="host" /></RHS>
+  </Production>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_48_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_48_0(_children[0], _children[1]);
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Body" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_Bar" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id2" grammar="host" /></RHS>
+  </Production>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_47_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_47_0(_children[0], _children[1]);
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Body" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_Bar" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id1" grammar="host" /></RHS>
+  </Production>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_46_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_46_0(_children[0], _children[1]);
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Body" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_Foo" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id3" grammar="host" /></RHS>
+  </Production>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_45_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_45_0(_children[0], _children[1]);
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Body" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_Foo" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id2" grammar="host" /></RHS>
+  </Production>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_44_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_44_0(_children[0], _children[1]);
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Body" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_Foo" grammar="host" /><TerminalRef id="copper_features_disambiguation_class_Id1" grammar="host" /></RHS>
+  </Production>
 
-			<Terminal id="max">
-				<Regex>
-					<CharacterSet><SingleCharacter char="M"/></CharacterSet>
-				</Regex>
-				<Operator>
-					<Precedence>3</Precedence>
-					<LeftAssociative/>
-				</Operator>
-			</Terminal>
-			
-			<Terminal id="digit">
-				<Regex>
-					<Choice>
-						<CharacterSet><SingleCharacter char="0"/></CharacterSet>
-						<Concatenation>
-							<CharacterSet>
-								<CharacterRange lower="1" upper="9"/>
-							</CharacterSet>
-							<KleeneStar>
-								<CharacterSet>
-									<CharacterRange lower="0" upper="9"/>
-								</CharacterSet>
-							</KleeneStar>
-						</Concatenation>
-					</Choice>
-				</Regex>
-				<Type>Float</Type>
-				<Code><![CDATA[ RESULT = Float.parseFloat(lexeme); ]]></Code>
-			</Terminal>
+  <Nonterminal id="copper_features_disambiguation_class_DCRoot">
+    <PP>copper_features:disambiguation_class:DCRoot</PP>
+    <Type><![CDATA[copper_features.disambiguation_class.NDCRoot]]></Type>
+  </Nonterminal>
+  <Production id="copper_features_disambiguation_class_root">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Proot(_children[0], _children[1]);
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_DCRoot" grammar="host" /></LHS>
+    <RHS><NonterminalRef id="copper_features_disambiguation_class_Select" grammar="host" /><NonterminalRef id="copper_features_disambiguation_class_Body" grammar="host" /></RHS>
+  </Production>
 
-			<Terminal id="ndigit">
-				<Regex>
-					<Choice>
-						<CharacterSet><SingleCharacter char="0"/></CharacterSet>
-						<Concatenation>
-							<CharacterSet>
-								<CharacterRange lower="1" upper="9"/>
-							</CharacterSet>
-							<KleeneStar>
-								<CharacterSet>
-									<CharacterRange lower="0" upper="9"/>
-								</CharacterSet>
-							</KleeneStar>
-						</Concatenation>
-					</Choice>
-				</Regex>
-				<Type>Float</Type>
-				<Code><![CDATA[ RESULT = new Float(-1.0 * Float.parseFloat(lexeme)); ]]></Code>
-				<Prefix>
-					<TerminalRef id="minus"/>
-				</Prefix>
-			</Terminal>
-			
-			<Terminal id="id">
-				<Regex>
-					<Concatenation>
-						<CharacterSet>
-							<CharacterRange lower="A" upper="Z"/>
-							<CharacterRange lower="a" upper="z"/>
-							<SingleCharacter char="_"/>
-						</CharacterSet>
-						<KleeneStar>
-							<CharacterSet>
-								<CharacterRange lower="A" upper="Z"/>
-								<CharacterRange lower="a" upper="z"/>
-								<CharacterRange lower="0" upper="9"/>
-								<SingleCharacter char="_"/>
-							</CharacterSet>
-						</KleeneStar>
-					</Concatenation>
-				</Regex>
-				<Type>Float</Type>
-				<Code><![CDATA[ RESULT = new Float(0.0); ]]></Code>
-			</Terminal>
-			
-			<Nonterminal id="E">
-				<Type>Float</Type>
-			</Nonterminal>
+  <Nonterminal id="copper_features_disambiguation_class_Select">
+    <PP>copper_features:disambiguation_class:Select</PP>
+    <Type><![CDATA[copper_features.disambiguation_class.NSelect]]></Type>
+  </Nonterminal>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_40_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_40_0(_children[0]);
+copper_features_disambiguation_class_selectedId = Terminals.copper_features_disambiguation_class_Id3.num();
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Select" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_SelectId3" grammar="host" /></RHS>
+  </Production>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_39_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_39_0(_children[0]);
+copper_features_disambiguation_class_selectedId = Terminals.copper_features_disambiguation_class_Id2.num();
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Select" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_SelectId2" grammar="host" /></RHS>
+  </Production>
+  <Production id="copper_features_disambiguation_class_p_copper_features_disambiguation_class_DisambiguationClasses_sv_38_0">
+    <Code><![CDATA[
+RESULT = new copper_features.disambiguation_class.Pp_copper_features_disambiguation_class_DisambiguationClasses_sv_38_0(_children[0]);
+copper_features_disambiguation_class_selectedId = Terminals.copper_features_disambiguation_class_Id1.num();
+]]></Code>
+    <LHS><NonterminalRef id="copper_features_disambiguation_class_Select" grammar="host" /></LHS>
+    <RHS><TerminalRef id="copper_features_disambiguation_class_SelectId1" grammar="host" /></RHS>
+  </Production>
 
-			<Nonterminal id="M">
-				<Type>Float</Type>
-			</Nonterminal>
-
-			<DisambiguationFunction id="digits">
-				<Members>
-					<TerminalRef id="digit"/>
-					<TerminalRef id="ndigit"/>
-				</Members>
-				<DisambiguateTo><TerminalRef id="digit"/></DisambiguateTo>
-			</DisambiguationFunction>
-
-			<DisambiguationFunction id="digitsSubset" applicableToSubsets="true">
-				<Members>
-					<TerminalRef id="digit"/>
-				</Members>
-				<DisambiguateTo><TerminalRef id="digit"/></DisambiguateTo>
-			</DisambiguationFunction>
-			
-			<Production id="p1">
-				<Code><![CDATA[ RESULT = left + right; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<NonterminalRef id="E" name="left"/>
-					<TerminalRef id="plus"/>
-					<NonterminalRef id="E" name="right"/>
-				</RHS>
-			</Production>
-
-			<Production id="p2">
-				<Code><![CDATA[ RESULT = left - right; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<NonterminalRef id="E" name="left"/>
-					<TerminalRef id="minus"/>
-					<NonterminalRef id="E" name="right"/>
-				</RHS>
-			</Production>
-
-			<Production id="p3">
-				<Code><![CDATA[ RESULT = left * right; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<NonterminalRef id="E" name="left"/>
-					<TerminalRef id="times"/>
-					<NonterminalRef id="E" name="right"/>
-				</RHS>
-			</Production>
-
-			<Production id="p4">
-				<Code><![CDATA[ RESULT = left / right; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<NonterminalRef id="E" name="left"/>
-					<TerminalRef id="slash"/>
-					<NonterminalRef id="E" name="right"/>
-				</RHS>
-			</Production>
-
-			<Production id="p5">
-				<Code><![CDATA[ RESULT = inner; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<TerminalRef id="lp"/>
-					<NonterminalRef id="E" name="inner"/>
-					<TerminalRef id="rp"/>
-				</RHS>
-			</Production>
-
-			<Production id="p6">
-				<Code><![CDATA[ RESULT = inner; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<TerminalRef id="lb"/>
-					<NonterminalRef id="M" name="inner"/>
-					<TerminalRef id="rb"/>
-				</RHS>
-				<Layout/>
-			</Production>
-
-			<Production id="p7">
-				<Code><![CDATA[ RESULT = dig; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<TerminalRef id="digit" name="dig"/>
-				</RHS>
-			</Production>
-
-			<Production id="p8">
-				<Code><![CDATA[ RESULT = dig; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<TerminalRef id="ndigit" name="dig"/>
-				</RHS>
-			</Production>
-
-			<Production id="p9">
-				<Code><![CDATA[ RESULT = id; ]]></Code>
-				<LHS><NonterminalRef id="E"/></LHS>
-				<RHS>
-					<TerminalRef id="id" name="id"/>
-				</RHS>
-			</Production>
-			
-			<Production id="p10">
-				<Code><![CDATA[ RESULT = Math.min(left,right); ]]></Code>
-				<LHS><NonterminalRef id="M"/></LHS>
-				<RHS>
-					<NonterminalRef id="M" name="left"/>
-					<TerminalRef id="min"/>
-					<NonterminalRef id="M" name="right"/>
-				</RHS>
-				<Layout/>
-			</Production>
-
-			<Production id="p11">
-				<Code><![CDATA[ RESULT = Math.max(left,right); ]]></Code>
-				<LHS><NonterminalRef id="M"/></LHS>
-				<RHS>
-					<NonterminalRef id="M" name="left"/>
-					<TerminalRef id="max"/>
-					<NonterminalRef id="M" name="right"/>
-				</RHS>
-				<Layout/>
-			</Production>
-			
-			<Production id="p12">
-				<Code><![CDATA[ RESULT = dig; ]]></Code>
-				<LHS><NonterminalRef id="M"/></LHS>
-				<RHS>
-					<TerminalRef id="digit" name="dig"/>
-				</RHS>
-			</Production>
-		</Declarations>
-	</Grammar>
+    </Declarations>
+  </Grammar>
 </CopperSpec>
