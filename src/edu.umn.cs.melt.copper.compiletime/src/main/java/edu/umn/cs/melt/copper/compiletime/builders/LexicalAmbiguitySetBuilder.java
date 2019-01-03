@@ -3,7 +3,9 @@ package edu.umn.cs.melt.copper.compiletime.builders;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map.Entry;
 
+import edu.umn.cs.melt.copper.compiletime.logging.messages.OverlappingDisambiguationFunctionMessage;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
@@ -14,6 +16,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 /**
  * Builds an object containing information about the lexical ambiguities in a compiled parser specification. 
  * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
+ * @author Lucas Kramer &lt;<a href="mailto:krame505@umn.edu">krame505@umn.edu</a>&gt;
  *
  */
 public class LexicalAmbiguitySetBuilder
@@ -48,7 +51,8 @@ public class LexicalAmbiguitySetBuilder
     //throws CopperException
 	{
 		BitSet unresolved = new BitSet();
-		Hashtable<BitSet,Integer> disambiguationFunctions = new Hashtable<BitSet,Integer>();
+		Hashtable<BitSet,Integer> regularDisambiguationFunctions = new Hashtable<BitSet,Integer>();
+		Hashtable<BitSet,Integer> subsetDisambiguationFunctions = new Hashtable<BitSet,Integer>();
 		Hashtable<BitSet,Integer> ambiguities = new Hashtable<BitSet,Integer>();
 		ArrayList<BitSet> locations = new ArrayList<BitSet>();
 		ArrayList<Integer> resolutions = new ArrayList<Integer>();
@@ -56,7 +60,14 @@ public class LexicalAmbiguitySetBuilder
 		
 		for(int i = spec.disambiguationFunctions.nextSetBit(0);i >= 0;i = spec.disambiguationFunctions.nextSetBit(i+1))
 		{
-			disambiguationFunctions.put(spec.df.getMembers(i),i);
+			if (spec.df.getApplicableToSubsets(i))
+			{
+				subsetDisambiguationFunctions.put(spec.df.getMembers(i), i);
+			}
+			else
+			{
+				regularDisambiguationFunctions.put(spec.df.getMembers(i),i);
+			}
 		}
 		
 		BitSet unitedValidLA;
@@ -76,8 +87,28 @@ public class LexicalAmbiguitySetBuilder
 			{
 				acceptSet = new BitSet(Math.max(spec.terminals.length(),spec.nonterminals.length()));
 				disambiguateState(i,unitedValidLA,acceptSet);
-				// If there is an ambiguity in the shiftable set, add it to the set of ambiguities.
-				if(acceptSet.cardinality() > 1 && !disambiguationFunctions.containsKey(acceptSet))
+				// If there is an ambiguity in the shiftable set, look for potentially matching disambiguation functions.
+				int disambiguate = -1;
+				if (acceptSet.cardinality() > 1)
+				{
+					if (regularDisambiguationFunctions.containsKey(acceptSet))
+					{
+						disambiguate = regularDisambiguationFunctions.get(acceptSet);
+					}
+					else
+					{
+						for (Entry<BitSet,Integer> df : subsetDisambiguationFunctions.entrySet()) {
+							BitSet acceptSetCopy = (BitSet)acceptSet.clone();
+							acceptSetCopy.andNot(df.getKey());
+							if (acceptSetCopy.cardinality() == 0) {
+								disambiguate = df.getValue();
+								break;
+							}
+						}
+					}
+				}
+				// If there is an unresolved ambiguity in the shiftable set, add it to the set of ambiguities.
+				if(acceptSet.cardinality() > 1 && disambiguate == -1)
 				{
 					// If there is an ambiguity between terminals that have the same reduce action,
 					// it need not be listed as an ambiguity.
@@ -125,7 +156,7 @@ public class LexicalAmbiguitySetBuilder
 						ambiguities.put(scannerDFAAnnotations.getAcceptSet(i),ambiguityCount++);
 						locations.add(new BitSet());
 						if(acceptSet.cardinality() == 1) resolutions.add(-1); // Context.
-						else resolutions.add(disambiguationFunctions.get(acceptSet));
+						else resolutions.add(disambiguate);
 					}
 
 					if(ambiguities.get(scannerDFAAnnotations.getAcceptSet(i)) != null &&

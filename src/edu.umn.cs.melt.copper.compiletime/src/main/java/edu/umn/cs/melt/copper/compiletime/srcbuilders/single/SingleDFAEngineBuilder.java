@@ -661,7 +661,7 @@ public class SingleDFAEngineBuilder
     		out.print("            ");
     		if(!first) out.print("else ");
     		else first = false;
-    		out.print("if(BitSetUtils.subset(match.terms,disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "]))\n");
+    		out.print("if(edu.umn.cs.melt.copper.runtime.auxiliary.internal.BitSetUtils.subset(match.terms,disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "]))\n");
     		out.print("            {\n");
     		out.print("                int result = disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme);\n");
 			out.print("                return match.terms.get(result)? result : -1;\n");
