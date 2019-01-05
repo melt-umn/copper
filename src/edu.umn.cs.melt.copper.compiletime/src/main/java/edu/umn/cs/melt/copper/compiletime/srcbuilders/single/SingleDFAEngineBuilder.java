@@ -663,7 +663,7 @@ public class SingleDFAEngineBuilder
     		else first = false;
     		out.print("if(edu.umn.cs.melt.copper.runtime.auxiliary.internal.BitSetUtils.subset(match.terms,disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "]))\n");
     		out.print("            {\n");
-    		out.print("                int result = disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme);\n");
+    		out.print("                int result = disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme, match.terms);\n");
 			out.print("                return match.terms.get(result)? result : -1;\n");
     		out.print("            }\n");
 		}
@@ -674,7 +674,14 @@ public class SingleDFAEngineBuilder
 	    
 	    for(int group = spec.disambiguationFunctions.nextSetBit(0);group >= 0;group = spec.disambiguationFunctions.nextSetBit(group+1))
 		{
-			out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(final String lexeme)\n");
+	    	if (spec.df.getApplicableToSubsets(group))
+	    	{
+	    		out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(final String lexeme, final " + BitSet.class.getName() + " shiftable)\n");
+	    	}
+	    	else
+	    	{
+	    		out.print("        public int disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(final String lexeme)\n");
+	    	}
 			out.print("        throws " + errorType + "\n");
 			out.print("        {\n");
 			if(spec.df.hasDisambiguateTo(group))
