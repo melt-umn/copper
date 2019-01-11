@@ -640,6 +640,16 @@ public class SingleDFAEngineBuilder
 			out.print("            return RESULT;\n");
 			out.print("        }\n");
 		}
+		
+		// For use by action code in disambiguation functions for accessing the shiftable set
+		out.print("        private boolean isMember(int t, " + BitSet.class.getName() + " s)\n");
+		out.print("        {\n");
+		out.print("            return s.get(t);\n");
+		out.print("        }\n");
+		out.print("        private int nextMember(int t, " + BitSet.class.getName() + " s)\n");
+		out.print("        {\n");
+		out.print("            return s.nextSetBit(t);\n");
+		out.print("        }\n");
 
 		out.print("        public int runDisambiguationAction(" + InputPosition.class.getName() + " _pos," + SingleDFAMatchData.class.getName() + " match)\n");
 	    out.print("        throws " + IOException.class.getName() + "," + errorType + "\n");
