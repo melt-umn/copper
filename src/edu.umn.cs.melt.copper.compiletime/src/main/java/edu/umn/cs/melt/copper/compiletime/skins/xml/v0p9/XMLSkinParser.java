@@ -196,6 +196,7 @@ public class XMLSkinParser extends VersionSpecificXMLSkinParser {
 			// Empty; all work is done in endElement() after the element's text content is known.
 			break;
 		case EXTENSION_GRAMMARS_ELEMENT:
+		case GLUE_DISAMBIGUATION_FUNCTIONS_ELEMENT:
 		case GRAMMARS_ELEMENT:
 			refSet = new HashSet<CopperElementReference>();
 			break;
@@ -403,6 +404,7 @@ public class XMLSkinParser extends VersionSpecificXMLSkinParser {
 		case OPERATOR_CLASS_REF_ELEMENT:
 		case TERMINAL_CLASS_REF_ELEMENT:
 		case PRODUCTION_REF_ELEMENT:
+		case DISAMBIGUATION_FUNCTION_REF_ELEMENT:
 			grammar = attributes.getValue("grammar");
 			if(grammar == null || grammar.equals("")) grammarName = currentGrammar.getName();
 			else grammarName = CopperElementName.newName(grammar);
@@ -568,6 +570,9 @@ public class XMLSkinParser extends VersionSpecificXMLSkinParser {
 		case DISAMBIGUATION_FUNCTION_ELEMENT:
 			currentDisambiguationFunction = null;
 			break;
+		case DISAMBIGUATION_FUNCTION_REF_ELEMENT:
+			// Empty
+			break;
 		case DOMINATES_ELEMENT:
 			currentTerminal.setDominateList(refSet);
 			refSet = null;
@@ -584,6 +589,17 @@ public class XMLSkinParser extends VersionSpecificXMLSkinParser {
 					grammars.get(ref.getName()).setName(ref.getName());
 				}
 				getCurrentParser().addGrammar(grammars.get(ref.getName()));
+			}
+			refSet = null;
+			break;
+		case GLUE_DISAMBIGUATION_FUNCTIONS_ELEMENT:
+			for(CopperElementReference ref : refSet)
+			{
+				if(ref.isFQ() && !ref.getGrammarName().equals(currentExtensionGrammar.getName()))
+				{
+					logger.logError(new GenericLocatedMessage(CompilerLevel.QUIET,element.startLocation,"Only local references are allowed in <" + element.type.getName() + "> elements",true,false));
+				}
+				else currentExtensionGrammar.addGlueDisambiguationFunction(ref.getName());
 			}
 			refSet = null;
 			break;

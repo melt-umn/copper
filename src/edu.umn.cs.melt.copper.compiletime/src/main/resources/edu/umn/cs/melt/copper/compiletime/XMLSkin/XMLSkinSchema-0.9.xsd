@@ -278,7 +278,18 @@
 		<xs:complexContent>
 			<xs:extension base="FQReference"/>
 		</xs:complexContent>
-	</xs:complexType>    
+	</xs:complexType>
+
+    <xs:complexType name="DisambiguationFunctionRef">
+		<xs:annotation>
+			<xs:documentation source="http://melt.cs.umn.edu/copper" xml:lang="en">
+				A reference to a disambiguation function (local or fully-qualified).
+			</xs:documentation>
+		</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="Reference"/>
+    	</xs:complexContent>
+    </xs:complexType>
 	
 	
 	
@@ -677,6 +688,13 @@
 						<xs:complexType>
 							<xs:sequence>
 								<xs:element name="ProductionRef" type="ProductionRef" minOccurs="1" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="GlueDisambiguationFunctions" minOccurs="0" maxOccurs="1">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="DisambiguationFunctionRef" type="DisambiguationFunctionRef" minOccurs="1" maxOccurs="unbounded"/>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
