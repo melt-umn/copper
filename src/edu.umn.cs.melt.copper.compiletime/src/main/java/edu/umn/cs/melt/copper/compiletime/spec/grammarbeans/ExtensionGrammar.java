@@ -39,12 +39,20 @@ public class ExtensionGrammar extends Grammar
 	 * grammar's list of productions.
 	 */
 	protected Set<CopperElementName> bridgeProductions;
+	/**
+	 * Disambiguation functions that are "glue code", required to resolve lexical
+	 * ambiguities between host terminals and the extension's marking terminals.
+	 * These functions are not properly a part of the extension, but must be provided
+	 * for the analysis to avoid lexical ambiguities.  
+	 */
+	protected Set<CopperElementName> glueDisambiguationFunctions;
 	
 	public ExtensionGrammar()
 	{
 		super(CopperElementType.EXTENSION_GRAMMAR);
 		markingTerminals = new HashSet<CopperElementName>();
 		bridgeProductions = new HashSet<CopperElementName>();
+		glueDisambiguationFunctions = new HashSet<CopperElementName>();
 	}
 	
 	/**
@@ -99,6 +107,23 @@ public class ExtensionGrammar extends Grammar
 	}
 
 	/**
+	 * @see #glueDisambiguationFunctions
+	 */
+	public Set<CopperElementName> getGlueDisambiguationFunctions()
+	{
+		return glueDisambiguationFunctions;
+	}
+	
+	/**
+	 * @see #glueDisambiguationFunctions
+	 */
+	public DisambiguationFunction getGlueDisambiguationFunctions(CopperElementName name)
+	{
+		if(!glueDisambiguationFunctions.contains(name)) return null;
+		return (DisambiguationFunction) grammarElements.get(name);
+	}
+
+	/**
 	 * @see #markingTerminals
 	 */
 	public boolean addMarkingTerminal(CopperElementName terminal)
@@ -112,6 +137,14 @@ public class ExtensionGrammar extends Grammar
 	public boolean addBridgeProduction(CopperElementName production)
 	{
 		return bridgeProductions.add(production);
+	}
+	
+	/**
+	 * @see #glueDisambiguationFunctions
+	 */
+	public boolean addGlueDisambiguationFunction(CopperElementName function)
+	{
+		return glueDisambiguationFunctions.add(function);
 	}
 	
 	@Override
