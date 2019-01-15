@@ -70,4 +70,9 @@ public class CopperMDATests {
 	public void runMDANonILSubsetOnly() {
 		runCopperMDAAPI(true, "mda/MDANonILSubsetOnly.xml");
 	}
+
+	@Test
+	public void runMDAGlueDisambiguationFunction() {
+		runCopperMDAAPI(false, "mda/MDAGlueDisambiguationFunction.xml");
+	}
 }
