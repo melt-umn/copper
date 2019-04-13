@@ -32,6 +32,7 @@ import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
@@ -41,11 +42,11 @@ public class XHTMLParserDumper extends FullParserDumper
 	private static final String COPPER_DUMP_NAMESPACE = "http://melt.cs.umn.edu/copper/xmlns/xmldump/0.9";
 	
 	public XHTMLParserDumper(PSSymbolTable symbolTable, ParserSpec spec,
-			LR0DFA dfa, LRLookaheadAndLayoutSets lookahead,
+			ContextSets contextSets, LR0DFA dfa, LRLookaheadAndLayoutSets lookahead,
 			LRParseTable parseTable, TransparentPrefixes prefixes)
 	throws ParserConfigurationException
 	{
-		super(symbolTable, spec, dfa, lookahead, parseTable, prefixes);
+		super(symbolTable, spec, contextSets, dfa, lookahead, parseTable, prefixes);
 	}
 
 	private static interface XMLOutputWriter<EX extends Exception> {
@@ -368,8 +369,68 @@ public class XHTMLParserDumper extends FullParserDumper
 			// TODO: Put an element in for disambiguation groups that disambiguate to a fixed terminal rather than through code.
 		}
 		
+
 		
+		// CONTEXT SETS
 		
+		xmlout.writeStartElement("context_sets");
+		
+		for(int i = spec.nonterminals.nextSetBit(0); i >= 0; i = spec.nonterminals.nextSetBit(i+1))
+		{
+			xmlout.writeStartElement("first");
+			xmlout.writeAttribute("of", String.valueOf(i));
+			for(int j = contextSets.getFirst(i).nextSetBit(0); j >= 0; j = contextSets.getFirst(i).nextSetBit(j+1))
+			{
+				xmlout.writeStartElement("member");
+				xmlout.writeCharacters(generateTag(j));
+				xmlout.writeEndElement();
+			}
+			xmlout.writeEndElement();
+		}
+
+		for(int i = spec.nonterminals.nextSetBit(0); i >= 0; i = spec.nonterminals.nextSetBit(i+1))
+		{
+			xmlout.writeStartElement("first_nt");
+			xmlout.writeAttribute("of", String.valueOf(i));
+			for(int j = contextSets.getFirstNTs(i).nextSetBit(0); j >= 0; j = contextSets.getFirstNTs(i).nextSetBit(j+1))
+			{
+				xmlout.writeStartElement("member");
+				xmlout.writeCharacters(generateTag(j));
+				xmlout.writeEndElement();
+			}
+			xmlout.writeEndElement();
+		}
+
+		BitSet syms = spec.terminals;
+		while(syms != null)
+		{
+			for(int i = syms.nextSetBit(0); i >= 0; i = syms.nextSetBit(i+1))
+			{
+				xmlout.writeStartElement("follow");
+				xmlout.writeAttribute("of", String.valueOf(i));
+				for(int j = contextSets.getFollow(i).nextSetBit(0); j >= 0; j = contextSets.getFollow(i).nextSetBit(j+1))
+				{
+					xmlout.writeStartElement("member");
+					xmlout.writeCharacters(generateTag(j));
+					xmlout.writeEndElement();
+				}
+				xmlout.writeEndElement();
+			}
+			syms = (syms == spec.terminals) ? spec.nonterminals : null; 
+		}
+
+		xmlout.writeStartElement("nullable");
+		for(int i = spec.nonterminals.nextSetBit(0); i >= 0; i = spec.terminals.nextSetBit(i+1))
+		{
+			if(contextSets.isNullable(i))
+			{
+				xmlout.writeStartElement("member");
+				xmlout.writeCharacters(generateTag(i));
+				xmlout.writeEndElement();
+			}
+		}
+		xmlout.writeEndElement();
+		xmlout.writeEndElement();
 		
 		// LALR(1) DFA
 		xmlout.writeStartElement("lalr_dfa");

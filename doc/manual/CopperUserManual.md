@@ -762,7 +762,7 @@ The `default` pipeline suppresses output of parser code in the event of an unres
 
 Copper is able to guarantee that there is no lexical ambiguity in its scanners, if certain compile-time checks pass. When any such checks fail, it is reported as a compilation error, of this form:
 
-     Unresolvable lexical ambiguity at parser states`
+     Unresolvable lexical ambiguity at parser states
          [...] (between/among) terminals:
 
          [...,

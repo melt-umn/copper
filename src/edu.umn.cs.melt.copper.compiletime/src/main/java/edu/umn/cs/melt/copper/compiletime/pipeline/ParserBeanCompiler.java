@@ -250,11 +250,11 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
             {
                 case HTML:
                 case XML:
-                    try { dumper = new XHTMLParserDumper(symbolTable, fullSpec, dfa, lookaheadSets, parseTable, prefixes); }
+                    try { dumper = new XHTMLParserDumper(symbolTable, fullSpec, contextSets, dfa, lookaheadSets, parseTable, prefixes); }
                     catch(ParserConfigurationException ex) { ex.printStackTrace(); }
                     break;
                 case PLAIN:
-                    dumper = new PlainTextParserDumper(80, symbolTable, fullSpec, dfa, lookaheadSets, parseTable, prefixes);
+                    dumper = new PlainTextParserDumper(80, symbolTable, fullSpec, contextSets, dfa, lookaheadSets, parseTable, prefixes);
                     break;
                 case XML_SPEC:
                     break;

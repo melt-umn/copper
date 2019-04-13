@@ -11,6 +11,7 @@ import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import edu.umn.cs.melt.copper.main.CopperDumpType;
@@ -20,10 +21,10 @@ public class PlainTextParserDumper extends FullParserDumper
 	private int textWidth;
 	
 	public PlainTextParserDumper(int textWidth, PSSymbolTable symbolTable, ParserSpec spec,
-			LR0DFA dfa, LRLookaheadAndLayoutSets lookahead,
+			ContextSets contextSets, LR0DFA dfa, LRLookaheadAndLayoutSets lookahead,
 			LRParseTable parseTable, TransparentPrefixes prefixes)
 	{
-		super(symbolTable, spec, dfa, lookahead, parseTable, prefixes);
+		super(symbolTable, spec, contextSets, dfa, lookahead, parseTable, prefixes);
 		this.textWidth = textWidth;
 	}
 

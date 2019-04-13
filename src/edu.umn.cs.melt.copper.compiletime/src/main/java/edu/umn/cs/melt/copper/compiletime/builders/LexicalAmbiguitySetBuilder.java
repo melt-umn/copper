@@ -5,7 +5,6 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
-import edu.umn.cs.melt.copper.compiletime.logging.messages.OverlappingDisambiguationFunctionMessage;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadAndLayoutSets;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.TransparentPrefixes;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;

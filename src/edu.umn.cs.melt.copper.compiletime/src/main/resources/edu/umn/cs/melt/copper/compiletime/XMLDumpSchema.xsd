@@ -106,6 +106,42 @@
 		</xs:complexContent>
 	</xs:complexType>
 	
+	<xs:complexType name="CopperXMLDumpContextSets">
+		<xs:sequence>
+			<xs:element name="first" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+					<xs:attribute name="of" type="CopperXMLDumpTagRef" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="first_nt" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+					<xs:attribute name="of" type="CopperXMLDumpTagRef" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="follow" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+					<xs:attribute name="of" type="CopperXMLDumpTagRef" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="nullable" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
 	<xs:complexType name="CopperXMLDumpLALRDFA">
 		<xs:sequence>
 			<xs:element name="state" minOccurs="1" maxOccurs="unbounded">
@@ -204,6 +240,7 @@
 			<xs:element name="production" type="CopperXMLDumpProduction" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="precgraph" type="CopperXMLDumpPrecedenceGraph" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="disambig_group" type="CopperXMLDumpDisambiguationFunction" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="context_sets" type="CopperXMLDumpContextSets" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="lalr_dfa" type="CopperXMLDumpLALRDFA" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="parsetable" type="CopperXMLDumpParseTable" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
