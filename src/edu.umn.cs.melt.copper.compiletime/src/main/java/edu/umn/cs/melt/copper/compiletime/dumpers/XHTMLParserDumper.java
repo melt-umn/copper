@@ -266,7 +266,6 @@ public class XHTMLParserDumper extends FullParserDumper
 				xmlout.writeAttribute("owner",String.valueOf(spec.owners[i]));
 			}
 			
-			xmlout.writeAttribute("name",generateName(p));
 			if(p.hasDisplayName())
 			{
 				xmlout.writeStartElement("DisplayName");
@@ -276,12 +275,22 @@ public class XHTMLParserDumper extends FullParserDumper
 			xmlout.writeStartElement("LHS");
 			xmlout.writeCharacters(generateTag(spec.pr.getLHS(i)));
 			xmlout.writeEndElement();
+			xmlout.writeStartElement("RHS");
 			for(int j = 0;j < spec.pr.getRHSLength(i);j++)
 			{
-				xmlout.writeStartElement("rhssym");
-				xmlout.writeCharacters(generateTag(spec.pr.getRHSSym(i,j)));
-				xmlout.writeEndElement();
+				int rhsSym = spec.pr.getRHSSym(i,j);
+			    if(spec.terminals.get(rhsSym))
+			    {
+			    	xmlout.writeStartElement("Terminal");
+			    }
+			    else
+			    {
+			    	xmlout.writeStartElement("Nonterminal");
+			    }
+			    xmlout.writeAttribute("ref", generateTag(rhsSym));
+			    xmlout.writeEndElement();
 			}
+			xmlout.writeEndElement();
 			xmlout.writeEndElement();
 		}
 		
@@ -366,8 +375,8 @@ public class XHTMLParserDumper extends FullParserDumper
 			xmlout.writeAttribute("appliesToSubsets", String.valueOf(spec.df.getApplicableToSubsets(i)));
 			for(int j = spec.df.getMembers(i).nextSetBit(0);j >= 0;j = spec.df.getMembers(i).nextSetBit(j+1))
 			{
-				xmlout.writeStartElement("member");
-				xmlout.writeCharacters(generateTag(j));
+				xmlout.writeStartElement("Member");
+				xmlout.writeAttribute("ref", generateTag(j));
 				xmlout.writeEndElement();
 			}
 			xmlout.writeEndElement();
@@ -385,8 +394,8 @@ public class XHTMLParserDumper extends FullParserDumper
 			xmlout.writeAttribute("of", String.valueOf(i));
 			for(int j = contextSets.getFirst(i).nextSetBit(0); j >= 0; j = contextSets.getFirst(i).nextSetBit(j+1))
 			{
-				xmlout.writeStartElement("member");
-				xmlout.writeCharacters(generateTag(j));
+				xmlout.writeStartElement("Member");
+				xmlout.writeAttribute("ref", generateTag(j));
 				xmlout.writeEndElement();
 			}
 			xmlout.writeEndElement();
@@ -398,8 +407,8 @@ public class XHTMLParserDumper extends FullParserDumper
 			xmlout.writeAttribute("of", String.valueOf(i));
 			for(int j = contextSets.getFirstNTs(i).nextSetBit(0); j >= 0; j = contextSets.getFirstNTs(i).nextSetBit(j+1))
 			{
-				xmlout.writeStartElement("member");
-				xmlout.writeCharacters(generateTag(j));
+				xmlout.writeStartElement("Member");
+				xmlout.writeAttribute("ref", generateTag(j));
 				xmlout.writeEndElement();
 			}
 			xmlout.writeEndElement();
@@ -410,12 +419,12 @@ public class XHTMLParserDumper extends FullParserDumper
 		{
 			for(int i = syms.nextSetBit(0); i >= 0; i = syms.nextSetBit(i+1))
 			{
-				xmlout.writeStartElement("follow");
+				xmlout.writeStartElement("Follow");
 				xmlout.writeAttribute("of", String.valueOf(i));
 				for(int j = contextSets.getFollow(i).nextSetBit(0); j >= 0; j = contextSets.getFollow(i).nextSetBit(j+1))
 				{
-					xmlout.writeStartElement("member");
-					xmlout.writeCharacters(generateTag(j));
+					xmlout.writeStartElement("Member");
+					xmlout.writeAttribute("ref", generateTag(j));
 					xmlout.writeEndElement();
 				}
 				xmlout.writeEndElement();
@@ -428,8 +437,8 @@ public class XHTMLParserDumper extends FullParserDumper
 		{
 			if(contextSets.isNullable(i))
 			{
-				xmlout.writeStartElement("member");
-				xmlout.writeCharacters(generateTag(i));
+				xmlout.writeStartElement("Member");
+				xmlout.writeAttribute("ref", generateTag(i));
 				xmlout.writeEndElement();
 			}
 		}
@@ -451,8 +460,8 @@ public class XHTMLParserDumper extends FullParserDumper
 				xmlout.writeAttribute("marker",String.valueOf(state.getPosition(item)));
 				for(int la = lookahead.getLookahead(statenum,item).nextSetBit(0);la >= 0;la = lookahead.getLookahead(statenum,item).nextSetBit(la+1))
 				{
-					xmlout.writeStartElement("lookahead");
-					xmlout.writeCharacters(generateTag(la));
+					xmlout.writeStartElement("Lookahead");
+					xmlout.writeAttribute("ref", generateTag(la));
 					xmlout.writeEndElement();
 				}
 				xmlout.writeEndElement();
@@ -492,8 +501,8 @@ public class XHTMLParserDumper extends FullParserDumper
 					xmlout.writeAttribute("tag",generateTag(layout));
 					for(int t = shiftable.nextSetBit(0);t >= 0;t = shiftable.nextSetBit(t+1))
 					{
-						xmlout.writeStartElement("follow");
-						xmlout.writeCharacters(generateTag(t));
+						xmlout.writeStartElement("Follow");
+						xmlout.writeAttribute("ref", generateTag(t));
 						xmlout.writeEndElement();
 					}
 					xmlout.writeEndElement();
@@ -505,8 +514,8 @@ public class XHTMLParserDumper extends FullParserDumper
 					xmlout.writeAttribute("tag",generateTag(prefix));
 					for(int t = prefixes.getFollowingTerminals(statenum,prefix).nextSetBit(0);t >= 0;t = prefixes.getFollowingTerminals(statenum,prefix).nextSetBit(t+1))
 					{
-						xmlout.writeStartElement("follow");
-						xmlout.writeCharacters(generateTag(t));
+						xmlout.writeStartElement("Follow");
+						xmlout.writeAttribute("ref", generateTag(t));
 						xmlout.writeEndElement();
 					}
 					xmlout.writeEndElement();
