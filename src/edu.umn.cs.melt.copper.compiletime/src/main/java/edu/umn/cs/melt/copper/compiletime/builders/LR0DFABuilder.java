@@ -177,6 +177,7 @@ public class LR0DFABuilder
 	
 	public void calculateGotos(int state,BitSet gotos)
 	{
+		int startingSize = itemSets.size();
 		LR0ItemSet I = itemSets.get(state);
 		
 		// For any item [A ::= a (*) X b] in I:
@@ -211,7 +212,7 @@ public class LR0DFABuilder
 			// Put the I-to-J transition in the delta table.
 			transitions.get(state)[X] = J;
 			// If a new state was created, add it to the set of new itemSets next to be processed.
-			if(J == itemSets.size() - 1) gotos.set(J);
+			if(J == itemSets.size() - 1 && itemSets.size() > startingSize) gotos.set(J);
 		}
 	}
 }

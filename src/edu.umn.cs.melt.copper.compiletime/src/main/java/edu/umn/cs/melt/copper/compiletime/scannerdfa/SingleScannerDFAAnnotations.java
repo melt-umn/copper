@@ -39,4 +39,11 @@ public class SingleScannerDFAAnnotations implements Serializable
 	public final BitSet getRejectSet(int state)   { return rejectSets[state]; }
 	public final BitSet getPossibleSet(int state) { return possibleSets[state]; }
 	
+	public String toString() {
+		StringBuffer rv = new StringBuffer();
+		for(int i = 0;i < size();i++) {
+			rv.append("  [").append(i).append("] Accept: ").append(acceptSets[i]).append("; Reject: ").append(rejectSets[i]).append("; Possible: ").append(possibleSets[i]).append("\n");
+		}
+		return rv.toString();
+	}
 }
