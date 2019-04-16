@@ -183,19 +183,19 @@ public class XHTMLParserDumper extends FullParserDumper
 	}
 	
 	private <EX extends Exception> void generateXMLDump(XMLOutputWriter<EX> xmlout) throws EX {
-		xmlout.writeStartElement("copper_spec");
+		xmlout.writeStartElement("CopperXMLDump");
 		xmlout.writeDefaultNamespace(COPPER_DUMP_NAMESPACE);
 		
 		// GRAMMARS
 		for(int i = spec.grammars.nextSetBit(0);i >= 0;i = spec.grammars.nextSetBit(i+1))
 		{
 			CopperASTBean gn = symbolTable.get(i);
-			xmlout.writeStartElement("grammar");
+			xmlout.writeStartElement("Grammar");
 			xmlout.writeAttribute("tag",String.valueOf(i));
 			xmlout.writeAttribute("id",generateName(gn));
 			if(gn.hasDisplayName())
 			{
-				xmlout.writeStartElement("displayname");
+				xmlout.writeStartElement("DisplayName");
 				xmlout.writeCharacters(gn.getDisplayName());
 				xmlout.writeEndElement();
 			}
@@ -208,7 +208,7 @@ public class XHTMLParserDumper extends FullParserDumper
 		for(int i = spec.terminals.nextSetBit(0);i >= 0;i = spec.terminals.nextSetBit(i+1))
 		{
 			CopperASTBean t = symbolTable.get(i);
-			xmlout.writeStartElement("terminal");
+			xmlout.writeStartElement("Terminal");
 			xmlout.writeAttribute("tag",generateTag(i));
 			xmlout.writeAttribute("id",generateName(t));
 			
@@ -218,7 +218,7 @@ public class XHTMLParserDumper extends FullParserDumper
 			}
 			if(t.hasDisplayName())
 			{
-				xmlout.writeStartElement("displayname");
+				xmlout.writeStartElement("DisplayName");
 				xmlout.writeCharacters(t.getDisplayName());
 				xmlout.writeEndElement();
 			}
@@ -232,7 +232,7 @@ public class XHTMLParserDumper extends FullParserDumper
 		for(int i = spec.nonterminals.nextSetBit(0);i >= 0;i = spec.nonterminals.nextSetBit(i+1))
 		{
 			CopperASTBean nt = symbolTable.get(i);
-			xmlout.writeStartElement("nonterminal");
+			xmlout.writeStartElement("Nonterminal");
 			xmlout.writeAttribute("tag",generateTag(i));
 			xmlout.writeAttribute("id",generateName(nt));
 			
@@ -242,7 +242,7 @@ public class XHTMLParserDumper extends FullParserDumper
 			}
 			if(nt.hasDisplayName())
 			{
-				xmlout.writeStartElement("displayname");
+				xmlout.writeStartElement("DisplayName");
 				xmlout.writeCharacters(nt.getDisplayName());
 				xmlout.writeEndElement();
 			}
@@ -257,7 +257,7 @@ public class XHTMLParserDumper extends FullParserDumper
 		for(int i = spec.productions.nextSetBit(0);i >= 0;i = spec.productions.nextSetBit(i+1))
 		{
 			CopperASTBean p = symbolTable.get(i);
-			xmlout.writeStartElement("production");
+			xmlout.writeStartElement("Production");
 			xmlout.writeAttribute("tag",generateTag(i));
 			xmlout.writeAttribute("id",generateName(p));
 
@@ -269,11 +269,11 @@ public class XHTMLParserDumper extends FullParserDumper
 			xmlout.writeAttribute("name",generateName(p));
 			if(p.hasDisplayName())
 			{
-				xmlout.writeStartElement("displayname");
+				xmlout.writeStartElement("DisplayName");
 				xmlout.writeCharacters(p.getDisplayName());
 				xmlout.writeEndElement();
 			}
-			xmlout.writeStartElement("lhs");
+			xmlout.writeStartElement("LHS");
 			xmlout.writeCharacters(generateTag(spec.pr.getLHS(i)));
 			xmlout.writeEndElement();
 			for(int j = 0;j < spec.pr.getRHSLength(i);j++)
@@ -286,18 +286,18 @@ public class XHTMLParserDumper extends FullParserDumper
 		}
 		
 		// PRECEDENCE GRAPH
-		xmlout.writeStartElement("precgraph");
+		xmlout.writeStartElement("PrecedenceGraph");
 		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
 		{
 			//if(!grammar.getPrecedenceRelationsGraph().hasVertex(t)) continue;
-			xmlout.writeStartElement("vertex");
+			xmlout.writeStartElement("Vertex");
 			xmlout.writeAttribute("tag",generateTag(t));
 			xmlout.writeEndElement();
 			for(int u = spec.terminals.nextSetBit(0);u >= 0;u = spec.terminals.nextSetBit(u+1))
 			{
 				if(spec.t.precedences.hasEdge(t,u))
 				{
-					xmlout.writeStartElement("edge");
+					xmlout.writeStartElement("Edge");
 					xmlout.writeAttribute("submits",generateTag(t));
 					xmlout.writeAttribute("dominates",generateTag(u));
 					xmlout.writeEndElement();
@@ -356,9 +356,14 @@ public class XHTMLParserDumper extends FullParserDumper
 		for(int i = spec.disambiguationFunctions.nextSetBit(0);i >= 0;i = spec.disambiguationFunctions.nextSetBit(i+1))
 		{
 			CopperASTBean df = symbolTable.get(i);
-			xmlout.writeStartElement("disambig_group");
+			xmlout.writeStartElement("DisambiguationFunction");
 			xmlout.writeAttribute("tag",generateTag(i));
 			xmlout.writeAttribute("id",df.getName().toString());
+			if(spec.df.hasDisambiguateTo(i))
+			{
+				xmlout.writeAttribute("disambiguateTo", generateTag(spec.df.getDisambiguateTo(i)));
+			}
+			xmlout.writeAttribute("appliesToSubsets", String.valueOf(spec.df.getApplicableToSubsets(i)));
 			for(int j = spec.df.getMembers(i).nextSetBit(0);j >= 0;j = spec.df.getMembers(i).nextSetBit(j+1))
 			{
 				xmlout.writeStartElement("member");
@@ -366,18 +371,17 @@ public class XHTMLParserDumper extends FullParserDumper
 				xmlout.writeEndElement();
 			}
 			xmlout.writeEndElement();
-			// TODO: Put an element in for disambiguation groups that disambiguate to a fixed terminal rather than through code.
 		}
 		
 
 		
 		// CONTEXT SETS
 		
-		xmlout.writeStartElement("context_sets");
+		xmlout.writeStartElement("ContextSets");
 		
 		for(int i = spec.nonterminals.nextSetBit(0); i >= 0; i = spec.nonterminals.nextSetBit(i+1))
 		{
-			xmlout.writeStartElement("first");
+			xmlout.writeStartElement("First");
 			xmlout.writeAttribute("of", String.valueOf(i));
 			for(int j = contextSets.getFirst(i).nextSetBit(0); j >= 0; j = contextSets.getFirst(i).nextSetBit(j+1))
 			{
@@ -390,7 +394,7 @@ public class XHTMLParserDumper extends FullParserDumper
 
 		for(int i = spec.nonterminals.nextSetBit(0); i >= 0; i = spec.nonterminals.nextSetBit(i+1))
 		{
-			xmlout.writeStartElement("first_nt");
+			xmlout.writeStartElement("FirstNT");
 			xmlout.writeAttribute("of", String.valueOf(i));
 			for(int j = contextSets.getFirstNTs(i).nextSetBit(0); j >= 0; j = contextSets.getFirstNTs(i).nextSetBit(j+1))
 			{
@@ -419,7 +423,7 @@ public class XHTMLParserDumper extends FullParserDumper
 			syms = (syms == spec.terminals) ? spec.nonterminals : null; 
 		}
 
-		xmlout.writeStartElement("nullable");
+		xmlout.writeStartElement("Nullable");
 		for(int i = spec.nonterminals.nextSetBit(0); i >= 0; i = spec.terminals.nextSetBit(i+1))
 		{
 			if(contextSets.isNullable(i))
@@ -433,16 +437,16 @@ public class XHTMLParserDumper extends FullParserDumper
 		xmlout.writeEndElement();
 		
 		// LALR(1) DFA
-		xmlout.writeStartElement("lalr_dfa");
+		xmlout.writeStartElement("LALR_DFA");
 		for(int statenum = 1;statenum < dfa.size();statenum++)
 		{
 			LR0ItemSet state = dfa.getItemSet(statenum);
-			xmlout.writeStartElement("state");
+			xmlout.writeStartElement("State");
 			xmlout.writeAttribute("id",String.valueOf(statenum));
 			xmlout.writeAttribute("tag","ds" + statenum);
 			for(int item = 0;item < state.size();item++)
 			{
-				xmlout.writeStartElement("item");
+				xmlout.writeStartElement("Item");
 				xmlout.writeAttribute("production",generateTag(state.getProduction(item)));
 				xmlout.writeAttribute("marker",String.valueOf(state.getPosition(item)));
 				for(int la = lookahead.getLookahead(statenum,item).nextSetBit(0);la >= 0;la = lookahead.getLookahead(statenum,item).nextSetBit(la+1))
@@ -455,7 +459,7 @@ public class XHTMLParserDumper extends FullParserDumper
 			}
 			for(int X = dfa.getTransitionLabels(statenum).nextSetBit(0);X >= 0;X = dfa.getTransitionLabels(statenum).nextSetBit(X+1))
 			{
-				xmlout.writeStartElement("transition");
+				xmlout.writeStartElement("Transition");
 				xmlout.writeAttribute("label",generateTag(X));
 				xmlout.writeAttribute("dest","ds" + dfa.getTransition(statenum,X));
 				xmlout.writeEndElement();
@@ -468,10 +472,10 @@ public class XHTMLParserDumper extends FullParserDumper
 		
 		
 		// PARSE TABLE
-		xmlout.writeStartElement("parsetable");
+		xmlout.writeStartElement("LRParseTable");
 		for(int statenum = 1;statenum < parseTable.size();statenum++)
 		{
-			xmlout.writeStartElement("state");
+			xmlout.writeStartElement("State");
 			xmlout.writeAttribute("tag","tr" + statenum);
 			xmlout.writeAttribute("id",String.valueOf(statenum));
 
@@ -484,7 +488,7 @@ public class XHTMLParserDumper extends FullParserDumper
 			{
 				for(int layout = lookahead.getLayout(statenum).nextSetBit(0);layout >= 0;layout = lookahead.getLayout(statenum).nextSetBit(layout+1))
 				{
-					xmlout.writeStartElement("layout");
+					xmlout.writeStartElement("Layout");
 					xmlout.writeAttribute("tag",generateTag(layout));
 					for(int t = shiftable.nextSetBit(0);t >= 0;t = shiftable.nextSetBit(t+1))
 					{
@@ -497,7 +501,7 @@ public class XHTMLParserDumper extends FullParserDumper
 	
 				for(int prefix = prefixes.getPrefixes(statenum).nextSetBit(0);prefix >= 0;prefix = prefixes.getPrefixes(statenum).nextSetBit(prefix+1))
 				{
-					xmlout.writeStartElement("prefix");
+					xmlout.writeStartElement("Prefix");
 					xmlout.writeAttribute("tag",generateTag(prefix));
 					for(int t = prefixes.getFollowingTerminals(statenum,prefix).nextSetBit(0);t >= 0;t = prefixes.getFollowingTerminals(statenum,prefix).nextSetBit(t+1))
 					{
@@ -510,7 +514,7 @@ public class XHTMLParserDumper extends FullParserDumper
 				
 				for(int t = shiftable.nextSetBit(0);t >= 0;t = shiftable.nextSetBit(t+1))
 				{
-					xmlout.writeStartElement("parse_cell");
+					xmlout.writeStartElement("ParseCell");
 					xmlout.writeAttribute("id",generateTag(t));
 					
 					switch(parseTable.getActionType(statenum, t))
@@ -541,7 +545,7 @@ public class XHTMLParserDumper extends FullParserDumper
 
 			for(int nt = gotoable.nextSetBit(0);nt >= 0;nt = gotoable.nextSetBit(nt+1))
 			{
-				xmlout.writeStartElement("goto_cell");
+				xmlout.writeStartElement("GotoCell");
 				xmlout.writeAttribute("id",generateTag(nt));
 				
 				addParseAction(xmlout, nt,LRParseTable.GOTO,parseTable.getActionParameter(statenum,nt));
@@ -570,24 +574,24 @@ public class XHTMLParserDumper extends FullParserDumper
 	{
 		if(type == LRParseTable.ACCEPT && sym == spec.getEOFTerminal())
 		{
-			xmlout.writeStartElement("accept");
+			xmlout.writeStartElement("Accept");
 			xmlout.writeEndElement();
 		}
 		else if(type == LRParseTable.GOTO && spec.nonterminals.get(sym))
 		{
-			xmlout.writeStartElement("goto");
+			xmlout.writeStartElement("Goto");
 			xmlout.writeAttribute("dest","tr" + parameter);
 			xmlout.writeEndElement();
 		}
 		else if(type == LRParseTable.SHIFT)
 		{
-			xmlout.writeStartElement("shift");
+			xmlout.writeStartElement("Shift");
 			xmlout.writeAttribute("dest","tr" + parameter);
 			xmlout.writeEndElement();
 		}
 		else /*if(type == LRParseTable.REDUCE) */
 		{
-			xmlout.writeStartElement("reduce");
+			xmlout.writeStartElement("Reduce");
 			xmlout.writeAttribute("prod",generateTag(parameter));
 			xmlout.writeEndElement();
 		}		

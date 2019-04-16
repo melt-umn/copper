@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:copper="http://melt.cs.umn.edu/copper/xmlns/xmldump/0.9" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:output method="html" indent="yes"/>
 
-<xsl:template match="/copper:copper_spec">
+<xsl:template match="/copper:CopperXMLDump">
 <html xmlns="http://www.w3.org/1999/xhtml"
     version="-//W3C//DTD XHTML 2.0//EN" xml:lang="en">
 <head>
@@ -39,7 +39,7 @@ span.grayed { color: #808080; font-style: italic; }
 <li><a href="#nonterminals" class="toclink">Nonterminals</a></li>
 <li><a href="#productions" class="toclink">Productions</a></li>
 <li><a href="#disambig_groups" class="toclink">Disambiguation functions/groups</a></li>
-<xsl:if test="./copper:precgraph/copper:img"><li><a href="#precgraph" class="toclink">Precedence relation graph</a></li></xsl:if>
+<xsl:if test="./copper:PrecedenceGraph/copper:img"><li><a href="#precgraph" class="toclink">Precedence relation graph</a></li></xsl:if>
 <li><a href="#lalr_dfa" class="toclink">LALR(1) DFA</a></li>
 <li><a href="#parsetable" class="toclink">Parse and goto tables</a></li>
 </ul>
@@ -55,7 +55,7 @@ span.grayed { color: #808080; font-style: italic; }
 <th>Internal name</th>
 <th>In grammar</th>
 </tr>
-   <xsl:apply-templates select="copper:terminal">
+   <xsl:apply-templates select="copper:Terminal">
        <xsl:sort select="string-length(@tag)"/>
        <xsl:sort select="@tag"/>
    </xsl:apply-templates>
@@ -69,7 +69,7 @@ span.grayed { color: #808080; font-style: italic; }
 <th>Internal name</th>
 <th>In grammar</th>
 </tr>
-   <xsl:apply-templates select="copper:nonterminal">
+   <xsl:apply-templates select="copper:Nonterminal">
        <xsl:sort select="string-length(@tag)"/>
        <xsl:sort select="@tag"/>
    </xsl:apply-templates>
@@ -82,7 +82,7 @@ span.grayed { color: #808080; font-style: italic; }
 <th>Signature</th>
 <th>In grammar</th>
 </tr>
-   <xsl:apply-templates select="copper:production">
+   <xsl:apply-templates select="copper:Production">
        <xsl:sort select="string-length(@tag)"/>
        <xsl:sort select="@tag"/>
    </xsl:apply-templates>
@@ -90,14 +90,14 @@ span.grayed { color: #808080; font-style: italic; }
 <a name="disambig_groups"/>
 <h1>Disambiguation functions/groups</h1>
 <xsl:choose>
-<xsl:when test="/copper:copper_spec/copper:disambig_group">
+<xsl:when test="/copper:CopperXMLDump/copper:DisambiguationFunction">
    <table class="symtable">
    <tr>
    <th>ID</th>
    <th>Name</th>
    <th>Members</th>
    </tr>
-      <xsl:apply-templates select="copper:disambig_group">
+      <xsl:apply-templates select="copper:DisambiguationFunction">
           <xsl:sort select="string-length(@tag)"/>
           <xsl:sort select="@tag"/>
       </xsl:apply-templates>
@@ -108,16 +108,16 @@ span.grayed { color: #808080; font-style: italic; }
 </xsl:otherwise>
 </xsl:choose>
 <a name="precgraph"/>
-<xsl:if test="./copper:precgraph/img"><h1>Precedence relation graph</h1></xsl:if>
+<xsl:if test="./copper:PrecedenceGraph/img"><h1>Precedence relation graph</h1></xsl:if>
 <!-- Put a generated SVG graph in here? -->
-<xsl:apply-templates select="copper:precgraph"/>
+<xsl:apply-templates select="copper:PrecedenceGraph"/>
 <a name="lalr_dfa"/>
 <h1>LALR(1) DFA</h1>
-   <xsl:apply-templates select="copper:lalr_dfa"/>
+   <xsl:apply-templates select="copper:LALR_DFA"/>
 
 <a name="parsetable"/>
 <h1>Parse and goto tables</h1>
-   <xsl:apply-templates select="copper:parsetable"/>
+   <xsl:apply-templates select="copper:LRParseTable"/>
 
 </div>
 </body>
@@ -125,7 +125,7 @@ span.grayed { color: #808080; font-style: italic; }
 
 </xsl:template>
 
-<xsl:template match="copper:terminal">
+<xsl:template match="copper:Terminal">
 <tr>
 <xsl:choose>
   <xsl:when test="position() mod 2 = 0">
@@ -145,29 +145,29 @@ span.grayed { color: #808080; font-style: italic; }
 </td>
 <td class="fixedcell">
     <xsl:variable name="this" select="@tag"/>
-    <xsl:variable name="cardinality" select="count(/copper:copper_spec/copper:precgraph/copper:edge[@submits=$this])"/>
-    <xsl:for-each select="/copper:copper_spec/copper:precgraph/copper:edge[@submits=$this]">
+    <xsl:variable name="cardinality" select="count(/copper:CopperXMLDump/copper:PrecedenceGraph/copper:Edge[@submits=$this])"/>
+    <xsl:for-each select="/copper:CopperXMLDump/copper:PrecedenceGraph/copper:Edge[@submits=$this]">
         <xsl:sort select="string-length(@dominates)"/>
         <xsl:sort select="@dominates"/>
         <xsl:variable name="dominates" select="@dominates"/>
-        <a href="#{$dominates}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:copper_spec/copper:terminal[@tag=$dominates]"/></xsl:call-template></a>
+        <a href="#{$dominates}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:CopperXMLDump/copper:Terminal[@tag=$dominates]"/></xsl:call-template></a>
         <xsl:if test="position() != $cardinality">, </xsl:if>
     </xsl:for-each>
 </td>
 <td class="fixedcell">
     <xsl:variable name="this" select="@tag"/>
-    <xsl:variable name="cardinality" select="count(/copper:copper_spec/copper:precgraph/copper:edge[@dominates=$this])"/>
-    <xsl:for-each select="/copper:copper_spec/copper:precgraph/copper:edge[@dominates=$this]">
+    <xsl:variable name="cardinality" select="count(/copper:CopperXMLDump/copper:PrecedenceGraph/copper:Edge[@dominates=$this])"/>
+    <xsl:for-each select="/copper:CopperXMLDump/copper:PrecedenceGraph/copper:Edge[@dominates=$this]">
         <xsl:sort select="string-length(@submits)"/>
         <xsl:sort select="@submits"/>
         <xsl:variable name="submits" select="@submits"/>
-        <a href="#{$submits}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:copper_spec/copper:terminal[@tag=$submits]"/></xsl:call-template></a>
+        <a href="#{$submits}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:CopperXMLDump/copper:Terminal[@tag=$submits]"/></xsl:call-template></a>
         <xsl:if test="position() != $cardinality">, </xsl:if>
     </xsl:for-each>
 </td>
 <td class="fixedcell">
 	<xsl:choose>
-		<xsl:when test="copper:displayname">
+		<xsl:when test="copper:DisplayName">
 			<xsl:value-of select="@id"/>
 		</xsl:when>
 		<xsl:otherwise>
@@ -177,12 +177,12 @@ span.grayed { color: #808080; font-style: italic; }
 </td>
 <td class="fixedcell">
 <xsl:variable name="owner" select="@owner"/>
-<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:copper_spec/copper:grammar[@tag=$owner]"/></xsl:call-template>
+<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:CopperXMLDump/copper:Grammar[@tag=$owner]"/></xsl:call-template>
 </td>
 </tr>
 </xsl:template>
 
-<xsl:template match="copper:nonterminal">
+<xsl:template match="copper:Nonterminal">
 <tr>
 <xsl:choose>
   <xsl:when test="position() mod 2 = 0">
@@ -202,7 +202,7 @@ span.grayed { color: #808080; font-style: italic; }
 </td>
 <td class="fixedcell">
 	<xsl:choose>
-		<xsl:when test="copper:displayname">
+		<xsl:when test="copper:DisplayName">
 			<xsl:value-of select="@id"/>
 		</xsl:when>
 		<xsl:otherwise>
@@ -212,12 +212,12 @@ span.grayed { color: #808080; font-style: italic; }
 </td>
 <td class="fixedcell">
 <xsl:variable name="owner" select="@owner"/>
-<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:copper_spec/copper:grammar[@tag=$owner]"/></xsl:call-template>
+<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:CopperXMLDump/copper:Grammar[@tag=$owner]"/></xsl:call-template>
 </td>
 </tr>
 </xsl:template>
 
-<xsl:template match="copper:production">
+<xsl:template match="copper:Production">
 <tr>
 <xsl:choose>
   <xsl:when test="position() mod 2 = 0">
@@ -231,26 +231,26 @@ span.grayed { color: #808080; font-style: italic; }
 <a name="{@tag}"/>
 <xsl:value-of select="@tag"/></td>
 <td class="fixedcell">
-<xsl:variable name="lhs" select="./copper:lhs"/>
-<xsl:variable name="lhsid" select="/copper:copper_spec/copper:nonterminal[@tag=$lhs]"/>
+<xsl:variable name="lhs" select="./copper:LHS"/>
+<xsl:variable name="lhsid" select="/copper:CopperXMLDump/copper:Nonterminal[@tag=$lhs]"/>
 <a href="#{$lhsid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$lhsid"/></xsl:call-template></a>
 ::=
 <xsl:for-each select="./copper:rhssym">
     <xsl:variable name="this" select="."/>
 
-    <xsl:variable name="thisid" select="/copper:copper_spec/copper:terminal[@tag=$this]|/copper:copper_spec/copper:nonterminal[@tag=$this]"/>
+    <xsl:variable name="thisid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]|/copper:CopperXMLDump/copper:Nonterminal[@tag=$this]"/>
     <a href="#{$thisid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$thisid"/></xsl:call-template></a><xsl:text> </xsl:text>
     <!--<xsl:text> </xsl:text>-->
 </xsl:for-each>
 </td>
 <td class="fixedcell">
 <xsl:variable name="owner" select="@owner"/>
-<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:copper_spec/copper:grammar[@tag=$owner]"/></xsl:call-template>
+<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:CopperXMLDump/copper:Grammar[@tag=$owner]"/></xsl:call-template>
 </td>
 </tr>
 </xsl:template>
 
-<xsl:template match="copper:disambig_group">
+<xsl:template match="copper:DisambiguationFunction">
 <tr>
 <xsl:choose>
   <xsl:when test="position() mod 2 = 0">
@@ -271,7 +271,7 @@ span.grayed { color: #808080; font-style: italic; }
     <xsl:sort select="."/>
     <xsl:variable name="this" select="."/>
     <a href="#{$this}" class="genlink">
-    	<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:copper_spec/copper:terminal[@tag=$this]"/></xsl:call-template>
+    	<xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]"/></xsl:call-template>
     </a>
     <xsl:if test="position() != $cardinality">, </xsl:if>
 </xsl:for-each>
@@ -279,36 +279,36 @@ span.grayed { color: #808080; font-style: italic; }
 </tr>
 </xsl:template>
 
-<xsl:template match="copper:lalr_dfa">
+<xsl:template match="copper:LALR_DFA">
     <h2>States index</h2>
-    <xsl:for-each select="./copper:state">
+    <xsl:for-each select="./copper:State">
         <xsl:sort select="string-length(@tag)"/>
         <xsl:sort select="@tag"/>
         <a href="#{@tag}" class="tablelink"><xsl:value-of select="@id"/></a><xsl:text> </xsl:text>
     </xsl:for-each>
     <!-- <h2>States</h2> -->
-    <xsl:for-each select="./copper:state">
+    <xsl:for-each select="./copper:State">
         <xsl:sort select="string-length(@tag)"/>
         <xsl:sort select="@tag"/>
         <a name="{@tag}"/><h2>State <xsl:value-of select="@id"/></h2>
         <table class="dfatable">
-        <xsl:for-each select="./copper:item">
+        <xsl:for-each select="./copper:Item">
              <xsl:sort select="string-length(@production)"/>
              <xsl:sort select="@production"/>
              <xsl:variable name="marker" select="@marker"/>
              <tr>
              <td class="dfacell">
              <xsl:variable name="prodtag" select="@production"/>
-             <xsl:variable name="prod" select="/copper:copper_spec/copper:production[@tag=$prodtag]"/>
-             <xsl:variable name="lhs" select="$prod/copper:lhs"/>
-             <xsl:variable name="lhsid" select="/copper:copper_spec/copper:nonterminal[@tag=$lhs]"/>
+             <xsl:variable name="prod" select="/copper:CopperXMLDump/copper:Production[@tag=$prodtag]"/>
+             <xsl:variable name="lhs" select="$prod/copper:LHS"/>
+             <xsl:variable name="lhsid" select="/copper:CopperXMLDump/copper:Nonterminal[@tag=$lhs]"/>
              <a href="#{$lhsid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$lhsid"/></xsl:call-template></a>
              ::=
              <xsl:if test="$marker = 0">&#x25CF; <!--(*)--></xsl:if>
              <xsl:for-each select="$prod/copper:rhssym">
                 <xsl:variable name="this" select="."/>
 
-                <xsl:variable name="thisid" select="/copper:copper_spec/copper:terminal[@tag=$this]|/copper:copper_spec/copper:nonterminal[@tag=$this]"/>
+                <xsl:variable name="thisid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]|/copper:CopperXMLDump/copper:Nonterminal[@tag=$this]"/>
                 <a href="#{$thisid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$thisid"/></xsl:call-template></a><xsl:text> </xsl:text>
                <!--<xsl:text> </xsl:text>-->
                <xsl:if test="position() = $marker">&#x25CF; <!--(*)--></xsl:if>
@@ -321,7 +321,7 @@ span.grayed { color: #808080; font-style: italic; }
                 <xsl:variable name="this" select="."/>
                 <a href="#{$this}" class="genlink">
                 	<xsl:call-template name="getDisplayName">
-                		<xsl:with-param name="element" select="/copper:copper_spec/copper:terminal[@tag=$this]"/>
+                		<xsl:with-param name="element" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]"/>
                 	</xsl:call-template>
                 </a>
                 <xsl:if test="position() != $cardinality">, </xsl:if>
@@ -331,13 +331,13 @@ span.grayed { color: #808080; font-style: italic; }
              </tr>
         </xsl:for-each>
         </table>
-        <xsl:if test="./copper:transition">
+        <xsl:if test="./copper:Transition">
            <table class="symtable">
            <tr>
            <th>On symbol</th>
            <th>Transition to</th>
            </tr>
-           <xsl:for-each select="./copper:transition">
+           <xsl:for-each select="./copper:Transition">
                <xsl:sort select="string-length(@label)"/>
                <xsl:sort select="@label"/>
                <xsl:variable name="label" select="@label"/>
@@ -352,12 +352,12 @@ span.grayed { color: #808080; font-style: italic; }
                   </xsl:otherwise>
                </xsl:choose>
                <td class="fixedfccell">
-                   <xsl:variable name="labelid" select="/copper:copper_spec/copper:terminal[@tag=$label]|/copper:copper_spec/copper:nonterminal[@tag=$label]"/>
+                   <xsl:variable name="labelid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$label]|/copper:CopperXMLDump/copper:Nonterminal[@tag=$label]"/>
                    <a href="#{$labelid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$labelid"/></xsl:call-template></a>
                </td>
                <td class="fixedfccell">
                   <a href="#{$dest}" class="genlink">State
-                  <xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:copper_spec/copper:lalr_dfa/copper:state[@tag=$dest]"/></xsl:call-template></a>
+                  <xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="/copper:CopperXMLDump/copper:LALR_DFA/copper:State[@tag=$dest]"/></xsl:call-template></a>
                </td>
                </tr>
            </xsl:for-each>
@@ -366,14 +366,14 @@ span.grayed { color: #808080; font-style: italic; }
     </xsl:for-each>
 </xsl:template>
 
-<xsl:template match="copper:parsetable">
+<xsl:template match="copper:LRParseTable">
     <h2>States index</h2>
-    <xsl:for-each select="./copper:state">
+    <xsl:for-each select="./copper:State">
         <xsl:sort select="string-length(@tag)"/>
         <xsl:sort select="@tag"/>
         <a href="#{@tag}">
         	<xsl:choose>
-        		<xsl:when test="copper:parse_cell[count(copper:shift|copper:reduce|copper:accept) &gt; 1]">
+        		<xsl:when test="copper:ParseCell[count(copper:Shift|copper:Reduce|copper:Accept) &gt; 1]">
         			<xsl:attribute name="class">tablelink_conflicted</xsl:attribute>
         		</xsl:when>
         		<xsl:otherwise>
@@ -384,23 +384,23 @@ span.grayed { color: #808080; font-style: italic; }
         </a><xsl:text> </xsl:text>
     </xsl:for-each>
     <!-- <h2>States</h2> -->
-    <xsl:for-each select="./copper:state">
+    <xsl:for-each select="./copper:State">
         <xsl:sort select="string-length(@tag)"/>
         <xsl:sort select="@tag"/>
         <a name="{@tag}"/><h2>State <xsl:value-of select="@id"/></h2>
-        <xsl:if test="./copper:parse_cell">
+        <xsl:if test="./copper:ParseCell">
 	        <table class="symtable">
 	        <caption><h4>Parse actions</h4></caption>
 	        <tr>
 	        <th>Cell</th>
 	        <th>Action</th>
 	        </tr>
-	        <xsl:for-each select="./copper:parse_cell">
+	        <xsl:for-each select="./copper:ParseCell">
                     <xsl:sort select="string-length(@id)"/>
 	            <xsl:sort select="@id"/>
 	            <tr> 
 	            <xsl:choose>
-	               <xsl:when test="count(copper:shift|copper:reduce|copper:accept) &gt; 1">
+	               <xsl:when test="count(copper:Shift|copper:Reduce|copper:Accept) &gt; 1">
 	                  <xsl:attribute name="class">trconflicted</xsl:attribute>
 	               </xsl:when>
 	               <xsl:when test="position() mod 2 = 0">
@@ -412,7 +412,7 @@ span.grayed { color: #808080; font-style: italic; }
 	            </xsl:choose>
 	            <td class="fixedfccell">
 		           <xsl:variable name="this" select="@id"/>
-		           <xsl:variable name="layoutid" select="/copper:copper_spec/copper:terminal[@tag=$this]"/>
+		           <xsl:variable name="layoutid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]"/>
 		           <a href="#{$layoutid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$layoutid"/></xsl:call-template><!--<xsl:value-of select="$layoutid/@id"/>--></a>
 	            </td>
 			    <td class="fixedcell">
@@ -422,14 +422,14 @@ span.grayed { color: #808080; font-style: italic; }
 	        </xsl:for-each>
 	        </table>
         </xsl:if>
-        <xsl:if test="./copper:goto_cell">
+        <xsl:if test="./copper:GotoCell">
 	        <table class="symtable">
 	        <caption><h4>Goto actions</h4></caption>
 	        <tr>
 	        <th>Cell</th>
 	        <th>Action</th>
 	        </tr>
-	        <xsl:for-each select="./copper:goto_cell">
+	        <xsl:for-each select="./copper:GotoCell">
                     <xsl:sort select="string-length(@id)"/>
 	            <xsl:sort select="@id"/>
 	            <tr> 
@@ -443,7 +443,7 @@ span.grayed { color: #808080; font-style: italic; }
 	            </xsl:choose>
 	            <td class="fixedfccell">
 		           <xsl:variable name="this" select="@id"/>
-		           <xsl:variable name="layoutid" select="/copper:copper_spec/copper:nonterminal[@tag=$this]"/>
+		           <xsl:variable name="layoutid" select="/copper:CopperXMLDump/copper:Nonterminal[@tag=$this]"/>
 		           <a href="#{$layoutid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$layoutid"/></xsl:call-template></a>
 	            </td>
 	            <td class="fixedcell">
@@ -453,14 +453,14 @@ span.grayed { color: #808080; font-style: italic; }
 	        </xsl:for-each>
 	        </table>
         </xsl:if>
-        <xsl:if test="./copper:layout">
+        <xsl:if test="./copper:Layout">
 	    <table class="symtable">
 	        <caption><h4>Layout</h4></caption>
 	        <tr>
 	        <th>Layout</th>
 	        <th>Can come before</th>
 	        </tr>
-	        <xsl:for-each select="./copper:layout">
+	        <xsl:for-each select="./copper:Layout">
                    <xsl:sort select="string-length(@tag)"/>
 	           <xsl:sort select="@tag"/>
 	           <tr>
@@ -474,14 +474,14 @@ span.grayed { color: #808080; font-style: italic; }
                    </xsl:choose>
 	           <td class="fixedfccell">
 	           <xsl:variable name="this" select="@tag"/>
-	           <xsl:variable name="layoutid" select="/copper:copper_spec/copper:terminal[@tag=$this]"/>
+	           <xsl:variable name="layoutid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]"/>
 	           <a href="#{$layoutid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$layoutid"/></xsl:call-template></a>
 	           </td>
 	           <td class="fixedcell">
 	           <xsl:variable name="cardinality" select="count(./copper:follow)"/>
 	           <xsl:for-each select="./copper:follow">
 	               <xsl:variable name="this" select="."/>
-	               <xsl:variable name="layoutid" select="/copper:copper_spec/copper:terminal[@tag=$this]"/>
+	               <xsl:variable name="layoutid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]"/>
 	               <a href="#{$layoutid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$layoutid"/></xsl:call-template></a>
 	               <xsl:if test="position() != $cardinality">, </xsl:if>
 	           </xsl:for-each>
@@ -490,14 +490,14 @@ span.grayed { color: #808080; font-style: italic; }
 	        </xsl:for-each>
 	        </table>
         </xsl:if>
-        <xsl:if test="./copper:prefix">
+        <xsl:if test="./copper:Prefix">
            <table class="symtable">
            <caption><h4>Transparent prefixes</h4></caption>
            <tr>
            <th>Prefix</th>
            <th>Can come before</th>
            </tr>
-           <xsl:for-each select="./copper:prefix">
+           <xsl:for-each select="./copper:Prefix">
               <xsl:sort select="string-length(@tag)"/>
               <xsl:sort select="@tag"/>
               <tr>
@@ -511,14 +511,14 @@ span.grayed { color: #808080; font-style: italic; }
                 </xsl:choose>
               <td class="fixedfccell">
               <xsl:variable name="this" select="@tag"/>
-              <xsl:variable name="prefixid" select="/copper:copper_spec/copper:terminal[@tag=$this]"/>
+              <xsl:variable name="prefixid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]"/>
               <a href="#{$prefixid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$prefixid"/></xsl:call-template></a>
               </td>
               <td class="fixedcell">
                  <xsl:variable name="cardinality" select="count(./copper:follow)"/>
                  <xsl:for-each select="./copper:follow">
                   <xsl:variable name="this" select="."/>
-                  <xsl:variable name="prefixid" select="/copper:copper_spec/copper:terminal[@tag=$this]"/>
+                  <xsl:variable name="prefixid" select="/copper:CopperXMLDump/copper:Terminal[@tag=$this]"/>
                   <a href="#{$prefixid/@tag}" class="genlink"><xsl:call-template name="getDisplayName"><xsl:with-param name="element" select="$prefixid"/></xsl:call-template></a>
                   <xsl:if test="position() != $cardinality">, </xsl:if>
               </xsl:for-each>
@@ -530,33 +530,33 @@ span.grayed { color: #808080; font-style: italic; }
     </xsl:for-each>
 </xsl:template>
 
-<xsl:template match="copper:accept">
+<xsl:template match="copper:Accept">
     Accept<br/>
 </xsl:template>
 
-<xsl:template match="copper:shift">
+<xsl:template match="copper:Shift">
     Shift to <xsl:variable name="dest" select="@dest"/>
     <a href="#{$dest}" class="genlink">state
-    <xsl:value-of select="/copper:copper_spec/copper:parsetable/copper:state[@tag=$dest]/@id"/></a><br/>
+    <xsl:value-of select="/copper:CopperXMLDump/copper:LRParseTable/copper:State[@tag=$dest]/@id"/></a><br/>
 </xsl:template>
 
-<xsl:template match="copper:goto">
+<xsl:template match="copper:Goto">
     Goto <xsl:variable name="dest" select="@dest"/>
     <a href="#{$dest}" class="genlink">state
-    <xsl:value-of select="/copper:copper_spec/copper:parsetable/copper:state[@tag=$dest]/@id"/></a><br/>
+    <xsl:value-of select="/copper:CopperXMLDump/copper:LRParseTable/copper:State[@tag=$dest]/@id"/></a><br/>
 </xsl:template>
 
-<xsl:template match="copper:reduce">
+<xsl:template match="copper:Reduce">
     Reduce with <xsl:variable name="prod" select="@prod"/>
     <a href="#{$prod}" class="genlink">production
-    <xsl:value-of select="/copper:copper_spec/copper:production[@tag=$prod]/@tag"/></a><br/>
+    <xsl:value-of select="/copper:CopperXMLDump/copper:Production[@tag=$prod]/@tag"/></a><br/>
 </xsl:template>
 
 <xsl:template name="getDisplayName">
 	<xsl:param name="element"/>
 	<xsl:choose>
-		<xsl:when test="$element/copper:displayname">
-			<xsl:value-of select="$element/copper:displayname"/>
+		<xsl:when test="$element/copper:DisplayName">
+			<xsl:value-of select="$element/copper:DisplayName"/>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:value-of select="$element/@id"/>
@@ -564,7 +564,7 @@ span.grayed { color: #808080; font-style: italic; }
 	</xsl:choose>
 </xsl:template>
 
-<xsl:template match="copper:precgraph">
+<xsl:template match="copper:PrecedenceGraph">
 	<xsl:apply-templates select="img"/>
 </xsl:template>
 

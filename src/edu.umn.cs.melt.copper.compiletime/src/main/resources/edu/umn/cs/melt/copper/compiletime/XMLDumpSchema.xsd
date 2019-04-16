@@ -39,7 +39,7 @@
 		<xs:complexContent>
 			<xs:extension base="CopperXMLDumpTaggedElement">
 				<xs:sequence>
-					<xs:element name="displayname" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="DisplayName" type="xs:string" minOccurs="0" maxOccurs="1"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -71,7 +71,7 @@
 		<xs:complexContent>
 			<xs:extension base="CopperXMLDumpGrammarElement">
 				<xs:sequence>
-					<xs:element name="lhs" type="CopperXMLDumpTagRef" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="LHS" type="CopperXMLDumpTagRef" minOccurs="1" maxOccurs="1"/>
 					<xs:element name="rhssym" type="CopperXMLDumpTagRef" minOccurs="0" maxOccurs="unbounded"/>					
 				</xs:sequence>
 				<xs:attribute name="name" type="CopperXMLDumpName" use="required"/>
@@ -82,12 +82,12 @@
 	
 	<xs:complexType name="CopperXMLDumpPrecedenceGraph">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="vertex">
+			<xs:element name="Vertex">
 				<xs:complexType>
 					<xs:attribute name="tag" type="xs:integer" use="required"/>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="edge">
+			<xs:element name="Edge">
 				<xs:complexType>
 					<xs:attribute name="submits" type="xs:integer" use="required"/>
 					<xs:attribute name="dominates" type="xs:integer" use="required"/>
@@ -102,13 +102,15 @@
 				<xs:sequence>
 					<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="2" maxOccurs="unbounded"/>
 				</xs:sequence>
+				<xs:attribute name="appliesToSubsets" type="xs:boolean" use="required"/>
+				<xs:attribute name="disambiguateTo" type="CopperXMLDumpTagRef" use="optional"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	
 	<xs:complexType name="CopperXMLDumpContextSets">
 		<xs:sequence>
-			<xs:element name="first" minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="First" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="1" maxOccurs="unbounded"/>
@@ -116,7 +118,7 @@
 					<xs:attribute name="of" type="CopperXMLDumpTagRef" use="required"/>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="first_nt" minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="FirstNT" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="1" maxOccurs="unbounded"/>
@@ -132,7 +134,7 @@
 					<xs:attribute name="of" type="CopperXMLDumpTagRef" use="required"/>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="nullable" minOccurs="1" maxOccurs="1">
+			<xs:element name="Nullable" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="member" type="CopperXMLDumpTagRef" minOccurs="0" maxOccurs="unbounded"/>
@@ -144,10 +146,10 @@
 	
 	<xs:complexType name="CopperXMLDumpLALRDFA">
 		<xs:sequence>
-			<xs:element name="state" minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="State" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:choice minOccurs="1" maxOccurs="unbounded">
-						<xs:element name="item">
+						<xs:element name="Item">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="lookahead" type="CopperXMLDumpTagRef" minOccurs="0" maxOccurs="unbounded"/>
@@ -156,7 +158,7 @@
 								<xs:attribute name="production" type="CopperXMLDumpTagRef" use="required"/>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="transition">
+						<xs:element name="Transition">
 							<xs:complexType>
 								<xs:attribute name="dest" type="xs:string" use="required"/>
 								<xs:attribute name="label" type="CopperXMLDumpTagRef" use="required"/>
@@ -172,10 +174,10 @@
 	
 	<xs:complexType name="CopperXMLDumpParseTable">
 		<xs:sequence>
-			<xs:element name="state" minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="State" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:choice minOccurs="1" maxOccurs="unbounded">
-						<xs:element name="layout">
+						<xs:element name="Layout">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="follow" type="CopperXMLDumpTagRef" minOccurs="0" maxOccurs="unbounded"/>
@@ -183,7 +185,7 @@
 								<xs:attribute name="tag" type="CopperXMLDumpTagRef" use="required"/>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="prefix">
+						<xs:element name="Prefix">
 							<xs:complexType>
 								<xs:sequence>
 									<xs:element name="follow" type="CopperXMLDumpTagRef" minOccurs="0" maxOccurs="unbounded"/>
@@ -191,30 +193,30 @@
 								<xs:attribute name="tag" type="CopperXMLDumpTagRef" use="required"/>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="parse_cell">
+						<xs:element name="ParseCell">
 							<xs:complexType>
 								<xs:choice minOccurs="0" maxOccurs="unbounded">
-									<xs:element name="shift">
+									<xs:element name="Shift">
 										<xs:complexType>
 											<xs:attribute name="dest" type="xs:string"/>
 										</xs:complexType>
 									</xs:element>
-									<xs:element name="reduce">
+									<xs:element name="Reduce">
 										<xs:complexType>
 											<xs:attribute name="prod" type="CopperXMLDumpTagRef"/>
 										</xs:complexType>
 									</xs:element>
-									<xs:element name="accept">
+									<xs:element name="Accept">
 										<xs:complexType/>
 									</xs:element>
 								</xs:choice>
 								<xs:attribute name="id" type="CopperXMLDumpTagRef" use="required"/>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="goto_cell">
+						<xs:element name="GotoCell">
 							<xs:complexType>
 								<xs:choice>
-									<xs:element name="goto">
+									<xs:element name="Goto">
 										<xs:complexType>
 											<xs:attribute name="dest" type="xs:string"/>
 										</xs:complexType>
@@ -234,18 +236,18 @@
 
 	<xs:complexType name="CopperXMLDump">
 		<xs:sequence>
-			<xs:element name="grammar" type="CopperXMLDumpGrammar" minOccurs="1" maxOccurs="unbounded"/>
-			<xs:element name="terminal" type="CopperXMLDumpTerminal" minOccurs="1" maxOccurs="unbounded"/>
-			<xs:element name="nonterminal" type="CopperXMLDumpNonterminal" minOccurs="1" maxOccurs="unbounded"/>
-			<xs:element name="production" type="CopperXMLDumpProduction" minOccurs="1" maxOccurs="unbounded"/>
-			<xs:element name="precgraph" type="CopperXMLDumpPrecedenceGraph" minOccurs="1" maxOccurs="unbounded"/>
-			<xs:element name="disambig_group" type="CopperXMLDumpDisambiguationFunction" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="context_sets" type="CopperXMLDumpContextSets" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="lalr_dfa" type="CopperXMLDumpLALRDFA" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="parsetable" type="CopperXMLDumpParseTable" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Grammar" type="CopperXMLDumpGrammar" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="Terminal" type="CopperXMLDumpTerminal" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="Nonterminal" type="CopperXMLDumpNonterminal" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="Production" type="CopperXMLDumpProduction" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="PrecedenceGraph" type="CopperXMLDumpPrecedenceGraph" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="DisambiguationFunction" type="CopperXMLDumpDisambiguationFunction" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ContextSets" type="CopperXMLDumpContextSets" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="LALR_DFA" type="CopperXMLDumpLALRDFA" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="LRParseTable" type="CopperXMLDumpParseTable" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="copper_spec" type="CopperXMLDump"/>
+	<xs:element name="CopperXMLDump" type="CopperXMLDump"/>
 </xs:schema>
 	
