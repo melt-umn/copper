@@ -579,7 +579,7 @@ Requirements.
 
 To compile a Copper parser, you need:
 
--   Java Runtime Environment version 6 or greater.
+-   Java Runtime Environment version 7 or greater.
 
 -   `CopperCompiler.jar` on the classpath.
 

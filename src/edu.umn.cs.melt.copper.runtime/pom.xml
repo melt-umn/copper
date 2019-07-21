@@ -16,7 +16,7 @@
         <configuration>
 	  <author>true</author>
 	  <doctitle>Copper ${project.version} Javadoc</doctitle>
-	  <source>1.6</source>
+	  <source>1.7</source>
 	  <splitindex>true</splitindex>
 	  <groups>
 	    <group>

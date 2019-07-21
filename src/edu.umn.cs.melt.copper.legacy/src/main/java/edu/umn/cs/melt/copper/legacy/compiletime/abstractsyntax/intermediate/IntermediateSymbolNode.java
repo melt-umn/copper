@@ -14,6 +14,7 @@ public class IntermediateSymbolNode extends IntermediateNode
 	public GrammarName owner;
 	public Hashtable< String,Pair<InputPosition,Object> > attributes;
 	
+	@SafeVarargs
 	public IntermediateSymbolNode(IntermediateSymbolSort sort,Symbol name,Pair< String,Pair<InputPosition,Object> >... attributes)
 	{
 		this.sort = sort;

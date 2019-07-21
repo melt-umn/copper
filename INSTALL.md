@@ -14,7 +14,7 @@ This will place two JARs into the `target` directory:
 * `CopperCompiler.jar` contains all Copper's classes.
 
 Once the JARs are built, you need only put one of them in your
-classpath. Copper as built has no dependencies outside of the Java 6
+classpath. Copper as built has no dependencies outside of the Java 7
 standard class library.
 
 If you will only be running Copper parsers (e.g., if you are running an
