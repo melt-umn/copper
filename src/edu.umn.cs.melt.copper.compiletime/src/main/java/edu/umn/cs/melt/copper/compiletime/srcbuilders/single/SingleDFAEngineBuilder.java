@@ -666,7 +666,7 @@ public class SingleDFAEngineBuilder
 	    		out.print("if(match.terms.equals(disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "]))\n");
 	    		out.print("            {\n");
 	    		out.print("                int result = disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme);\n");
-				out.print("                return match.terms.get(result)? result : -1;\n");
+				out.print("                return (result > 0 && match.terms.get(result))? result : -1;\n");
 	    		out.print("            }\n");
 	    	}
 		}
@@ -678,7 +678,7 @@ public class SingleDFAEngineBuilder
     		out.print("if(edu.umn.cs.melt.copper.runtime.auxiliary.internal.BitSetUtils.subset(match.terms,disambiguationGroups[" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "]))\n");
     		out.print("            {\n");
     		out.print("                int result = disambiguate_" + (group - spec.disambiguationFunctions.nextSetBit(0)) + "(lexeme, match.terms);\n");
-			out.print("                return match.terms.get(result)? result : -1;\n");
+			out.print("                return (result > 0 && match.terms.get(result))? result : -1;\n");
     		out.print("            }\n");
 		}
 		out.print("            ");
