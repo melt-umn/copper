@@ -2,7 +2,6 @@ package edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors;
 
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
-import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.GrammarSemanticErrorMessage;
 import edu.umn.cs.melt.copper.main.ParserCompiler;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 

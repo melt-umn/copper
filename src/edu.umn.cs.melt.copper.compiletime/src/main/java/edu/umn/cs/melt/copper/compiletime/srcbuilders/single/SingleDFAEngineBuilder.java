@@ -642,10 +642,12 @@ public class SingleDFAEngineBuilder
 		}
 		
 		// For use by action code in disambiguation functions for accessing the shiftable set
+		out.print("        @SuppressWarnings(\"unused\")\n");
 		out.print("        private boolean isMember(int t, " + BitSet.class.getName() + " s)\n");
 		out.print("        {\n");
 		out.print("            return s.get(t);\n");
 		out.print("        }\n");
+		out.print("        @SuppressWarnings(\"unused\")\n");
 		out.print("        private int nextMember(int t, " + BitSet.class.getName() + " s)\n");
 		out.print("        {\n");
 		out.print("            return s.nextSetBit(t);\n");

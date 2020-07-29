@@ -126,6 +126,11 @@
 					logger.log(new GrammarSyntaxError(ex));
 					spec = null;
 				}
+				catch(CopperParserException ex)
+				{
+					logger.log(new GenericMessage(CompilerLevel.QUIET,ex.getMessage()));
+					spec = null;
+				}
         		logger.flush();
         		if(hasError) return null;
         		return spec;
@@ -184,6 +189,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
 import edu.umn.cs.melt.copper.runtime.io.Location;
 import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
+import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 ]]></Code>
         </Preamble>
@@ -2528,7 +2534,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
                 <Layout/>
             </Production>
             <Production id="UGtoCHAR_dash_CHAR">
-                <Code><![CDATA[ RESULT = new CharacterSetRegex().addRange(lower,upper); ]]></Code>
+                <Code><![CDATA[ try { RESULT = new CharacterSetRegex().addRange(lower,upper); } catch(IllegalArgumentException ex) { reportError(formatError(ex.getMessage())); } ]]></Code>
                 <LHS><NonterminalRef id="Regex_UG"/></LHS>
                 <RHS>
                     <TerminalRef id="Regex_CHAR" name="lower"/>

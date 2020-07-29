@@ -196,7 +196,6 @@ public class XMLGrammarParser
 	// Visitor patterns
 
 	// ASSUMES that the "copperspec" node has attributes "id" and "type".
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitCopperSpecNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -253,7 +252,6 @@ public class XMLGrammarParser
 	}
 	
 	// ASSUMES that the "preamble" node is the child of a "copperspec" node and has an attribute "code".
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitPreambleNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -294,7 +292,6 @@ public class XMLGrammarParser
 		            Pair.cons("code",Pair.cons(getPos(),(Object) code)));		
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitAttributeNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -387,7 +384,6 @@ public class XMLGrammarParser
 	
 	// ASSUMES that the "nonterm" node is a child of a "copperspec," "lhs," "rhs," or "start" node
 	// and has an attribute "id".
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitNontermNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -432,7 +428,6 @@ public class XMLGrammarParser
 
 	// ASSUMES that the "term" node is the child of a "copperspec," "layout," "prefix,"
 	// "lhs," "rhs," or "disambig_func" node, and has attributes "id", "regex".
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitTermNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -578,7 +573,6 @@ public class XMLGrammarParser
 		return ntName;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitOperatorNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -683,7 +677,6 @@ public class XMLGrammarParser
 	
 	// ASSUMES that the prod node is the child of a "copperspec" node,
 	// has attributes "id," "class," "code," and "precedence", and children "lhs" and "rhs."
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitProdNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -928,7 +921,6 @@ public class XMLGrammarParser
 	// ASSUMES that the "disambig_func" node has attributes "id" and "code",
 	//         that there are two or more child nodes,
 	//         and that each child node has an "id" attribute.
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitDisambigFuncNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -1051,7 +1043,6 @@ public class XMLGrammarParser
 	}
 
 	// ASSUMES that the "termclass" node has an "id" attribute.
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitTermClassNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -1074,7 +1065,6 @@ public class XMLGrammarParser
 	}
 	
 	// ASSUMES that the "prefix" node has only one child, a terminal node with an "id" attribute. 
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitPrefixNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{
@@ -1111,7 +1101,6 @@ public class XMLGrammarParser
 	}
 	
 	// ASSUMES that the regex node is the child of a term node and has only one child.
-	@SuppressWarnings("unchecked")
 	public static IntermediateNode visitRegexNode(Node n,String inheritance,CompilerLogger logger)
 	throws CopperException
 	{

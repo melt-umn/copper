@@ -1,8 +1,7 @@
 /*
- * Built at Fri Oct 04 10:01:31 CDT 2013
- * by Copper version 0.7.0,
- *      revision bb020b7c012578e7a2bd63a447b7a46f7b26907f+,
- *      build 20130730-0917
+ * Built at Wed Jul 29 02:14:59 CDT 2020
+ * by Copper version 0.8.1-SNAPSHOT,
+ *      build 20200729-0711
  */
 package edu.umn.cs.melt.copper.compiletime.skins.cup;
 
@@ -44,6 +43,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.internal.QuotedStringFormatter;
 import edu.umn.cs.melt.copper.runtime.io.Location;
 import edu.umn.cs.melt.copper.runtime.io.ScannerBuffer;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
+import edu.umn.cs.melt.copper.runtime.logging.CopperParserException;
 import edu.umn.cs.melt.copper.runtime.logging.CopperSyntaxError;
 
 
@@ -1257,7 +1257,7 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
             Character lower = (Character) _children[0];
             Character upper = (Character) _children[2];
             CharacterSetRegex RESULT = null;
-             RESULT = new CharacterSetRegex().addRange(lower,upper); 
+             try { RESULT = new CharacterSetRegex().addRange(lower,upper); } catch(IllegalArgumentException ex) { reportError(formatError(ex.getMessage())); } 
             return RESULT;
         }
         public Regex runSemanticAction_161()
@@ -1451,28 +1451,110 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
              RESULT = new Token(lexeme,getStartRealLocation()); 
             return RESULT;
         }
+        @SuppressWarnings("unused")
+        private boolean isMember(int t, java.util.BitSet s)
+        {
+            return s.get(t);
+        }
+        @SuppressWarnings("unused")
+        private int nextMember(int t, java.util.BitSet s)
+        {
+            return s.nextSetBit(t);
+        }
         public int runDisambiguationAction(edu.umn.cs.melt.copper.runtime.io.InputPosition _pos,edu.umn.cs.melt.copper.runtime.engines.single.scanner.SingleDFAMatchData match)
         throws java.io.IOException,edu.umn.cs.melt.copper.runtime.logging.CopperParserException
         {
             String lexeme = match.lexeme;
-            if(match.terms.equals(disambiguationGroups[0])) return disambiguate_0(lexeme);
-            else if(match.terms.equals(disambiguationGroups[1])) return disambiguate_1(lexeme);
-            else if(match.terms.equals(disambiguationGroups[2])) return disambiguate_2(lexeme);
-            else if(match.terms.equals(disambiguationGroups[3])) return disambiguate_3(lexeme);
-            else if(match.terms.equals(disambiguationGroups[4])) return disambiguate_4(lexeme);
-            else if(match.terms.equals(disambiguationGroups[5])) return disambiguate_5(lexeme);
-            else if(match.terms.equals(disambiguationGroups[6])) return disambiguate_6(lexeme);
-            else if(match.terms.equals(disambiguationGroups[7])) return disambiguate_7(lexeme);
-            else if(match.terms.equals(disambiguationGroups[8])) return disambiguate_8(lexeme);
-            else if(match.terms.equals(disambiguationGroups[9])) return disambiguate_9(lexeme);
-            else if(match.terms.equals(disambiguationGroups[10])) return disambiguate_10(lexeme);
-            else if(match.terms.equals(disambiguationGroups[11])) return disambiguate_11(lexeme);
-            else if(match.terms.equals(disambiguationGroups[12])) return disambiguate_12(lexeme);
-            else if(match.terms.equals(disambiguationGroups[13])) return disambiguate_13(lexeme);
-            else if(match.terms.equals(disambiguationGroups[14])) return disambiguate_14(lexeme);
-            else if(match.terms.equals(disambiguationGroups[15])) return disambiguate_15(lexeme);
-            else if(match.terms.equals(disambiguationGroups[16])) return disambiguate_16(lexeme);
-            else if(match.terms.equals(disambiguationGroups[17])) return disambiguate_17(lexeme);
+            if(match.terms.equals(disambiguationGroups[0]))
+            {
+                int result = disambiguate_0(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[1]))
+            {
+                int result = disambiguate_1(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[2]))
+            {
+                int result = disambiguate_2(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[3]))
+            {
+                int result = disambiguate_3(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[4]))
+            {
+                int result = disambiguate_4(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[5]))
+            {
+                int result = disambiguate_5(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[6]))
+            {
+                int result = disambiguate_6(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[7]))
+            {
+                int result = disambiguate_7(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[8]))
+            {
+                int result = disambiguate_8(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[9]))
+            {
+                int result = disambiguate_9(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[10]))
+            {
+                int result = disambiguate_10(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[11]))
+            {
+                int result = disambiguate_11(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[12]))
+            {
+                int result = disambiguate_12(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[13]))
+            {
+                int result = disambiguate_13(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[14]))
+            {
+                int result = disambiguate_14(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[15]))
+            {
+                int result = disambiguate_15(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[16]))
+            {
+                int result = disambiguate_16(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
+            else if(match.terms.equals(disambiguationGroups[17]))
+            {
+                int result = disambiguate_17(lexeme);
+                return (result > 0 && match.terms.get(result))? result : -1;
+            }
             else return -1;
         }
         public int disambiguate_0(final String lexeme)
@@ -2490,6 +2572,11 @@ public CupSkinParser() {}
 				catch(CopperSyntaxError ex)
 				{
 					logger.log(new GrammarSyntaxError(ex));
+					spec = null;
+				}
+				catch(CopperParserException ex)
+				{
+					logger.log(new GenericMessage(CompilerLevel.QUIET,ex.getMessage()));
 					spec = null;
 				}
         		logger.flush();

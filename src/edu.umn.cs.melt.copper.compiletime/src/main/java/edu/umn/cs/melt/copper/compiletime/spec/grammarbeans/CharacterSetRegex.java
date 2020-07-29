@@ -5,6 +5,7 @@ import java.util.Set;
 
 import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVisitor;
+import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
 
 /**
  * Represents the base regex: a set of characters.
@@ -52,8 +53,13 @@ public class CharacterSetRegex extends Regex
 	 * @return {@code this} (to enable chaining of mutator calls).
 	 */
 	public CharacterSetRegex addRange(char lowerBound,char upperBound)
+	throws IllegalArgumentException
 	{
 		SetOfCharsSyntax rhs = new SetOfCharsSyntax(lowerBound,upperBound);
+		if(rhs.size() == 0)
+		{
+			throw new IllegalArgumentException(PrettyPrinter.charPrettyPrint(lowerBound) + "-" + PrettyPrinter.charPrettyPrint(upperBound) + " is an invalid character range");
+		}
 		chars = SetOfCharsSyntax.union(chars,rhs);
 		return this;
 	}

@@ -47,6 +47,7 @@ public class FinalReportMessage implements CompilerLogMessage
 		rv.append("   producing " + stats.parseStateCount + " unique parse state" + ((stats.parseStateCount == 1) ? "" : "s") + "\n");
 		rv.append("   and " + stats.scannerStateCount + " unique scanner state" + ((stats.scannerStateCount == 1) ? "" : "s") + ".\n");
 		rv.append(stats.uselessNTs.cardinality() + " useless nonterminal" + ((stats.uselessNTs.cardinality() == 1) ? "" : "s") + ".\n");
+		rv.append(stats.malformedRegexTerminals.cardinality() + " malformed regex" + ((stats.malformedRegexTerminals.cardinality() == 1) ? "" : "es") + ".\n");
 		if(stats.parseTableConflictCount == 0)
 		{
 			rv.append("No parse table conflicts detected.\n");			

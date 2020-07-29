@@ -134,7 +134,14 @@ public class XMLSkinParser extends VersionSpecificXMLSkinParser {
 		case CHARACTER_RANGE_ELEMENT:
 			String lowerBound = attributes.getValue("lower");
 			String upperBound = attributes.getValue("upper");
-			((CharacterSetRegex) parent.regexChildren.get(0)).addRange(lowerBound.charAt(0), upperBound.charAt(0));
+			try
+			{
+				((CharacterSetRegex) parent.regexChildren.get(0)).addRange(lowerBound.charAt(0), upperBound.charAt(0));
+			}
+			catch(IllegalArgumentException ex)
+			{
+				logger.logError(new GenericLocatedMessage(CompilerLevel.QUIET,peek().startLocation,ex.getMessage()));				
+			}
 			break;
 		case CHARACTER_SET_ELEMENT:
 			String invert = attributes.getValue("invert");

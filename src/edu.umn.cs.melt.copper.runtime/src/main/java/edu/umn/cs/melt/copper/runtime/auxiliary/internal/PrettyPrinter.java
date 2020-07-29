@@ -73,4 +73,16 @@ public class PrettyPrinter
 		rv += /*"\n" + linePrefix +*/ "]";
 		return rv;
 	}
+	
+	public static String charPrettyPrint(char toPrint)
+	{
+		if(Character.isISOControl(toPrint))
+		{
+			return String.format("U+%x", toPrint);
+		}
+		else
+		{
+			return String.valueOf(toPrint);
+		}
+	}
 }

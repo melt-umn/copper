@@ -229,7 +229,7 @@ public class LegacyPipeline implements Pipeline
 		return grammar;
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "resource" })
 	private int compileParserLegacy(ParserCompilerParameters args,GrammarSource grammar)
 	throws CopperException
 	{

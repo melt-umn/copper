@@ -33,6 +33,7 @@ public class GrammarStatistics implements Serializable
 
 	public BitSet uselessNTs;
 	public BitSet nonTerminalNTs;
+	public BitSet malformedRegexTerminals;
 	public int parseTableConflictCount;
 	public int shiftReduceParseTableConflictCount;
 	public int reduceReduceParseTableConflictCount;

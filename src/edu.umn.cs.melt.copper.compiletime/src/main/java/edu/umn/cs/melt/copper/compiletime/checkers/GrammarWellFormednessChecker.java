@@ -2,10 +2,20 @@ package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 
+import edu.umn.cs.melt.copper.compiletime.auxiliary.SetOfCharsSyntax;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
+import edu.umn.cs.melt.copper.compiletime.logging.messages.MalformedRegexMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.NonterminalNonterminalMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.UselessNonterminalMessage;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CharacterSetRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ChoiceRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ConcatenationRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.EmptyStringRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.KleeneStarRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.MacroHoleRegex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Regex;
+import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.visitors.RegexBeanVisitor;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.GrammarStatistics;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
@@ -13,7 +23,8 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
  * Checks that a grammar is "well-formed;" i.e., that it contains no nonterminals with no terminal
- * derivations, and, if specified, that it contains no "useless" nonterminals.
+ * derivations; that regexes contain no invalid constructs such as empty character ranges;
+ * and, if specified, that it contains no "useless" nonterminals.
  * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  *
  */
@@ -144,6 +155,74 @@ public class GrammarWellFormednessChecker
 			if(nt != spec.getStartNonterminal())
 			{
 				if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new NonterminalNonterminalMessage(symbolTable.getNonTerminal(nt)));
+			}
+		}
+		
+		// Check for any malformed regexes.
+		stats.malformedRegexTerminals = new BitSet();
+		for(int t = spec.terminals.nextSetBit(0);t >= 0;t = spec.terminals.nextSetBit(t+1))
+		{
+			Regex r = spec.t.getRegex(t);
+			if(r != null)
+			{
+				boolean regexPassed = r.acceptVisitor(new RegexBeanVisitor<Boolean, CopperException>()
+				{
+
+					@Override
+					public Boolean visitChoiceRegex(ChoiceRegex bean) throws CopperException
+					{
+						boolean passed = true;
+						for(Regex subexp : bean.getSubexps())
+						{
+							passed &= subexp.acceptVisitor(this);
+						}
+						return passed;
+					}
+
+					@Override
+					public Boolean visitConcatenationRegex(ConcatenationRegex bean) throws CopperException
+					{
+						boolean passed = true;
+						for(Regex subexp : bean.getSubexps())
+						{
+							passed &= subexp.acceptVisitor(this);
+						}
+						return passed;
+					}
+
+					@Override
+					public Boolean visitKleeneStarRegex(KleeneStarRegex bean) throws CopperException
+					{
+						return bean.getSubexp().acceptVisitor(this);
+					}
+
+					@Override
+					public Boolean visitEmptyStringRegex(EmptyStringRegex bean) throws CopperException
+					{
+						return true;
+					}
+
+					@Override
+					public Boolean visitCharacterSetRegex(CharacterSetRegex bean, SetOfCharsSyntax chars)
+							throws CopperException
+					{
+						return bean.isComplete();
+					}
+
+					@Override
+					public Boolean visitMacroHoleRegex(MacroHoleRegex bean) throws CopperException
+					{
+						throw new UnsupportedOperationException("Undefined macro '" + bean.getMacroName() + "'");		
+					}
+				});
+				if(!regexPassed)
+				{
+					stats.malformedRegexTerminals.set(t);
+					spec.t.setRegex(t, new ChoiceRegex());
+					if(logger.isLoggable(CompilerLevel.QUIET)) logger.log(new MalformedRegexMessage(symbolTable.getTerminal(t)));
+					passed = false;
+				}
+				
 			}
 		}
 		
