@@ -2,6 +2,33 @@
 
 ---
 
+# 1.0 #
+
+---
+
+## 1.0.0 ##
+
+_Released April 6, 2021._
+
+A few bug fixes and incremental improvements.
+
+### Bug fixes ###
+
+* Copper no longer enters into an infinite loop on grammars that produce LR DFAs with loop transitions.
+* Copper now gracefully handles character-set regular expressions with empty ranges.
+
+### Improvements ###
+
+* The LR "context sets" of a grammar (first, follow, and nullable) are now included in XML dumps.
+* The XML skin and Java API now support specially labeled disambiguation functions that can be appied to any subset of its members, provided that all such disambiguation functions have disjoint member sets.
+* Disambiguation functions may now be expressly labeled as "glue" functions that resolve ambiguities involving an extension's marking terminal.
+
+### Build changes ###
+
+* Copper now requires Java version 7 to build and run.
+
+---
+
 # 0.8 #
 
 ---

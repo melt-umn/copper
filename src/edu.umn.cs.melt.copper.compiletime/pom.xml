@@ -86,7 +86,7 @@
 
   <parent>
     <relativePath>../../pom.xml</relativePath>
-    <version>0.8.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <artifactId>copper-parent</artifactId>
     <groupId>edu.umn.cs.melt</groupId>
   </parent>
