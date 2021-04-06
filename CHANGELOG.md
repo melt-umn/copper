@@ -20,7 +20,7 @@ A few bug fixes and incremental improvements.
 ### Improvements ###
 
 * The LR "context sets" of a grammar (first, follow, and nullable) are now included in XML dumps.
-* The XML skin and Java API now support specially labeled disambiguation functions that can be appied to any subset of its members, provided that all such disambiguation functions have disjoint member sets.
+* The XML skin and Java API now support specially labeled disambiguation functions that can be applied to any subset of its members, provided that all such disambiguation functions have disjoint member sets.
 * Disambiguation functions may now be expressly labeled as "glue" functions that resolve ambiguities involving an extension's marking terminal.
 
 ### Build changes ###
