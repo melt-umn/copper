@@ -44,7 +44,7 @@
   
   <parent>
     <relativePath>../../pom.xml</relativePath>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <artifactId>copper-parent</artifactId>
     <groupId>edu.umn.cs.melt</groupId>
   </parent>

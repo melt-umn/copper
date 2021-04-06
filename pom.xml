@@ -7,7 +7,7 @@
 
   <!-- This info is all inherited by child poms -->
   <groupId>edu.umn.cs.melt</groupId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <licenses>
     <license>
       <name>GNU Lesser General Public License, version 3 or later</name>
