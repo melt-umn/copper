@@ -45,6 +45,7 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 			SpecCompiler<SCIN, SCOUT> specCompiler,
 			SourceBuilder<SCOUT> sourceBuilder)
 	{
+		// this calls the Object constructor, which doesn't do anything...
 		super();
 		this.specParser = specParser;
 		this.specCompiler = specCompiler;

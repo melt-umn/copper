@@ -38,6 +38,8 @@ import java.io.PrintStream;
 import java.util.Set;
 
 /**
+ * Constructs the parser, runs checks, and logs messages. The core of the parser generator.
+ * Extended and used by by both {@link StandardSpecCompiler} and  {@link FragmentGenerator}
  * @author Kevin Viratyosin
  *
  * Extracted from StandardSpecCompiler
@@ -190,7 +192,7 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
 
         timeBefore = System.currentTimeMillis();
 
-        succeeded &= ParseTableConflictChecker.check(logger, symbolTable, fullSpec, parseTable, stats);
+        succeeded &= ParseTableConflictChecker.check(logger, symbolTable, fullSpec, parseTable, dfa, contextSets, stats);
 
         if(logger.isLoggable(TimingMessage.TIMING_LEVEL)) logger.log(new TimingMessage("Checking parse table conflicts",System.currentTimeMillis() - timeBefore));
         logger.flush();

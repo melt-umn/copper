@@ -13,9 +13,9 @@ public class LR0DFA
 {
 	/** The item set for each state. */
 	protected LR0ItemSet[] itemSets;
-	/** The set of transitions leading out of each state. */
+	/** The set of transitions leading out of each state. Each index is a symbol that leads to a transition. */
 	protected BitSet[] transitionLabels;
-	/** The DFA's transition function. */ 
+	/** The DFA's transition function/GOTO table */
 	protected int[][] transitions;
 	/**
 	 * The set of "goto items" for each state and transition. {@code gotoItems[s][X]}
@@ -43,12 +43,14 @@ public class LR0DFA
 		this.gotoItems = gotoItems;
 		this.initNTs = initNTs;
 	}
-	
+
+	/**number of states in the DFA */
 	public int size() { return itemSets.length; }
-	
+
 	public final LR0ItemSet getItemSet(int state) 		   { return itemSets[state]; }
 	public final BitSet getTransitionLabels(int state)     { return transitionLabels[state]; }
 	public final int getTransition(int state,int symbol)   { return transitions[state][symbol]; }
+	public final int getTransitionLength()                 { return transitions.length; }
 	public final BitSet getGotoItems(int state,int symbol) { return gotoItems[state][symbol]; }
 	public final BitSet getInitNTs(int state) { return initNTs[state]; }
 }
