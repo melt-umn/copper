@@ -14,7 +14,7 @@ public class Derivation {
     List<Derivation> derivations;
 
     //TODO do we want to have non-ascii chars required?
-    public static final Derivation dot = new Derivation("•", new LinkedList<Derivation>());
+    public static final Derivation dot = new Derivation("(*)", new LinkedList<Derivation>());
 
     //TODO go through when this is used instead of calling the 2 argument one with the empty list
     public Derivation(String symbol){

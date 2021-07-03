@@ -1,21 +1,14 @@
 package edu.umn.cs.melt.copper.compiletime.logging.messages;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.Counterexample;
-import edu.umn.cs.melt.copper.compiletime.auxiliary.Derivation;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.LookaheadSensitiveGraph;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageType;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
-import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadSets;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
-import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
-import sun.jvm.hotspot.utilities.Bits;
-
-import java.util.BitSet;
 
 //TODO separate out a builder
 //TODO comment

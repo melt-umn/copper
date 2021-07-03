@@ -18,10 +18,10 @@ public class ProductionStepTables {
      * The reverse production steps indexed by the state and the non-terminal on the lefthand side of the production
      * Represented by indices into the LR0ItemSet (in the LR0DFA) for the associated state.
      */
-    private ArrayList<BitSet>[] reverseProductionStepTable;
+    private BitSet[][] reverseProductionStepTable;
 
     public ProductionStepTables(LR0DFA dfa, ParserSpec spec){
-       reverseProductionStepTable = new ArrayList[dfa.size()];
+       reverseProductionStepTable = new BitSet[dfa.size()][];
        productionStepTable = new Hashtable<>();
        build(dfa, spec);
     }
@@ -55,7 +55,7 @@ public class ProductionStepTables {
                     closures[j].set(spec.pr.getLHS(curr.getProduction(j)));
                 }
             }
-            reverseProductionStepTable[state] = new ArrayList<>();
+            reverseProductionStepTable[state] = new BitSet[spec.nonterminals.size()];
 
             //for each item in the state
             for (int item = 0; item < curr.size(); item++) {
@@ -77,7 +77,7 @@ public class ProductionStepTables {
                         productionStepTable.put(srcStateItem,new BitSet());
                     }
                     productionStepTable.get(srcStateItem).or(closures[item]);
-                    reverseProductionStepTable[state].get(symbolAfterDot).set(item);
+                    reverseProductionStepTable[state][symbolAfterDot].set(item);
                 }
             }
         }
@@ -99,6 +99,6 @@ public class ProductionStepTables {
      * @return get the set of reverse production steps for the given state and nonterminal
      */
     public BitSet getReverseProductionSteps(int state, int nonTerminal){
-        return reverseProductionStepTable[state].get(nonTerminal);
+        return reverseProductionStepTable[state][nonTerminal];
     }
 }

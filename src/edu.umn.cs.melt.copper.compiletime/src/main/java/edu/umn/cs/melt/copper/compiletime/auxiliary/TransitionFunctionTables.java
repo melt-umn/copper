@@ -16,12 +16,12 @@ public class TransitionFunctionTables {
      * the state item transitioned to parameterized by the start StateItem and the symbol
      * (which is an integer index into the symbol table)
      */
-    protected Hashtable<StateItem, ArrayList<StateItem>> trans;
+    protected Hashtable<StateItem, StateItem[]> trans;
     /**
      * same as {@link #trans}, but the result is the set of any possible
      * StateItems that could have transitioned to the input StateItem on the input symbol
      */
-    protected Hashtable<StateItem, ArrayList<Set<StateItem>>> revTrans;
+    protected Hashtable<StateItem, Set<StateItem>[]> revTrans;
 
 
     public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec){
@@ -36,8 +36,13 @@ public class TransitionFunctionTables {
             LR0ItemSet srcItemSet = dfa.getItemSet(i);
             for(int j = 0; j < srcItemSet.size(); j++){
                 int srcProduction = srcItemSet.getProduction(j);
-                int expectedDotPosition = srcItemSet.getPosition(j) + 1;
-                int symbolAfterDot = spec.pr.getRHSSym(srcProduction,expectedDotPosition);
+                int dotPosition = srcItemSet.getPosition(j);
+                int expectedDotPosition =  dotPosition + 1;
+                //skip reduce items
+                if(dotPosition >= spec.pr.getRHSLength(srcProduction)){
+                    continue;
+                }
+                int symbolAfterDot = spec.pr.getRHSSym(srcProduction,dotPosition);
 
                 int destinationState = dfa.getTransition(i,symbolAfterDot);
                 LR0ItemSet dstItemSet = dfa.getItemSet(i);
@@ -53,22 +58,22 @@ public class TransitionFunctionTables {
                     StateItem srcStateItem = new StateItem(i,srcProduction,srcItemSet.getPosition(j));
                     StateItem dstStateItem = new StateItem(destinationState,dstItemSet.getProduction(k),dstItemSet.getPosition(k));
 
-                   ArrayList<StateItem> tran = trans.get(srcStateItem);
+                   StateItem[] tran = trans.get(srcStateItem);
                     if(tran == null){
-                        tran = new ArrayList<>();
+                        tran = new StateItem[spec.terminals.size() + spec.nonterminals.size()];
                         trans.put(srcStateItem,tran);
                     }
-                    tran.set(symbolAfterDot,dstStateItem);
+                    tran[symbolAfterDot] = dstStateItem;
 
-                    ArrayList<Set<StateItem>> revTran = revTrans.get(dstStateItem);
+                    Set<StateItem>[] revTran = revTrans.get(dstStateItem);
                     if(revTran == null){
-                        revTran = new ArrayList<>();
+                        revTran = new Set[spec.terminals.size() + spec.nonterminals.size()];
                         revTrans.put(dstStateItem,revTran);
                     }
-                    Set<StateItem> srcs = revTran.get(symbolAfterDot);
+                    Set<StateItem> srcs = revTran[symbolAfterDot];
                     if (srcs == null) {
                         srcs = new HashSet<>();
-                        revTran.set(symbolAfterDot, srcs);
+                        revTran[symbolAfterDot] =  srcs;
                     }
                     srcs.add(srcStateItem);
                     break;
@@ -77,10 +82,10 @@ public class TransitionFunctionTables {
         }
     }
     public StateItem getTransition(StateItem stateItem, int symbol){
-        return trans.get(stateItem).get(symbol);
+        return trans.get(stateItem)[symbol];
     }
     public Set<StateItem> getReverseTransitions(StateItem stateItem, int symbol){
-        return revTrans.get(stateItem).get(symbol);
+        return revTrans.get(stateItem)[symbol];
     }
 //    /**
 //     * The reverse transition function.

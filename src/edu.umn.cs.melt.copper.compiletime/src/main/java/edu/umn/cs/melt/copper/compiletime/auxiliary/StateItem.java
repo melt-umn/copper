@@ -26,6 +26,17 @@ public class StateItem {
         return dotPosition == stateItem.dotPosition;
     }
 
+    @Override public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("(State: ");
+        sb.append(state);
+        sb.append(", Production: ");
+        sb.append(production);
+        sb.append(", DotPosition: ");
+        sb.append(dotPosition);
+        sb.append(')');
+        return sb.toString();
+    }
 
     @Override
     public int hashCode() {

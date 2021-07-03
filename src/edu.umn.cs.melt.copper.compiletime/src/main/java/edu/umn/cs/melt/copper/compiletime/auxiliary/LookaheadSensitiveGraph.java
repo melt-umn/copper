@@ -1,13 +1,11 @@
 package edu.umn.cs.melt.copper.compiletime.auxiliary;
 
-import edu.umn.cs.melt.copper.compiletime.logging.messages.CounterexampleMessage;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
-import sun.awt.image.ImageWatched;
 
 import java.util.*;
 
@@ -42,34 +40,108 @@ public class LookaheadSensitiveGraph {
     public LookaheadSensitiveGraph(LRParseTableConflict conflict,
                                    ParserSpec spec, PSSymbolTable symbolTable,
                                    ContextSets contextSets, LR0DFA dfa) {
-       conflictState = conflict.getState();
-        //shift/reduce
-        int conflictItem1Index;
-        int conflictItem2Index;
-        isShiftReduce = conflict.shift != -1;
-        if(isShiftReduce){
-            conflictItem1Index = conflict.reduce.nextSetBit(0);
-            conflictItem2Index = conflict.shift;
-        }
-        //reduce/reduce
-        else {
-            conflictItem1Index = conflict.reduce.nextSetBit(0);
-            conflictItem2Index = conflict.reduce.nextSetBit(conflictItem1Index + 1);
-        }
 
-        LR0ItemSet conflictStateItems = dfa.getItemSet(conflictState);
-        conflictItem1 = new StateItem(conflictState,
-                            conflictStateItems.getProduction(conflictItem1Index),
-                            conflictStateItems.getPosition(conflictItem1Index));
-        conflictItem2 = new StateItem(conflictState,
-                conflictStateItems.getProduction(conflictItem2Index),
-                conflictStateItems.getPosition(conflictItem2Index));
-
+        conflictState = conflict.getState();
         this.conflictTerminal = conflict.getSymbol();
         this.spec = spec;
         this.symbolTable = symbolTable;
         this.contextSets = contextSets;
         this.dfa = dfa;
+
+        //shift/reduce
+        int conflictItem1Production = -1;
+        int conflictItem1Position = -1;
+        int conflictItem2Production = -1;
+        int conflictItem2Position = -1;
+
+        isShiftReduce = conflict.shift != -1;
+        LR0ItemSet conflictStateItems = dfa.getItemSet(conflictState);
+        if(isShiftReduce){
+            conflictItem1Production = conflict.reduce.nextSetBit(0);
+
+            //find dot position for the reduce production
+            for(int i = 0; i<conflictStateItems.size(); i++){
+                if(conflictStateItems.getProduction(i) == conflictItem1Production){
+                    conflictItem1Position = conflictStateItems.getPosition(i);
+                    break;
+                }
+            }
+            if(conflictItem1Position == -1){
+                System.out.println("conflictItem1Production: " + conflictItem1Production);
+                throw new Error("Failed to find reduce conflict item");
+            }
+
+            //get shift conflict item from shift state and conflict terminal
+            for(int i = 0; i < conflictStateItems.size(); i++ ){
+                int prod = conflictStateItems.getProduction(i);
+                int pos = conflictStateItems.getPosition(i);
+
+                if(pos == 0){
+                    continue;
+                }
+
+                //If the dot is directly after the conflict terminal, it is the shift conflict item
+                if(spec.pr.getRHSSym(prod,pos) == conflictTerminal){
+                    conflictItem2Position = pos;
+                    conflictItem2Production = prod;
+                    break;
+                }
+            }
+            if(conflictItem2Position == -1 || conflictItem2Production == -1){
+                System.out.println("conflictItem2Production: " + conflictItem2Production);
+                System.out.println("conflictItem2Position: " + conflictItem2Position);
+                throw new Error("Failed to find shift conflict item");
+
+            }
+
+            System.out.println("conflict state: " + conflictState);
+            System.out.println("shift state: " + conflict.shift);
+            System.out.println("conflictStateItems: " + conflictStateItems.toString());
+            System.out.println("end of shift/reduce info gathering");
+        }
+        //reduce/reduce
+        else {
+            conflictItem1Production= conflict.reduce.nextSetBit(0);
+
+            //find dot position for the first  reduce production
+            for(int i = 0; i<conflictStateItems.size(); i++){
+                if(conflictStateItems.getProduction(i) == conflictItem1Production){
+                    conflictItem1Position = conflictStateItems.getPosition(i);
+                    break;
+                }
+            }
+            if(conflictItem1Position == -1){
+                System.out.println("conflictItem1Production: " + conflictItem1Production);
+                throw new Error("Failed to find first reduce conflict item");
+            }
+
+            conflictItem2Production = conflict.reduce.nextSetBit(conflictItem1Production + 1);
+
+            //find dot position for the second reduce production
+            for(int i = 0; i<conflictStateItems.size(); i++){
+                if(conflictStateItems.getProduction(i) == conflictItem2Production){
+                    conflictItem2Position = conflictStateItems.getPosition(i);
+                    break;
+                }
+            }
+            if(conflictItem2Position == -1){
+                System.out.println("conflictItem2Production: " + conflictItem2Production);
+                throw new Error("Failed to find reduce conflict item");
+            }
+        }
+
+        conflictItem1 = new StateItem(conflictState,
+                conflictItem1Production,
+                conflictItem1Position);
+
+        conflictItem2 = new StateItem(conflictState,
+                conflictItem2Production,
+                conflictItem2Position);
+
+        System.out.println("conflict items:");
+        System.out.println(conflictItem1);
+        System.out.println(conflictItem2);
+
 
         BitSet initLookaheadSet = new BitSet();
         initLookaheadSet.set(spec.getEOFTerminal());
@@ -326,7 +398,7 @@ public class LookaheadSensitiveGraph {
             } else {
                 //TODO is the position correct here? may +1 or -1 of what it is
                 int symbol = spec.pr.getRHSSym(si.getProduction(),pos-1);
-                for(StateItem prevSI :  transitionTables.revTrans.get(si).get(symbol)){
+                for(StateItem prevSI :  transitionTables.getReverseTransitions(si,symbol)){
                     if(prevSI.getState() != prevRefSI.getState()){
                         continue;
                     }
@@ -380,7 +452,7 @@ public class LookaheadSensitiveGraph {
                             if(!contextSets.isNullable(symbol) || contextSets.getFirst(symbol).get(conflictTerminal)){
                                 //TODO ???
                                 LinkedList <Derivation> nextDerivations =
-                                        expandFirst(transitionTables.trans.get(stateItem).get(spec.pr.getRHSSym(prod,pos)));
+                                        expandFirst(transitionTables.getTransition(stateItem,spec.pr.getRHSSym(prod,pos)));
 
                                 result.addAll(nextDerivations);
                                 i += nextDerivations.size() - 1;
@@ -475,7 +547,7 @@ public class LookaheadSensitiveGraph {
                 }
                 if(contextSets.isNullable(symbolAfterDot)){
 
-                    StateItem nextSI = transitionTables.trans.get(lastSI).get(symbolAfterDot);
+                    StateItem nextSI = transitionTables.getTransition(lastSI,symbolAfterDot);
                     LinkedList<StateItem> next = new LinkedList<>(states);
                     next.add(nextSI);
                     queue.add(next);
