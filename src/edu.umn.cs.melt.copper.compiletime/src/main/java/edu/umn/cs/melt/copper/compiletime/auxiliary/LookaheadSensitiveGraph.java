@@ -6,7 +6,6 @@ import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
-
 import java.util.*;
 
 //TODO comment this whole file thoroughly. like spend a few hours on it.
@@ -88,16 +87,10 @@ public class LookaheadSensitiveGraph {
                 }
             }
             if(conflictItem2Position == -1 || conflictItem2Production == -1){
-                System.out.println("conflictItem2Production: " + conflictItem2Production);
-                System.out.println("conflictItem2Position: " + conflictItem2Position);
                 throw new Error("Failed to find shift conflict item");
 
             }
 
-            System.out.println("conflict state: " + conflictState);
-            System.out.println("shift state: " + conflict.shift);
-            System.out.println("conflictStateItems: " + conflictStateItems.toString());
-            System.out.println("end of shift/reduce info gathering");
         }
         //reduce/reduce
         else {
@@ -145,7 +138,7 @@ public class LookaheadSensitiveGraph {
 
         BitSet initLookaheadSet = new BitSet();
         initLookaheadSet.set(spec.getEOFTerminal());
-        this.startVertex = new LookaheadSensitiveGraphVertex(0,spec.getStartProduction(),0,initLookaheadSet);
+        this.startVertex = new LookaheadSensitiveGraphVertex(1,spec.getStartProduction(),0,initLookaheadSet);
 
         this.transitionTables = new TransitionFunctionTables(dfa,spec);
         this.productionStepTables = new ProductionStepTables(dfa,spec);
@@ -159,6 +152,8 @@ public class LookaheadSensitiveGraph {
     //todo comment
     public ArrayList<StateItem> findShortestContextSensitivePath(StateItem target){
         Set<StateItem> possibleStateItems = eligibleStateItems(target);
+        System.out.println("Possible stateItems:");
+        System.out.println(possibleStateItems);
 
         Queue<LinkedList<LookaheadSensitiveGraphVertex>> queue = new LinkedList<>();
         Set<LookaheadSensitiveGraphVertex> visited = new HashSet<>();
@@ -167,34 +162,57 @@ public class LookaheadSensitiveGraph {
         init.add(startVertex);
         queue.add(init);
 
+        System.out.println(transitionTables.revTrans);
+
+        System.out.println(transitionTables.revTrans.get(conflictItem1));
+        System.out.println(transitionTables.trans.get(startVertex.stateItem));
+
+
         //unguided breadth-first search
         while(!queue.isEmpty()){
+            System.out.println("top of main loop");
+            System.out.println("queue:");
+            System.out.println(queue);
             LinkedList<LookaheadSensitiveGraphVertex> path = queue.remove();
-            LookaheadSensitiveGraphVertex last = path.get(path.size() - 1);
+            LookaheadSensitiveGraphVertex last = path.getLast();
+            System.out.println("path at start of queue:");
+            System.out.println(path);
             if (visited.contains(last)) {
                 continue;
             }
             visited.add(last);
             if(target.equals(last.stateItem) && last.lookaheadSet.get(conflictTerminal)){
-                //TODO process info and such
+                //TODO print process info and such
                 //success, copy to ArrayList for efficient access
                 ArrayList<StateItem> shortestConflictPath = new ArrayList<>(path.size());
                 for (LookaheadSensitiveGraphVertex v : path){
                     shortestConflictPath.add(v.stateItem);
                 }
                 return shortestConflictPath;
+            } else {
+                System.out.println("Did not finish.");
+                System.out.println(target + " != " + last.stateItem);
+                System.out.println("and " + conflictTerminal + " is not in " + last.lookaheadSet);
             }
             //Add all transitions to the search queue
             if(transitionTables.trans.get(last.stateItem) != null){
+                System.out.println("Some transition items for" + last.stateItem);
                 for(StateItem tranDst : transitionTables.trans.get(last.stateItem)){
-                    if(!possibleStateItems.contains(tranDst)){
+                    if(tranDst == null){
                         continue;
                     }
+                    //TODO maybe using an array here isn't great if it's almost always null...
+                    System.out.println("testing transition item " + tranDst);
+//                    if(!possibleStateItems.contains(tranDst)){
+//                        continue;
+//                    }
                     LookaheadSensitiveGraphVertex next = new LookaheadSensitiveGraphVertex(tranDst,last.lookaheadSet);
                     LinkedList<LookaheadSensitiveGraphVertex> nextPath = new LinkedList<>(path);
                     nextPath.add(next);
                     queue.add(nextPath);
                 }
+            } else {
+                System.out.println("No transition items for" + last.stateItem);
             }
             if(productionStepTables.getProductionSteps(last.stateItem) != null){
                 int len = spec.pr.getRHSLength(last.getProduction());
@@ -203,18 +221,21 @@ public class LookaheadSensitiveGraph {
 
                 //for each possible item reached via a production step
                 LR0ItemSet stateItems = dfa.getItemSet(last.getState());
-                for(int i = productionSteps.nextSetBit(0); i != -1; productionSteps.nextSetBit(i)) {
+                for(int i = productionSteps.nextSetBit(0); i != -1; i = productionSteps.nextSetBit(i)) {
                     //TODO refactor to use a memoized lookup table if this uses too much memory
                     StateItem pStateItem = new StateItem(last.getState(),stateItems.getProduction(i),stateItems.getPosition(i));
-                    if(!possibleStateItems.contains(pStateItem)){
-                        continue;
-                    }
+                    //TODO fix possibleStateItems and re-add this check
+//                    if(!possibleStateItems.contains(pStateItem)){
+//                        continue;
+//                    }
                     LookaheadSensitiveGraphVertex next = new LookaheadSensitiveGraphVertex(pStateItem,newLookahead);
                     LinkedList<LookaheadSensitiveGraphVertex> nextPath = new LinkedList<>(path);
                     nextPath.add(next);
                     queue.add(nextPath);
                 }
 
+            } else {
+                System.out.println("No production step items for" + last.stateItem);
             }
         }
         throw new Error("Cannot find shortest path along lookahead sensitive graph");
@@ -237,7 +258,10 @@ public class LookaheadSensitiveGraph {
            //consider reverse transitions
            if(transitionTables.revTrans.containsKey(s)){
                for(Set<StateItem> prev : transitionTables.revTrans.get(s)){
-                   queue.addAll(prev);
+                   //TODO probably stop using arrays in transition table due to null problem.
+                   if(prev != null){
+                       queue.addAll(prev);
+                   }
                }
            }
            if(s.getDotPosition() == 0){

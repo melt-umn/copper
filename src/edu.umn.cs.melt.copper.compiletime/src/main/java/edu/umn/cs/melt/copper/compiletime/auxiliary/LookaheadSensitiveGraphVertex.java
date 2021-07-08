@@ -12,7 +12,6 @@ class LookaheadSensitiveGraphVertex {
     protected StateItem stateItem;
     protected BitSet lookaheadSet;
 
-    //TODO maybe take the StateItem in directly?
     public LookaheadSensitiveGraphVertex(int state, int production, int dotPosition, BitSet lookaheadSet) {
         this.stateItem = new StateItem(state,production,dotPosition);
         this.lookaheadSet = lookaheadSet;
@@ -32,6 +31,15 @@ class LookaheadSensitiveGraphVertex {
 
     public int getState(){
         return stateItem.getState();
+    }
+
+
+    @Override
+    public String toString() {
+        return "LookaheadSensitiveGraphVertex{" +
+                "stateItem=" + stateItem +
+                ", lookaheadSet=" + lookaheadSet +
+                '}';
     }
 
     @Override
