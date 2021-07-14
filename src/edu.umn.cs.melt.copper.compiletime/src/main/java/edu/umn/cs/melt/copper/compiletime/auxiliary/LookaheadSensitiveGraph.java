@@ -6,6 +6,8 @@ import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
+
+import java.io.Console;
 import java.util.*;
 
 //TODO comment this whole file thoroughly. like spend a few hours on it.
@@ -151,6 +153,7 @@ public class LookaheadSensitiveGraph {
 
     //todo comment
     public ArrayList<StateItem> findShortestContextSensitivePath(StateItem target){
+        System.out.println("start findShortestContextSensitivePath");
         Set<StateItem> possibleStateItems = eligibleStateItems(target);
         System.out.println("Possible stateItems:");
         System.out.println(possibleStateItems);
@@ -162,32 +165,40 @@ public class LookaheadSensitiveGraph {
         init.add(startVertex);
         queue.add(init);
 
+        System.out.println("Reverse transition table");
         System.out.println(transitionTables.revTrans);
+        System.out.println("Transition table");
+        System.out.println(transitionTables.trans);
 
-        System.out.println(transitionTables.revTrans.get(conflictItem1));
-        System.out.println(transitionTables.trans.get(startVertex.stateItem));
+        System.out.println("Production step table:");
+        System.out.println(productionStepTables.productionStepTable);
+        System.out.println("Reverse production step table:");
+        System.out.println(productionStepTables.reverseProductionStepTable);
 
 
         //unguided breadth-first search
         while(!queue.isEmpty()){
             System.out.println("top of main loop");
-            System.out.println("queue:");
-            System.out.println(queue);
+//            System.out.println("queue:");
+//            System.out.println(queue);
             LinkedList<LookaheadSensitiveGraphVertex> path = queue.remove();
             LookaheadSensitiveGraphVertex last = path.getLast();
             System.out.println("path at start of queue:");
             System.out.println(path);
             if (visited.contains(last)) {
+                System.out.println("VISITED");
                 continue;
             }
             visited.add(last);
             if(target.equals(last.stateItem) && last.lookaheadSet.get(conflictTerminal)){
+                System.out.println("FINISHED");
                 //TODO print process info and such
                 //success, copy to ArrayList for efficient access
                 ArrayList<StateItem> shortestConflictPath = new ArrayList<>(path.size());
                 for (LookaheadSensitiveGraphVertex v : path){
                     shortestConflictPath.add(v.stateItem);
                 }
+                System.out.println("RETURNING");
                 return shortestConflictPath;
             } else {
                 System.out.println("Did not finish.");
@@ -221,7 +232,7 @@ public class LookaheadSensitiveGraph {
 
                 //for each possible item reached via a production step
                 LR0ItemSet stateItems = dfa.getItemSet(last.getState());
-                for(int i = productionSteps.nextSetBit(0); i != -1; i = productionSteps.nextSetBit(i)) {
+                for(int i = productionSteps.nextSetBit(0); i >= 0; i = productionSteps.nextSetBit(i+1)) {
                     //TODO refactor to use a memoized lookup table if this uses too much memory
                     StateItem pStateItem = new StateItem(last.getState(),stateItems.getProduction(i),stateItems.getPosition(i));
                     //TODO fix possibleStateItems and re-add this check
@@ -243,6 +254,8 @@ public class LookaheadSensitiveGraph {
 
     //TODO comment
     private Set<StateItem> eligibleStateItems(StateItem target){
+        System.out.println("Begin eligibleStateItems");
+        //TODO this is looping at some point
         //It's between using a hashSet and creating a flat array of all possible stateItems with arbitary positions
         //and doing bitsets of indices into that
         //I might go to that point if performance becomes too big of an issue, but this should be fine.
@@ -250,30 +263,36 @@ public class LookaheadSensitiveGraph {
         Queue<StateItem> queue = new LinkedList<>();
         queue.add(target);
         while(!queue.isEmpty()){
-           StateItem s = queue.remove();
-           if(result.contains(s)){
-               continue;
-           }
-           result.add(s);
-           //consider reverse transitions
-           if(transitionTables.revTrans.containsKey(s)){
-               for(Set<StateItem> prev : transitionTables.revTrans.get(s)){
-                   //TODO probably stop using arrays in transition table due to null problem.
-                   if(prev != null){
+            StateItem s = queue.remove();
+            System.out.println("Considering" + s);
+            if(result.contains(s)){
+                //Somehow never reached?
+                System.out.println("Stateitem " + s + " is in the result, skipping");
+                continue;
+            }
+            result.add(s);
+            //consider reverse transitions
+            if(transitionTables.revTrans.containsKey(s)){
+                for(Set<StateItem> prev : transitionTables.revTrans.get(s)){
+                    //TODO probably stop using arrays in transition table due to null problem.
+                    if(prev != null){
                        queue.addAll(prev);
-                   }
+                    }
                }
-           }
-           if(s.getDotPosition() == 0){
-               int lhs = spec.pr.getLHS(s.getProduction());
-               BitSet revProd = productionStepTables.getReverseProductionSteps(s.getState(),lhs);
-               if (revProd != null){
-                   for(int i = revProd.nextSetBit(0); i != -1; i = revProd.nextSetBit(i)){
-                       LR0ItemSet itemSet = dfa.getItemSet(s.getState());
-                       queue.add(new StateItem(s.getState(),itemSet.getProduction(i),itemSet.getPosition(i)));
-                   }
-               }
-           }
+            }
+            if(s.getDotPosition() == 0){
+                int lhs = spec.pr.getLHS(s.getProduction());
+                BitSet revProd = productionStepTables.getReverseProductionSteps(s.getState(),lhs);
+                if (revProd != null){
+                    for(int i = revProd.nextSetBit(0); i >= 0; i = revProd.nextSetBit(i+1)){
+                        System.out.println("Reached this position on item " + s);
+                        System.out.println(revProd);
+                        System.out.println(i);
+                        LR0ItemSet itemSet = dfa.getItemSet(s.getState());
+                        queue.add(new StateItem(s.getState(),itemSet.getProduction(i),itemSet.getPosition(i)));
+                    }
+                }
+            }
         }
         return result;
     }
@@ -320,7 +339,9 @@ public class LookaheadSensitiveGraph {
 
     //TODO this entire function is suspicious.
     // is there something i'm missing or is this just bad academic code?
+    // It's also looping... gah
     private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath){
+        System.out.println("Starting CounterexampleFromShortestPath");
         StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition());
         if(!isShiftReduce){
             ArrayList<StateItem> shortestPath2 = findShortestContextSensitivePath(si);
@@ -328,6 +349,7 @@ public class LookaheadSensitiveGraph {
             Derivation deriv2 = nonUnifyingDerivFromPath(shortestPath2);
             return new Counterexample(deriv1,deriv2,isShiftReduce);
         }
+        System.out.println("Shift-reduce conflict");
         // in the case of a shift reduce conflict, construct a second path via traversing backwards
         // along parts of the first shortestPath
         ListIterator<StateItem> itr = shortestPath.listIterator(shortestPath.size());
@@ -337,10 +359,14 @@ public class LookaheadSensitiveGraph {
         LinkedList<StateItem> result = new LinkedList<>();
         result.add(si);
         while(refSI != null){
+            System.out.println("Top of main loop");
+            System.out.println("refSI = " + refSI);
+
             LinkedList<StateItem> refsis = new LinkedList<>();
             //TODO remove this first check and see if it still works. It seems pointless.
             // that is, refSI is only used in the next if statement, and that seems to do the same thing?
             if(prevRefSI != null){
+
                 int curPos = refSI.getDotPosition();
                 int prevPos = prevRefSI.getDotPosition();
                 while(prevRefSI != null && prevPos + 1 != curPos){
@@ -408,7 +434,7 @@ public class LookaheadSensitiveGraph {
                         int lhs = spec.pr.getLHS(siSource.getProduction());
                         LR0ItemSet itemSet = dfa.getItemSet(siSource.getState());
                         BitSet prodSteps = productionStepTables.getReverseProductionSteps(siSource.getState(), lhs);
-                        for(int i = prodSteps.nextSetBit(0); i != -1; i = prodSteps.nextSetBit(i)){
+                        for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1)){
                             StateItem prevSI = new StateItem(siSource.getState(), itemSet.getProduction(i),itemSet.getPosition(i));
                             if (sis.contains(prevSI)) continue;
                             LinkedList<StateItem> prevSIs = new LinkedList<>(sis);
@@ -420,6 +446,7 @@ public class LookaheadSensitiveGraph {
                 }
 
             } else {
+                System.out.println("Position correct question reached");
                 //TODO is the position correct here? may +1 or -1 of what it is
                 int symbol = spec.pr.getRHSSym(si.getProduction(),pos-1);
                 for(StateItem prevSI :  transitionTables.getReverseTransitions(si,symbol)){
@@ -559,7 +586,7 @@ public class LookaheadSensitiveGraph {
             }
             if(spec.nonterminals.get(symbolAfterDot)){
                 BitSet prodSteps = productionStepTables.getProductionSteps(lastSI);
-                for(int i = prodSteps.nextSetBit(0); prodSteps.nextSetBit(i) != -1; i = prodSteps.nextSetBit(i)){
+                for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1)){
                     LR0ItemSet itemSet = dfa.getItemSet(lastSI.getState());
                     StateItem nextSI = new StateItem(lastSI.getState(),itemSet.getProduction(i),itemSet.getPosition(i));
                     if(states.contains(nextSI)){
