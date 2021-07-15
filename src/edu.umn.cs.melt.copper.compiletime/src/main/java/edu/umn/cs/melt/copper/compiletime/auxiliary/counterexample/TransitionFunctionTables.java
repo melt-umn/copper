@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.auxiliary;
+package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
@@ -20,8 +20,16 @@ public class TransitionFunctionTables {
     /**
      * same as {@link #trans}, but the result is the set of any possible
      * StateItems that could have transitioned to the input StateItem on the input symbol
+     * Unlike the forward transition table, this is only parametrized by a stateItem.
+     * This is because there is only one symbol that can lead to a given state,
+     * so there would only be one valid (symbol) index for each stateItem, which is silly
      */
-    protected Hashtable<StateItem, Set<StateItem>[]> revTrans;
+    protected Hashtable<StateItem, Set<StateItem>> revTrans;
+
+    /**
+     * A mapping of states
+     */
+    int[] test;
 
 
     public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec){
@@ -78,17 +86,12 @@ public class TransitionFunctionTables {
                     }
                     tran[symbolAfterDot] = dstStateItem;
 
-                    Set<StateItem>[] revTran = revTrans.get(dstStateItem);
+                    Set<StateItem> revTran = revTrans.get(dstStateItem);
                     if(revTran == null){
-                        revTran = new Set[spec.terminals.size() + spec.nonterminals.size()];
+                        revTran = new HashSet<>();
                         revTrans.put(dstStateItem,revTran);
                     }
-                    Set<StateItem> srcs = revTran[symbolAfterDot];
-                    if (srcs == null) {
-                        srcs = new HashSet<>();
-                        revTran[symbolAfterDot] =  srcs;
-                    }
-                    srcs.add(srcStateItem);
+                    revTran.add(srcStateItem);
                     break;
                 }
             }
@@ -97,8 +100,8 @@ public class TransitionFunctionTables {
     public StateItem getTransition(StateItem stateItem, int symbol){
         return trans.get(stateItem)[symbol];
     }
-    public Set<StateItem> getReverseTransitions(StateItem stateItem, int symbol){
-        return revTrans.get(stateItem)[symbol];
+    public Set<StateItem> getReverseTransitions(StateItem stateItem){
+        return revTrans.get(stateItem);
     }
 //    /**
 //     * The reverse transition function.

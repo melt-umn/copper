@@ -1,6 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.logging.messages;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.LookaheadSensitiveGraph;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.LookaheadSensitiveGraph;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageType;

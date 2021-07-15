@@ -1,6 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.parsetable;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;

@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.auxiliary;
+package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 
 import java.util.LinkedList;
@@ -13,7 +13,6 @@ public class Derivation {
     String symbol;
     List<Derivation> derivations;
 
-    //TODO do we want to have non-ascii chars required?
     public static final Derivation dot = new Derivation("(*)", new LinkedList<Derivation>());
 
     //TODO go through when this is used instead of calling the 2 argument one with the empty list

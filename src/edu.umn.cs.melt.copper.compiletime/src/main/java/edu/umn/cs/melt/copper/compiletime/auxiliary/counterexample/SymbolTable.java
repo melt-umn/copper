@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.auxiliary;
+package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 import java.io.Serializable;
 import java.util.ArrayList;

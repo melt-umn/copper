@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.auxiliary;
+package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
@@ -7,7 +7,6 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
-import java.io.Console;
 import java.util.*;
 
 //TODO comment this whole file thoroughly. like spend a few hours on it.
@@ -171,22 +170,19 @@ public class LookaheadSensitiveGraph {
         System.out.println(transitionTables.trans);
 
         System.out.println("Production step table:");
-        System.out.println(productionStepTables.productionStepTable);
+        System.out.println(productionStepTables.prodTable);
         System.out.println("Reverse production step table:");
-        System.out.println(productionStepTables.reverseProductionStepTable);
+        System.out.println(productionStepTables.revProdTable);
 
 
         //unguided breadth-first search
         while(!queue.isEmpty()){
-            System.out.println("top of main loop");
-//            System.out.println("queue:");
-//            System.out.println(queue);
             LinkedList<LookaheadSensitiveGraphVertex> path = queue.remove();
             LookaheadSensitiveGraphVertex last = path.getLast();
-            System.out.println("path at start of queue:");
-            System.out.println(path);
+//            System.out.println("path at start of queue:");
+//            System.out.println(path);
             if (visited.contains(last)) {
-                System.out.println("VISITED");
+//                System.out.println("VISITED");
                 continue;
             }
             visited.add(last);
@@ -198,22 +194,21 @@ public class LookaheadSensitiveGraph {
                 for (LookaheadSensitiveGraphVertex v : path){
                     shortestConflictPath.add(v.stateItem);
                 }
-                System.out.println("RETURNING");
                 return shortestConflictPath;
             } else {
-                System.out.println("Did not finish.");
-                System.out.println(target + " != " + last.stateItem);
-                System.out.println("and " + conflictTerminal + " is not in " + last.lookaheadSet);
+//                System.out.println("Did not finish.");
+//                System.out.println(target + " != " + last.stateItem);
+//                System.out.println("and " + conflictTerminal + " is not in " + last.lookaheadSet);
             }
             //Add all transitions to the search queue
             if(transitionTables.trans.get(last.stateItem) != null){
-                System.out.println("Some transition items for" + last.stateItem);
+//                System.out.println("Some transition items for" + last.stateItem);
                 for(StateItem tranDst : transitionTables.trans.get(last.stateItem)){
                     if(tranDst == null){
                         continue;
                     }
                     //TODO maybe using an array here isn't great if it's almost always null...
-                    System.out.println("testing transition item " + tranDst);
+//                    System.out.println("testing transition item " + tranDst);
 //                    if(!possibleStateItems.contains(tranDst)){
 //                        continue;
 //                    }
@@ -222,13 +217,11 @@ public class LookaheadSensitiveGraph {
                     nextPath.add(next);
                     queue.add(nextPath);
                 }
-            } else {
-                System.out.println("No transition items for" + last.stateItem);
             }
-            if(productionStepTables.getProductionSteps(last.stateItem) != null){
+            if(productionStepTables.getProdSteps(last.stateItem) != null){
                 int len = spec.pr.getRHSLength(last.getProduction());
                 BitSet newLookahead = followL(last.getProduction(),last.getDotPosition(),last.lookaheadSet);
-                BitSet productionSteps = productionStepTables.getProductionSteps(last.stateItem);
+                BitSet productionSteps = productionStepTables.getProdSteps(last.stateItem);
 
                 //for each possible item reached via a production step
                 LR0ItemSet stateItems = dfa.getItemSet(last.getState());
@@ -245,8 +238,6 @@ public class LookaheadSensitiveGraph {
                     queue.add(nextPath);
                 }
 
-            } else {
-                System.out.println("No production step items for" + last.stateItem);
             }
         }
         throw new Error("Cannot find shortest path along lookahead sensitive graph");
@@ -264,28 +255,23 @@ public class LookaheadSensitiveGraph {
         queue.add(target);
         while(!queue.isEmpty()){
             StateItem s = queue.remove();
-            System.out.println("Considering" + s);
+//            System.out.println("Considering" + s);
             if(result.contains(s)){
                 //Somehow never reached?
-                System.out.println("Stateitem " + s + " is in the result, skipping");
+//                System.out.println("Stateitem " + s + " is in the result, skipping");
                 continue;
             }
             result.add(s);
             //consider reverse transitions
             if(transitionTables.revTrans.containsKey(s)){
-                for(Set<StateItem> prev : transitionTables.revTrans.get(s)){
-                    //TODO probably stop using arrays in transition table due to null problem.
-                    if(prev != null){
-                       queue.addAll(prev);
-                    }
-               }
+                queue.addAll(transitionTables.revTrans.get(s));
             }
             if(s.getDotPosition() == 0){
                 int lhs = spec.pr.getLHS(s.getProduction());
-                BitSet revProd = productionStepTables.getReverseProductionSteps(s.getState(),lhs);
+                BitSet revProd = productionStepTables.getRevProdSteps(s.getState(),lhs);
                 if (revProd != null){
                     for(int i = revProd.nextSetBit(0); i >= 0; i = revProd.nextSetBit(i+1)){
-                        System.out.println("Reached this position on item " + s);
+//                        System.out.println("Reached this position on item " + s);
                         System.out.println(revProd);
                         System.out.println(i);
                         LR0ItemSet itemSet = dfa.getItemSet(s.getState());
@@ -337,10 +323,8 @@ public class LookaheadSensitiveGraph {
         }
     }
 
-    //TODO this entire function is suspicious.
-    // is there something i'm missing or is this just bad academic code?
-    // It's also looping... gah
     private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath){
+        //TODO modify to do unifying examples
         System.out.println("Starting CounterexampleFromShortestPath");
         StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition());
         if(!isShiftReduce){
@@ -349,118 +333,110 @@ public class LookaheadSensitiveGraph {
             Derivation deriv2 = nonUnifyingDerivFromPath(shortestPath2);
             return new Counterexample(deriv1,deriv2,isShiftReduce);
         }
-        System.out.println("Shift-reduce conflict");
-        // in the case of a shift reduce conflict, construct a second path via traversing backwards
-        // along parts of the first shortestPath
-        ListIterator<StateItem> itr = shortestPath.listIterator(shortestPath.size());
-        //refSI is the last StateItem that has the last state in the shortest path
-        StateItem refSI = itr.previous();
-        StateItem prevRefSI = itr.hasPrevious() ? itr.previous() : null;
-        LinkedList<StateItem> result = new LinkedList<>();
-        result.add(si);
-        while(refSI != null){
-            System.out.println("Top of main loop");
-            System.out.println("refSI = " + refSI);
+        ArrayList<StateItem> shiftConflictPath = findShiftConflictPath(shortestPath);
+        Derivation deriv1 = nonUnifyingDerivFromPath(shortestPath);
+        Derivation deriv2 = nonUnifyingDerivFromPath(shiftConflictPath);
+        return new Counterexample(deriv1,deriv2,isShiftReduce);
+    }
 
-            LinkedList<StateItem> refsis = new LinkedList<>();
-            //TODO remove this first check and see if it still works. It seems pointless.
-            // that is, refSI is only used in the next if statement, and that seems to do the same thing?
-            if(prevRefSI != null){
+    private ArrayList<StateItem> findShiftConflictPath(ArrayList<StateItem> shortestPath) {
+        //Perform a breadth first search to find a path from the shift conflict stateItem to the start stateItem
+        //We use information from the shortest path to limit the search, only adding states if they are
+        //(reverse) production steps, or reverse transitions to a state along the shortest path.
+        //The order of the states in the path should be identical, the differences being caused by taking different production steps
 
-                int curPos = refSI.getDotPosition();
-                int prevPos = prevRefSI.getDotPosition();
-                while(prevRefSI != null && prevPos + 1 != curPos){
-                    refsis.addFirst(prevRefSI);
-                    curPos = prevPos;
-                    if(itr.hasPrevious()){
-                        prevRefSI = itr.previous();
-                        prevPos = prevRefSI.getDotPosition();
-                    } else {
-                        prevRefSI = null;
-                    }
-                }
-            }
-            if (si == refSI || (refSI.getProduction() ==  spec.getStartProduction()&& refSI.getDotPosition() == 0) ) {
-                // Reached common item; prepend to the beginning.
-                refsis.remove(refsis.size() - 1);
-                result.addAll(0, refsis);
-                if (prevRefSI != null) result.addFirst(prevRefSI);
-                while (itr.hasPrevious())
-                    result.add(0, itr.previous());
-                Derivation deriv1 =
-                        nonUnifyingDerivFromPath(shortestPath);
-                ArrayList<StateItem> path = new ArrayList<>(result);
-                Derivation deriv2 = nonUnifyingDerivFromPath(path);
-                return new Counterexample(deriv1,deriv2,isShiftReduce);
-            }
-            int pos = si.getDotPosition();
-            if(pos == 0){
-                // For a production item, find a sequence of items within the
-                // same state that leads to this production.
-                LinkedList<StateItem> init = new LinkedList<>();
-                init.add(si);
-                Queue<LinkedList<StateItem>> queue = new LinkedList<>();
-                queue.add(init);
-                while (!queue.isEmpty()) {
-                    LinkedList<StateItem> sis = queue.remove();
-                    StateItem siSource = sis.get(0);
-                    if(siSource.getProduction() == spec.getStartProduction() && siSource.getDotPosition() == 0){
-                        sis.removeLast();
-                        result.addAll(0,sis);
-                        si = siSource;
-                        break;
-                    }
-
-                    int sourcePos = siSource.getDotPosition();
-                    if(sourcePos > 0 ){
-                        //make a transition if possible.
-                        int symbol = spec.pr.getRHSSym(siSource.getProduction(),sourcePos - 1);
-                        for(StateItem prevSI : transitionTables.getReverseTransitions(siSource,symbol)){
-                            // Only look for state compatible with the shortest path.
-                            if (prevSI.getState() != prevRefSI.getState()){
-                                continue;
-                            }
-                            sis.removeLast();
-                            result.addAll(0,sis);
-                            result.addFirst(prevSI);
-                            si = prevSI;
-                            refSI = prevRefSI;
-                            queue.clear();
-                            break;
-
-                        }
-                    } else {
-                        //take a production step if possible
-                        int lhs = spec.pr.getLHS(siSource.getProduction());
-                        LR0ItemSet itemSet = dfa.getItemSet(siSource.getState());
-                        BitSet prodSteps = productionStepTables.getReverseProductionSteps(siSource.getState(), lhs);
-                        for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1)){
-                            StateItem prevSI = new StateItem(siSource.getState(), itemSet.getProduction(i),itemSet.getPosition(i));
-                            if (sis.contains(prevSI)) continue;
-                            LinkedList<StateItem> prevSIs = new LinkedList<>(sis);
-                            prevSIs.add(0, prevSI);
-                            queue.add(prevSIs);
-
-                        }
-                    }
-                }
-
-            } else {
-                System.out.println("Position correct question reached");
-                //TODO is the position correct here? may +1 or -1 of what it is
-                int symbol = spec.pr.getRHSSym(si.getProduction(),pos-1);
-                for(StateItem prevSI :  transitionTables.getReverseTransitions(si,symbol)){
-                    if(prevSI.getState() != prevRefSI.getState()){
-                        continue;
-                    }
-                    result.add(0, prevSI);
-                    si = prevSI;
-                    refSI = prevRefSI;
-                    break;
-                }
+        //We need to get a list of all of the states in the shortest path without repetition,
+        //as having the shift path maintain that order is how we keep the search space reasonable
+        ArrayList<Integer> shortestPathStates = new ArrayList<>();
+        shortestPathStates.add(shortestPath.get(0).getState());
+        for (StateItem s: shortestPath) {
+            if(s.getState() != shortestPathStates.get(shortestPathStates.size()-1)){
+                shortestPathStates.add(s.getState());
             }
         }
-        throw new Error("Cannot find derivation to conflict state.");
+
+
+        //We get what states are valid to transition to by
+        Queue<LinkedList<ShiftConflictSearchNode>> queue = new LinkedList<>();
+        LinkedList<ShiftConflictSearchNode> startPath = new LinkedList<>();
+        startPath.addFirst(new ShiftConflictSearchNode(shortestPathStates.size()-2,false,conflictItem2));
+        queue.add(startPath);
+
+        while(!queue.isEmpty()){
+            System.out.println("top of loop");
+            LinkedList<ShiftConflictSearchNode> path = queue.remove();
+            ShiftConflictSearchNode head = path.getFirst();
+            System.out.println("Considering head " + head);
+
+            //TODO if the head stateItem is in the shortest path, we should finish and re-use the shortest path from there.
+            //TODO fix the stateItem equality function, this is dumb
+            if(head.getStateItem().getState() == startVertex.getState() &&
+                    head.getStateItem().getProduction() == startVertex.getProduction() &&
+                    head.getStateItem().getDotPosition() == startVertex.getDotPosition()){
+                System.out.println("Finished findShiftConflictPath");
+                ArrayList<StateItem> result = new ArrayList<>(path.size());
+
+                //extract the stateItems, move to an arrayList
+                for(ShiftConflictSearchNode n : path){
+                    result.add(n.getStateItem());
+                }
+
+                System.out.println(result);
+                return result;
+            } else {
+                System.out.println("Head " + head.getStateItem() + " != " + startVertex.stateItem);
+            }
+
+            //Consider production steps only if the current path doesn't start with a production step itself
+            //Otherwise we would add the same production step items over and over
+            //TODO i don't think this needs to be in the node, I think any production item with dotPosition == 0 is a prod. item
+            if(!head.isProductionItem()){
+                System.out.println("head is not a production item");
+                BitSet revProd =
+                        productionStepTables.getRevProdSteps(head.getStateItem().getState(),
+                                                             spec.pr.getLHS(head.getStateItem().getProduction()));
+                if(revProd == null){
+                    System.out.println("revProd was null for state" + head.getStateItem().getState());
+                } else {
+                    LR0ItemSet itemSet = dfa.getItemSet(head.getStateItem().getState());
+                    //For each production step
+                    for(int i = revProd.nextSetBit(0); i >= 0; i = revProd.nextSetBit(i+1)){
+                        StateItem newState = new StateItem(head.getStateItem().getState(),itemSet.getProduction(i),itemSet.getPosition(i));
+                        LinkedList<ShiftConflictSearchNode> newPath = new LinkedList<>();
+                        //add a new path with that production step item as the head to the queue
+                        newPath.addAll(path);
+                        newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex(),true,newState));
+                        queue.add(newPath);
+                    }
+                }
+            } else{
+                System.out.println("head is a production item, skipping");
+            }
+
+            //consider reverse transition items
+            System.out.println(head.getStateItem());
+            //No way to transition to these, must have been a production item (at some point)
+            if(head.getStateItem().getDotPosition() == 0 ){
+                continue;
+            }
+            Set<StateItem> revTran = transitionTables.revTrans.get(head.getStateItem());
+            for(StateItem s : revTran){
+                System.out.println("Considering stateItem " + s + " for shiftPath");
+                //only add states that are in the correct position along the shortest path
+                if(s.getState() == shortestPathStates.get(head.getValidStateIndex())){
+                    System.out.println("Correct state, adding to queue");
+                    LinkedList<ShiftConflictSearchNode> newPath = new LinkedList<>();
+                    newPath.addAll(path);
+                    newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex()-1,false,s));
+                    queue.add(newPath);
+                } else{
+                    System.out.println("Did not have correct state, needed state " + shortestPath.get(head.getValidStateIndex()).getState());
+                    System.out.println("As index " + head.getValidStateIndex() + " in shortest path is " + shortestPath.get(head.getValidStateIndex()));
+                }
+
+            }
+        }
+        throw new Error("failed to find shift conflict path");
     }
 
     private Derivation nonUnifyingDerivFromPath(ArrayList<StateItem> states){
@@ -528,7 +504,7 @@ public class LookaheadSensitiveGraph {
             //symbols before dot
             Iterator<Derivation> derivationItr = derivations.descendingIterator();
             for (int j = pos - 1; j >= 0; j--) {
-                result.addFirst(derivationItr.hasNext() ? derivationItr.next() : new Derivation(getSymbolString(prod,i)));
+                result.addFirst(derivationItr.hasNext() ? derivationItr.next() : new Derivation(getSymbolString(prod,j)));
 
             }
             //complete the derivation
@@ -585,7 +561,7 @@ public class LookaheadSensitiveGraph {
                 return result;
             }
             if(spec.nonterminals.get(symbolAfterDot)){
-                BitSet prodSteps = productionStepTables.getProductionSteps(lastSI);
+                BitSet prodSteps = productionStepTables.getProdSteps(lastSI);
                 for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1)){
                     LR0ItemSet itemSet = dfa.getItemSet(lastSI.getState());
                     StateItem nextSI = new StateItem(lastSI.getState(),itemSet.getProduction(i),itemSet.getPosition(i));
@@ -609,6 +585,7 @@ public class LookaheadSensitiveGraph {
     }
 
     private String getSymbolString(int prod, int pos){
+//        System.out.println("prod " + prod + " pos " + pos);
         return symbolTable.get(spec.pr.getRHSSym(prod,pos)).getDisplayName();
     }
     private String getSymbolString(int sym){

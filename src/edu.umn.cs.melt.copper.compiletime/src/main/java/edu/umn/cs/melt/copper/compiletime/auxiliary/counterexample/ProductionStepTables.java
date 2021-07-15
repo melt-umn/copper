@@ -1,10 +1,9 @@
-package edu.umn.cs.melt.copper.compiletime.auxiliary;
+package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 
@@ -13,16 +12,16 @@ public class ProductionStepTables {
      * The production steps for a given StateItem
      * The bitset represents indices into the LR0ItemSet for the associated state
      */
-    protected Hashtable<StateItem,BitSet> productionStepTable;
+    protected Hashtable<StateItem,BitSet> prodTable;
     /**
      * The reverse production steps indexed by the state and the non-terminal on the lefthand side of the production
      * Represented by indices into the LR0ItemSet (in the LR0DFA) for the associated state.
      */
-    protected BitSet[][] reverseProductionStepTable;
+    protected BitSet[][] revProdTable;
 
     public ProductionStepTables(LR0DFA dfa, ParserSpec spec){
-       reverseProductionStepTable = new BitSet[dfa.size()][];
-       productionStepTable = new Hashtable<>();
+       revProdTable = new BitSet[dfa.size()][];
+       prodTable = new Hashtable<>();
        build(dfa, spec);
     }
 
@@ -68,7 +67,7 @@ public class ProductionStepTables {
             System.out.println("]");
             System.out.println(closures);
 
-            reverseProductionStepTable[state] = new BitSet[spec.nonterminals.size()];
+            revProdTable[state] = new BitSet[spec.nonterminals.size()];
 
             //for each item in the state
             for (int item = 0; item < curr.size(); item++) {
@@ -89,15 +88,15 @@ public class ProductionStepTables {
                 }
                 if(closures[symbolAfterDot] != null){
                     StateItem srcStateItem = new StateItem(state,curr.getProduction(item), curr.getPosition(item));
-                    if(productionStepTable.get(srcStateItem) == null){
-                        productionStepTable.put(srcStateItem,new BitSet());
+                    if(prodTable.get(srcStateItem) == null){
+                        prodTable.put(srcStateItem,new BitSet());
                     }
-                    if(reverseProductionStepTable[state][symbolAfterDot] == null){
-                        reverseProductionStepTable[state][symbolAfterDot] = new BitSet();
+                    if(revProdTable[state][symbolAfterDot] == null){
+                        revProdTable[state][symbolAfterDot] = new BitSet();
                     }
                     System.out.println("adding " + srcStateItem + " to productionStepTables");
-                    productionStepTable.get(srcStateItem).or(closures[symbolAfterDot]);
-                    reverseProductionStepTable[state][symbolAfterDot].set(item);
+                    prodTable.get(srcStateItem).or(closures[symbolAfterDot]);
+                    revProdTable[state][symbolAfterDot].set(item);
                 } else {
                     System.out.println("Symbol after dot (" + symbolAfterDot + ") is has a null closure set");
 
@@ -108,21 +107,21 @@ public class ProductionStepTables {
     }
 
     /**
-     * @see #productionStepTable
+     * @see #prodTable
      * @param stateItem
      * @return the set of production steps for the given StateItem
      */
-    public BitSet getProductionSteps(StateItem stateItem) {
-        return productionStepTable.get(stateItem);
+    public BitSet getProdSteps(StateItem stateItem) {
+        return prodTable.get(stateItem);
     }
 
     /**
-     * @see #reverseProductionStepTable
+     * @see #revProdTable
      * @param state
      * @param nonTerminal
      * @return get the set of reverse production steps for the given state and nonterminal
      */
-    public BitSet getReverseProductionSteps(int state, int nonTerminal){
-        return reverseProductionStepTable[state][nonTerminal];
+    public BitSet getRevProdSteps(int state, int nonTerminal){
+        return revProdTable[state][nonTerminal];
     }
 }

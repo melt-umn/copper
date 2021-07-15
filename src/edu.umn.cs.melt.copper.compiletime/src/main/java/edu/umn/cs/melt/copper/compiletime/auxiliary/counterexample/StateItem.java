@@ -1,4 +1,4 @@
-package edu.umn.cs.melt.copper.compiletime.auxiliary;
+package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 public class StateItem {
     private int state;
@@ -14,6 +14,7 @@ public class StateItem {
         this.dotPosition = dotPosition;
     }
 
+    //TODO fix this, not working somehow.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
