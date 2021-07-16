@@ -194,6 +194,7 @@ public class LookaheadSensitiveGraph {
                 for (LookaheadSensitiveGraphVertex v : path){
                     shortestConflictPath.add(v.stateItem);
                 }
+                System.out.println(shortestConflictPath);
                 return shortestConflictPath;
             } else {
 //                System.out.println("Did not finish.");
@@ -272,8 +273,8 @@ public class LookaheadSensitiveGraph {
                 if (revProd != null){
                     for(int i = revProd.nextSetBit(0); i >= 0; i = revProd.nextSetBit(i+1)){
 //                        System.out.println("Reached this position on item " + s);
-                        System.out.println(revProd);
-                        System.out.println(i);
+//                        System.out.println(revProd);
+//                        System.out.println(i);
                         LR0ItemSet itemSet = dfa.getItemSet(s.getState());
                         queue.add(new StateItem(s.getState(),itemSet.getProduction(i),itemSet.getPosition(i)));
                     }
@@ -363,10 +364,10 @@ public class LookaheadSensitiveGraph {
         queue.add(startPath);
 
         while(!queue.isEmpty()){
-            System.out.println("top of loop");
+//            System.out.println("top of loop");
             LinkedList<ShiftConflictSearchNode> path = queue.remove();
             ShiftConflictSearchNode head = path.getFirst();
-            System.out.println("Considering head " + head);
+//            System.out.println("Considering head " + head);
 
             //TODO if the head stateItem is in the shortest path, we should finish and re-use the shortest path from there.
             //TODO fix the stateItem equality function, this is dumb
@@ -384,19 +385,19 @@ public class LookaheadSensitiveGraph {
                 System.out.println(result);
                 return result;
             } else {
-                System.out.println("Head " + head.getStateItem() + " != " + startVertex.stateItem);
+//                System.out.println("Head " + head.getStateItem() + " != " + startVertex.stateItem);
             }
 
             //Consider production steps only if the current path doesn't start with a production step itself
             //Otherwise we would add the same production step items over and over
             //TODO i don't think this needs to be in the node, I think any production item with dotPosition == 0 is a prod. item
             if(!head.isProductionItem()){
-                System.out.println("head is not a production item");
+//                System.out.println("head is not a production item");
                 BitSet revProd =
                         productionStepTables.getRevProdSteps(head.getStateItem().getState(),
                                                              spec.pr.getLHS(head.getStateItem().getProduction()));
                 if(revProd == null){
-                    System.out.println("revProd was null for state" + head.getStateItem().getState());
+//                    System.out.println("revProd was null for state" + head.getStateItem().getState());
                 } else {
                     LR0ItemSet itemSet = dfa.getItemSet(head.getStateItem().getState());
                     //For each production step
@@ -410,28 +411,28 @@ public class LookaheadSensitiveGraph {
                     }
                 }
             } else{
-                System.out.println("head is a production item, skipping");
+//                System.out.println("head is a production item, skipping");
             }
 
             //consider reverse transition items
-            System.out.println(head.getStateItem());
+//            System.out.println(head.getStateItem());
             //No way to transition to these, must have been a production item (at some point)
             if(head.getStateItem().getDotPosition() == 0 ){
                 continue;
             }
             Set<StateItem> revTran = transitionTables.revTrans.get(head.getStateItem());
             for(StateItem s : revTran){
-                System.out.println("Considering stateItem " + s + " for shiftPath");
+//                System.out.println("Considering stateItem " + s + " for shiftPath");
                 //only add states that are in the correct position along the shortest path
                 if(s.getState() == shortestPathStates.get(head.getValidStateIndex())){
-                    System.out.println("Correct state, adding to queue");
+//                    System.out.println("Correct state, adding to queue");
                     LinkedList<ShiftConflictSearchNode> newPath = new LinkedList<>();
                     newPath.addAll(path);
                     newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex()-1,false,s));
                     queue.add(newPath);
                 } else{
-                    System.out.println("Did not have correct state, needed state " + shortestPath.get(head.getValidStateIndex()).getState());
-                    System.out.println("As index " + head.getValidStateIndex() + " in shortest path is " + shortestPath.get(head.getValidStateIndex()));
+//                    System.out.println("Did not have correct state, needed state " + shortestPath.get(head.getValidStateIndex()).getState());
+//                    System.out.println("As index " + head.getValidStateIndex() + " in shortest path is " + shortestPath.get(head.getValidStateIndex()));
                 }
 
             }

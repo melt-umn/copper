@@ -13,7 +13,7 @@ public class Derivation {
     String symbol;
     List<Derivation> derivations;
 
-    public static final Derivation dot = new Derivation("(*)", new LinkedList<Derivation>());
+    public static final Derivation dot = new Derivation("(*)", null);
 
     //TODO go through when this is used instead of calling the 2 argument one with the empty list
     public Derivation(String symbol){
