@@ -32,52 +32,52 @@ public class TransitionFunctionTables {
     int[] test;
 
 
-    public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec){
+    public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec) {
         trans = new Hashtable<>();
         revTrans = new Hashtable<>();
 
         //TODO comment
         //Initialize the tables
         //for each state
-        for(int i = 0; i < dfa.size(); i++) {
+        for (int i = 0; i < dfa.size(); i++) {
             //for each item in the (source) state
             LR0ItemSet srcItemSet = dfa.getItemSet(i);
-            for(int j = 0; j < srcItemSet.size(); j++){
+            for (int j = 0; j < srcItemSet.size(); j++) {
                 int srcProduction = srcItemSet.getProduction(j);
                 int srcDotPosition = srcItemSet.getPosition(j);
                 int expectedDotPosition = srcDotPosition + 1;
 
                 //skip reduce items
-                if(srcDotPosition == spec.pr.getRHSLength(srcProduction)){
+                if (srcDotPosition == spec.pr.getRHSLength(srcProduction)) {
                     continue;
                 }
-                int symbolAfterDot = spec.pr.getRHSSym(srcProduction,srcDotPosition);
+                int symbolAfterDot = spec.pr.getRHSSym(srcProduction, srcDotPosition);
 
-                int destinationState = dfa.getTransition(i,symbolAfterDot);
+                int destinationState = dfa.getTransition(i, symbolAfterDot);
 
                 LR0ItemSet dstItemSet = dfa.getItemSet(destinationState);
 
                 //for each item in the (destination) state
-                for(int k = 0; k < dstItemSet.size(); k++){
+                for (int k = 0; k < dstItemSet.size(); k++) {
                     //determine if the item is the transition destination item
-                    if(srcProduction != dstItemSet.getProduction(k)  || expectedDotPosition != dstItemSet.getPosition(k)){
+                    if (srcProduction != dstItemSet.getProduction(k) || expectedDotPosition != dstItemSet.getPosition(k)) {
                         //if it isn't, try the next item.
-                       continue;
+                        continue;
                     }
-                    StateItem srcStateItem = new StateItem(i,srcProduction,srcItemSet.getPosition(j));
-                    StateItem dstStateItem = new StateItem(destinationState,dstItemSet.getProduction(k),dstItemSet.getPosition(k));
+                    StateItem srcStateItem = new StateItem(i, srcProduction, srcItemSet.getPosition(j));
+                    StateItem dstStateItem = new StateItem(destinationState, dstItemSet.getProduction(k), dstItemSet.getPosition(k));
 
-                   StateItem[] tran = trans.get(srcStateItem);
-                    if(tran == null){
+                    StateItem[] tran = trans.get(srcStateItem);
+                    if (tran == null) {
                         tran = new StateItem[spec.terminals.size() + spec.nonterminals.size()];
-                        trans.put(srcStateItem,tran);
+                        trans.put(srcStateItem, tran);
                     }
                     tran[symbolAfterDot] = dstStateItem;
 
                     Set<StateItem> revTran = revTrans.get(dstStateItem);
-                    if(revTran == null){
+                    if (revTran == null) {
                         revTran = new HashSet<>();
-                        revTrans.put(dstStateItem,revTran);
+                        revTrans.put(dstStateItem, revTran);
                     }
                     revTran.add(srcStateItem);
                     break;
@@ -85,29 +85,12 @@ public class TransitionFunctionTables {
             }
         }
     }
-    public StateItem getTransition(StateItem stateItem, int symbol){
+
+    public StateItem getTransition(StateItem stateItem, int symbol) {
         return trans.get(stateItem)[symbol];
     }
-    public Set<StateItem> getReverseTransitions(StateItem stateItem){
+
+    public Set<StateItem> getReverseTransitions(StateItem stateItem) {
         return revTrans.get(stateItem);
     }
-//    /**
-//     * The reverse transition function.
-//     * @return a 2d array of BitSets such that {@code build(dfa)[state][symbol]}
-//     * is the set of states that could have transitioned to {@code state} on {@code symbol}
-//     */
-//    //TODO may require information on the item?
-//    public static BitSet[][] build(LR0DFA dfa, ParserSpec spec){
-//        int maxTransitionSize = Math.max(spec.terminals.length(),spec.nonterminals.length());
-//        BitSet[][] result = new BitSet[dfa.getTransitionLength()][maxTransitionSize];
-//        //for each state
-//        for (int i = 0; i < dfa.getTransitionLength(); i++) {
-//            //for each symbol
-//            for(int j = 0; j < maxTransitionSize; j++){
-//                //TODO is the transition function total? that is, will this ever be null/invalid?
-//                result[dfa.getTransition(i,j)][j].set(i);
-//            }
-//        }
-//        return result;
-//    }
 }
