@@ -20,7 +20,7 @@ public class Counterexample {
         sb.append('\n');
         sb.append(isShiftReduce? "reduce derivation:\n" : "second reduce derivation:\n");
         sb.append(derivation2.toString());
-        sb.append("\n\n");
+        sb.append("\n");
         return sb.toString();
     }
 }

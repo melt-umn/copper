@@ -132,9 +132,9 @@ public class LookaheadSensitiveGraph {
                 conflictItem2Production,
                 conflictItem2Position);
 
-        System.out.println("conflict items:");
-        System.out.println(conflictItem1);
-        System.out.println(conflictItem2);
+//        System.out.println("conflict items:");
+//        System.out.println(conflictItem1);
+//        System.out.println(conflictItem2);
 
 
         BitSet initLookaheadSet = new BitSet();
@@ -152,10 +152,10 @@ public class LookaheadSensitiveGraph {
 
     //todo comment
     public ArrayList<StateItem> findShortestContextSensitivePath(StateItem target){
-        System.out.println("start findShortestContextSensitivePath");
+//        System.out.println("start findShortestContextSensitivePath");
         Set<StateItem> possibleStateItems = eligibleStateItems(target);
-        System.out.println("Possible stateItems:");
-        System.out.println(possibleStateItems);
+//        System.out.println("Possible stateItems:");
+//        System.out.println(possibleStateItems);
 
         Queue<LinkedList<LookaheadSensitiveGraphVertex>> queue = new LinkedList<>();
         Set<LookaheadSensitiveGraphVertex> visited = new HashSet<>();
@@ -164,15 +164,15 @@ public class LookaheadSensitiveGraph {
         init.add(startVertex);
         queue.add(init);
 
-        System.out.println("Reverse transition table");
-        System.out.println(transitionTables.revTrans);
-        System.out.println("Transition table");
-        System.out.println(transitionTables.trans);
-
-        System.out.println("Production step table:");
-        System.out.println(productionStepTables.prodTable);
-        System.out.println("Reverse production step table:");
-        System.out.println(productionStepTables.revProdTable);
+//        System.out.println("Reverse transition table");
+//        System.out.println(transitionTables.revTrans);
+//        System.out.println("Transition table");
+//        System.out.println(transitionTables.trans);
+//
+//        System.out.println("Production step table:");
+//        System.out.println(productionStepTables.prodTable);
+//        System.out.println("Reverse production step table:");
+//        System.out.println(productionStepTables.revProdTable);
 
 
         //unguided breadth-first search
@@ -184,14 +184,14 @@ public class LookaheadSensitiveGraph {
             }
             visited.add(last);
             if(target.equals(last.stateItem) && last.lookaheadSet.get(conflictTerminal)){
-                System.out.println("FINISHED");
+//                System.out.println("FINISHED");
                 //TODO print process info and such
                 //success, copy to ArrayList for efficient access
                 ArrayList<StateItem> shortestConflictPath = new ArrayList<>(path.size());
                 for (LookaheadSensitiveGraphVertex v : path){
                     shortestConflictPath.add(v.stateItem);
                 }
-                System.out.println(shortestConflictPath);
+//                System.out.println(shortestConflictPath);
                 return shortestConflictPath;
             }
             //Add all transitions to the search queue
@@ -237,7 +237,7 @@ public class LookaheadSensitiveGraph {
 
     //TODO comment
     private Set<StateItem> eligibleStateItems(StateItem target){
-        System.out.println("Begin eligibleStateItems");
+//        System.out.println("Begin eligibleStateItems");
         //TODO this is looping at some point
         //It's between using a hashSet and creating a flat array of all possible stateItems with arbitary positions
         //and doing bitsets of indices into that
@@ -317,7 +317,7 @@ public class LookaheadSensitiveGraph {
 
     private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath){
         //TODO modify to do unifying examples
-        System.out.println("Starting CounterexampleFromShortestPath");
+//        System.out.println("Starting CounterexampleFromShortestPath");
         StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition());
         if(!isShiftReduce){
             ArrayList<StateItem> shortestPath2 = findShortestContextSensitivePath(si);
@@ -364,7 +364,7 @@ public class LookaheadSensitiveGraph {
             if(head.getStateItem().getState() == startVertex.getState() &&
                     head.getStateItem().getProduction() == startVertex.getProduction() &&
                     head.getStateItem().getDotPosition() == startVertex.getDotPosition()){
-                System.out.println("Finished findShiftConflictPath");
+//                System.out.println("Finished findShiftConflictPath");
                 ArrayList<StateItem> result = new ArrayList<>(path.size());
 
                 //extract the stateItems, move to an arrayList
@@ -372,7 +372,7 @@ public class LookaheadSensitiveGraph {
                     result.add(n.getStateItem());
                 }
 
-                System.out.println(result);
+//                System.out.println(result);
                 return result;
             }
 
@@ -438,6 +438,7 @@ public class LookaheadSensitiveGraph {
      * @param derivations any currently unfinished derivations that need to be filled out
      * @return
      */
+    //TODO this entire function is a mess and needs a bunch of comments
     private Derivation nonUnifyingDerivFromPath(ArrayList<StateItem> states, LinkedList<Derivation> derivations){
         LinkedList<Derivation> result = new LinkedList<>();
 
@@ -450,7 +451,6 @@ public class LookaheadSensitiveGraph {
 
             if(result.isEmpty()){
                 if (derivations.isEmpty()) {
-                    System.out.println("so is derivations");
                     result.add(Derivation.dot);
                     lookaheadRequired = true;
                 }
