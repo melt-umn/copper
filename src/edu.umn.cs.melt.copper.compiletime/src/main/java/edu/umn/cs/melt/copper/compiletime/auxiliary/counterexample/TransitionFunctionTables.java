@@ -33,7 +33,6 @@ public class TransitionFunctionTables {
 
 
     public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec){
-//        System.out.println("Begin transition function tables builder");
         trans = new Hashtable<>();
         revTrans = new Hashtable<>();
 
@@ -43,23 +42,18 @@ public class TransitionFunctionTables {
         for(int i = 0; i < dfa.size(); i++) {
             //for each item in the (source) state
             LR0ItemSet srcItemSet = dfa.getItemSet(i);
-//            System.out.println("Transition src state: " + i);
             for(int j = 0; j < srcItemSet.size(); j++){
                 int srcProduction = srcItemSet.getProduction(j);
                 int srcDotPosition = srcItemSet.getPosition(j);
                 int expectedDotPosition = srcDotPosition + 1;
-//                System.out.println("Transition Function: (srcProduction: " + srcProduction + ", srcDotPosition: " + srcDotPosition +")");
 
                 //skip reduce items
                 if(srcDotPosition == spec.pr.getRHSLength(srcProduction)){
-//                    System.out.println("Reduce item, skipping");
                     continue;
                 }
                 int symbolAfterDot = spec.pr.getRHSSym(srcProduction,srcDotPosition);
-//                System.out.println("Symbol after dot: " + symbolAfterDot);
 
                 int destinationState = dfa.getTransition(i,symbolAfterDot);
-//                System.out.println("destination state: " + destinationState);
 
                 LR0ItemSet dstItemSet = dfa.getItemSet(destinationState);
 
@@ -67,15 +61,9 @@ public class TransitionFunctionTables {
                 for(int k = 0; k < dstItemSet.size(); k++){
                     //determine if the item is the transition destination item
                     if(srcProduction != dstItemSet.getProduction(k)  || expectedDotPosition != dstItemSet.getPosition(k)){
-//                        System.out.println("destination item (Production: " + dstItemSet.getProduction(k)
-//                                + ", dotPosition: " + dstItemSet.getPosition(k) + ") does not appear to be a transition for "
-//                                + "(Production: " + srcProduction + ", dotPosition: " + srcDotPosition + ")");
                         //if it isn't, try the next item.
                        continue;
                     }
-//                    System.out.println("destination item (Production: " + dstItemSet.getProduction(k)
-//                            + ", dotPosition: " + dstItemSet.getPosition(k) + ") IS a transition for "
-//                            + "(Production: " + srcProduction + ", dotPosition: " + srcDotPosition + ")");
                     StateItem srcStateItem = new StateItem(i,srcProduction,srcItemSet.getPosition(j));
                     StateItem dstStateItem = new StateItem(destinationState,dstItemSet.getProduction(k),dstItemSet.getPosition(k));
 

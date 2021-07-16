@@ -38,7 +38,6 @@ public class ProductionStepTables {
      */
     private void build(LR0DFA dfa, ParserSpec spec){
         //seems to be working correctly...
-        System.out.println("building productionStepTables");
         //fill in the closure map
         //for each state
         for (int state = 0; state < dfa.size(); state++) {
@@ -58,14 +57,6 @@ public class ProductionStepTables {
                     closures[lhs].set(j);
                 }
             }
-            System.out.println("Closures for state " + state + ":");
-            System.out.print("[");
-            for(int i = 0; i < closures.length; i++){
-                System.out.print(closures[i]);
-                System.out.print(", ");
-            }
-            System.out.println("]");
-            System.out.println(closures);
 
             revProdTable[state] = new BitSet[spec.nonterminals.size()];
 
@@ -73,17 +64,14 @@ public class ProductionStepTables {
             for (int item = 0; item < curr.size(); item++) {
                 int production = curr.getProduction(item);
                 int dotPosition = curr.getPosition(item);
-                System.out.println("Testing item (Production: " + production + ", dotPosition: " + dotPosition + ")" );
                 //do nothing on reduce items
                 if (spec.pr.getRHSLength(production) == dotPosition){
-                    System.out.println("Reduce item, skipping");
                     continue;
                 }
                 int symbolAfterDot = spec.pr.getRHSSym(production,dotPosition);
 
                 //ignore productions with terminals after their dot
                 if(spec.terminals.get(symbolAfterDot)){
-                    System.out.println("Symbol after dot (" + symbolAfterDot + ") is terminal, skipping");
                     continue;
                 }
                 if(closures[symbolAfterDot] != null){
@@ -94,16 +82,11 @@ public class ProductionStepTables {
                     if(revProdTable[state][symbolAfterDot] == null){
                         revProdTable[state][symbolAfterDot] = new BitSet();
                     }
-                    System.out.println("adding " + srcStateItem + " to productionStepTables");
                     prodTable.get(srcStateItem).or(closures[symbolAfterDot]);
                     revProdTable[state][symbolAfterDot].set(item);
-                } else {
-                    System.out.println("Symbol after dot (" + symbolAfterDot + ") is has a null closure set");
-
                 }
             }
         }
-        System.out.println("finished building production step table");
     }
 
     /**
