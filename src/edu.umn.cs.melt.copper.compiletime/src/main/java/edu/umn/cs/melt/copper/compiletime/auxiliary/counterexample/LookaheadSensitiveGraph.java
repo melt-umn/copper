@@ -179,10 +179,7 @@ public class LookaheadSensitiveGraph {
         while(!queue.isEmpty()){
             LinkedList<LookaheadSensitiveGraphVertex> path = queue.remove();
             LookaheadSensitiveGraphVertex last = path.getLast();
-//            System.out.println("path at start of queue:");
-//            System.out.println(path);
             if (visited.contains(last)) {
-//                System.out.println("VISITED");
                 continue;
             }
             visited.add(last);
@@ -196,23 +193,17 @@ public class LookaheadSensitiveGraph {
                 }
                 System.out.println(shortestConflictPath);
                 return shortestConflictPath;
-            } else {
-//                System.out.println("Did not finish.");
-//                System.out.println(target + " != " + last.stateItem);
-//                System.out.println("and " + conflictTerminal + " is not in " + last.lookaheadSet);
             }
             //Add all transitions to the search queue
             if(transitionTables.trans.get(last.stateItem) != null){
-//                System.out.println("Some transition items for" + last.stateItem);
                 for(StateItem tranDst : transitionTables.trans.get(last.stateItem)){
                     if(tranDst == null){
                         continue;
                     }
                     //TODO maybe using an array here isn't great if it's almost always null...
-//                    System.out.println("testing transition item " + tranDst);
-//                    if(!possibleStateItems.contains(tranDst)){
-//                        continue;
-//                    }
+                    if(!possibleStateItems.contains(tranDst)){
+                        continue;
+                    }
                     LookaheadSensitiveGraphVertex next = new LookaheadSensitiveGraphVertex(tranDst,last.lookaheadSet);
                     LinkedList<LookaheadSensitiveGraphVertex> nextPath = new LinkedList<>(path);
                     nextPath.add(next);
@@ -230,9 +221,9 @@ public class LookaheadSensitiveGraph {
                     //TODO refactor to use a memoized lookup table if this uses too much memory
                     StateItem pStateItem = new StateItem(last.getState(),stateItems.getProduction(i),stateItems.getPosition(i));
                     //TODO fix possibleStateItems and re-add this check
-//                    if(!possibleStateItems.contains(pStateItem)){
-//                        continue;
-//                    }
+                    if(!possibleStateItems.contains(pStateItem)){
+                        continue;
+                    }
                     LookaheadSensitiveGraphVertex next = new LookaheadSensitiveGraphVertex(pStateItem,newLookahead);
                     LinkedList<LookaheadSensitiveGraphVertex> nextPath = new LinkedList<>(path);
                     nextPath.add(next);
@@ -356,7 +347,6 @@ public class LookaheadSensitiveGraph {
             }
         }
 
-
         //We get what states are valid to transition to by
         Queue<LinkedList<ShiftConflictSearchNode>> queue = new LinkedList<>();
         LinkedList<ShiftConflictSearchNode> startPath = new LinkedList<>();
@@ -384,8 +374,6 @@ public class LookaheadSensitiveGraph {
 
                 System.out.println(result);
                 return result;
-            } else {
-//                System.out.println("Head " + head.getStateItem() + " != " + startVertex.stateItem);
             }
 
             //Consider production steps only if the current path doesn't start with a production step itself
@@ -462,16 +450,17 @@ public class LookaheadSensitiveGraph {
 
             if(result.isEmpty()){
                 if (derivations.isEmpty()) {
+                    System.out.println("so is derivations");
                     result.add(Derivation.dot);
                     lookaheadRequired = true;
                 }
                 if(pos != len){
                     result.add(new Derivation(getSymbolString(prod,pos)));
                     lookaheadRequired = false;
-
                 }
             }
 
+            // I don't think this can handle reduction items (where the dot at the end) correctly.
             for(int j = pos + 1; j < len; j++){
                 int symbol = spec.pr.getRHSSym(prod,j);
                 if(lookaheadRequired){
@@ -483,12 +472,12 @@ public class LookaheadSensitiveGraph {
                                         expandFirst(transitionTables.getTransition(stateItem,spec.pr.getRHSSym(prod,pos)));
 
                                 result.addAll(nextDerivations);
-                                i += nextDerivations.size() - 1;
+                                j += nextDerivations.size() - 1;
                                 lookaheadRequired = false;
+                            } else {
+                                //can't derive the the conflict terminal, must be some other prod
+                                result.add(new Derivation(getSymbolString(symbol)));
                             }
-                        } else {
-                            //can't derive the the conflict terminal, must be some other prod
-                            result.add(new Derivation(getSymbolString(symbol)));
                         }
                     } else {
                         result.add(new Derivation(getSymbolString(symbol)));
@@ -505,11 +494,13 @@ public class LookaheadSensitiveGraph {
             //symbols before dot
             Iterator<Derivation> derivationItr = derivations.descendingIterator();
             for (int j = pos - 1; j >= 0; j--) {
+                if(i>0){
+                    i--;
+                }
                 result.addFirst(derivationItr.hasNext() ? derivationItr.next() : new Derivation(getSymbolString(prod,j)));
-
             }
+
             //complete the derivation
-            int lhs = spec.pr.getLHS(prod);
             Derivation deriv = new Derivation(getSymbolString(spec.pr.getLHS(prod)), result);
             result = new LinkedList<>();
             result.add(deriv);
