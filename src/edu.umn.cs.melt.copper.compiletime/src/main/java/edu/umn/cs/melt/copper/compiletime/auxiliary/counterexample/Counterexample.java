@@ -22,17 +22,20 @@ public class Counterexample {
         StringBuilder sb = new StringBuilder();
         sb.append("Example:\n");
         sb.append(isShiftReduce? "shift derivation:\n" : "first reduce derivation:\n");
-        derivation1.prettyPrint(sb1,0,0);
+        ArrayList<Integer> escapes = new ArrayList<>();
+        escapes.add(0);
+        derivation1.prettyPrint(sb1,escapes,0,0);
         for(StringBuilder s : sb1){
             sb.append(s);
-            //TODO might not need this newline
-            sb.append('\n');
+            sb.append('\n'+Derivation.ANSI_RESET);
         }
         sb.append(isShiftReduce? "reduce derivation:\n" : "second reduce derivation:\n");
-        derivation2.prettyPrint(sb2,0,0);
+        escapes = new ArrayList<>();
+        escapes.add(0);
+        derivation2.prettyPrint(sb2,escapes,0,0);
         for(StringBuilder s : sb2){
             sb.append(s);
-            sb.append('\n');
+            sb.append('\n'+Derivation.ANSI_RESET);
         }
         return sb.toString();
     }
