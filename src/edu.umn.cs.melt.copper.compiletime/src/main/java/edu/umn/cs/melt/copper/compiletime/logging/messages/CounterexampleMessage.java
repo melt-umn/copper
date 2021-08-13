@@ -1,10 +1,11 @@
 package edu.umn.cs.melt.copper.compiletime.logging.messages;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.LookaheadSensitiveGraph;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.CounterexampleSearchGraphs;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageType;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadSets;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
@@ -20,13 +21,14 @@ public class CounterexampleMessage implements CompilerLogMessage {
 //    private ContextSets contextSets;
 //    private ParserSpec spec;
 
-    private LookaheadSensitiveGraph lookaheadSensitiveGraph;
+    private CounterexampleSearchGraphs counterExampleSearchGraphs;
 
     public CounterexampleMessage(PSSymbolTable symbolTable, LR0DFA dfa,
-                                  LRParseTableConflict conflict,
-                                 ContextSets contextSets, ParserSpec spec)
+                                 LRParseTableConflict conflict,
+                                 ContextSets contextSets, ParserSpec spec,
+                                 LRLookaheadSets lookaheadSets)
     {
-        this.lookaheadSensitiveGraph = new LookaheadSensitiveGraph(conflict,spec,symbolTable,contextSets,dfa);
+        this.counterExampleSearchGraphs = new CounterexampleSearchGraphs(conflict,spec,symbolTable,contextSets,lookaheadSets, dfa);
     }
 
 
@@ -42,7 +44,7 @@ public class CounterexampleMessage implements CompilerLogMessage {
 
     @Override
     public String toString(){
-      return lookaheadSensitiveGraph.getNonUnifyingCounterExample().toString();
+      return counterExampleSearchGraphs.getNonUnifyingCounterexample().toString();
     }
 
 

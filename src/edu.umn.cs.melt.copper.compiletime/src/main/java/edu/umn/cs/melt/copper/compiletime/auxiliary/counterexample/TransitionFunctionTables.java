@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 import java.util.*;
@@ -26,13 +27,8 @@ public class TransitionFunctionTables {
      */
     protected Hashtable<StateItem, Set<StateItem>> revTrans;
 
-    /**
-     * A mapping of states
-     */
-    int[] test;
 
-
-    public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec) {
+    public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec, LRLookaheadSets lookaheads) {
         trans = new Hashtable<>();
         revTrans = new Hashtable<>();
 
@@ -53,9 +49,9 @@ public class TransitionFunctionTables {
                 }
                 int symbolAfterDot = spec.pr.getRHSSym(srcProduction, srcDotPosition);
 
-                int destinationState = dfa.getTransition(i, symbolAfterDot);
+                int dstState = dfa.getTransition(i, symbolAfterDot);
 
-                LR0ItemSet dstItemSet = dfa.getItemSet(destinationState);
+                LR0ItemSet dstItemSet = dfa.getItemSet(dstState);
 
                 //for each item in the (destination) state
                 for (int k = 0; k < dstItemSet.size(); k++) {
@@ -64,9 +60,11 @@ public class TransitionFunctionTables {
                         //if it isn't, try the next item.
                         continue;
                     }
-                    StateItem srcStateItem = new StateItem(i, srcProduction, srcItemSet.getPosition(j));
-                    StateItem dstStateItem = new StateItem(destinationState, dstItemSet.getProduction(k), dstItemSet.getPosition(k));
-
+                    StateItem srcStateItem =
+                            new StateItem(i, srcProduction, srcItemSet.getPosition(j), lookaheads.getLookahead(i,j));
+                    StateItem dstStateItem =
+                            new StateItem(dstState, dstItemSet.getProduction(k),
+                                    dstItemSet.getPosition(k),lookaheads.getLookahead(dstState,k));
                     StateItem[] tran = trans.get(srcStateItem);
                     if (tran == null) {
                         tran = new StateItem[spec.terminals.size() + spec.nonterminals.size()];

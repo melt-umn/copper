@@ -5,6 +5,7 @@ import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.CounterexampleMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.ParseTableConflictMessage;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadSets;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
@@ -21,6 +22,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
  */
 public class ParseTableConflictChecker
 {
+	private LRLookaheadSets lookaheadSets;
 	private CompilerLogger logger;
 	private PSSymbolTable symbolTable;
 	private ParserSpec spec;
@@ -35,14 +37,14 @@ public class ParseTableConflictChecker
 	public static boolean check(CompilerLogger logger,
 								PSSymbolTable symbolTable, ParserSpec spec,
 								LRParseTable parseTable, LR0DFA dfa,
-								 ContextSets contextSets,
+								ContextSets contextSets, LRLookaheadSets lookaheadSets,
 								GrammarStatistics stats)
 	{
-		return new ParseTableConflictChecker(logger, symbolTable, spec, parseTable, dfa, contextSets, stats).checkConflicts();
+		return new ParseTableConflictChecker(logger, symbolTable, spec, parseTable, dfa, contextSets, lookaheadSets, stats).checkConflicts();
 	}
 	
 	private ParseTableConflictChecker(CompilerLogger logger, PSSymbolTable symbolTable, ParserSpec spec,
-			LRParseTable parseTable, LR0DFA dfa, ContextSets contextSets, GrammarStatistics stats)
+			LRParseTable parseTable, LR0DFA dfa, ContextSets contextSets, LRLookaheadSets lookaheadSets, GrammarStatistics stats)
 	{
 		this.logger = logger;
 		this.symbolTable = symbolTable;
@@ -51,6 +53,7 @@ public class ParseTableConflictChecker
 		this.stats = stats;
 		this.dfa = dfa;
 		this.contextSets = contextSets;
+		this.lookaheadSets = lookaheadSets;
 	}
 
 	private boolean checkConflicts()
@@ -86,7 +89,7 @@ public class ParseTableConflictChecker
 		}
 		//TODO implement a command line option to disable counterexamples
 		if(firstUnresolvedConflict != null){
-			logger.log(new CounterexampleMessage(symbolTable,dfa,firstUnresolvedConflict,contextSets,spec));
+			logger.log(new CounterexampleMessage(symbolTable,dfa,firstUnresolvedConflict,contextSets,spec,lookaheadSets));
 		}
 		return passed;
 	}

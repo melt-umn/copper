@@ -3,22 +3,23 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 import java.util.BitSet;
 
 /**
- * A vertex in a {@link LookaheadSensitiveGraph}.
+ * A vertex in a {@link CounterexampleSearchGraphs}.
  * A triplet of an int representing a state in the parse table,
  * an int representing the position of an LR0 item in the itemSet for that state,
  * and the lookahead set.
  */
 class LookaheadSensitiveGraphVertex {
     protected StateItem stateItem;
-    protected BitSet lookaheadSet;
+    protected BitSet lookahead;
 
-    public LookaheadSensitiveGraphVertex(int state, int production, int dotPosition, BitSet lookaheadSet) {
-        this.stateItem = new StateItem(state,production,dotPosition);
-        this.lookaheadSet = lookaheadSet;
+    public LookaheadSensitiveGraphVertex(int state, int production, int dotPosition, BitSet lookahead) {
+        //TODO should this be the same lookahead?
+        this.stateItem = new StateItem(state,production,dotPosition,lookahead);
+        this.lookahead = lookahead;
     }
-    public LookaheadSensitiveGraphVertex(StateItem stateItem, BitSet lookaheadSet) {
+    public LookaheadSensitiveGraphVertex(StateItem stateItem, BitSet lookahead) {
         this.stateItem = stateItem;
-        this.lookaheadSet = lookaheadSet;
+        this.lookahead = lookahead;
     }
 
     public int getProduction(){
@@ -38,7 +39,7 @@ class LookaheadSensitiveGraphVertex {
     public String toString() {
         return "LookaheadSensitiveGraphVertex{" +
                 "stateItem=" + stateItem +
-                ", lookaheadSet=" + lookaheadSet +
+                ", lookaheadSet=" + lookahead +
                 '}';
     }
 
@@ -50,13 +51,14 @@ class LookaheadSensitiveGraphVertex {
         LookaheadSensitiveGraphVertex that = (LookaheadSensitiveGraphVertex) o;
 
         if (!stateItem.equals(that.stateItem)) return false;
-        return lookaheadSet != null ? lookaheadSet.equals(that.lookaheadSet) : that.lookaheadSet == null;
+        return lookahead != null ? lookahead.equals(that.lookahead) : that.lookahead == null;
     }
 
     @Override
     public int hashCode() {
         int result = stateItem.hashCode();
-        result = 31 * result + (lookaheadSet != null ? lookaheadSet.hashCode() : 0);
+        result = 31 * result + (lookahead != null ? lookahead.hashCode() : 0);
         return result;
     }
+
 }

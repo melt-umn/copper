@@ -192,7 +192,7 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
 
         timeBefore = System.currentTimeMillis();
 
-        succeeded &= ParseTableConflictChecker.check(logger, symbolTable, fullSpec, parseTable, dfa, contextSets, stats);
+        succeeded &= ParseTableConflictChecker.check(logger, symbolTable, fullSpec, parseTable, dfa, contextSets,lookaheadSets, stats);
 
         if(logger.isLoggable(TimingMessage.TIMING_LEVEL)) logger.log(new TimingMessage("Checking parse table conflicts",System.currentTimeMillis() - timeBefore));
         logger.flush();

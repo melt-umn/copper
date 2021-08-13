@@ -8,13 +8,13 @@ import static edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.Colour
 
 /**
  * A derivation is a parse tree, represented by a symbol (which could a terminal or a non-terminal),
- * and  optionally a list of children derivations in the case of a non-terminal
+ * and optionally a list of children derivations in the case of a non-terminal
  */
 public class Derivation {
     String symbol;
     List<Derivation> derivations;
 
-    public static final Derivation dot = new Derivation("(*)", null);
+    public static final Derivation dot = new Derivation("•", null);
 
 
     public Derivation(String symbol){
@@ -29,6 +29,7 @@ public class Derivation {
 
     //return value the new indent
     public int prettyPrint(ArrayList<ColouredStringBuilder> sbs, int index,int indent) {
+        //TODO have a flag to disable coloured output?
         //print LHS/terminal
         ColouredStringBuilder sb = sbs.get(index);
         if(derivations != null){

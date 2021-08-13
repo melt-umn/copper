@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 import java.util.BitSet;
@@ -19,10 +20,10 @@ public class ProductionStepTables {
      */
     protected BitSet[][] revProdTable;
 
-    public ProductionStepTables(LR0DFA dfa, ParserSpec spec){
+    public ProductionStepTables(LR0DFA dfa, ParserSpec spec,LRLookaheadSets lookaheadSets){
        revProdTable = new BitSet[dfa.size()][];
        prodTable = new Hashtable<>();
-       build(dfa, spec);
+       build(dfa, spec,lookaheadSets);
     }
 
     /**
@@ -36,7 +37,7 @@ public class ProductionStepTables {
      *     </a>
      * </p>
      */
-    private void build(LR0DFA dfa, ParserSpec spec){
+    private void build(LR0DFA dfa, ParserSpec spec, LRLookaheadSets lookaheads){
         //seems to be working correctly...
         //fill in the closure map
         //for each state
@@ -75,7 +76,9 @@ public class ProductionStepTables {
                     continue;
                 }
                 if(closures[symbolAfterDot] != null){
-                    StateItem srcStateItem = new StateItem(state,curr.getProduction(item), curr.getPosition(item));
+                    StateItem srcStateItem =
+                            new StateItem(state,curr.getProduction(item), curr.getPosition(item),
+                                    lookaheads.getLookahead(state,item));
                     if(prodTable.get(srcStateItem) == null){
                         prodTable.put(srcStateItem,new BitSet());
                     }

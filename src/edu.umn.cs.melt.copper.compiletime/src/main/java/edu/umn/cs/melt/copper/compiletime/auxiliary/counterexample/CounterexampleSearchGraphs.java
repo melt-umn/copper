@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0DFA;
 import edu.umn.cs.melt.copper.compiletime.lrdfa.LR0ItemSet;
+import edu.umn.cs.melt.copper.compiletime.lrdfa.LRLookaheadSets;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
@@ -10,6 +11,8 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import java.util.*;
 
 //TODO comment this whole file thoroughly. like spend a few hours on it.
+//TODO review the structure of the additions (incl. what is private/protected/public)
+// All/Most of the logic here should probably be in a builder/checker
 
 /**
  * A digraph that is searched in the creation of non-unifying counterexamples to
@@ -17,7 +20,7 @@ import java.util.*;
  * as the number of vertices is not initially known.
  * Wrapper around {@link LookaheadSensitiveGraphVertex}
  */
-public class LookaheadSensitiveGraph {
+public class CounterexampleSearchGraphs {
     private LookaheadSensitiveGraphVertex startVertex;
 
     private int conflictState;
@@ -32,14 +35,16 @@ public class LookaheadSensitiveGraph {
     private PSSymbolTable symbolTable;
     private ContextSets contextSets;
     private LR0DFA dfa;
+    private LRLookaheadSets lookaheadSets;
 
     private TransitionFunctionTables transitionTables;
     private ProductionStepTables productionStepTables;
 
     //TODO the structure of where the counterExampleMessage begins and this ends is all sorts of wrong. Reassess once more code is written.
-    public LookaheadSensitiveGraph(LRParseTableConflict conflict,
-                                   ParserSpec spec, PSSymbolTable symbolTable,
-                                   ContextSets contextSets, LR0DFA dfa) {
+    public CounterexampleSearchGraphs(LRParseTableConflict conflict,
+                                      ParserSpec spec, PSSymbolTable symbolTable,
+                                      ContextSets contextSets, LRLookaheadSets lookaheadSets,
+                                      LR0DFA dfa) {
 
         conflictState = conflict.getState();
         this.conflictTerminal = conflict.getSymbol();
@@ -47,12 +52,16 @@ public class LookaheadSensitiveGraph {
         this.symbolTable = symbolTable;
         this.contextSets = contextSets;
         this.dfa = dfa;
+        this.lookaheadSets = lookaheadSets;
 
-        //shift/reduce
+        //If the conflict is shift/reduce, then conflictItem1 is the shift item.
         int conflictItem1Production = -1;
         int conflictItem1Position = -1;
+        BitSet conflictItem1Lookahead = null;
+
         int conflictItem2Production = -1;
         int conflictItem2Position = -1;
+        BitSet conflictItem2Lookahead = null;
 
         isShiftReduce = conflict.shift != -1;
         LR0ItemSet conflictStateItems = dfa.getItemSet(conflictState);
@@ -63,6 +72,7 @@ public class LookaheadSensitiveGraph {
             for(int i = 0; i<conflictStateItems.size(); i++){
                 if(conflictStateItems.getProduction(i) == conflictItem1Production){
                     conflictItem1Position = conflictStateItems.getPosition(i);
+                    conflictItem1Lookahead = lookaheadSets.getLookahead(conflictState,i);
                     break;
                 }
             }
@@ -84,6 +94,7 @@ public class LookaheadSensitiveGraph {
                 if(spec.pr.getRHSSym(prod,pos) == conflictTerminal){
                     conflictItem2Position = pos;
                     conflictItem2Production = prod;
+                    conflictItem2Lookahead = lookaheadSets.getLookahead(conflictState,i);
                     break;
                 }
             }
@@ -101,6 +112,7 @@ public class LookaheadSensitiveGraph {
             for(int i = 0; i<conflictStateItems.size(); i++){
                 if(conflictStateItems.getProduction(i) == conflictItem1Production){
                     conflictItem1Position = conflictStateItems.getPosition(i);
+                    conflictItem1Lookahead = lookaheadSets.getLookahead(conflictState,i);
                     break;
                 }
             }
@@ -115,6 +127,7 @@ public class LookaheadSensitiveGraph {
             for(int i = 0; i<conflictStateItems.size(); i++){
                 if(conflictStateItems.getProduction(i) == conflictItem2Production){
                     conflictItem2Position = conflictStateItems.getPosition(i);
+                    conflictItem2Lookahead = lookaheadSets.getLookahead(conflictState,i);
                     break;
                 }
             }
@@ -126,23 +139,154 @@ public class LookaheadSensitiveGraph {
 
         conflictItem1 = new StateItem(conflictState,
                 conflictItem1Production,
-                conflictItem1Position);
+                conflictItem1Position,
+                conflictItem1Lookahead);
 
         conflictItem2 = new StateItem(conflictState,
                 conflictItem2Production,
-                conflictItem2Position);
+                conflictItem2Position,
+                conflictItem2Lookahead);
 
         BitSet initLookaheadSet = new BitSet();
         initLookaheadSet.set(spec.getEOFTerminal());
         this.startVertex = new LookaheadSensitiveGraphVertex(1,spec.getStartProduction(),0,initLookaheadSet);
 
-        this.transitionTables = new TransitionFunctionTables(dfa,spec);
-        this.productionStepTables = new ProductionStepTables(dfa,spec);
+        this.transitionTables = new TransitionFunctionTables(dfa,spec,lookaheadSets);
+        this.productionStepTables = new ProductionStepTables(dfa,spec,lookaheadSets);
     }
 
-    public Counterexample getNonUnifyingCounterExample(){
+
+    //TODO
+    public Counterexample attemptUnifyingCounterexample(){
+        return null;
+    }
+
+
+    public Counterexample getNonUnifyingCounterexample(){
         ArrayList<StateItem> shortestContextSensitivePath = findShortestContextSensitivePath(conflictItem1);
         return counterexampleFromShortestPath(shortestContextSensitivePath);
+    }
+
+
+    //TODO figure out where to put this
+    /**
+     * Compute a set of StateItems that can make a transition on the given
+     * symbol to the given StateItem such that the resulting possible lookahead
+     * symbols are as given.
+     * @param si the stateItem to calculate transitions to
+     * @param sym The symbol to make a transition on.
+     * @param lookahead The expected possible lookahead symbols
+     * @param guide If not null, restricts the possible parser states to this
+     *          set; otherwise, explore all possible parser states that can
+     *          make the desired transition.
+     * @return A LinkedList of StateItems that result from making a reverse transition
+     *          from this StateItem on the given symbol and lookahead set.
+     */
+    //TODO
+    protected LinkedList<StateItem> reverseTransition(StateItem si, int sym, BitSet lookahead, BitSet guide){
+        LinkedList<StateItem> result = new LinkedList<>();
+        //TODO need to add null here?
+        LinkedList<StateItem> init = new LinkedList<>();
+        init.add(si);
+
+        if(si.getDotPosition() > 0){
+            Set<StateItem> prevs = transitionTables.revTrans.get(si);
+            if(prevs == null) {
+                return result;
+            }
+            for(StateItem prev : prevs){
+                if(guide != null && !guide.get(prev.getState())){
+                    continue;
+                }
+                if(lookahead != null && !lookahead.intersects(prev.getLookahead())){
+                    continue;
+                }
+                result.add(prev);
+            }
+            return result;
+        }
+        for(LookaheadSensitiveGraphVertex g : reverseProduction(si,si.getLookahead())){
+            result.add(g.stateItem);
+        }
+        return result;
+    }
+
+    protected LinkedList<LookaheadSensitiveGraphVertex> reverseProduction(StateItem si, BitSet lookahead){
+        LinkedList<LookaheadSensitiveGraphVertex> result = new LinkedList<>();
+        BitSet[] revProd = productionStepTables.revProdTable[si.getState()];
+        LR0ItemSet lr0Items = dfa.getItemSet(si.getState());
+
+        if(revProd == null){
+            return result;
+        }
+
+        int prod = si.getProduction();
+        BitSet prevs = revProd[spec.pr.getLHS(prod)];
+
+        if(prevs == null){
+            return result;
+        }
+
+        for(int i = prevs.nextSetBit(0); i>=0; i = prevs.nextSetBit(i+1)){
+            int prevProd = lr0Items.getProduction(i);
+            int prevDotPos = lr0Items.getPosition(i);
+            BitSet prevLookahead = lookaheadSets.getLookahead(si.getState(),i);
+            //there's a check in the reference implementation here to see if prevProd can come before prod
+            //but it only checks precedence, which doesn't seem relevant here.
+            StateItem prevSi = new StateItem(si.getState(),prevProd,prevDotPos,prevLookahead);
+            BitSet nextLookahead =  new BitSet();
+
+            int prevLen = spec.pr.getRHSLength(prevProd);
+
+            //reduce item
+            if(prevDotPos == prevLen){
+                if(!prevLookahead.intersects(lookahead)){
+                    continue;
+                }
+                nextLookahead.or(prevLookahead);
+                nextLookahead.and(lookahead);
+            }
+            //shift item
+            else {
+                //TODO
+                if(lookahead != null){
+                    //TODO comment this logic
+                    boolean applicable = false;
+                    boolean nullable = true;
+                    for (int pos = prevDotPos; !applicable && nullable && pos < prevLen; pos++) {
+                        int nextSym = spec.pr.getRHSSym(prevProd,pos);
+                        if(spec.terminals.get(nextSym)){
+                            applicable = terminalIntersects(nextSym,lookahead);
+                            nullable = false;
+                        } else if(spec.nonterminals.get(nextSym)){
+                            applicable = lookahead.intersects(contextSets.getFirst(nextSym));
+                            if(!applicable){
+                                nullable = contextSets.isNullable(nextSym);
+                            }
+                        }
+                    }
+                    if (!applicable && !nullable) {
+                        continue;
+                    }
+                }
+                nextLookahead = prevLookahead;
+            }
+            result.add(new LookaheadSensitiveGraphVertex(prevSi,nextLookahead));
+        }
+        return result;
+    }
+
+    //TODO comment
+    private boolean terminalIntersects(int term, BitSet lookahead) {
+        for(int i = lookahead.nextSetBit(0); i>=0; i = lookahead.nextSetBit(i+1)){
+            if(spec.terminals.get(i) && term == i){
+                return true;
+            }
+            if(spec.nonterminals.get(i) && contextSets.getFirst(i).get(term)){
+                return true;
+            }
+        }
+        return false;
     }
 
     //todo comment
@@ -164,7 +308,7 @@ public class LookaheadSensitiveGraph {
                 continue;
             }
             visited.add(last);
-            if(target.equals(last.stateItem) && last.lookaheadSet.get(conflictTerminal)){
+            if(target.equals(last.stateItem) && last.lookahead.get(conflictTerminal)){
                 //TODO print process info and such
                 //success, copy to ArrayList for efficient access
                 ArrayList<StateItem> shortestConflictPath = new ArrayList<>(path.size());
@@ -183,7 +327,7 @@ public class LookaheadSensitiveGraph {
                     if(!possibleStateItems.contains(tranDst)){
                         continue;
                     }
-                    LookaheadSensitiveGraphVertex next = new LookaheadSensitiveGraphVertex(tranDst,last.lookaheadSet);
+                    LookaheadSensitiveGraphVertex next = new LookaheadSensitiveGraphVertex(tranDst,last.lookahead);
                     LinkedList<LookaheadSensitiveGraphVertex> nextPath = new LinkedList<>(path);
                     nextPath.add(next);
                     queue.add(nextPath);
@@ -191,14 +335,15 @@ public class LookaheadSensitiveGraph {
             }
             if(productionStepTables.getProdSteps(last.stateItem) != null){
                 int len = spec.pr.getRHSLength(last.getProduction());
-                BitSet newLookahead = followL(last.getProduction(),last.getDotPosition(),last.lookaheadSet);
+                BitSet newLookahead = followL(last.getProduction(),last.getDotPosition(),last.lookahead);
                 BitSet productionSteps = productionStepTables.getProdSteps(last.stateItem);
 
                 //for each possible item reached via a production step
                 LR0ItemSet stateItems = dfa.getItemSet(last.getState());
                 for(int i = productionSteps.nextSetBit(0); i >= 0; i = productionSteps.nextSetBit(i+1)) {
                     //TODO refactor to use a memoized lookup table if this uses too much memory
-                    StateItem pStateItem = new StateItem(last.getState(),stateItems.getProduction(i),stateItems.getPosition(i));
+                    BitSet l = lookaheadSets.getLookahead(last.getState(),i);
+                    StateItem pStateItem = new StateItem(last.getState(),stateItems.getProduction(i),stateItems.getPosition(i),l);
                     //TODO fix possibleStateItems and re-add this check
                     if(!possibleStateItems.contains(pStateItem)){
                         continue;
@@ -216,8 +361,7 @@ public class LookaheadSensitiveGraph {
 
     //TODO comment
     private Set<StateItem> eligibleStateItems(StateItem target){
-        //TODO this is looping at some point
-        //It's between using a hashSet and creating a flat array of all possible stateItems with arbitary positions
+        //It's between using a hashSet and creating a flat array of all possible stateItems with arbitrary positions
         //and doing bitsets of indices into that
         //I might go to that point if performance becomes too big of an issue, but this should be fine.
         Set<StateItem> result = new HashSet<>();
@@ -239,7 +383,8 @@ public class LookaheadSensitiveGraph {
                 if (revProd != null){
                     for(int i = revProd.nextSetBit(0); i >= 0; i = revProd.nextSetBit(i+1)){
                         LR0ItemSet itemSet = dfa.getItemSet(s.getState());
-                        queue.add(new StateItem(s.getState(),itemSet.getProduction(i),itemSet.getPosition(i)));
+                        BitSet l = lookaheadSets.getLookahead(s.getState(),i);
+                        queue.add(new StateItem(s.getState(),itemSet.getProduction(i),itemSet.getPosition(i),l));
                     }
                 }
             }
@@ -289,7 +434,7 @@ public class LookaheadSensitiveGraph {
 
     private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath){
         //TODO modify to do unifying examples
-        StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition());
+        StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition(),conflictItem2.getLookahead());
         if(!isShiftReduce){
             ArrayList<StateItem> shortestPath2 = findShortestContextSensitivePath(si);
             Derivation deriv1 = nonUnifyingDerivFromPath(shortestPath);
@@ -355,11 +500,13 @@ public class LookaheadSensitiveGraph {
                     LR0ItemSet itemSet = dfa.getItemSet(head.getStateItem().getState());
                     //For each production step
                     for(int i = revProd.nextSetBit(0); i >= 0; i = revProd.nextSetBit(i+1)){
-                        StateItem newState = new StateItem(head.getStateItem().getState(),itemSet.getProduction(i),itemSet.getPosition(i));
+                        int newState = head.getStateItem().getState();
+                        BitSet l = lookaheadSets.getLookahead(newState,i);
+                        StateItem newStateItem = new StateItem(newState,itemSet.getProduction(i),itemSet.getPosition(i),l);
                         LinkedList<ShiftConflictSearchNode> newPath = new LinkedList<>();
                         //add a new path with that production step item as the head to the queue
                         newPath.addAll(path);
-                        newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex(),true,newState));
+                        newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex(),true,newStateItem));
                         queue.add(newPath);
                     }
                 }
@@ -512,7 +659,8 @@ public class LookaheadSensitiveGraph {
                 BitSet prodSteps = productionStepTables.getProdSteps(lastSI);
                 for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1)){
                     LR0ItemSet itemSet = dfa.getItemSet(lastSI.getState());
-                    StateItem nextSI = new StateItem(lastSI.getState(),itemSet.getProduction(i),itemSet.getPosition(i));
+                    BitSet lookahead = lookaheadSets.getLookahead(lastSI.getState(),i);
+                    StateItem nextSI = new StateItem(lastSI.getState(),itemSet.getProduction(i),itemSet.getPosition(i),lookahead);
                     if(states.contains(nextSI)){
                         continue;
                     }
@@ -538,6 +686,5 @@ public class LookaheadSensitiveGraph {
     private String getSymbolString(int sym){
         return symbolTable.get(sym).getDisplayName();
     }
-
 
 }

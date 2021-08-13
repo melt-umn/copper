@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 public class ColouredStringBuilder {
     private static final String ANSI_RESET = "\u001B[0m";
+    //yellow, green, blue, ...
     private static final String[] ansiColours = {"\u001B[36m","\u001B[33m","\u001B[32m","\u001B[34m","\u001B[31m","\u001B[35m"};
     private StringBuilder sb;
     private int colourEscapeCount;
