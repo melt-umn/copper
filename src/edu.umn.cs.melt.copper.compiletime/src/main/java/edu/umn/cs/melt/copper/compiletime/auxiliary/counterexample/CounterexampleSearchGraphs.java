@@ -7,6 +7,7 @@ import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
+import sun.awt.image.ImageWatched;
 
 import java.util.*;
 
@@ -21,6 +22,12 @@ import java.util.*;
  * Wrapper around {@link LookaheadSensitiveGraphVertex}
  */
 public class CounterexampleSearchGraphs {
+
+    protected static final int PRODUCTION_COST = 50;
+    protected static final int REDUCE_COST = 1;
+    protected static final int SHIFT_COST = 1;
+    protected static final int UNSHIFT_COST = 1;
+
     private LookaheadSensitiveGraphVertex startVertex;
 
     private int conflictState;
@@ -174,7 +181,6 @@ public class CounterexampleSearchGraphs {
      * symbol to the given StateItem such that the resulting possible lookahead
      * symbols are as given.
      * @param si the stateItem to calculate transitions to
-     * @param sym The symbol to make a transition on.
      * @param lookahead The expected possible lookahead symbols
      * @param guide If not null, restricts the possible parser states to this
      *          set; otherwise, explore all possible parser states that can
@@ -183,7 +189,7 @@ public class CounterexampleSearchGraphs {
      *          from this StateItem on the given symbol and lookahead set.
      */
     //TODO
-    protected LinkedList<StateItem> reverseTransition(StateItem si, int sym, BitSet lookahead, BitSet guide){
+    protected LinkedList<StateItem> reverseTransition(StateItem si, BitSet lookahead, BitSet guide){
         LinkedList<StateItem> result = new LinkedList<>();
         //TODO need to add null here?
         LinkedList<StateItem> init = new LinkedList<>();
@@ -685,6 +691,275 @@ public class CounterexampleSearchGraphs {
     }
     private String getSymbolString(int sym){
         return symbolTable.get(sym).getDisplayName();
+    }
+
+    //TODO where to put this...
+    protected class UnifiedSearchState {
+        //a list of derivations that simulates the  parse stack,
+        //and a list of state items representing the state transitions the parser takes (with explicit production steps)
+        //one of each for each part of the product parser.
+        protected LinkedList<Derivation> derivs1, derivs2;
+        protected LinkedList<StateItem> states1, states2;
+
+        /**
+         * number of states and production steps the parser has had to encounter.
+         */
+        protected int complexity;
+        /**
+         * The number of production steps made since the reduce conflict item.
+         * If this is -1, the reduce conflict item has been completed.
+         */
+        protected int reduceDepth;
+        /**
+         * The number of production steps made since the shift conflict item.
+         * If this is -1, the shift conflict item has been completed and
+         * reduced.
+         */
+        protected int shiftDepth;
+
+        protected UnifiedSearchState(StateItem si1, StateItem si2) {
+            derivs1 = new LinkedList<>();
+            derivs2 = new LinkedList<>();
+            states1 = new LinkedList<>();
+            states2 = new LinkedList<>();
+            states1.add(si1);
+            states2.add(si2);
+            complexity = 0;
+            reduceDepth = 0;
+            shiftDepth = 0;
+        }
+
+        private UnifiedSearchState(LinkedList<Derivation> derivs1, LinkedList<Derivation> derivs2,
+                                   LinkedList<StateItem> states1, LinkedList<StateItem> states2,
+                                   int complexity, int reduceDepth, int shiftDepth) {
+            this.states1 = new LinkedList<>(states1);
+            this.derivs1 = new LinkedList<>(derivs1);
+
+            this.states2 = new LinkedList<>(states2);
+            this.derivs2 = new LinkedList<>(derivs2);
+
+            this.complexity = complexity;
+            this.reduceDepth = reduceDepth;
+            this.shiftDepth = shiftDepth;
+        }
+        //TODO is this necessary?
+
+        /**
+         * Duplicate a search state.
+         */
+        protected UnifiedSearchState copy() {
+            return new UnifiedSearchState(derivs1,
+                    derivs2,
+                    states1,
+                    states2,
+                    complexity,
+                    reduceDepth,
+                    shiftDepth);
+        }
+
+        /**
+         * prepend a symbol to the current configuration if possible
+         *
+         * @param sym   the symbol to add.
+         * @param guide If not null, restricts the possible parser states to this set;
+         *              otherwise, explore all possible parser states that can make the desired transition.
+         * @return A List of search states that result from prepending successfully (can be empty).
+         */
+        protected LinkedList<UnifiedSearchState> prepend(int sym, BitSet guide) {
+            StateItem si1src = states1.getFirst();
+            StateItem si2src = states2.getFirst();
+
+            BitSet si1Lookahead = si1src.getLookahead();
+            BitSet si2Lookahead = si2src.getLookahead();
+
+            LinkedList<UnifiedSearchState> result = new LinkedList<>();
+
+            //
+            if (transitionTables.prevSymbol[si1src.getState()] != sym || transitionTables.prevSymbol[si2src.getState()] != sym) {
+                return result;
+            }
+
+            LinkedList<StateItem> prev1ext = reverseTransition(si1src, si1Lookahead, guide);
+            LinkedList<StateItem> prev2ext = reverseTransition(si2src, si2Lookahead, guide);
+
+            for (StateItem prevSI1 : prev1ext) {
+                for (StateItem prevSI2 : prev1ext) {
+                    boolean prev1IsSrc = prevSI1 == si1src;
+                    boolean prev2IsSrc = prevSI2 == si2src;
+                    if (prev1IsSrc && prev2IsSrc) {
+                        continue;
+                    }
+                    if (prevSI1.getState() == prevSI2.getState()) {
+                        continue;
+                    }
+                    UnifiedSearchState copy = this.copy();
+
+                    if (prev1IsSrc) {
+                        copy.states1.addFirst(prevSI1);
+                    }
+                    if (prev2IsSrc) {
+                        copy.states2.addFirst(prevSI2);
+                    }
+                    //TODO the placement of the ifs seems somewhat suspect
+                    // just seems like a lot is done computed multiple times
+                    if (!prev1IsSrc
+                            && copy.states1.get(0).getDotPosition() + 1 == copy.states1.get(1).getDotPosition()) {
+                        if (!prev2IsSrc
+                                && copy.states2.get(0).getDotPosition() + 1 == copy.states2.get(1).getDotPosition()) {
+                            Derivation deriv = new Derivation(getSymbolString(sym));
+                            copy.derivs1.addFirst(deriv);
+                            copy.derivs2.addFirst(deriv);
+
+                        } else {
+                            continue;
+                        }
+                    } else if (!prev2IsSrc
+                            && copy.states2.get(0).getDotPosition() + 1 == copy.states2.get(1).getDotPosition()) {
+                        continue;
+                    }
+                    int prependSize = (prev1IsSrc ? 0 : 1) + (prev2IsSrc ? 0 : 1);
+                    //the number of production steps taken from prevNSI to siNsrc
+                    int productionSteps =
+                            (!prev1IsSrc && prevSI1.getState() == si1src.getState() ? 1 : 0) +
+                                    (!prev2IsSrc && prevSI2.getState() == si2src.getState() ? 1 : 0);
+                    copy.complexity +=
+                            UNSHIFT_COST * (prependSize - productionSteps) + PRODUCTION_COST * productionSteps;
+                    result.add(copy);
+                }
+            }
+            return result;
+        }
+
+        protected LinkedList<UnifiedSearchState> reduce1(Integer sym) {
+            //If not a reduce item
+            StateItem lastItem = states1.getLast();
+            if (lastItem.getDotPosition() == spec.pr.getRHSLength(lastItem.getProduction())) {
+                throw new Error("cannot reduce non-reduce item in search state" + this);
+            }
+
+            LinkedList<UnifiedSearchState> result = new LinkedList<>();
+            BitSet symbolSet;
+
+            if (sym != null) {
+                if (!lastItem.getLookahead().get(sym)) {
+                    return result;
+                }
+                symbolSet = new BitSet();
+                symbolSet.set(sym);
+            } else {
+                symbolSet = lastItem.getLookahead();
+            }
+            int prod = lastItem.getProduction();
+            int lhs = spec.pr.getLHS(prod);
+            int len = spec.pr.getRHSLength(prod);
+//            int derivSize = derivs1.size();
+            Derivation deriv = new Derivation(getSymbolString(lhs),
+                    new LinkedList<Derivation>(derivs1.subList(derivs1.size() - len, derivs1.size())));
+
+            if (reduceDepth == 0) {
+                // We are reducing the reduce conflict item.
+                // Add a dot for visual inspection of the resulting counterexample.
+                derivs1.add(lastItem.getDotPosition(), Derivation.dot);
+            }
+            derivs1 = new LinkedList<>(derivs1.subList(0, derivs1.size() - len));
+            derivs1.add(deriv);
+            if (states1.size() == len + 1) {
+                LinkedList<LookaheadSensitiveGraphVertex> prev = reverseProduction(states1.getFirst(), symbolSet);
+                for (LookaheadSensitiveGraphVertex prevV : prev) {
+                    UnifiedSearchState copy = copy();
+                    copy.states1 = new LinkedList<>(states1.subList(0, states1.size() - len - 1));
+                    copy.states1.addFirst(prevV.stateItem);
+                    copy.states1.add(transitionTables.trans.get(copy.states1.getLast())[lhs]);
+                    int statesSize = copy.states1.size();
+                    int productionSteps = productionSteps(copy.states1, states1.get(0));
+                    copy.complexity +=
+                            UNSHIFT_COST * (statesSize - productionSteps) + PRODUCTION_COST * productionSteps;
+                    if (copy.reduceDepth == 0) {
+                        copy.reduceDepth--;
+                    }
+                    result.add(copy);
+                }
+            } else {
+                UnifiedSearchState copy = copy();
+                copy.states1 = new LinkedList<>(states1.subList(0, states1.size() - len - 1));
+                copy.states1.add(transitionTables.trans.get(copy.states1.getLast())[lhs]);
+                copy.complexity += REDUCE_COST;
+                if (copy.reduceDepth == 0) {
+                    copy.reduceDepth--;
+                }
+                result.add(copy);
+            }
+            // transition on nullable symbols
+            LinkedList<UnifiedSearchState> finalizedResult = new LinkedList<>();
+            for(UnifiedSearchState ss : result){
+                StateItem next = ss.states1.getLast();
+                List<Derivation> derivs1 = new LinkedList<>();
+                List<StateItem> states1 = new LinkedList<>();
+                //TODO
+                nullableClosure(next.getProduction(),
+                        next.getDotPosition(),
+                        next,
+                        states1,
+                        derivs1);
+                finalizedResult.add(ss);
+                for (int i = 1, size1 = derivs1.size(); i <= size1; i++) {
+                    List<Derivation> subderivs1 =
+                            new ArrayList<>(derivs1.subList(0, i));
+                    List<StateItem> substates1 =
+                            new ArrayList<>(states1.subList(0, i));
+                    UnifiedSearchState copy = ss.copy();
+                    copy.derivs1.addAll(subderivs1);
+                    copy.states1.addAll(substates1);
+                    finalizedResult.add(copy);
+                }
+            }
+            return finalizedResult;
+        }
+
+        @Override
+        public String toString() {
+            return "UnifiedSearchState{" +
+                    "derivs1=" + derivs1 +
+                    ", states1=" + states1 +
+                    ", derivs2=" + derivs2 +
+                    ", states2=" + states2 +
+                    ", complexity=" + complexity +
+                    ", reduceDepth=" + reduceDepth +
+                    ", shiftDepth=" + shiftDepth +
+                    '}';
+        }
+    }
+
+    private void nullableClosure(int production, int dotPosition, StateItem lastSI,
+                                 List<StateItem> states, List<Derivation> derivs){
+        int len = spec.pr.getRHSLength(production);
+        for(int curPos = dotPosition; curPos < len; curPos++){
+            int sp = spec.pr.getRHSSym(production,curPos);
+            if(!spec.nonterminals.get(sp)){
+                break;
+            }
+            if(!contextSets.isNullable(sp)){
+                break;
+            }
+            lastSI = transitionTables.trans.get(lastSI)[sp];
+            derivs.add(new Derivation(getSymbolString(sp), new LinkedList<Derivation>()));
+            states.add(lastSI);
+        }
+    }
+
+    //TODO no point in having last? It seems that you could just go forward.
+    protected static int productionSteps(LinkedList<StateItem> stateItems, StateItem last){
+        int count = 0;
+        int lastState = last.getState();
+        Iterator<StateItem> itr =  stateItems.descendingIterator();
+        while(itr.hasNext()){
+            int state = itr.next().getState();
+            if(state == lastState){
+                count++;
+            }
+            lastState = state;
+        }
+        return count;
     }
 
 }

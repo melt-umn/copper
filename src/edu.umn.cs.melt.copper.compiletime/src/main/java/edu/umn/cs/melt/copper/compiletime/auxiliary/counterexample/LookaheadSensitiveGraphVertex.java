@@ -8,6 +8,7 @@ import java.util.BitSet;
  * an int representing the position of an LR0 item in the itemSet for that state,
  * and the lookahead set.
  */
+//TODO could this just be a stateItem?
 class LookaheadSensitiveGraphVertex {
     protected StateItem stateItem;
     protected BitSet lookahead;

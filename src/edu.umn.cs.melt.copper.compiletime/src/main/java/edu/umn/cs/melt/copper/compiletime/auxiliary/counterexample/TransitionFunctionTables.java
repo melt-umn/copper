@@ -27,8 +27,18 @@ public class TransitionFunctionTables {
      */
     protected Hashtable<StateItem, Set<StateItem>> revTrans;
 
+    /**
+     * Direct mapping from LR state to symbol.
+     * Each state has exactly one symbol that it can be reached by
+     * (i.e, if a state can be reached on symbol `2`, it can _only_ be reached on symbol 2).
+     * This array is that mapping.
+     * This relation is not bijective, so the reverse is not necessarily true
+     * (multiple states can be reached on the same symbol (depending on the current state))
+     */
+    protected int[] prevSymbol;
 
     public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec, LRLookaheadSets lookaheads) {
+        prevSymbol = new int[dfa.size()];
         trans = new Hashtable<>();
         revTrans = new Hashtable<>();
 
@@ -50,6 +60,9 @@ public class TransitionFunctionTables {
                 int symbolAfterDot = spec.pr.getRHSSym(srcProduction, srcDotPosition);
 
                 int dstState = dfa.getTransition(i, symbolAfterDot);
+
+                //could check for null, but I think that would be equally efficient.
+                prevSymbol[dstState] = symbolAfterDot;
 
                 LR0ItemSet dstItemSet = dfa.getItemSet(dstState);
 
