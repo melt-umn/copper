@@ -859,7 +859,8 @@ public class CounterexampleSearchGraphs {
             if (reduceDepth == 0) {
                 // We are reducing the reduce conflict item.
                 // Add a dot for visual inspection of the resulting counterexample.
-                derivs1.add(lastItem.getDotPosition(), Derivation.dot);
+                // Add a dot for visual inspection of the resulting counterexample.
+                derivs1.add(conflictItem1.getDotPosition(), Derivation.dot);
             }
             derivs1 = new LinkedList<>(derivs1.subList(0, derivs1.size() - len));
             derivs1.add(deriv);
@@ -874,7 +875,7 @@ public class CounterexampleSearchGraphs {
                     int productionSteps = productionSteps(copy.states1, states1.get(0));
                     copy.complexity +=
                             UNSHIFT_COST * (statesSize - productionSteps) + PRODUCTION_COST * productionSteps;
-                    if (copy.reduceDepth == 0) {
+                    if (copy.reduceDepth >= 0) {
                         copy.reduceDepth--;
                     }
                     result.add(copy);
@@ -884,7 +885,7 @@ public class CounterexampleSearchGraphs {
                 copy.states1 = new LinkedList<>(states1.subList(0, states1.size() - len - 1));
                 copy.states1.add(transitionTables.trans.get(copy.states1.getLast())[lhs]);
                 copy.complexity += REDUCE_COST;
-                if (copy.reduceDepth == 0) {
+                if (copy.reduceDepth >= 0) {
                     copy.reduceDepth--;
                 }
                 result.add(copy);
@@ -910,6 +911,94 @@ public class CounterexampleSearchGraphs {
                     UnifiedSearchState copy = ss.copy();
                     copy.derivs1.addAll(subderivs1);
                     copy.states1.addAll(substates1);
+                    finalizedResult.add(copy);
+                }
+            }
+            return finalizedResult;
+        }
+        //this is a really stupid hack that i'm only using because this is what they do in the reference impl.
+        //TODO make this and reduce1 one function with an additional parameter
+        protected LinkedList<UnifiedSearchState> reduce2(Integer sym) {
+            //If not a reduce item
+            StateItem lastItem = states2.getLast();
+            if (lastItem.getDotPosition() == spec.pr.getRHSLength(lastItem.getProduction())) {
+                throw new Error("cannot reduce non-reduce item in search state" + this);
+            }
+
+            LinkedList<UnifiedSearchState> result = new LinkedList<>();
+            BitSet symbolSet;
+
+            if (sym != null) {
+                if (!lastItem.getLookahead().get(sym)) {
+                    return result;
+                }
+                symbolSet = new BitSet();
+                symbolSet.set(sym);
+            } else {
+                symbolSet = lastItem.getLookahead();
+            }
+            int prod = lastItem.getProduction();
+            int lhs = spec.pr.getLHS(prod);
+            int len = spec.pr.getRHSLength(prod);
+//            int derivSize = derivs2.size();
+            Derivation deriv = new Derivation(getSymbolString(lhs),
+                    new LinkedList<Derivation>(derivs2.subList(derivs2.size() - len, derivs2.size())));
+
+            if (reduceDepth == 0) {
+                // We are reducing either the second reduce item, or the shift reduce item.
+                // (depending on if this is a reduce/reduce or a shift/reduce conflict)
+                // Add a dot for visual inspection of the resulting counterexample.
+                derivs2.add(conflictItem2.getDotPosition(), Derivation.dot);
+            }
+            derivs2 = new LinkedList<>(derivs2.subList(0, derivs2.size() - len));
+            derivs2.add(deriv);
+            if (states2.size() == len + 1) {
+                LinkedList<LookaheadSensitiveGraphVertex> prev = reverseProduction(states2.getFirst(), symbolSet);
+                for (LookaheadSensitiveGraphVertex prevV : prev) {
+                    UnifiedSearchState copy = copy();
+                    copy.states2 = new LinkedList<>(states2.subList(0, states2.size() - len - 1));
+                    copy.states2.addFirst(prevV.stateItem);
+                    copy.states2.add(transitionTables.trans.get(copy.states2.getLast())[lhs]);
+                    int statesSize = copy.states2.size();
+                    int productionSteps = productionSteps(copy.states2, states2.get(0));
+                    copy.complexity +=
+                            SHIFT_COST * (statesSize - productionSteps) + PRODUCTION_COST * productionSteps;
+                    if (copy.shiftDepth >= 0) {
+                        copy.shiftDepth--;
+                    }
+                    result.add(copy);
+                }
+            } else {
+                UnifiedSearchState copy = copy();
+                copy.states2 = new LinkedList<>(states2.subList(0, states2.size() - len - 1));
+                copy.states2.add(transitionTables.trans.get(copy.states2.getLast())[lhs]);
+                copy.complexity += REDUCE_COST;
+                if (copy.shiftDepth >= 0) {
+                    copy.shiftDepth--;
+                }
+                result.add(copy);
+            }
+            // transition on nullable symbols
+            LinkedList<UnifiedSearchState> finalizedResult = new LinkedList<>();
+            for(UnifiedSearchState ss : result){
+                StateItem next = ss.states2.getLast();
+                List<Derivation> derivs2 = new LinkedList<>();
+                List<StateItem> states2 = new LinkedList<>();
+                //TODO
+                nullableClosure(next.getProduction(),
+                        next.getDotPosition(),
+                        next,
+                        states2,
+                        derivs2);
+                finalizedResult.add(ss);
+                for (int i = 1, size2 = derivs2.size(); i <= size2; i++) {
+                    List<Derivation> subderivs2 =
+                            new ArrayList<>(derivs2.subList(0, i));
+                    List<StateItem> substates2 =
+                            new ArrayList<>(states2.subList(0, i));
+                    UnifiedSearchState copy = ss.copy();
+                    copy.derivs2.addAll(subderivs2);
+                    copy.states2.addAll(substates2);
                     finalizedResult.add(copy);
                 }
             }
