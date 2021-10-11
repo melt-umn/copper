@@ -3,7 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.spec.numeric;
 import java.util.BitSet;
 import java.util.Collection;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.SymbolTable;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.DisambiguationFunction;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.Grammar;

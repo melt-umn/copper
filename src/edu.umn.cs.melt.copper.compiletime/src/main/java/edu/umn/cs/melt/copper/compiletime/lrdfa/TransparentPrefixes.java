@@ -3,7 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.lrdfa;
 import java.io.Serializable;
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.SymbolTable;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTable;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.CopperASTBean;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;

@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import java.util.Queue;
 import java.util.Stack;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.SymbolTable;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.runtime.auxiliary.internal.PrettyPrinter;
 
 /**

@@ -18,6 +18,7 @@ public class StateItem {
         this.lookahead = lookahead;
     }
 
+
     //TODO fix this, not working somehow.
     @Override
     public boolean equals(Object o) {

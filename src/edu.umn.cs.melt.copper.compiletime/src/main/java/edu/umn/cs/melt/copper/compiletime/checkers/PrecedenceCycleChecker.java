@@ -2,7 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.checkers;
 
 import java.util.BitSet;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.SymbolTable;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.SymbolTable;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.CyclicPrecedenceRelationMessage;

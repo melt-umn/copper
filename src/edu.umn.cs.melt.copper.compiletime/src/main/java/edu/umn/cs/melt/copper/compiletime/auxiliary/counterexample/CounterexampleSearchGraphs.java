@@ -7,7 +7,6 @@ import edu.umn.cs.melt.copper.compiletime.parsetable.LRParseTableConflict;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
-import sun.awt.image.ImageWatched;
 
 import java.util.*;
 
@@ -46,6 +45,10 @@ public class CounterexampleSearchGraphs {
 
     private TransitionFunctionTables transitionTables;
     private ProductionStepTables productionStepTables;
+
+    ArrayList<StateItem> shortestContextSensitivePath;
+    private BitSet shortestContextSensitiveSet;
+    private BitSet reduceProductionSet;
 
     //TODO the structure of where the counterExampleMessage begins and this ends is all sorts of wrong. Reassess once more code is written.
     public CounterexampleSearchGraphs(LRParseTableConflict conflict,
@@ -160,17 +163,32 @@ public class CounterexampleSearchGraphs {
 
         this.transitionTables = new TransitionFunctionTables(dfa,spec,lookaheadSets);
         this.productionStepTables = new ProductionStepTables(dfa,spec,lookaheadSets);
+        shortestContextSensitivePath = findShortestContextSensitivePath(conflictItem1);
+
+        boolean reduceProdReached = false;
+        for (StateItem si : shortestContextSensitivePath) {
+            shortestContextSensitiveSet.set(si.getState());
+            reduceProdReached =
+                    reduceProdReached || si.getProduction() == conflictItem1Production;
+            if (reduceProdReached) {
+                reduceProductionSet.set(si.getState());
+            }
+        }
     }
 
 
     //TODO
-    public Counterexample attemptUnifyingCounterexample(){
-        return null;
+    public Counterexample getExample(){
+        Counterexample unified = getUnifiedExample();
+        if (unified == null){
+            return getNonUnifyingCounterexample();
+        } else {
+            return unified;
+        }
     }
 
 
     public Counterexample getNonUnifyingCounterexample(){
-        ArrayList<StateItem> shortestContextSensitivePath = findShortestContextSensitivePath(conflictItem1);
         return counterexampleFromShortestPath(shortestContextSensitivePath);
     }
 
@@ -283,6 +301,7 @@ public class CounterexampleSearchGraphs {
     }
 
     //TODO comment
+    //TODO is .get used where this should be in places?
     private boolean terminalIntersects(int term, BitSet lookahead) {
         for(int i = lookahead.nextSetBit(0); i>=0; i = lookahead.nextSetBit(i+1)){
             if(spec.terminals.get(i) && term == i){
@@ -293,6 +312,252 @@ public class CounterexampleSearchGraphs {
             }
         }
         return false;
+    }
+
+    public Counterexample getUnifiedExample(){
+        UnifiedSearchState initial = new UnifiedSearchState(conflictItem1,conflictItem2);
+
+        // The search uses a priority queue on the complexity of search states.
+        PriorityQueue<UnifiedSearchState> pq = new PriorityQueue<>();
+        HashMap<LinkedList<StateItem>, HashSet<LinkedList<StateItem>>> visited = new HashMap<>();
+
+        add(pq,visited,initial);
+        //timer
+        long start = System.nanoTime();
+        //TODO i don't know what this is for
+        UnifiedSearchState stage3result = null;
+        while(!pq.isEmpty()){
+            UnifiedSearchState ss = pq.remove();
+            StateItem si1src = ss.states1.get(0);
+            StateItem si2src = ss.states2.get(0);
+            visited(visited, ss);
+            if (ss.reduceDepth < 0 && ss.shiftDepth < 0) {
+                // We have completed the reduce and shift conflict items.
+                // Stage 3
+                if(spec.pr.getLHS(si1src.getProduction()) == spec.pr.getLHS(si2src.getProduction())
+                        && hasCommonPrefex(si1src,si2src)){
+                    //both paths begin with the same prefix
+                    if (ss.derivs1.size() == 1 && ss.derivs2.size() == 1
+                            && ss.derivs1.getFirst().symbol == ss.derivs2.getFirst().symbol) {
+                        // each path is only one (identical) symbol.
+                        // This by itself is a counterexample
+                        return new Counterexample(ss.derivs1.getFirst(), ss.derivs2.getFirst(),true);
+                    }
+                    //we've found the unifying non-terminal which we can use to construct the full example
+                    //we can use this to construct a compact non-unifying counter-example
+                    if (stage3result == null) {
+                        stage3result = ss;
+                    }
+                }
+            }
+            //TODO check the timer here (and print a message saying that it's still working if need be)
+
+            //Compute the successor configurations
+            StateItem si1 = ss.states1.getLast();
+            StateItem si2 = ss.states2.getLast();
+
+            boolean si1reduce = spec.pr.getRHSLength(si1.getProduction()) == si1.getDotPosition();
+            boolean si2reduce = spec.pr.getRHSLength(si2.getProduction()) == si2.getDotPosition();
+
+            int si1sym = spec.pr.getRHSSym(si1.getProduction(), si1.getDotPosition()+1);
+            int si2sym = spec.pr.getRHSSym(si2.getProduction(), si2.getDotPosition()+1);
+
+            if(!si1reduce && !si2reduce){
+                //neither path ends in a reduce item, so it is possible to search forwards as normal
+                // Two actions are possible:
+                // - Make a transition on the next symbol of the items, if they are the same.
+                // - Take a production step, avoiding duplicates as necessary.
+
+                if(si1sym == si2sym){
+                    StateItem nextSI1 = transitionTables.getTransition(si1,si1sym);
+                    StateItem nextSI2 = transitionTables.getTransition(si2,si2sym);
+                    LinkedList<Derivation> derivs1 = new LinkedList<>();
+                    LinkedList<Derivation> derivs2 = new LinkedList<>();
+                    LinkedList<StateItem> states1 = new LinkedList<>();
+                    LinkedList<StateItem> states2 = new LinkedList<>();
+
+                    derivs1.add(new Derivation(getSymbolString(si1sym)));
+                    states1.add(nextSI1);
+                    derivs2.add(new Derivation(getSymbolString(si2sym)));
+                    states2.add(nextSI2);
+
+                    //TODO nullable closure calls here
+
+                    //FIXME(?) this was copied in more or less directly from the reference code.
+                    // should work just fine, but noting in case anything goes terribly wrong
+                    for (int i = 1, size1 = derivs1.size(); i <= size1; i++) {
+                        List<Derivation> subderivs1 =
+                                new ArrayList<>(derivs1.subList(0, i));
+                        List<StateItem> substates1 =
+                                new ArrayList<>(states1.subList(0, i));
+                        for (int j = 1, size2 =
+                             derivs2.size(); j <= size2; j++) {
+                            List<Derivation> subderivs2 =
+                                    new ArrayList<>(derivs2.subList(0, j));
+                            List<StateItem> substates2 =
+                                    new ArrayList<>(states2.subList(0, j));
+                            UnifiedSearchState copy = ss.copy();
+                            copy.derivs1.addAll(subderivs1);
+                            copy.states1.addAll(substates1);
+                            copy.derivs2.addAll(subderivs2);
+                            copy.states2.addAll(substates2);
+                            copy.complexity += 2 * SHIFT_COST;
+                            add(pq, visited, copy);
+                        }
+                    }
+
+                }
+                //take a production step if possible
+                if(spec.nonterminals.get(si1sym) && productionStepTables.prodTable.containsKey(si1)){
+                    BitSet prodSteps = productionStepTables.prodTable.get(si1);
+
+                    for(int i = prodSteps.nextSetBit(0);
+                        prodSteps.nextSetBit(i) >= 0; i = prodSteps.nextSetBit(i+1) ){
+                        if(spec.pr.getRHSLength(si1.getProduction()) != si1.getDotPosition() ||
+                                !compatible(spec.pr.getRHSSym(si1.getProduction(),si1.getDotPosition()),si2sym)){
+                            continue;
+                        }
+                        //TODO better names
+                        LR0ItemSet itemSet = dfa.getItemSet(si1.getState());
+                        if(!productionAllowed(si1.getProduction(),itemSet.getProduction(i))){
+                            continue;
+                        }
+                        //TODO make less bad
+                        StateItem next = new StateItem(si1.getState(),itemSet.getProduction(i),
+                                itemSet.getPosition(i),lookaheadSets.getLookahead(si1.getState(),i));
+                        LinkedList<Derivation> derivs1 = new LinkedList<>();
+                        LinkedList<StateItem> states1 = new LinkedList<>();
+                        states1.add(next);
+                        //TODO does this work like in the reference code?
+                        nullableClosure(itemSet.getProduction(i), 0, next, states1, derivs1);
+                        for (int j = 0, size1 =
+                             derivs1.size(); j <= size1; j++) {
+                            LinkedList<Derivation> subderivs1 =
+                                    new LinkedList<>(derivs1.subList(0, j));
+                            List<StateItem> substates1 =
+                                    new LinkedList<>(states1.subList(0, j + 1));
+                            UnifiedSearchState copy = ss.copy();
+                            copy.derivs1.addAll(subderivs1);
+                            copy.states1.addAll(substates1);
+                            copy.complexity += PRODUCTION_COST;
+                            add(pq, visited, copy);
+                        }
+
+                    }
+                }
+                //TODO this seems bad... Is there a way to avoid this code duplication?
+                if(spec.nonterminals.get(si2sym) && productionStepTables.prodTable.containsKey(si2)){
+                    BitSet prodSteps = productionStepTables.prodTable.get(si2);
+
+                    for(int i = prodSteps.nextSetBit(0);
+                        prodSteps.nextSetBit(i) >= 0; i = prodSteps.nextSetBit(i+1) ){
+                        if(spec.pr.getRHSLength(si2.getProduction()) != si2.getDotPosition() ||
+                                !compatible(spec.pr.getRHSSym(si2.getProduction(),si2.getDotPosition()),si1sym)){
+                            continue;
+                        }
+                        //TODO better names
+                        LR0ItemSet itemSet = dfa.getItemSet(si2.getState());
+                        if(!productionAllowed(si2.getProduction(),itemSet.getProduction(i))){
+                            continue;
+                        }
+                        //TODO make less bad
+                        StateItem next = new StateItem(si2.getState(),itemSet.getProduction(i),
+                                itemSet.getPosition(i),lookaheadSets.getLookahead(si2.getState(),i));
+                        LinkedList<Derivation> derivs2 = new LinkedList<>();
+                        LinkedList<StateItem> states2 = new LinkedList<>();
+                        states2.add(next);
+                        //TODO does this work like in the reference code?
+                        nullableClosure(itemSet.getProduction(i), 0, next, states2, derivs2);
+                        for (int j = 0, size1 =
+                             derivs2.size(); j <= size1; j++) {
+                            LinkedList<Derivation> subderivs2 =
+                                    new LinkedList<>(derivs2.subList(0, j));
+                            List<StateItem> substates2 =
+                                    new LinkedList<>(states2.subList(0, j + 1));
+                            UnifiedSearchState copy = ss.copy();
+                            copy.derivs1.addAll(subderivs2);
+                            copy.states1.addAll(substates2);
+                            copy.complexity += PRODUCTION_COST;
+                            add(pq, visited, copy);
+                        }
+                    }
+                }
+            //one path requires a reduction
+            } else {
+                int len1 = spec.pr.getRHSLength(si1.getProduction());
+                int len2 = spec.pr.getRHSLength(si2.getProduction());
+                boolean ready1 = si1reduce && ss.states1.size() > len1;
+                boolean ready2 = si2reduce && ss.states2.size() > len2;
+                if(ready1) {
+                    LinkedList<UnifiedSearchState> reduced1 = ss.reduce1(si2sym);
+                    if (ready2) {
+                        reduced1.add(ss);
+                        for (UnifiedSearchState red1 : reduced1) {
+                            for (UnifiedSearchState candidate : red1.reduce2(si1sym))
+                                add(pq, visited, candidate);
+                            if (si1reduce && red1 != ss) // avoid duplicates
+                                add(pq, visited, red1);
+                        }
+                    } else {
+                        for (UnifiedSearchState canadite : reduced1) {
+                            add(pq, visited, canadite);
+                        }
+                    }
+                } else if (ready2){
+                    LinkedList<UnifiedSearchState> reduced2 = ss.reduce2(si1sym);
+                    for (UnifiedSearchState candidate : reduced2){
+                        add(pq, visited, candidate);
+                    }
+                }
+                // Otherwise, prepend to both paths.
+                // This prepares them both for a reduction
+                else {
+                    int sym;
+                    if (si1reduce){
+                        sym = spec.pr.getRHSSym(si1.getProduction(),len1-ss.states1.size());
+                    } else {
+                        sym = spec.pr.getRHSSym(si2.getProduction(),len2-ss.states2.size());
+                    }
+                    for(UnifiedSearchState prepended : ss.prepend(sym,
+                            ss.reduceDepth >= 0 ? reduceProductionSet : shortestContextSensitiveSet)){
+                        add(pq,visited,prepended);
+                    }
+                }
+            }
+        }
+        //TODO return null here or default to non-unified?
+        return null;
+    }
+
+    private boolean hasCommonPrefex(StateItem si1, StateItem si2) {
+        if(si1.getDotPosition() != si2.getDotPosition()){
+            return false;
+        }
+        for(int i = 0; i < si1.getDotPosition(); i++){
+            if(spec.pr.getRHSSym(si1.getProduction(),i) != spec.pr.getRHSSym(si2.getProduction(),i)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void visited(HashMap<LinkedList<StateItem>, HashSet<LinkedList<StateItem>>> visited, UnifiedSearchState ss) {
+        HashSet<LinkedList<StateItem>> visited1 = visited.get(ss.states1);
+        if (visited1 == null) {
+            visited1 = new HashSet<>();
+            visited.put(ss.states1, visited1);
+        }
+        visited1.add(ss.states2);
+    }
+
+    private void add(PriorityQueue<UnifiedSearchState> pq, HashMap<LinkedList<StateItem>,
+            HashSet<LinkedList<StateItem>>> visited, UnifiedSearchState ss) {
+        HashSet<LinkedList<StateItem>> visited1 = visited.get(ss.states1);
+        if (visited1 != null && visited1.contains(ss.states2)) {
+            return;
+        }
+        pq.add(ss);
+
     }
 
     //todo comment
@@ -569,7 +834,7 @@ public class CounterexampleSearchGraphs {
                 }
             }
 
-            // I don't think this can handle reduction items (where the dot at the end) correctly.
+            // I don't think this can handle reduction items (items where the dot is at the end) correctly.
             for(int j = pos + 1; j < len; j++){
                 int symbol = spec.pr.getRHSSym(prod,j);
                 if(lookaheadRequired){
@@ -694,7 +959,7 @@ public class CounterexampleSearchGraphs {
     }
 
     //TODO where to put this...
-    protected class UnifiedSearchState {
+    protected class UnifiedSearchState implements Comparable<UnifiedSearchState> {
         //a list of derivations that simulates the  parse stack,
         //and a list of state items representing the state transitions the parser takes (with explicit production steps)
         //one of each for each part of the product parser.
@@ -1017,6 +1282,28 @@ public class CounterexampleSearchGraphs {
                     ", shiftDepth=" + shiftDepth +
                     '}';
         }
+
+        //for use the priority queue used in the search process
+        @Override
+        public int compareTo(UnifiedSearchState toCompare) {
+            return this.complexity - toCompare.complexity;
+        }
+    }
+
+    protected boolean compatible(int sym1, int sym2){
+        if(spec.terminals.get(sym1)) {
+            if (spec.terminals.get(sym2)) {
+                return sym1 == sym2;
+            } else {
+                return contextSets.getFirst(sym2).get(sym1);
+            }
+        } else {
+            if(spec.terminals.get(sym2)){
+                return contextSets.getFirst(sym1).get(sym2);
+            } else {
+                return sym1 == sym2 || contextSets.getFirst(sym1).intersects(contextSets.getFirst(sym2));
+            }
+        }
     }
 
     private void nullableClosure(int production, int dotPosition, StateItem lastSI,
@@ -1051,4 +1338,21 @@ public class CounterexampleSearchGraphs {
         return count;
     }
 
+    protected boolean productionAllowed(int p, int nextP){
+        int prodPred = spec.pr.getPrecedence(p);
+        int nextProdPred = spec.pr.getPrecedence(nextP);
+        int prodPredClass = spec.pr.getPrecedenceClass(p);
+        int nextProdPredClass = spec.pr.getPrecedenceClass(nextP);
+        if (prodPred >= 0 && nextProdPred >= 0 && prodPredClass == nextProdPredClass) {
+            // Do not expand if lower precedence.
+            if (prodPred > nextProdPred) {
+                return false;
+            }
+            if (prodPred == nextProdPred) {
+                //TODO check for associativity?
+                return true;
+            }
+        }
+        return true;
+    }
 }
