@@ -1,5 +1,7 @@
 package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
+import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import java.util.BitSet;
 
 public class StateItem {
@@ -22,7 +24,6 @@ public class StateItem {
     //TODO fix this, not working somehow.
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         StateItem stateItem = (StateItem) o;
@@ -41,6 +42,19 @@ public class StateItem {
         sb.append(", DotPosition: ");
         sb.append(dotPosition);
         sb.append(')');
+        return sb.toString();
+    }
+    public String prettyPrint(PSSymbolTable symbolTable, ParserSpec spec){
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < dotPosition; i++){
+            sb.append(symbolTable.get(spec.pr.getRHSSym(production,i)).getDisplayName());
+            sb.append(" ");
+        }
+        sb.append("• ");
+        for(int i = dotPosition; i < spec.pr.getRHSLength(production); i++){
+            sb.append(symbolTable.get(spec.pr.getRHSSym(production,i)).getDisplayName());
+            sb.append(" ");
+        }
         return sb.toString();
     }
 

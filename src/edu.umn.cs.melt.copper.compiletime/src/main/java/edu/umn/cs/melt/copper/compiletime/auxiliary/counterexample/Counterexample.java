@@ -17,7 +17,6 @@ public class Counterexample {
         sb2.add(new ColouredStringBuilder());
     }
 
-    //TODO
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("Example:\n");
