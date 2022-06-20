@@ -2,12 +2,10 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 public class ShiftConflictSearchNode {
     private final int  possibleTransitionState;
-    private final boolean productionItem;
     private final StateItem stateItem;
 
-    public ShiftConflictSearchNode(int possibleTransitionState, boolean productionItem, StateItem stateItem) {
+    public ShiftConflictSearchNode(int possibleTransitionState, StateItem stateItem) {
         this.possibleTransitionState = possibleTransitionState;
-        this.productionItem = productionItem;
         this.stateItem = stateItem;
     }
 
@@ -16,7 +14,7 @@ public class ShiftConflictSearchNode {
     }
 
     public boolean isProductionItem() {
-        return productionItem;
+        return stateItem.getDotPosition() == 0;
     }
 
     public StateItem getStateItem() {
@@ -27,7 +25,6 @@ public class ShiftConflictSearchNode {
     public String toString() {
         return "ShiftConflictSearchNode{" +
                 "possibleTransitionState=" + possibleTransitionState +
-                ", productionItem=" + productionItem +
                 ", stateItem=" + stateItem +
                 '}';
     }

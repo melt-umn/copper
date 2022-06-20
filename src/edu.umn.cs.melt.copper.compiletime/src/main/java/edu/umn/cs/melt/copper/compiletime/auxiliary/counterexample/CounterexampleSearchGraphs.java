@@ -194,6 +194,7 @@ public class CounterexampleSearchGraphs {
         Counterexample unified = getUnifiedExample();
         if (unified == null){
             System.out.println("No unified counterexample found");
+            System.out.println("I give up. Trying Non-Unified");
             return getNonUnifyingCounterexample();
         } else {
             return unified;
@@ -202,6 +203,7 @@ public class CounterexampleSearchGraphs {
 
 
     public Counterexample getNonUnifyingCounterexample(){
+        System.out.println(shortestContextSensitivePath);
         return counterexampleFromShortestPath(shortestContextSensitivePath);
     }
 
@@ -753,13 +755,15 @@ public class CounterexampleSearchGraphs {
 
     private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath){
         //TODO modify to do unifying examples
-        StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition(),conflictItem2.getLookahead());
+        //for reduce/reduce errors, just find the path to the other conflict item
         if(!isShiftReduce){
+            StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition(),conflictItem2.getLookahead());
             ArrayList<StateItem> shortestPath2 = findShortestContextSensitivePath(si);
             Derivation deriv1 = nonUnifyingDerivFromPath(shortestPath);
             Derivation deriv2 = nonUnifyingDerivFromPath(shortestPath2);
             return new Counterexample(deriv1,deriv2,isShiftReduce);
         }
+
         ArrayList<StateItem> shiftConflictPath = findShiftConflictPath(shortestPath);
         Derivation deriv1 = nonUnifyingDerivFromPath(shortestPath);
         Derivation deriv2 = nonUnifyingDerivFromPath(shiftConflictPath);
@@ -772,7 +776,7 @@ public class CounterexampleSearchGraphs {
         //(reverse) production steps, or reverse transitions to a state along the shortest path.
         //The order of the states in the path should be identical, the differences being caused by taking different production steps
 
-        //We need to get a list of all of the states in the shortest path without repetition,
+        //We need to get a list of all the states in the shortest path without repetition,
         //as having the shift path maintain that order is how we keep the search space reasonable
         ArrayList<Integer> shortestPathStates = new ArrayList<>();
         shortestPathStates.add(shortestPath.get(0).getState());
@@ -785,7 +789,7 @@ public class CounterexampleSearchGraphs {
         //We get what states are valid to transition to by
         Queue<LinkedList<ShiftConflictSearchNode>> queue = new LinkedList<>();
         LinkedList<ShiftConflictSearchNode> startPath = new LinkedList<>();
-        startPath.addFirst(new ShiftConflictSearchNode(shortestPathStates.size()-2,false,conflictItem2));
+        startPath.addFirst(new ShiftConflictSearchNode(shortestPathStates.size()-2,conflictItem2));
         queue.add(startPath);
 
         while(!queue.isEmpty()){
@@ -796,7 +800,8 @@ public class CounterexampleSearchGraphs {
             //TODO fix the stateItem equality function, this is dumb
             if(head.getStateItem().getState() == startVertex.getState() &&
                     head.getStateItem().getProduction() == startVertex.getProduction() &&
-                    head.getStateItem().getDotPosition() == startVertex.getDotPosition()){
+                    head.getStateItem().getDotPosition() == startVertex.getDotPosition() ||
+                    head.getStateItem().getState() == 0){
                 ArrayList<StateItem> result = new ArrayList<>(path.size());
 
                 //extract the stateItems, move to an arrayList
@@ -807,15 +812,12 @@ public class CounterexampleSearchGraphs {
                 return result;
             }
 
-            //Consider production steps only if the current path doesn't start with a production step itself
-            //Otherwise we would add the same production step items over and over
-            //TODO i don't think this needs to be in the node, I think any production item with dotPosition == 0 is a prod. item
-            if(!head.isProductionItem()){
+            //consider reverse production items
+            if(head.isProductionItem()){
                 BitSet revProd =
                         productionStepTables.getRevProdSteps(head.getStateItem().getState(),
                                                              spec.pr.getLHS(head.getStateItem().getProduction()));
-                if(revProd == null){
-                } else {
+                if(revProd != null){
                     LR0ItemSet itemSet = dfa.getItemSet(head.getStateItem().getState());
                     //For each production step
                     for(int i = revProd.nextSetBit(0); i >= 0; i = revProd.nextSetBit(i+1)){
@@ -825,24 +827,19 @@ public class CounterexampleSearchGraphs {
                         LinkedList<ShiftConflictSearchNode> newPath = new LinkedList<>();
                         //add a new path with that production step item as the head to the queue
                         newPath.addAll(path);
-                        newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex(),true,newStateItem));
+                        newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex(),newStateItem));
                         queue.add(newPath);
                     }
                 }
-            }
-
-            //consider reverse transition items
-            //No way to transition to these, must have been a production item (at some point)
-            if(head.getStateItem().getDotPosition() == 0 ){
                 continue;
             }
+
             Set<StateItem> revTran = transitionTables.revTrans.get(head.getStateItem());
             for(StateItem s : revTran){
                 //only add states that are in the correct position along the shortest path
                 if(s.getState() == shortestPathStates.get(head.getValidStateIndex())){
-                    LinkedList<ShiftConflictSearchNode> newPath = new LinkedList<>();
-                    newPath.addAll(path);
-                    newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex()-1,false,s));
+                    LinkedList<ShiftConflictSearchNode> newPath = new LinkedList<>(path);
+                    newPath.addFirst(new ShiftConflictSearchNode(head.getValidStateIndex()-1,s));
                     queue.add(newPath);
                 }
             }
