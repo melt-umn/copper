@@ -4,7 +4,7 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import static edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.ColouredStringBuilder.*;
+import static edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.ColoredStringBuilder.*;
 
 /**
  * A derivation is a parse tree, represented by a symbol (which could a terminal or a non-terminal),
@@ -28,15 +28,15 @@ public class Derivation {
 
 
     //return value the new indent
-    public int prettyPrint(ArrayList<ColouredStringBuilder> sbs, int index,int indent) {
+    public int prettyPrint(ArrayList<ColoredStringBuilder> sbs, int index, int indent) {
         //TODO have a flag to disable coloured output?
         //print LHS/terminal
-        ColouredStringBuilder sb = sbs.get(index);
+        ColoredStringBuilder sb = sbs.get(index);
         if(derivations != null){
-            incrementCurrentColour();
+            incrementCurrentColor();
         }
         sb.append(" ");
-        sb.appendColoured(symbol);
+        sb.appendColored(symbol);
 
         indent += symbol.length() + 1;
         if(derivations == null){
@@ -47,14 +47,14 @@ public class Derivation {
         try {
             sbs.get(index+1);
         } catch(IndexOutOfBoundsException e) {
-           sbs.add(new ColouredStringBuilder());
+           sbs.add(new ColoredStringBuilder());
         }
 
-        ColouredStringBuilder nextsb = sbs.get(index+1);
+        ColoredStringBuilder nextsb = sbs.get(index+1);
         for (int i = nextsb.length(); i < indent-1; i++) {
             nextsb.append(" ");
         }
-        nextsb.appendColoured("↳");
+        nextsb.appendColored("↳");
 
         //print rhs
         for(Derivation d : derivations){
@@ -65,7 +65,7 @@ public class Derivation {
         for (int i = sb.length(); i < indent; i++) {
             sb.append(" ");
         }
-        decrementCurrentColour();
+        decrementCurrentColor();
 
         return indent;
     }

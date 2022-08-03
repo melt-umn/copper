@@ -178,31 +178,11 @@ public class CounterexampleSearchGraphs {
         }
     }
 
-
-    //TODO
-
-    /**
-     * Attempt to get a unified counterexample, if possible.
-     * If not, return a non-unifying counterexample.
-     * @return
-     */
-    public Counterexample getExample(){
-        Counterexample unified = getUnifiedExample();
-        if (unified == null){
-            System.out.println("No unified counterexample found, attempting non-unified example");
-            return getNonUnifyingCounterexample();
-        } else {
-            return unified;
-        }
-    }
-
-
     public Counterexample getNonUnifyingCounterexample(){
         return counterexampleFromShortestPath(shortestContextSensitivePath);
     }
 
 
-    //TODO figure out where to put this
     /**
      * Compute a set of StateItems that can make a transition on the given
      * symbol to the given StateItem such that the resulting possible lookahead
@@ -218,7 +198,6 @@ public class CounterexampleSearchGraphs {
     //TODO
     protected LinkedList<StateItem> reverseTransition(StateItem si, BitSet lookahead, BitSet guide){
         LinkedList<StateItem> result = new LinkedList<>();
-        //TODO need to add null here?
         LinkedList<StateItem> init = new LinkedList<>();
         init.add(si);
 
@@ -244,7 +223,6 @@ public class CounterexampleSearchGraphs {
         return result;
     }
 
-    //FIXME(?) this might not work? getting no output when called with reduce1
     protected LinkedList<LookaheadSensitiveGraphVertex> reverseProduction(StateItem si, BitSet lookahead){
         LinkedList<LookaheadSensitiveGraphVertex> result = new LinkedList<>();
         BitSet[] revProd = productionStepTables.revProdTable[si.getState()];
@@ -324,7 +302,13 @@ public class CounterexampleSearchGraphs {
         return false;
     }
 
-    public Counterexample getUnifiedExample(){
+    /**
+     * Simulates 2 parsers on the same input in order to generate two derivations of the same tokens.
+     * If this fails, 2 derivations that are the same up to the point of error (but potentially different afterwards)
+     * are generated.
+     * @return A unified or non-unified counterexample
+     */
+    public Counterexample getExample(){
         UnifiedSearchState initial = new UnifiedSearchState(conflictItem1,conflictItem2);
 
         // The search uses a priority queue on the complexity of search states.
@@ -334,7 +318,6 @@ public class CounterexampleSearchGraphs {
         add(pq,visited,initial);
         //timer
         long start = System.nanoTime();
-        //TODO i don't know what this is for
         UnifiedSearchState stage3result = null;
         while(!pq.isEmpty()){
             UnifiedSearchState ss = pq.remove();
@@ -386,9 +369,9 @@ public class CounterexampleSearchGraphs {
                     LinkedList<StateItem> states1 = new LinkedList<>();
                     LinkedList<StateItem> states2 = new LinkedList<>();
 
-                    derivs1.add(new Derivation(getSymbolString(si1sym)));
+                    derivs1.add(new Derivation(symbolTable.getSymbolString(si1sym)));
                     states1.add(nextSI1);
-                    derivs2.add(new Derivation(getSymbolString(si2sym)));
+                    derivs2.add(new Derivation(symbolTable.getSymbolString(si2sym)));
                     states2.add(nextSI2);
 
                     nullableClosure(si1.getProduction(),
@@ -536,7 +519,9 @@ public class CounterexampleSearchGraphs {
                 }
             }
         }
-        return null;
+        System.out.println("Failed to find unifying counterexample, attempting non-unified");
+        //TODO re-use the derivations generated while attempting to construct the unified counterexample here
+        return counterexampleFromShortestPath(shortestContextSensitivePath);
     }
 
 
@@ -715,19 +700,27 @@ public class CounterexampleSearchGraphs {
     }
 
     private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath){
-        //TODO modify to do unifying examples
+        return counterexampleFromShortestPath(shortestPath,null,null);
+    }
+
+    private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath,
+                                                          LinkedList<Derivation> derivs1, LinkedList<Derivation> derivs2){
         //for reduce/reduce errors, just find the path to the other conflict item
+        if (derivs1 == null || derivs2 == null){
+            derivs1 = new LinkedList<>();
+            derivs2 = new LinkedList<>();
+        }
         if(!isShiftReduce){
             StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition(),conflictItem2.getLookahead());
             ArrayList<StateItem> shortestPath2 = findShortestContextSensitivePath(si);
-            Derivation deriv1 = nonUnifyingDerivFromPath(shortestPath);
-            Derivation deriv2 = nonUnifyingDerivFromPath(shortestPath2);
+            Derivation deriv1 = completeNonUnifyingExample(shortestPath,derivs1);
+            Derivation deriv2 = completeNonUnifyingExample(shortestPath2,derivs2);
             return new Counterexample(deriv1,deriv2,isShiftReduce);
         }
 
         ArrayList<StateItem> shiftConflictPath = findShiftConflictPath(shortestPath);
-        Derivation deriv1 = nonUnifyingDerivFromPath(shortestPath);
-        Derivation deriv2 = nonUnifyingDerivFromPath(shiftConflictPath);
+        Derivation deriv1 = completeNonUnifyingExample(shortestPath,derivs1);
+        Derivation deriv2 = completeNonUnifyingExample(shiftConflictPath,derivs2);
         return new Counterexample(deriv1,deriv2,isShiftReduce);
     }
 
@@ -808,20 +801,17 @@ public class CounterexampleSearchGraphs {
         throw new Error("failed to find shift conflict path");
     }
 
-    private Derivation nonUnifyingDerivFromPath(ArrayList<StateItem> states){
-        return nonUnifyingDerivFromPath(states, new LinkedList<Derivation>());
-    }
-
     /**
-     * creates a full derivation from a list of parser states to the conflict state
+     * creates a full derivation from a list of parser states to the conflict state.
+     * Used when constructing a non-unifying example, as no guarantees of what follows the path are made.
      * @param states the states along the shortest lookahead sensitive path
-     * @param derivations any currently unfinished derivations that need to be filled out
-     * @return
+     * @param derivations any currently unfinished derivations that need to be filled out,
+     *                    generated from attempting (and failing) to make a unified example
+     * @return A completed derivation that begins with the shortest lookahead sensitive path
      */
-    //TODO this entire function is a mess and needs a bunch of comments
-    private Derivation nonUnifyingDerivFromPath(ArrayList<StateItem> states, LinkedList<Derivation> derivations){
+    private Derivation completeNonUnifyingExample(ArrayList<StateItem> states, LinkedList<Derivation> derivations){
         LinkedList<Derivation> result = new LinkedList<>();
-
+        //for every state in the shortest lookahead sensitive path
         for (int i = states.size() - 1; i >= 0 ; i--) {
             boolean lookaheadRequired = false;
             StateItem stateItem = states.get(i);
@@ -835,19 +825,21 @@ public class CounterexampleSearchGraphs {
                     lookaheadRequired = true;
                 }
                 if(pos != len){
-                    result.add(new Derivation(getSymbolString(prod,pos)));
+                    result.add(new Derivation(symbolTable.getSymbolString(spec.pr.getRHSSym(prod,pos))));
                     lookaheadRequired = false;
                 }
             }
 
-            // I don't think this can handle reduction items (items where the dot is at the end) correctly.
+            //for every symbol to the right of the dot, either add it to the derivation directly,
+            // or if lookahead is required, use expandFirst to generate a sequence of derivations that begins with
+            // the conflict symbol
             for(int j = pos + 1; j < len; j++){
                 int symbol = spec.pr.getRHSSym(prod,j);
                 if(lookaheadRequired){
                     if(symbol != conflictTerminal){
                         if(spec.nonterminals.get(symbol)){
                             if(!contextSets.isNullable(symbol) || contextSets.getFirst(symbol).get(conflictTerminal)){
-                                //TODO ???
+                                //creates a list of derivations that ends with the current stateItem and starts with the conflict terminal
                                 LinkedList <Derivation> nextDerivations =
                                         expandFirst(transitionTables.getTransition(stateItem,spec.pr.getRHSSym(prod,pos)));
 
@@ -855,33 +847,33 @@ public class CounterexampleSearchGraphs {
                                 j += nextDerivations.size() - 1;
                                 lookaheadRequired = false;
                             } else {
-                                //can't derive the the conflict terminal, must be some other prod
-                                result.add(new Derivation(getSymbolString(symbol)));
+                                //can't derive  the conflict terminal, must be some other prod
+                                result.add(new Derivation(symbolTable.getSymbolString(symbol)));
                             }
                         }
                     } else {
-                        result.add(new Derivation(getSymbolString(symbol)));
+                        result.add(new Derivation(symbolTable.getSymbolString(symbol)));
                         lookaheadRequired = false;
                     }
 
                 } else {
-                    result.add(new Derivation(getSymbolString(symbol)));
+                    result.add(new Derivation(symbolTable.getSymbolString(symbol)));
                 }
 
             }
 
-            //TODO try removing the derivations argument and see if it lessens the quality of counterexamples
-            //symbols before dot
+            //add the symbols from the partially complete derivation to the beginning of the derivation
             Iterator<Derivation> derivationItr = derivations.descendingIterator();
             for (int j = pos - 1; j >= 0; j--) {
                 if(i>0){
                     i--;
                 }
-                result.addFirst(derivationItr.hasNext() ? derivationItr.next() : new Derivation(getSymbolString(prod,j)));
+                result.addFirst(derivationItr.hasNext() ? derivationItr.next() :
+                        new Derivation(symbolTable.getSymbolString(spec.pr.getRHSSym(prod,j))));
             }
 
             //complete the derivation
-            Derivation deriv = new Derivation(getSymbolString(spec.pr.getLHS(prod)), result);
+            Derivation deriv = new Derivation(symbolTable.getSymbolString(spec.pr.getLHS(prod)), result);
             result = new LinkedList<>();
             result.add(deriv);
         }
@@ -909,7 +901,7 @@ public class CounterexampleSearchGraphs {
             if(symbolAfterDot == conflictTerminal){
                 //we're done
                 LinkedList<Derivation> result = new LinkedList<>();
-                result.add(new Derivation(getSymbolString(conflictTerminal)));
+                result.add(new Derivation(symbolTable.getSymbolString(conflictTerminal)));
                 for(int i = states.size() - 1; i >= 0 ; i--){
                     StateItem si = states.get(i);
                     int pos = si.getDotPosition();
@@ -917,14 +909,14 @@ public class CounterexampleSearchGraphs {
                     if (pos == 0) {
                         int len = spec.pr.getRHSLength(prod);
                         for (int j = pos + 1; j < len; j++) {
-                            result.add(new Derivation(getSymbolString(prod,j)));
+                            result.add(new Derivation(symbolTable.getSymbolString(spec.pr.getRHSSym(prod,j))));
                         }
                         int lhs = spec.pr.getLHS(prod);
-                        Derivation deriv = new Derivation(getSymbolString(lhs), result);
+                        Derivation deriv = new Derivation(symbolTable.getSymbolString(lhs), result);
                         result = new LinkedList<>();
                         result.add(deriv);
                     } else {
-                        Derivation deriv = new Derivation(getSymbolString(prod,pos-1));
+                        Derivation deriv = new Derivation(symbolTable.getSymbolString(spec.pr.getRHSSym(prod,pos-1)));
                         result.addFirst(deriv);
                     }
                 }
@@ -956,14 +948,6 @@ public class CounterexampleSearchGraphs {
         throw new Error("Invalid state reached in expandFirst");
     }
 
-    private String getSymbolString(int prod, int pos){
-        return symbolTable.get(spec.pr.getRHSSym(prod,pos)).getDisplayName();
-    }
-    private String getSymbolString(int sym){
-        return symbolTable.get(sym).getDisplayName();
-    }
-
-    //TODO where to put this...
     protected class UnifiedSearchState implements Comparable<UnifiedSearchState> {
         //a list of derivations that simulates the  parse stack,
         //and a list of state items representing the state transitions the parser takes (with explicit production steps)
@@ -1027,7 +1011,7 @@ public class CounterexampleSearchGraphs {
         }
 
         /**
-         * prepend a symbol to the current configuration if possible
+         * prepends a symbol to the current configuration if possible
          *
          * @param sym   the symbol to add.
          * @param guide If not null, restricts the possible parser states to this set;
@@ -1069,7 +1053,7 @@ public class CounterexampleSearchGraphs {
                         copy.states1.get(1).getDotPosition()) {
                         if (copy.states2.get(0).getDotPosition() + 1 ==
                             copy.states2.get(1).getDotPosition()) {
-                            Derivation deriv = new Derivation(getSymbolString(sym));
+                            Derivation deriv = new Derivation(symbolTable.getSymbolString(sym));
                             copy.derivs1.addFirst(deriv);
                             copy.derivs2.addFirst(deriv);
 
@@ -1093,7 +1077,12 @@ public class CounterexampleSearchGraphs {
             return result;
         }
 
-        //should be working, but also does not account for accept state
+        /**
+         * Reduces the search state for one of the simulated parsers.
+         * @param sym symbol that follows the production item for the relevant parser
+         * @param isOne true if the first parser is being reduced, false for the second parser
+         * @return A list of all possible reductions for the parser
+         */
         protected LinkedList<UnifiedSearchState> reduce(Integer sym, boolean isOne) {
             LinkedList<StateItem> states = isOne ? states1 : states2;
             LinkedList<Derivation> derivs = isOne ? derivs1 : derivs2;
@@ -1120,7 +1109,7 @@ public class CounterexampleSearchGraphs {
             int lhs = spec.pr.getLHS(prod);
             int len = spec.pr.getRHSLength(prod);
             int derivSize = derivs.size();
-            Derivation deriv = new Derivation(getSymbolString(lhs),
+            Derivation deriv = new Derivation(symbolTable.getSymbolString(lhs),
                     new LinkedList<>(derivs.subList(derivs.size() - len, derivs.size())));
 
             if(isOne){
@@ -1152,7 +1141,7 @@ public class CounterexampleSearchGraphs {
                     copyStates.add(transitionTables.trans.get(copyStates.getLast())[lhs]);
 
                     int statesSize = copyStates.size();
-                    int productionSteps = productionSteps(copyStates, states.get(0));
+                    int productionSteps = productionSteps(copyStates);
 
                     copy.complexity +=
                             UNSHIFT_COST * (statesSize - productionSteps) + PRODUCTION_COST * productionSteps;
@@ -1249,6 +1238,12 @@ public class CounterexampleSearchGraphs {
         }
     }
 
+    /**
+     * Determine if two symbols are compatible for the purposes of taking a production step.
+     * @param sym1
+     * @param sym2
+     * @return If the symbols are compatible
+     */
     protected boolean compatible(int sym1, int sym2){
         if(spec.terminals.get(sym1)) {
             if (spec.terminals.get(sym2)) {
@@ -1265,6 +1260,15 @@ public class CounterexampleSearchGraphs {
         }
     }
 
+    /**
+     * Computes the list of StateItems that are possible for the given production item
+     * to reach from taking a transition on a nullable symbol.
+     * @param production the number of the production
+     * @param dotPosition the position of the dot within the production
+     * @param lastSI the starting StateItem
+     * @param states the list of StateItems the output closure is placed in
+     * @param derivs the list of derivations the output closure derivations are placed in
+     */
     private void nullableClosure(int production, int dotPosition, StateItem lastSI,
                                  List<StateItem> states, List<Derivation> derivs){
         int len = spec.pr.getRHSLength(production);
@@ -1277,26 +1281,35 @@ public class CounterexampleSearchGraphs {
                 break;
             }
             lastSI = transitionTables.trans.get(lastSI)[sp];
-            derivs.add(new Derivation(getSymbolString(sp), new LinkedList<Derivation>()));
+            derivs.add(new Derivation(symbolTable.getSymbolString(sp), new LinkedList<Derivation>()));
             states.add(lastSI);
         }
     }
 
-    //TODO no point in having last? It seems that you could just go forward.
-    protected static int productionSteps(LinkedList<StateItem> stateItems, StateItem last){
+    /**
+     * counts the number of production steps taken by seeing how many times there is no transition of state.
+     * @param stateItems the state sequence to count
+     * @return the number of production steps taken
+     */
+    protected static int productionSteps(LinkedList<StateItem> stateItems){
         int count = 0;
-        int lastState = last.getState();
-        Iterator<StateItem> itr =  stateItems.descendingIterator();
-        while(itr.hasNext()){
-            int state = itr.next().getState();
-            if(state == lastState){
+        int lastState = stateItems.getFirst().getState();
+        for(StateItem si : stateItems){
+            if (si.getState() == lastState) {
                 count++;
             }
-            lastState = state;
+            lastState = si.getState();
         }
         return count;
     }
 
+    /**
+     * determines if a production step can be taken from the first argument to the second,
+     * based on precedence.
+     * @param p the starting production
+     * @param nextP the desired destination production.
+     * @return if a production step from p to nextP is possible
+     */
     protected boolean productionAllowed(int p, int nextP){
         int prodPred = spec.pr.getPrecedence(p);
         int nextProdPred = spec.pr.getPrecedence(nextP);
