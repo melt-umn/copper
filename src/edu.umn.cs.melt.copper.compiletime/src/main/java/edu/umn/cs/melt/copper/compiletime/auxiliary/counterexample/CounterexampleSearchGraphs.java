@@ -169,14 +169,10 @@ public class CounterexampleSearchGraphs {
 
         boolean reduceProdReached = false;
         for (StateItem si : shortestContextSensitivePath) {
-            if(si == null){
-                System.out.println("si is null");
-            }
             shortestContextSensitiveSet.set(si.getState());
             reduceProdReached =
                     reduceProdReached || si.getProduction() == conflictItem1Production;
             if (reduceProdReached) {
-                System.out.println("reduce prod reached");
                 reduceProductionSet.set(si.getState());
             }
         }
@@ -193,8 +189,7 @@ public class CounterexampleSearchGraphs {
     public Counterexample getExample(){
         Counterexample unified = getUnifiedExample();
         if (unified == null){
-            System.out.println("No unified counterexample found");
-            System.out.println("I give up. Trying Non-Unified");
+            System.out.println("No unified counterexample found, attempting non-unified example");
             return getNonUnifyingCounterexample();
         } else {
             return unified;
@@ -203,7 +198,6 @@ public class CounterexampleSearchGraphs {
 
 
     public Counterexample getNonUnifyingCounterexample(){
-        System.out.println(shortestContextSensitivePath);
         return counterexampleFromShortestPath(shortestContextSensitivePath);
     }
 
@@ -343,10 +337,6 @@ public class CounterexampleSearchGraphs {
         //TODO i don't know what this is for
         UnifiedSearchState stage3result = null;
         while(!pq.isEmpty()){
-            System.out.println("pq is");
-            for (UnifiedSearchState s : pq) {
-               System.out.println(s);
-            }
             UnifiedSearchState ss = pq.remove();
             StateItem si1src = ss.states1.get(0);
             StateItem si2src = ss.states2.get(0);
@@ -377,50 +367,18 @@ public class CounterexampleSearchGraphs {
             StateItem si1 = ss.states1.getLast();
             StateItem si2 = ss.states2.getLast();
 
-            System.out.println("lens:");
-            System.out.println(spec.pr.getRHSLength(si1.getProduction()));
-            System.out.println(spec.pr.getRHSLength(si2.getProduction()));
             boolean si1reduce = spec.pr.getRHSLength(si1.getProduction()) == si1.getDotPosition();
             boolean si2reduce = spec.pr.getRHSLength(si2.getProduction()) == si2.getDotPosition();
 
-            //index out of bounds error here partway through search
-            System.out.println(si1.prettyPrint(symbolTable,spec));
-            System.out.println(si2.prettyPrint(symbolTable,spec));
             Integer si1sym = si1reduce ? null : spec.pr.getRHSSym(si1.getProduction(), si1.getDotPosition());
             Integer si2sym = si2reduce ? null : spec.pr.getRHSSym(si2.getProduction(), si2.getDotPosition());
 
-            System.out.println("si1reduce: " + si1reduce);
-            System.out.println("si2reduce: " + si2reduce);
-            if(!si1reduce){
-                System.out.println("si1sym: " + si1sym);
-                System.out.println(getSymbolString(si1sym));
-
-            }
-            if(!si2reduce){
-                System.out.println("si2sym: " + si2sym);
-                System.out.println(getSymbolString(si2sym));
-            }
             if(!si1reduce && !si2reduce){
                 //neither path ends in a reduce item, so it is possible to search forwards as normal
                 // Two actions are possible:
                 // - Make a transition on the next symbol of the items, if they are the same.
                 // - Take a production step, avoiding duplicates as necessary.
-
-                //TODO the issue now is that if the transition would lead to the acceptance state, it crashes.
-                // This is because there is no state item to actually transition to, because in reality it just goes to being done
-                // Some sort of special exception is going to need to be carved out here.
                 if(si1sym == si2sym){
-                    System.out.println("here we go");
-                    System.out.println(ss.derivs1);
-                    System.out.println(ss.derivs1.size());
-                    System.out.println(ss.derivs2);
-                    System.out.println(ss.derivs2.size());
-                    System.out.println(ss.states1);
-                    System.out.println(ss.states2);
-                    System.out.println(ss.reduceDepth);
-                    System.out.println(ss.shiftDepth);
-                    System.out.println(Arrays.toString(transitionTables.trans.get(si1)));
-                    System.out.println(si1);
                     StateItem nextSI1 = transitionTables.getTransition(si1,si1sym);
                     StateItem nextSI2 = transitionTables.getTransition(si2,si2sym);
                     LinkedList<Derivation> derivs1 = new LinkedList<>();
@@ -444,10 +402,6 @@ public class CounterexampleSearchGraphs {
                             states2,
                             derivs2);
 
-                    System.out.println("this part is probably not done");
-
-                    //FIXME(?) this was copied in more or less directly from the reference code.
-                    // should work just fine, but noting in case anything goes terribly wrong
                     for (int i = 1, size1 = derivs1.size(); i <= size1; i++) {
                         List<Derivation> subderivs1 = new ArrayList<>(derivs1.subList(0, i));
                         List<StateItem> substates1 = new ArrayList<>(states1.subList(0, i));
@@ -502,7 +456,7 @@ public class CounterexampleSearchGraphs {
 
                     }
                 }
-                //TODO this seems bad... Is there a way to avoid this code duplication?
+                //take a production step along the other path if possible
                 if(spec.nonterminals.get(si2sym) && productionStepTables.prodTable.containsKey(si2)){
                     BitSet prodSteps = productionStepTables.prodTable.get(si2);
 
@@ -531,8 +485,8 @@ public class CounterexampleSearchGraphs {
                             List<StateItem> substates2 =
                                     new LinkedList<>(states2.subList(0, j + 1));
                             UnifiedSearchState copy = ss.copy();
-                            copy.derivs1.addAll(subderivs2);
-                            copy.states1.addAll(substates2);
+                            copy.derivs2.addAll(subderivs2);
+                            copy.states2.addAll(substates2);
                             copy.complexity += PRODUCTION_COST;
                             add(pq, visited, copy);
                         }
@@ -542,19 +496,11 @@ public class CounterexampleSearchGraphs {
             } else {
                 int len1 = spec.pr.getRHSLength(si1.getProduction());
                 int len2 = spec.pr.getRHSLength(si2.getProduction());
-                System.out.println("ready1 states:" + ss.states1);
-                System.out.println("ready1 size:" +  ss.states1.size());
-                System.out.println("ready1 derivs:" +  ss.derivs1);
                 boolean ready1 = si1reduce && ss.states1.size() > len1;
                 //derivs not being updated correctly relative to the number of states? getting out of bounds errors
-                System.out.println("ready2 states:" + ss.states2);
-                System.out.println("ready2 size:" +  ss.states2.size());
-                System.out.println("ready2 derivs:" +  ss.derivs2);
                 boolean ready2 = si2reduce && ss.states2.size() > len2;
-                System.out.println("ready1: " + ready1 + " ready2: " + ready2);
                 if(ready1) {
                     LinkedList<UnifiedSearchState> reduced1 = ss.reduce(si2sym,true);
-                    System.out.println("reduced1: " + reduced1);
                     if (ready2) {
                         reduced1.add(ss);
                         for (UnifiedSearchState red1 : reduced1) {
@@ -568,7 +514,7 @@ public class CounterexampleSearchGraphs {
                             add(pq, visited, candidate);
                         }
                     }
-                } else if (ready2) { // TODO this used to have `ss.derivs2.size() > len2` as a req, try >= if this doesn't work
+                } else if (ready2) { // NOTE this used to have `ss.derivs2.size() > len2` as a req, should be fine, but noting in case it becomes a failure point later.
                     LinkedList<UnifiedSearchState> reduced2 = ss.reduce(si1sym,false);
                     for (UnifiedSearchState candidate : reduced2){
                         add(pq, visited, candidate);
@@ -581,30 +527,15 @@ public class CounterexampleSearchGraphs {
                     if (si1reduce){
                         sym = spec.pr.getRHSSym(si1.getProduction(),len1-ss.states1.size());
                     } else {
-                        System.out.println("len2 is " + len2);
-                        System.out.println("states2 size is " + ss.states2.size());
-                        //fIXME breaks! Out of bounds Exception!
                         sym = spec.pr.getRHSSym(si2.getProduction(),len2-ss.states2.size());
                     }
-                    System.out.println("si1: " + si1.prettyPrint(symbolTable,spec));
-                    System.out.println("si2: " + si2.prettyPrint(symbolTable,spec));
-                    System.out.println("Sym: " + getSymbolString(sym));
-                    System.out.println("ss: " + ss);
-                    //the issue seems to be with prepend failing to add new states.
-                    //or it could be that the example is not unifiable.
-                    System.out.println(ss.prepend(sym,null));
                     for(UnifiedSearchState prepended : ss.prepend(sym,
                             ss.reduceDepth >= 0 ? reduceProductionSet : shortestContextSensitiveSet)){
-                        System.out.println("add");
                         add(pq,visited,prepended);
                     }
-                    System.out.println("end of loop");
-                    System.out.println("ss: " + ss);
-                    System.out.println("pq: " + pq);
                 }
             }
         }
-        //TODO return null here or default to non-unified?
         return null;
     }
 
@@ -997,7 +928,6 @@ public class CounterexampleSearchGraphs {
                         result.addFirst(deriv);
                     }
                 }
-                //TODO ??? why remove the first one
                 result.removeFirst();
                 return result;
             }
@@ -1082,7 +1012,6 @@ public class CounterexampleSearchGraphs {
             this.reduceDepth = reduceDepth;
             this.shiftDepth = shiftDepth;
         }
-        //TODO is this necessary?
 
         /**
          * Duplicate a search state.
@@ -1115,27 +1044,20 @@ public class CounterexampleSearchGraphs {
             LinkedList<UnifiedSearchState> result = new LinkedList<>();
 
             if (transitionTables.prevSymbol[si1src.getState()] != sym || transitionTables.prevSymbol[si2src.getState()] != sym) {
-                System.out.println("bailed out on previous symbol");
                 return result;
             }
 
             LinkedList<StateItem> prev1ext = reverseTransition(si1src, si1Lookahead, guide);
             LinkedList<StateItem> prev2ext = reverseTransition(si2src, si2Lookahead, guide);
 
-            System.out.println("prevext1: " + prev1ext);
-            System.out.println("prevext2: " + prev2ext);
-
-
             for (StateItem prevSI1 : prev1ext) {
                 for (StateItem prevSI2 : prev2ext) {
                     boolean prev1IsSrc = prevSI1.equals(si1src);
                     boolean prev2IsSrc = prevSI2.equals(si2src);
                     if (prev1IsSrc && prev2IsSrc) {
-                        System.out.println("both prevs are the same as the originator");
                         continue;
                     }
                     if (prevSI1.getState() != prevSI2.getState()) {
-                        System.out.println("diff states");
                         continue;
                     }
                     UnifiedSearchState copy = this.copy();
@@ -1143,9 +1065,6 @@ public class CounterexampleSearchGraphs {
                     copy.states1.addFirst(prevSI1);
                     copy.states2.addFirst(prevSI2);
 
-                    System.out.println("big ball of mess begins now");
-                    //TODO the placement of the ifs seems somewhat suspect
-                    // just seems like a lot is done computed multiple times
                     if (copy.states1.get(0).getDotPosition() + 1 ==
                         copy.states1.get(1).getDotPosition()) {
                         if (copy.states2.get(0).getDotPosition() + 1 ==
@@ -1189,7 +1108,6 @@ public class CounterexampleSearchGraphs {
 
             if (sym != null) {
                 if (!lastItem.getLookahead().get(sym)) {
-                    System.out.println("next symbol not in lookahead");
                     return result;
                 }
                 symbolSet = new BitSet();
@@ -1202,8 +1120,6 @@ public class CounterexampleSearchGraphs {
             int lhs = spec.pr.getLHS(prod);
             int len = spec.pr.getRHSLength(prod);
             int derivSize = derivs.size();
-            System.out.println("derivSize reduce:" + derivSize);
-            System.out.println(derivs);
             Derivation deriv = new Derivation(getSymbolString(lhs),
                     new LinkedList<>(derivs.subList(derivs.size() - len, derivs.size())));
 
@@ -1222,13 +1138,8 @@ public class CounterexampleSearchGraphs {
             derivs = new LinkedList<>(derivs.subList(0, derivs.size() - len));
             derivs.add(deriv);
             if (states.size() == len + 1) {
-                System.out.println("size is big guy");
-                System.out.println(states.getFirst());
-                System.out.println(symbolSet);
                 //was not null before, should probably be that again
                 LinkedList<LookaheadSensitiveGraphVertex> prev = reverseProduction(states.getFirst(),symbolSet);
-                System.out.println(prev);
-                System.out.println(reverseProduction(states.getFirst(), symbolSet));
                 for (LookaheadSensitiveGraphVertex prevV : prev) {
                     UnifiedSearchState copy = copy();
                     if(isOne){
@@ -1259,7 +1170,6 @@ public class CounterexampleSearchGraphs {
                     }
 
                     result.add(copy);
-                    System.out.println("justaddedresult" + result);
                 }
             } else {
                 UnifiedSearchState copy = copy();
@@ -1273,7 +1183,6 @@ public class CounterexampleSearchGraphs {
 
                 copy.complexity += REDUCE_COST;
 
-                //TODO is this correct?
                 if(isOne){
                     if (copy.reduceDepth == 0) {
                         copy.reduceDepth--;
@@ -1285,7 +1194,6 @@ public class CounterexampleSearchGraphs {
                 }
                 result.add(copy);
             }
-            System.out.println("any here?:" + result);
             // transition on nullable symbols
             LinkedList<UnifiedSearchState> finalizedResult = new LinkedList<>();
             for(UnifiedSearchState ss : result){
@@ -1295,10 +1203,8 @@ public class CounterexampleSearchGraphs {
                 } else {
                     next = ss.states2.getLast();
                 }
-                //TODO what's up with this? why do they have the same names?
                 List<Derivation> derivsNew = new LinkedList<>();
                 List<StateItem> statesNew = new LinkedList<>();
-                //TODO is this causing issues? seems to be the same as the reference impl.
                 nullableClosure(next.getProduction(),
                         next.getDotPosition(),
                         next,
@@ -1308,8 +1214,6 @@ public class CounterexampleSearchGraphs {
                 for (int i = 1, size1 = derivsNew.size(); i <= size1; i++) {
                     List<Derivation> subderivs =
                             new ArrayList<>(derivsNew.subList(0, i));
-                    System.out.println("before break");
-                    System.out.println(states);
                     List<StateItem> substates =
                             new ArrayList<>(statesNew.subList(0, i));
                     UnifiedSearchState copy = ss.copy();
