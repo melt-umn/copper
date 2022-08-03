@@ -48,23 +48,38 @@ public class TransitionFunctionTables {
         for (int i = 0; i < dfa.size(); i++) {
             //for each item in the (source) state
             LR0ItemSet srcItemSet = dfa.getItemSet(i);
+            if(i == 5){
+                System.out.println("spate 5 " +  srcItemSet);
+                System.out.println("spate 5 " +  srcItemSet.size());
+            }
             for (int j = 0; j < srcItemSet.size(); j++) {
                 int srcProduction = srcItemSet.getProduction(j);
                 int srcDotPosition = srcItemSet.getPosition(j);
                 int expectedDotPosition = srcDotPosition + 1;
+                if(i==5){
+                    System.out.println(srcProduction);
+                    System.out.println(srcDotPosition);
+                }
 
                 //skip reduce items
                 if (srcDotPosition == spec.pr.getRHSLength(srcProduction)) {
+                    System.out.println("skipping on state" + i);
                     continue;
                 }
                 int symbolAfterDot = spec.pr.getRHSSym(srcProduction, srcDotPosition);
 
                 int dstState = dfa.getTransition(i, symbolAfterDot);
+                if(i == 5){
+                   System.out.println("after dot:" + symbolAfterDot);
+                   System.out.println("dstState " + dstState);
+                }
 
                 //could check for null, but I think that would be equally efficient.
                 prevSymbol[dstState] = symbolAfterDot;
 
                 LR0ItemSet dstItemSet = dfa.getItemSet(dstState);
+                if(i == 5)
+                    System.out.println("dstItemSet " + dstItemSet);
 
                 //for each item in the (destination) state
                 for (int k = 0; k < dstItemSet.size(); k++) {
@@ -95,6 +110,9 @@ public class TransitionFunctionTables {
                 }
             }
         }
+        System.out.println("trans,lol");
+        System.out.println(trans);
+        System.out.println(trans);
     }
 
     public StateItem getTransition(StateItem stateItem, int symbol) {
