@@ -10,10 +10,7 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 import java.util.*;
 
-//TODO comment this whole file thoroughly. like spend a few hours on it.
-//TODO review the structure of the additions (incl. what is private/protected/public)
-// All/Most of the logic here should probably be in a builder/checker
-
+//TODO redo this javadodc comment
 /**
  * A digraph that is searched in the creation of non-unifying counterexamples to
  * non-lalr parsers. Does not use {@link edu.umn.cs.melt.copper.compiletime.spec.numeric.Digraph},
@@ -46,13 +43,11 @@ public class CounterexampleSearchGraphs {
     private TransitionFunctionTables transitionTables;
     private ProductionStepTables productionStepTables;
 
-    ArrayList<StateItem> shortestContextSensitivePath;
+    ArrayList<StateItem> shortestLookaheadSensitivePath;
     //The set of all the states in the shortest context-sensitive path
-    private BitSet shortestContextSensitiveSet = new BitSet();
-    //????
+    private BitSet shortestLookaheadSensitiveSet = new BitSet();
     private BitSet reduceProductionSet = new BitSet();
 
-    //TODO the structure of where the counterExampleMessage begins and this ends is all sorts of wrong. Reassess once more code is written.
     public CounterexampleSearchGraphs(LRParseTableConflict conflict,
                                       ParserSpec spec, PSSymbolTable symbolTable,
                                       ContextSets contextSets, LRLookaheadSets lookaheadSets,
@@ -165,11 +160,11 @@ public class CounterexampleSearchGraphs {
 
         this.transitionTables = new TransitionFunctionTables(dfa,spec,lookaheadSets);
         this.productionStepTables = new ProductionStepTables(dfa,spec,lookaheadSets);
-        shortestContextSensitivePath = findShortestContextSensitivePath(conflictItem1);
+        shortestLookaheadSensitivePath = findShortestLookaheadSensitivePath(conflictItem1);
 
         boolean reduceProdReached = false;
-        for (StateItem si : shortestContextSensitivePath) {
-            shortestContextSensitiveSet.set(si.getState());
+        for (StateItem si : shortestLookaheadSensitivePath) {
+            shortestLookaheadSensitiveSet.set(si.getState());
             reduceProdReached =
                     reduceProdReached || si.getProduction() == conflictItem1Production;
             if (reduceProdReached) {
@@ -179,127 +174,7 @@ public class CounterexampleSearchGraphs {
     }
 
     public Counterexample getNonUnifyingCounterexample(){
-        return counterexampleFromShortestPath(shortestContextSensitivePath);
-    }
-
-
-    /**
-     * Compute a set of StateItems that can make a transition on the given
-     * symbol to the given StateItem such that the resulting possible lookahead
-     * symbols are as given.
-     * @param si the stateItem to calculate transitions to
-     * @param lookahead The expected possible lookahead symbols
-     * @param guide If not null, restricts the possible parser states to this
-     *          set; otherwise, explore all possible parser states that can
-     *          make the desired transition.
-     * @return A LinkedList of StateItems that result from making a reverse transition
-     *          from this StateItem on the given symbol and lookahead set.
-     */
-    //TODO
-    protected LinkedList<StateItem> reverseTransition(StateItem si, BitSet lookahead, BitSet guide){
-        LinkedList<StateItem> result = new LinkedList<>();
-        LinkedList<StateItem> init = new LinkedList<>();
-        init.add(si);
-
-        if(si.getDotPosition() > 0){
-            Set<StateItem> prevs = transitionTables.revTrans.get(si);
-            if(prevs == null) {
-                return result;
-            }
-            for(StateItem prev : prevs){
-                if(guide != null && !guide.get(prev.getState())){
-                    continue;
-                }
-                if(lookahead != null && !lookahead.intersects(prev.getLookahead())){
-                    continue;
-                }
-                result.add(prev);
-            }
-            return result;
-        }
-        for(LookaheadSensitiveGraphVertex g : reverseProduction(si,si.getLookahead())){
-            result.add(g.stateItem);
-        }
-        return result;
-    }
-
-    protected LinkedList<LookaheadSensitiveGraphVertex> reverseProduction(StateItem si, BitSet lookahead){
-        LinkedList<LookaheadSensitiveGraphVertex> result = new LinkedList<>();
-        BitSet[] revProd = productionStepTables.revProdTable[si.getState()];
-        LR0ItemSet lr0Items = dfa.getItemSet(si.getState());
-
-        if(revProd == null){
-            return result;
-        }
-
-        int prod = si.getProduction();
-        BitSet prevs = revProd[spec.pr.getLHS(prod)];
-
-        if(prevs == null){
-            return result;
-        }
-
-        for(int i = prevs.nextSetBit(0); i>=0; i = prevs.nextSetBit(i+1)){
-            int prevProd = lr0Items.getProduction(i);
-            int prevDotPos = lr0Items.getPosition(i);
-            BitSet prevLookahead = lookaheadSets.getLookahead(si.getState(),i);
-            //there's a check in the reference implementation here to see if prevProd can come before prod
-            //but it only checks precedence, which doesn't seem relevant here.
-            StateItem prevSi = new StateItem(si.getState(),prevProd,prevDotPos,prevLookahead);
-            BitSet nextLookahead =  new BitSet();
-
-            int prevLen = spec.pr.getRHSLength(prevProd);
-
-            //reduce item
-            if(prevDotPos == prevLen){
-                if(!prevLookahead.intersects(lookahead)){
-                    continue;
-                }
-                nextLookahead.or(prevLookahead);
-                nextLookahead.and(lookahead);
-            }
-            //shift item
-            else {
-                //TODO
-                if(lookahead != null){
-                    //TODO comment this logic
-                    boolean applicable = false;
-                    boolean nullable = true;
-                    for (int pos = prevDotPos; !applicable && nullable && pos < prevLen; pos++) {
-                        int nextSym = spec.pr.getRHSSym(prevProd,pos);
-                        if(spec.terminals.get(nextSym)){
-                            applicable = terminalIntersects(nextSym,lookahead);
-                            nullable = false;
-                        } else if(spec.nonterminals.get(nextSym)){
-                            applicable = lookahead.intersects(contextSets.getFirst(nextSym));
-                            if(!applicable){
-                                nullable = contextSets.isNullable(nextSym);
-                            }
-                        }
-                    }
-                    if (!applicable && !nullable) {
-                        continue;
-                    }
-                }
-                nextLookahead = prevLookahead;
-            }
-            result.add(new LookaheadSensitiveGraphVertex(prevSi,nextLookahead));
-        }
-        return result;
-    }
-
-    //TODO comment
-    //TODO is .get used where this should be in places?
-    private boolean terminalIntersects(int term, BitSet lookahead) {
-        for(int i = lookahead.nextSetBit(0); i>=0; i = lookahead.nextSetBit(i+1)){
-            if(spec.terminals.get(i) && term == i){
-                return true;
-            }
-            if(spec.nonterminals.get(i) && contextSets.getFirst(i).get(term)){
-                return true;
-            }
-        }
-        return false;
+        return counterexampleFromShortestPath(shortestLookaheadSensitivePath);
     }
 
     /**
@@ -362,6 +237,8 @@ public class CounterexampleSearchGraphs {
                 // - Make a transition on the next symbol of the items, if they are the same.
                 // - Take a production step, avoiding duplicates as necessary.
                 if(si1sym == si2sym){
+                    // in this case, find the sequence of possible transitions on nullable symbols (the nullable closure)
+                    //and add all subsequences of those to the search queue
                     StateItem nextSI1 = transitionTables.getTransition(si1,si1sym);
                     StateItem nextSI2 = transitionTables.getTransition(si2,si2sym);
                     LinkedList<Derivation> derivs1 = new LinkedList<>();
@@ -402,28 +279,31 @@ public class CounterexampleSearchGraphs {
                     }
 
                 }
-                //take a production step if possible
+                //have the first parser take a production step if possible
                 if(spec.nonterminals.get(si1sym) && productionStepTables.prodTable.containsKey(si1)){
                     BitSet prodSteps = productionStepTables.prodTable.get(si1);
 
+                    //contains all possible productions for the state, we will take all production steps allowed by
+                    // the production step table and loop over each, adding the search states where we have taken the
+                    // production steps to the queue
+                    LR0ItemSet possibleItems = dfa.getItemSet(si1.getState());
                     for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1) ){
                         if(spec.pr.getRHSLength(si1.getProduction()) != si1.getDotPosition() ||
                                 !compatible(spec.pr.getRHSSym(si1.getProduction(),si1.getDotPosition()),si2sym)){
                             continue;
                         }
-                        //TODO better names
-                        LR0ItemSet itemSet = dfa.getItemSet(si1.getState());
-                        if(!productionAllowed(si1.getProduction(),itemSet.getProduction(i))){
+                        if(!productionAllowed(si1.getProduction(),possibleItems.getProduction(i))){
                             continue;
                         }
-                        //TODO make less bad
-                        StateItem next = new StateItem(si1.getState(),itemSet.getProduction(i),
-                                itemSet.getPosition(i),lookaheadSets.getLookahead(si1.getState(),i));
+                        //create a new state item from the newly selected production
+                        StateItem next = new StateItem(si1.getState(),possibleItems.getProduction(i),
+                                possibleItems.getPosition(i),lookaheadSets.getLookahead(si1.getState(),i));
                         LinkedList<Derivation> derivs1 = new LinkedList<>();
                         LinkedList<StateItem> states1 = new LinkedList<>();
                         states1.add(next);
-                        //TODO does this work like in the reference code?
-                        nullableClosure(itemSet.getProduction(i), 0, next, states1, derivs1);
+
+                        //add the nullable closure (and all possible subsequences) of the new production item
+                        nullableClosure(possibleItems.getProduction(i), 0, next, states1, derivs1);
                         for (int j = 0, size1 =
                              derivs1.size(); j <= size1; j++) {
                             LinkedList<Derivation> subderivs1 =
@@ -439,28 +319,32 @@ public class CounterexampleSearchGraphs {
 
                     }
                 }
-                //take a production step along the other path if possible
+                //have the second parser take a production step if possible
                 if(spec.nonterminals.get(si2sym) && productionStepTables.prodTable.containsKey(si2)){
                     BitSet prodSteps = productionStepTables.prodTable.get(si2);
 
+                    //contains all possible productions for the state, we will take all production steps allowed by
+                    // the production step table and loop over each, adding the search states where we have taken the
+                    // production steps to the queue
+                    LR0ItemSet possibleItems = dfa.getItemSet(si2.getState());
                     for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1) ){
                         if(spec.pr.getRHSLength(si2.getProduction()) != si2.getDotPosition() ||
                                 !compatible(spec.pr.getRHSSym(si2.getProduction(),si2.getDotPosition()),si1sym)){
                             continue;
                         }
-                        //TODO better names
-                        LR0ItemSet itemSet = dfa.getItemSet(si2.getState());
-                        if(!productionAllowed(si2.getProduction(),itemSet.getProduction(i))){
+                        if(!productionAllowed(si2.getProduction(),possibleItems.getProduction(i))){
                             continue;
                         }
-                        //TODO make less bad
-                        StateItem next = new StateItem(si2.getState(),itemSet.getProduction(i),
-                                itemSet.getPosition(i),lookaheadSets.getLookahead(si2.getState(),i));
+
+                        //create a new state item from the newly selected production
+                        StateItem next = new StateItem(si2.getState(),possibleItems.getProduction(i),
+                                possibleItems.getPosition(i),lookaheadSets.getLookahead(si2.getState(),i));
                         LinkedList<Derivation> derivs2 = new LinkedList<>();
                         LinkedList<StateItem> states2 = new LinkedList<>();
                         states2.add(next);
-                        //TODO does this work like in the reference code?
-                        nullableClosure(itemSet.getProduction(i), 0, next, states2, derivs2);
+
+                        //add the nullable closure (and all possible subsequences) of the new production item
+                        nullableClosure(possibleItems.getProduction(i), 0, next, states2, derivs2);
                         for (int j = 0, size1 =
                              derivs2.size(); j <= size1; j++) {
                             LinkedList<Derivation> subderivs2 =
@@ -475,13 +359,14 @@ public class CounterexampleSearchGraphs {
                         }
                     }
                 }
-            //one path requires a reduction
+            //at least one path requires a reduction
             } else {
                 int len1 = spec.pr.getRHSLength(si1.getProduction());
                 int len2 = spec.pr.getRHSLength(si2.getProduction());
                 boolean ready1 = si1reduce && ss.states1.size() > len1;
-                //derivs not being updated correctly relative to the number of states? getting out of bounds errors
                 boolean ready2 = si2reduce && ss.states2.size() > len2;
+
+                //self documenting: if the reductions are ready, add all possible reduction steps to the queue
                 if(ready1) {
                     LinkedList<UnifiedSearchState> reduced1 = ss.reduce(si2sym,true);
                     if (ready2) {
@@ -497,14 +382,15 @@ public class CounterexampleSearchGraphs {
                             add(pq, visited, candidate);
                         }
                     }
-                } else if (ready2) { // NOTE this used to have `ss.derivs2.size() > len2` as a req, should be fine, but noting in case it becomes a failure point later.
+                // NOTE this used to have `ss.derivs2.size() > len2` as a req, should be fine, but noting in case it becomes a failure point later.
+                } else if (ready2) {
                     LinkedList<UnifiedSearchState> reduced2 = ss.reduce(si1sym,false);
                     for (UnifiedSearchState candidate : reduced2){
                         add(pq, visited, candidate);
                     }
                 }
-                // Otherwise, prepend to both paths.
-                // This prepares them both for a reduction
+                //neither are ready, but both are reduction items
+                //we have to prepend to parsers in order to prepare a reduction
                 else {
                     int sym;
                     if (si1reduce){
@@ -513,7 +399,7 @@ public class CounterexampleSearchGraphs {
                         sym = spec.pr.getRHSSym(si2.getProduction(),len2-ss.states2.size());
                     }
                     for(UnifiedSearchState prepended : ss.prepend(sym,
-                            ss.reduceDepth >= 0 ? reduceProductionSet : shortestContextSensitiveSet)){
+                            ss.reduceDepth >= 0 ? reduceProductionSet : shortestLookaheadSensitiveSet)){
                         add(pq,visited,prepended);
                     }
                 }
@@ -521,10 +407,138 @@ public class CounterexampleSearchGraphs {
         }
         System.out.println("Failed to find unifying counterexample, attempting non-unified");
         //TODO re-use the derivations generated while attempting to construct the unified counterexample here
-        return counterexampleFromShortestPath(shortestContextSensitivePath);
+        return counterexampleFromShortestPath(shortestLookaheadSensitivePath);
     }
 
 
+    /**
+     * Compute a list of StateItems that can make a transition on the given
+     * symbol to the given StateItem such that the resulting possible lookahead
+     * symbols are as given.
+     * @param si the stateItem to calculate transitions to
+     * @param lookahead The expected possible lookahead symbols
+     * @param guide If not null, restricts the possible parser states to this
+     *          set; otherwise, explore all possible parser states that can
+     *          make the desired transition.
+     * @return A LinkedList of StateItems that result from making a reverse transition
+     *          from this StateItem on the given symbol and lookahead set.
+     */
+    protected LinkedList<StateItem> reverseTransition(StateItem si, BitSet lookahead, BitSet guide){
+        LinkedList<StateItem> result = new LinkedList<>();
+        LinkedList<StateItem> init = new LinkedList<>();
+        init.add(si);
+
+        if(si.getDotPosition() > 0){
+            Set<StateItem> prevs = transitionTables.revTrans.get(si);
+            if(prevs == null) {
+                return result;
+            }
+            for(StateItem prev : prevs){
+                if(guide != null && !guide.get(prev.getState())){
+                    continue;
+                }
+                if(lookahead != null && !lookahead.intersects(prev.getLookahead())){
+                    continue;
+                }
+                result.add(prev);
+            }
+            return result;
+        }
+        result.addAll(reverseProduction(si,si.getLookahead()));
+        return result;
+    }
+
+    /**
+     * Computes a list of possible StateItems that could take a production step to reach the given StateItem
+     * @param si the StateItem the output StateItems can take a production step to reach
+     * @param lookahead a guide to restrict the output StateItems to only those that
+     * @return A list of StateItems that can take a production step to reach {@code si}
+     */
+    protected LinkedList<StateItem> reverseProduction(StateItem si, BitSet lookahead){
+        LinkedList<StateItem> result = new LinkedList<>();
+        BitSet[] revProd = productionStepTables.revProdTable[si.getState()];
+        LR0ItemSet lr0Items = dfa.getItemSet(si.getState());
+
+        if(revProd == null){
+            return result;
+        }
+
+        int prod = si.getProduction();
+        BitSet prevs = revProd[spec.pr.getLHS(prod)];
+
+        if(prevs == null){
+            return result;
+        }
+
+        //for every production item that can take a production step to the input StateItem
+        for(int i = prevs.nextSetBit(0); i>=0; i = prevs.nextSetBit(i+1)){
+            int prevProd = lr0Items.getProduction(i);
+            int prevDotPos = lr0Items.getPosition(i);
+            BitSet prevLookahead = lookaheadSets.getLookahead(si.getState(),i);
+            //there's a check in the reference implementation here to see if prevProd can come before prod
+            // but it only checks precedence, which doesn't seem relevant here.
+            StateItem prevSi = new StateItem(si.getState(),prevProd,prevDotPos,prevLookahead);
+            int prevLen = spec.pr.getRHSLength(prevProd);
+
+            //reduce item
+            if(prevDotPos == prevLen){
+                if(!prevLookahead.intersects(lookahead)){
+                    continue;
+                }
+            }
+            //shift item
+            else {
+                if(lookahead != null){
+                    boolean applicable = false;
+                    boolean nullable = true;
+                    //for every symbol on the RHS of the dot in the production item that can take a production step to
+                    // the input StateItem
+                    for (int pos = prevDotPos; !applicable && nullable && pos < prevLen; pos++) {
+                        int nextSym = spec.pr.getRHSSym(prevProd,pos);
+                        //the next expected symbol is a terminal, so it is not nullable by definition
+                        if(spec.terminals.get(nextSym)){
+                            applicable = terminalIntersects(nextSym,lookahead);
+                            nullable = false;
+                        } else if(spec.nonterminals.get(nextSym)){
+                            applicable = lookahead.intersects(contextSets.getFirst(nextSym));
+                            if(!applicable){
+                                nullable = contextSets.isNullable(nextSym);
+                            }
+                        }
+                    }
+                    if (!applicable && !nullable) {
+                        continue;
+                    }
+                }
+            }
+            result.add(prevSi);
+        }
+        return result;
+    }
+
+    /**
+     * Calculates if a terminal is either in a lookahead set, or if it can be derived by a non-terminal in the set
+     * @param term the terminal to check
+     * @param lookahead the lookahead set to see if the terminal is inside
+     * @return if the terminal is in or derivable by something in the lookahead set
+     */
+    private boolean terminalIntersects(int term, BitSet lookahead) {
+        for(int i = lookahead.nextSetBit(0); i>=0; i = lookahead.nextSetBit(i+1)){
+            if(spec.terminals.get(i) && term == i){
+                return true;
+            }
+            if(spec.nonterminals.get(i) && contextSets.getFirst(i).get(term)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Determines if two state items are the same up to the dot.
+     * @return if the state items have the same symbols up to the dot.
+     */
     private boolean hasCommonPrefex(StateItem si1, StateItem si2) {
         if(si1.getDotPosition() != si2.getDotPosition()){
             return false;
@@ -537,6 +551,11 @@ public class CounterexampleSearchGraphs {
         return true;
     }
 
+    /**
+     * marks the given search state as visited in the given map.
+     * @param visited the map representing visited search states
+     * @param ss the search state to mark as visited
+     */
     private void visited(HashMap<LinkedList<StateItem>, HashSet<LinkedList<StateItem>>> visited, UnifiedSearchState ss) {
         HashSet<LinkedList<StateItem>> visited1 = visited.get(ss.states1);
         if (visited1 == null) {
@@ -546,6 +565,12 @@ public class CounterexampleSearchGraphs {
         visited1.add(ss.states2);
     }
 
+    /**
+     * Adds a search state to the priority queue if it has not already been visited
+     * @param pq the priority queue of search states to be searched
+     * @param visited A map representing the visited search states
+     * @param ss the search state to add
+     */
     private void add(PriorityQueue<UnifiedSearchState> pq, HashMap<LinkedList<StateItem>,
             HashSet<LinkedList<StateItem>>> visited, UnifiedSearchState ss) {
         HashSet<LinkedList<StateItem>> visited1 = visited.get(ss.states1);
@@ -556,8 +581,15 @@ public class CounterexampleSearchGraphs {
 
     }
 
-    //todo comment
-    public ArrayList<StateItem> findShortestContextSensitivePath(StateItem target){
+    //TODO logic comments
+    //TODO clean up
+
+    /**
+     * finds the shortest path to a target state item that respects the lookahead sets of each state in the path.
+     * @param target the state item at the end of the path.
+     * @return the shortest path to {@code target} that takes the lookahead of each state into account.
+     */
+    public ArrayList<StateItem> findShortestLookaheadSensitivePath(StateItem target){
         Set<StateItem> possibleStateItems = eligibleStateItems(target);
 
         Queue<LinkedList<LookaheadSensitiveGraphVertex>> queue = new LinkedList<>();
@@ -626,11 +658,9 @@ public class CounterexampleSearchGraphs {
         throw new Error("Cannot find shortest path along lookahead sensitive graph");
     }
 
-    //TODO comment
+    //TODO javadoc comment
+    //TODO comment logic
     private Set<StateItem> eligibleStateItems(StateItem target){
-        //It's between using a hashSet and creating a flat array of all possible stateItems with arbitrary positions
-        //and doing bitsets of indices into that
-        //I might go to that point if performance becomes too big of an issue, but this should be fine.
         Set<StateItem> result = new HashSet<>();
         Queue<StateItem> queue = new LinkedList<>();
         queue.add(target);
@@ -659,7 +689,8 @@ public class CounterexampleSearchGraphs {
         return result;
     }
 
-    /** places the followL set of a production into an arrayList
+    /**
+     * places the followL set of a production into an arrayList
      * where followL is defined on page 4 of "Finding Counterexamples from Parsing Conflicts" by Isradisaikul & Myers
      *
      * @param production - the production in the LR0 item.
@@ -703,6 +734,13 @@ public class CounterexampleSearchGraphs {
         return counterexampleFromShortestPath(shortestPath,null,null);
     }
 
+    /**
+     * generates a non-unifying example from the shortest path.
+     * @param shortestPath the path to base the example upon
+     * @param derivs1 A partially completed derivation of the first part of the example. May be null.
+     * @param derivs2 A partially completed derivation of the second part of the example. May be null.
+     * @return A non-unifying counter-example that is the same up at least until the conflict point.
+     */
     private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath,
                                                           LinkedList<Derivation> derivs1, LinkedList<Derivation> derivs2){
         //for reduce/reduce errors, just find the path to the other conflict item
@@ -712,7 +750,7 @@ public class CounterexampleSearchGraphs {
         }
         if(!isShiftReduce){
             StateItem si = new StateItem(conflictState,conflictItem2.getProduction(),conflictItem2.getDotPosition(),conflictItem2.getLookahead());
-            ArrayList<StateItem> shortestPath2 = findShortestContextSensitivePath(si);
+            ArrayList<StateItem> shortestPath2 = findShortestLookaheadSensitivePath(si);
             Derivation deriv1 = completeNonUnifyingExample(shortestPath,derivs1);
             Derivation deriv2 = completeNonUnifyingExample(shortestPath2,derivs2);
             return new Counterexample(deriv1,deriv2,isShiftReduce);
@@ -724,6 +762,8 @@ public class CounterexampleSearchGraphs {
         return new Counterexample(deriv1,deriv2,isShiftReduce);
     }
 
+    //TODO javadoc comment
+    //TODO review logic comments
     private ArrayList<StateItem> findShiftConflictPath(ArrayList<StateItem> shortestPath) {
         //Perform a breadth first search to find a path from the shift conflict stateItem to the start stateItem
         //We use information from the shortest path to limit the search, only adding states if they are
@@ -884,7 +924,7 @@ public class CounterexampleSearchGraphs {
      * Repeatedly take production steps on the given StateItem so that the
      * first symbol of the derivation matches the conflict symbol.
      * @param start The StateItem to start with.
-     * @return A sequence of derivation of {@code start} that ends with
+     * @return A sequence of derivations of {@code start} that ends with
      *          the conflict symbol.
      */
     private LinkedList<Derivation> expandFirst(StateItem start) {
@@ -899,13 +939,15 @@ public class CounterexampleSearchGraphs {
             StateItem lastSI = states.getLast();
             int symbolAfterDot = spec.pr.getRHSSym(lastSI.getProduction(), lastSI.getDotPosition());
             if(symbolAfterDot == conflictTerminal){
-                //we're done
+                //the conflict symbol has been reached, consolidate list of states into a list of derivations
                 LinkedList<Derivation> result = new LinkedList<>();
                 result.add(new Derivation(symbolTable.getSymbolString(conflictTerminal)));
                 for(int i = states.size() - 1; i >= 0 ; i--){
                     StateItem si = states.get(i);
                     int pos = si.getDotPosition();
                     int prod = si.getProduction();
+                    //if the dot position is at the start, construct the derivation with all symbols on the RHS of the production
+                    //  as singleton (unexpanded) child derivations
                     if (pos == 0) {
                         int len = spec.pr.getRHSLength(prod);
                         for (int j = pos + 1; j < len; j++) {
@@ -915,7 +957,10 @@ public class CounterexampleSearchGraphs {
                         Derivation deriv = new Derivation(symbolTable.getSymbolString(lhs), result);
                         result = new LinkedList<>();
                         result.add(deriv);
-                    } else {
+                    }
+                    //otherwise, add as singleton derivation on the symbol before the dot
+                    // the rest of the derivation will be constructed in a later iteration of the loop
+                    else {
                         Derivation deriv = new Derivation(symbolTable.getSymbolString(spec.pr.getRHSSym(prod,pos-1)));
                         result.addFirst(deriv);
                     }
@@ -923,6 +968,7 @@ public class CounterexampleSearchGraphs {
                 result.removeFirst();
                 return result;
             }
+            //if the symbol after the dot is a non-terminal, add any valid production steps to the search
             if(spec.nonterminals.get(symbolAfterDot)){
                 BitSet prodSteps = productionStepTables.getProdSteps(lastSI);
                 for(int i = prodSteps.nextSetBit(0); i >= 0; i = prodSteps.nextSetBit(i+1)){
@@ -937,7 +983,6 @@ public class CounterexampleSearchGraphs {
                     queue.add(next);
                 }
                 if(contextSets.isNullable(symbolAfterDot)){
-
                     StateItem nextSI = transitionTables.getTransition(lastSI,symbolAfterDot);
                     LinkedList<StateItem> next = new LinkedList<>(states);
                     next.add(nextSI);
@@ -948,6 +993,10 @@ public class CounterexampleSearchGraphs {
         throw new Error("Invalid state reached in expandFirst");
     }
 
+    /**
+     * A search state representing two simulated parsers.
+     * This is the "configuration" described in Isradisaikul & Myers.
+     */
     protected class UnifiedSearchState implements Comparable<UnifiedSearchState> {
         //a list of derivations that simulates the  parse stack,
         //and a list of state items representing the state transitions the parser takes (with explicit production steps)
@@ -1010,6 +1059,7 @@ public class CounterexampleSearchGraphs {
                     shiftDepth);
         }
 
+        //TODO comment logic
         /**
          * prepends a symbol to the current configuration if possible
          *
@@ -1077,6 +1127,7 @@ public class CounterexampleSearchGraphs {
             return result;
         }
 
+        //TODO comment logic
         /**
          * Reduces the search state for one of the simulated parsers.
          * @param sym symbol that follows the production item for the relevant parser
@@ -1128,8 +1179,8 @@ public class CounterexampleSearchGraphs {
             derivs.add(deriv);
             if (states.size() == len + 1) {
                 //was not null before, should probably be that again
-                LinkedList<LookaheadSensitiveGraphVertex> prev = reverseProduction(states.getFirst(),symbolSet);
-                for (LookaheadSensitiveGraphVertex prevV : prev) {
+                LinkedList<StateItem> prev = reverseProduction(states.getFirst(),symbolSet);
+                for (StateItem prevV : prev) {
                     UnifiedSearchState copy = copy();
                     if(isOne){
                         copy.derivs1 = derivs;
@@ -1137,7 +1188,7 @@ public class CounterexampleSearchGraphs {
                         copy.derivs2 = derivs;
                     }
                     LinkedList<StateItem> copyStates = new LinkedList<>(states.subList(0, states.size() - len - 1));
-                    copyStates.addFirst(prevV.stateItem);
+                    copyStates.addFirst(prevV);
                     copyStates.add(transitionTables.trans.get(copyStates.getLast())[lhs]);
 
                     int statesSize = copyStates.size();

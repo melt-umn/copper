@@ -42,7 +42,6 @@ public class TransitionFunctionTables {
         trans = new Hashtable<>();
         revTrans = new Hashtable<>();
 
-        //TODO comment
         //Initialize the tables
         //for each state
         for (int i = 0; i < dfa.size(); i++) {
@@ -72,6 +71,7 @@ public class TransitionFunctionTables {
                         //if it isn't, try the next item.
                         continue;
                     }
+                    //if it is, construct the relevant state items and then put them into the tables
                     StateItem srcStateItem =
                             new StateItem(i, srcProduction, srcItemSet.getPosition(j), lookaheads.getLookahead(i,j));
                     StateItem dstStateItem =

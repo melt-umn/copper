@@ -36,6 +36,7 @@ public class CounterexampleMessage implements CompilerLogMessage {
 
     public boolean isFatalError(){ return false;}
 
+    //TODO add a flag to disable attemping the unified example and just do the non-unified example
     @Override
     public String toString(){
 //      return counterExampleSearchGraphs.getNonUnifyingCounterexample().toString();
