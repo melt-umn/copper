@@ -581,11 +581,9 @@ public class CounterexampleSearchGraphs {
 
     }
 
-    //TODO logic comments
-    //TODO clean up
-
     /**
      * finds the shortest path to a target state item that respects the lookahead sets of each state in the path.
+     * This step is required for both unified and non-unified counterexamples.
      * @param target the state item at the end of the path.
      * @return the shortest path to {@code target} that takes the lookahead of each state into account.
      */
@@ -608,7 +606,6 @@ public class CounterexampleSearchGraphs {
             }
             visited.add(last);
             if(target.equals(last.stateItem) && last.lookahead.get(conflictTerminal)){
-                //TODO print process info and such
                 //success, copy to ArrayList for efficient access
                 ArrayList<StateItem> shortestConflictPath = new ArrayList<>(path.size());
                 for (LookaheadSensitiveGraphVertex v : path){
@@ -622,7 +619,6 @@ public class CounterexampleSearchGraphs {
                     if(tranDst == null){
                         continue;
                     }
-                    //TODO maybe using an array here isn't great if it's almost always null...
                     if(!possibleStateItems.contains(tranDst)){
                         continue;
                     }
@@ -632,18 +628,16 @@ public class CounterexampleSearchGraphs {
                     queue.add(nextPath);
                 }
             }
+            //add all production steps to the search queue
             if(productionStepTables.getProdSteps(last.stateItem) != null){
-                int len = spec.pr.getRHSLength(last.getProduction());
                 BitSet newLookahead = followL(last.getProduction(),last.getDotPosition(),last.lookahead);
                 BitSet productionSteps = productionStepTables.getProdSteps(last.stateItem);
 
                 //for each possible item reached via a production step
                 LR0ItemSet stateItems = dfa.getItemSet(last.getState());
                 for(int i = productionSteps.nextSetBit(0); i >= 0; i = productionSteps.nextSetBit(i+1)) {
-                    //TODO refactor to use a memoized lookup table if this uses too much memory
                     BitSet l = lookaheadSets.getLookahead(last.getState(),i);
                     StateItem pStateItem = new StateItem(last.getState(),stateItems.getProduction(i),stateItems.getPosition(i),l);
-                    //TODO fix possibleStateItems and re-add this check
                     if(!possibleStateItems.contains(pStateItem)){
                         continue;
                     }
@@ -658,8 +652,12 @@ public class CounterexampleSearchGraphs {
         throw new Error("Cannot find shortest path along lookahead sensitive graph");
     }
 
-    //TODO javadoc comment
-    //TODO comment logic
+    /**
+     * computes the set of state items that may be used in a path to reach the target state.
+     * works by performing a breadth-first search on reverse production steps and reverse transitions.
+     * @param target the destination StateItem.
+     * @return any StateItems that may be in a path to {@code target}.
+     */
     private Set<StateItem> eligibleStateItems(StateItem target){
         Set<StateItem> result = new HashSet<>();
         Queue<StateItem> queue = new LinkedList<>();
@@ -674,6 +672,7 @@ public class CounterexampleSearchGraphs {
             if(transitionTables.revTrans.containsKey(s)){
                 queue.addAll(transitionTables.revTrans.get(s));
             }
+            //consider reverse production steps
             if(s.getDotPosition() == 0){
                 int lhs = spec.pr.getLHS(s.getProduction());
                 BitSet revProd = productionStepTables.getRevProdSteps(s.getState(),lhs);
@@ -762,8 +761,12 @@ public class CounterexampleSearchGraphs {
         return new Counterexample(deriv1,deriv2,isShiftReduce);
     }
 
-    //TODO javadoc comment
-    //TODO review logic comments
+    /**
+     * Finds the shortest path to the shift conflict StateItem, using the path to the reduce conflict StateItem
+     * to guide the search.
+     * @param shortestPath the shortest lookahead-sensitive path to the reduce conflict item.
+     * @return the shortest lookaheads-sensitive path to the shift conflict item.
+     */
     private ArrayList<StateItem> findShiftConflictPath(ArrayList<StateItem> shortestPath) {
         //Perform a breadth first search to find a path from the shift conflict stateItem to the start stateItem
         //We use information from the shortest path to limit the search, only adding states if they are
@@ -790,11 +793,8 @@ public class CounterexampleSearchGraphs {
             LinkedList<ShiftConflictSearchNode> path = queue.remove();
             ShiftConflictSearchNode head = path.getFirst();
 
-            //TODO if the head stateItem is in the shortest path, we should finish and re-use the shortest path from there.
-            //TODO fix the stateItem equality function, this is dumb
-            if(head.getStateItem().getState() == startVertex.getState() &&
-                    head.getStateItem().getProduction() == startVertex.getProduction() &&
-                    head.getStateItem().getDotPosition() == startVertex.getDotPosition() ||
+            //we're at the start state, so we have our path
+            if(head.getStateItem().equals(startVertex.stateItem) ||
                     head.getStateItem().getState() == 0){
                 ArrayList<StateItem> result = new ArrayList<>(path.size());
 
@@ -1059,7 +1059,6 @@ public class CounterexampleSearchGraphs {
                     shiftDepth);
         }
 
-        //TODO comment logic
         /**
          * prepends a symbol to the current configuration if possible
          *
@@ -1077,6 +1076,7 @@ public class CounterexampleSearchGraphs {
 
             LinkedList<UnifiedSearchState> result = new LinkedList<>();
 
+            //can't prepend, just return the empty list
             if (transitionTables.prevSymbol[si1src.getState()] != sym || transitionTables.prevSymbol[si2src.getState()] != sym) {
                 return result;
             }
@@ -1084,10 +1084,12 @@ public class CounterexampleSearchGraphs {
             LinkedList<StateItem> prev1ext = reverseTransition(si1src, si1Lookahead, guide);
             LinkedList<StateItem> prev2ext = reverseTransition(si2src, si2Lookahead, guide);
 
+            //for every 2 possible reverse transition state items we could prepend...
             for (StateItem prevSI1 : prev1ext) {
                 for (StateItem prevSI2 : prev2ext) {
                     boolean prev1IsSrc = prevSI1.equals(si1src);
                     boolean prev2IsSrc = prevSI2.equals(si2src);
+                    //would be prepending the state to itself on both parts of the configuration
                     if (prev1IsSrc && prev2IsSrc) {
                         continue;
                     }
@@ -1103,6 +1105,8 @@ public class CounterexampleSearchGraphs {
                         copy.states1.get(1).getDotPosition()) {
                         if (copy.states2.get(0).getDotPosition() + 1 ==
                             copy.states2.get(1).getDotPosition()) {
+                            //the expected symbol for the new state item is the symbol that already exists in the
+                            // configuration, so we can prepend
                             Derivation deriv = new Derivation(symbolTable.getSymbolString(sym));
                             copy.derivs1.addFirst(deriv);
                             copy.derivs2.addFirst(deriv);
@@ -1159,6 +1163,7 @@ public class CounterexampleSearchGraphs {
             int prod = lastItem.getProduction();
             int lhs = spec.pr.getLHS(prod);
             int len = spec.pr.getRHSLength(prod);
+            //TODO what was this used for?
             int derivSize = derivs.size();
             Derivation deriv = new Derivation(symbolTable.getSymbolString(lhs),
                     new LinkedList<>(derivs.subList(derivs.size() - len, derivs.size())));

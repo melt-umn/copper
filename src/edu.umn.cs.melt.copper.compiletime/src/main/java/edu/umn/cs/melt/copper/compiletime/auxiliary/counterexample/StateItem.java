@@ -10,9 +10,6 @@ public class StateItem {
     private int dotPosition;
     private BitSet lookahead;
 
-    //TODO: make a memoized lookup table?
-    // The fact it would be a 3d array makes me feel like that's a less than ideal solution
-
     public StateItem(int state, int production, int dotPosition, BitSet lookahead) {
         this.state = state;
         this.production = production;
@@ -24,12 +21,15 @@ public class StateItem {
     //TODO fix this, not working somehow.
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !getClass().equals(o.getClass()))
+            return false;
 
         StateItem stateItem = (StateItem) o;
 
-        if (state != stateItem.state) return false;
-        if (production != stateItem.production) return false;
+        if (state != stateItem.state)
+            return false;
+        if (production != stateItem.production)
+            return false;
         return dotPosition == stateItem.dotPosition;
     }
 
