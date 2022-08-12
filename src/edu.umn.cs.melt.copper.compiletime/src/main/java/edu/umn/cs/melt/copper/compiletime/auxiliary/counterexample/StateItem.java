@@ -25,7 +25,7 @@ public class StateItem {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || !getClass().equals(o.getClass()))
+        if (!(o instanceof StateItem))
             return false;
 
         StateItem stateItem = (StateItem) o;

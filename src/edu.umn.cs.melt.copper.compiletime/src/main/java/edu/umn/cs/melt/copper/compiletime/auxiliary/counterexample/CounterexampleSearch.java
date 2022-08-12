@@ -81,15 +81,17 @@ public class CounterexampleSearch {
         LR0ItemSet conflictStateItems = dfa.getItemSet(conflictState);
         if(isShiftReduce){
             conflictItem1Production = conflict.reduce.nextSetBit(0);
+            conflictItem1Position = spec.pr.getRHSLength(conflictItem1Production);
 
-            //find dot position for the reduce production
+            //find the lookaheadSet for the reduce production
             for(int i = 0; i<conflictStateItems.size(); i++){
-                if(conflictStateItems.getProduction(i) == conflictItem1Production){
-                    conflictItem1Position = conflictStateItems.getPosition(i);
+                if(conflictStateItems.getProduction(i) == conflictItem1Production &&
+                    conflictStateItems.getPosition(i) == conflictItem1Position){
                     conflictItem1Lookahead = lookaheadSets.getLookahead(conflictState,i);
                     break;
                 }
             }
+
             if(conflictItem1Position == -1){
                 System.out.println("conflictItem1Production: " + conflictItem1Production);
                 throw new Error("Failed to find reduce conflict item");
@@ -99,10 +101,6 @@ public class CounterexampleSearch {
             for(int i = 0; i < conflictStateItems.size(); i++ ){
                 int prod = conflictStateItems.getProduction(i);
                 int pos = conflictStateItems.getPosition(i);
-
-                if(pos == 0){
-                    continue;
-                }
 
                 //If the dot is directly after the conflict terminal, it is the shift conflict item
                 if(spec.pr.getRHSSym(prod,pos) == conflictTerminal){

@@ -47,7 +47,7 @@ public class CounterexampleMessage implements CompilerLogMessage {
     @Override
     public String toString(){
         // return counterExampleSearch.getNonUnifyingCounterexample().toString();
-        return counterexampleSearch.toString();
+        return counterexampleSearch.getExample().toString();
     }
 
 
