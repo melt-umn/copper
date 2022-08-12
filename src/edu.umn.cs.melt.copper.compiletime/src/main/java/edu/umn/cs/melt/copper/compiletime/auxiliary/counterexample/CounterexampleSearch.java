@@ -10,19 +10,26 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
 import java.util.*;
 
-//TODO redo this javadodc comment
 /**
- * A digraph that is searched in the creation of non-unifying counterexamples to
- * non-lalr parsers. Does not use {@link edu.umn.cs.melt.copper.compiletime.spec.numeric.Digraph},
- * as the number of vertices is not initially known.
- * Wrapper around {@link LookaheadSensitiveGraphVertex}
+ * The business logic for finding counter examples for parsing conflicts.
+ * Reading "Finding Counterexamples from Parsing Conflicts" by Isradisaikul & Myers 
+ * is highly recommended before attempting to edit this code. 
+ * This is a more or less direct implementation of the process discussed in that paper.
+ * The key function is {@link CounterexampleSearch#getExample()}} which attempts to find a unifying counter examples
+ * (2 derivations with exactly the same symbols), and then failing that, one that is the same up until the conflict symbol.
+ * {@link UnifiedSearchState} are the configurations described in the paper.
+ * Most of the functions on configurations require information used in other parts of the search, so
+ * for the sake of keeping the code clean, they are implemented as an inner class.
+ * @author Kelton OBrien
  */
-public class CounterexampleSearchGraphs {
+public class CounterexampleSearch {
 
     protected static final int PRODUCTION_COST = 50;
     protected static final int REDUCE_COST = 1;
     protected static final int SHIFT_COST = 1;
     protected static final int UNSHIFT_COST = 1;
+    protected static final long ASSURANCE_LIMIT = 2 * 1000000000L;
+    protected static final long TIME_LIMIT = 5 * 1000000000L;
 
     private LookaheadSensitiveGraphVertex startVertex;
 
@@ -48,10 +55,10 @@ public class CounterexampleSearchGraphs {
     private BitSet shortestLookaheadSensitiveSet = new BitSet();
     private BitSet reduceProductionSet = new BitSet();
 
-    public CounterexampleSearchGraphs(LRParseTableConflict conflict,
-                                      ParserSpec spec, PSSymbolTable symbolTable,
-                                      ContextSets contextSets, LRLookaheadSets lookaheadSets,
-                                      LR0DFA dfa) {
+    public CounterexampleSearch(LRParseTableConflict conflict,
+                                ParserSpec spec, PSSymbolTable symbolTable,
+                                ContextSets contextSets, LRLookaheadSets lookaheadSets,
+                                LR0DFA dfa) {
 
         conflictState = conflict.getState();
         this.conflictTerminal = conflict.getSymbol();
@@ -174,7 +181,7 @@ public class CounterexampleSearchGraphs {
     }
 
     public Counterexample getNonUnifyingCounterexample(){
-        return counterexampleFromShortestPath(shortestLookaheadSensitivePath);
+        return counterexampleFromShortestPath();
     }
 
     /**
@@ -193,7 +200,12 @@ public class CounterexampleSearchGraphs {
         add(pq,visited,initial);
         //timer
         long start = System.nanoTime();
+        boolean assurancePrinted = false;
         UnifiedSearchState stage3result = null;
+        //One can think of the search as being A* on a digraph, where the heuristic is complexity of parser state paths
+        // In other words, we simulate searching a directed graph of possible parser states
+        // by placing paths of parser states into a priority queue, and adding all paths that are the same but with
+        // a single node added to the end back into the queue if it is not a unifying counter example.
         while(!pq.isEmpty()){
             UnifiedSearchState ss = pq.remove();
             StateItem si1src = ss.states1.get(0);
@@ -218,8 +230,18 @@ public class CounterexampleSearchGraphs {
                     }
                 }
             }
-            //TODO check the timer here (and print a message saying that it's still working if need be)
-            System.out.println("here! This is where we will check the timer.");
+            if (!assurancePrinted
+                    && System.nanoTime() - start > ASSURANCE_LIMIT
+                    && stage3result != null) {
+                System.err.println("Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...");
+                assurancePrinted = true;
+            }
+            if (System.nanoTime() - start > TIME_LIMIT) {
+                System.err.println("time limit exceeded: "
+                        + (System.nanoTime() - start));
+                System.err.println("Finding non-unifying example");
+                return counterexampleFromShortestPath();
+            }
 
             //Compute the successor configurations
             StateItem si1 = ss.states1.getLast();
@@ -405,9 +427,9 @@ public class CounterexampleSearchGraphs {
                 }
             }
         }
-        System.out.println("Failed to find unifying counterexample, attempting non-unified");
+        System.err.println("Failed to find unifying counterexample, attempting non-unified");
         //TODO re-use the derivations generated while attempting to construct the unified counterexample here
-        return counterexampleFromShortestPath(shortestLookaheadSensitivePath);
+        return counterexampleFromShortestPath();
     }
 
 
@@ -729,8 +751,8 @@ public class CounterexampleSearchGraphs {
         }
     }
 
-    private Counterexample counterexampleFromShortestPath(ArrayList<StateItem> shortestPath){
-        return counterexampleFromShortestPath(shortestPath,null,null);
+    private Counterexample counterexampleFromShortestPath(){
+        return counterexampleFromShortestPath(shortestLookaheadSensitivePath,null,null);
     }
 
     /**
@@ -995,6 +1017,8 @@ public class CounterexampleSearchGraphs {
 
     /**
      * A search state representing two simulated parsers.
+     * Represents two paths parser states and their associated derivations,
+     * used for finding unifying counter examples.
      * This is the "configuration" described in Isradisaikul & Myers.
      */
     protected class UnifiedSearchState implements Comparable<UnifiedSearchState> {
@@ -1131,7 +1155,6 @@ public class CounterexampleSearchGraphs {
             return result;
         }
 
-        //TODO comment logic
         /**
          * Reduces the search state for one of the simulated parsers.
          * @param sym symbol that follows the production item for the relevant parser
@@ -1139,6 +1162,9 @@ public class CounterexampleSearchGraphs {
          * @return A list of all possible reductions for the parser
          */
         protected LinkedList<UnifiedSearchState> reduce(Integer sym, boolean isOne) {
+            //the configuration we are reducing. the actions are the same for each, we just need to worry about
+            //if we are reading/writing from {{state,derivs}1} or {{states,derivs},2}.
+            //this is what the isOne option controls.
             LinkedList<StateItem> states = isOne ? states1 : states2;
             LinkedList<Derivation> derivs = isOne ? derivs1 : derivs2;
             //If not a reduce item
@@ -1147,26 +1173,26 @@ public class CounterexampleSearchGraphs {
                 throw new Error("cannot reduce non-reduce item in search state" + this);
             }
 
-            LinkedList<UnifiedSearchState> result = new LinkedList<>();
-            BitSet symbolSet;
+            LinkedList<UnifiedSearchState> possibleTran = new LinkedList<>();
+            //the possible next symbol(s). Used to restrict what steps we take when reducing
+            BitSet lookaheadSymbolSet;
 
+            //if we know the exact symbol create a singleton, otherwise take the default.
             if (sym != null) {
                 if (!lastItem.getLookahead().get(sym)) {
-                    return result;
+                    return possibleTran;
                 }
-                symbolSet = new BitSet();
-                symbolSet.set(sym);
+                lookaheadSymbolSet = new BitSet();
+                lookaheadSymbolSet.set(sym);
             } else {
-                symbolSet = lastItem.getLookahead();
+                lookaheadSymbolSet = lastItem.getLookahead();
             }
 
             int prod = lastItem.getProduction();
-            int lhs = spec.pr.getLHS(prod);
-            int len = spec.pr.getRHSLength(prod);
-            //TODO what was this used for?
-            int derivSize = derivs.size();
-            Derivation deriv = new Derivation(symbolTable.getSymbolString(lhs),
-                    new LinkedList<>(derivs.subList(derivs.size() - len, derivs.size())));
+            int lhsProd = spec.pr.getLHS(prod);
+            int rhsLen = spec.pr.getRHSLength(prod);
+            Derivation deriv = new Derivation(symbolTable.getSymbolString(lhsProd),
+                    new LinkedList<>(derivs.subList(derivs.size() - rhsLen, derivs.size())));
 
             if(isOne){
                 if (reduceDepth == 0) {
@@ -1176,25 +1202,27 @@ public class CounterexampleSearchGraphs {
                 }
             } else {
                 if (shiftDepth == 0) {
+                    //same as the other case, just using the other conflict item
                     deriv.derivations.add(conflictItem2.getDotPosition(),Derivation.dot);
                 }
             }
 
-            derivs = new LinkedList<>(derivs.subList(0, derivs.size() - len));
+            derivs = new LinkedList<>(derivs.subList(0, derivs.size() - rhsLen));
             derivs.add(deriv);
-            if (states.size() == len + 1) {
-                //was not null before, should probably be that again
-                LinkedList<StateItem> prev = reverseProduction(states.getFirst(),symbolSet);
-                for (StateItem prevV : prev) {
+            //primed for a production step
+            if (states.size() == rhsLen + 1) {
+                LinkedList<StateItem> possibleRevProds = reverseProduction(states.getFirst(),lookaheadSymbolSet);
+                //take all possible production steps and add them to the results
+                for (StateItem revProd : possibleRevProds) {
                     UnifiedSearchState copy = copy();
                     if(isOne){
                         copy.derivs1 = derivs;
                     } else {
                         copy.derivs2 = derivs;
                     }
-                    LinkedList<StateItem> copyStates = new LinkedList<>(states.subList(0, states.size() - len - 1));
-                    copyStates.addFirst(prevV);
-                    copyStates.add(transitionTables.trans.get(copyStates.getLast())[lhs]);
+                    LinkedList<StateItem> copyStates = new LinkedList<>(states.subList(0, states.size() - rhsLen - 1));
+                    copyStates.addFirst(revProd);
+                    copyStates.add(transitionTables.getTransition(copyStates.getLast(),lhsProd));
 
                     int statesSize = copyStates.size();
                     int productionSteps = productionSteps(copyStates);
@@ -1214,16 +1242,17 @@ public class CounterexampleSearchGraphs {
                         }
                     }
 
-                    result.add(copy);
+                    possibleTran.add(copy);
                 }
             } else {
+                //can't take a production step, so we transition instead
                 UnifiedSearchState copy = copy();
                 if(isOne){
-                    copy.states1 = new LinkedList<>(states1.subList(0, states1.size() - len - 1));
-                    copy.states1.add(transitionTables.trans.get(copy.states1.getLast())[lhs]);
+                    copy.states1 = new LinkedList<>(states1.subList(0, states1.size() - rhsLen - 1));
+                    copy.states1.add(transitionTables.trans.get(copy.states1.getLast())[lhsProd]);
                 } else {
-                    copy.states2 = new LinkedList<>(states2.subList(0, states2.size() - len - 1));
-                    copy.states2.add(transitionTables.trans.get(copy.states2.getLast())[lhs]);
+                    copy.states2 = new LinkedList<>(states2.subList(0, states2.size() - rhsLen - 1));
+                    copy.states2.add(transitionTables.trans.get(copy.states2.getLast())[lhsProd]);
                 }
 
                 copy.complexity += REDUCE_COST;
@@ -1237,11 +1266,11 @@ public class CounterexampleSearchGraphs {
                         copy.shiftDepth--;
                     }
                 }
-                result.add(copy);
+                possibleTran.add(copy);
             }
             // transition on nullable symbols
             LinkedList<UnifiedSearchState> finalizedResult = new LinkedList<>();
-            for(UnifiedSearchState ss : result){
+            for(UnifiedSearchState ss : possibleTran){
                 StateItem next;
                 if(isOne){
                     next = ss.states1.getLast();
@@ -1256,6 +1285,8 @@ public class CounterexampleSearchGraphs {
                         statesNew,
                         derivsNew);
                 finalizedResult.add(ss);
+                //add all subsequences that start at the beginning of the output of nullable closure to the output
+                //these are the reductions
                 for (int i = 1, size1 = derivsNew.size(); i <= size1; i++) {
                     List<Derivation> subderivs =
                             new ArrayList<>(derivsNew.subList(0, i));
@@ -1336,8 +1367,8 @@ public class CounterexampleSearchGraphs {
             if(!contextSets.isNullable(sp)){
                 break;
             }
-            lastSI = transitionTables.trans.get(lastSI)[sp];
-            derivs.add(new Derivation(symbolTable.getSymbolString(sp), new LinkedList<Derivation>()));
+            lastSI = transitionTables.getTransition(lastSI,sp);
+            derivs.add(new Derivation(symbolTable.getSymbolString(sp)));
             states.add(lastSI);
         }
     }

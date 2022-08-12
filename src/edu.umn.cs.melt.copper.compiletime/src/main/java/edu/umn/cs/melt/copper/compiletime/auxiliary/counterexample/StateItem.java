@@ -4,6 +4,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import java.util.BitSet;
 
+/**
+ * A representation of the state of an (LA)LR(1) parser mid-parse.
+ * Contains the state number and lookahead, as well as the particular production item being considered.
+ * The basic abstraction used in generating counterexamples.
+ */
 public class StateItem {
     private int state;
     private int production;
@@ -18,7 +23,6 @@ public class StateItem {
     }
 
 
-    //TODO fix this, not working somehow.
     @Override
     public boolean equals(Object o) {
         if (o == null || !getClass().equals(o.getClass()))

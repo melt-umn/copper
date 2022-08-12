@@ -3,8 +3,8 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 import java.util.ArrayList;
 
 public class Counterexample {
-    private Derivation derivation1;
-    private Derivation derivation2;
+    public Derivation derivation1;
+    public Derivation derivation2;
     private boolean isShiftReduce;
     private ArrayList<ColoredStringBuilder> sb1 = new ArrayList<>();
     private ArrayList<ColoredStringBuilder> sb2 = new ArrayList<>();

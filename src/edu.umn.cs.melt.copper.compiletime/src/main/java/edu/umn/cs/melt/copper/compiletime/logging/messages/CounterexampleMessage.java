@@ -1,6 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.logging.messages;
 
-import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.CounterexampleSearchGraphs;
+import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.CounterexampleSearch;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessage;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessageType;
@@ -15,32 +15,39 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 //TODO comment
 public class CounterexampleMessage implements CompilerLogMessage {
 
-    private CounterexampleSearchGraphs counterExampleSearchGraphs;
+    private CounterexampleSearch counterexampleSearch;
 
     public CounterexampleMessage(PSSymbolTable symbolTable, LR0DFA dfa,
                                  LRParseTableConflict conflict,
                                  ContextSets contextSets, ParserSpec spec,
-                                 LRLookaheadSets lookaheadSets)
-    {
-        this.counterExampleSearchGraphs = new CounterexampleSearchGraphs(conflict,spec,symbolTable,contextSets,lookaheadSets, dfa);
+                                 LRLookaheadSets lookaheadSets) {
+        this.counterexampleSearch = new CounterexampleSearch(conflict,spec,symbolTable,contextSets,lookaheadSets, dfa);
     }
 
 
-    public CompilerLevel getLevel(){ return CompilerLevel.REGULAR; }
+    public CompilerLevel getLevel(){
+        return CompilerLevel.REGULAR;
+    }
 
-    public int getType(){ return CompilerLogMessageType.COUNTEREXAMPLE; }
+    public int getType(){
+        return CompilerLogMessageType.COUNTEREXAMPLE;
+    }
 
     //well, kinda?
-    public boolean isError(){ return false;}
+    public boolean isError(){
+        return false;
+    }
 
 
-    public boolean isFatalError(){ return false;}
+    public boolean isFatalError() {
+        return false;
+    }
 
     //TODO add a flag to disable attemping the unified example and just do the non-unified example
     @Override
     public String toString(){
-//      return counterExampleSearchGraphs.getNonUnifyingCounterexample().toString();
-      return counterExampleSearchGraphs.getExample().toString();
+        // return counterExampleSearch.getNonUnifyingCounterexample().toString();
+        return counterexampleSearch.toString();
     }
 
 

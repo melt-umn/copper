@@ -3,18 +3,16 @@ package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 import java.util.BitSet;
 
 /**
- * A vertex in a {@link CounterexampleSearchGraphs}.
- * A triplet of an int representing a state in the parse table,
+ * A vertex in a {@link CounterexampleSearch}.
+ * A triplet of an int representing a state in the parse table
  * an int representing the position of an LR0 item in the itemSet for that state,
  * and the lookahead set.
  */
-//TODO could this just be a stateItem?
 class LookaheadSensitiveGraphVertex {
     protected StateItem stateItem;
     protected BitSet lookahead;
 
     public LookaheadSensitiveGraphVertex(int state, int production, int dotPosition, BitSet lookahead) {
-        //TODO should this be the same lookahead?
         this.stateItem = new StateItem(state,production,dotPosition,lookahead);
         this.lookahead = lookahead;
     }
