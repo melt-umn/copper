@@ -29,7 +29,8 @@ public class ColoredStringBuilder {
     }
     public void appendColored(String input){
         colorEscapeCount++;
-        sb.append(ansiColors[currentColor]+input);
+        sb.append(ansiColors[currentColor]);
+        sb.append(input);
     }
 
     public void append(String input){

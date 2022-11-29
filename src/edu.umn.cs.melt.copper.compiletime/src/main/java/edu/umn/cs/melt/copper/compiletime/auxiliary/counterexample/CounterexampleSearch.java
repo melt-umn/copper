@@ -118,7 +118,7 @@ public class CounterexampleSearch {
         }
         //reduce/reduce
         else {
-            conflictItem1Production= conflict.reduce.nextSetBit(0);
+            conflictItem1Production = conflict.reduce.nextSetBit(0);
 
             //find dot position for the first  reduce production
             for(int i = 0; i<conflictStateItems.size(); i++){
@@ -256,7 +256,7 @@ public class CounterexampleSearch {
                 // Two actions are possible:
                 // - Make a transition on the next symbol of the items, if they are the same.
                 // - Take a production step, avoiding duplicates as necessary.
-                if(si1sym == si2sym){
+                if(si1sym.equals(si2sym)){
                     // in this case, find the sequence of possible transitions on nullable symbols (the nullable closure)
                     //and add all subsequences of those to the search queue
                     StateItem nextSI1 = transitionTables.getTransition(si1,si1sym);
@@ -471,7 +471,7 @@ public class CounterexampleSearch {
     /**
      * Computes a list of possible StateItems that could take a production step to reach the given StateItem
      * @param si the StateItem the output StateItems can take a production step to reach
-     * @param lookahead a guide to restrict the output StateItems to only those that
+     * @param lookahead a guide to restrict the output StateItems to only those that si can reach
      * @return A list of StateItems that can take a production step to reach {@code si}
      */
     protected LinkedList<StateItem> reverseProduction(StateItem si, BitSet lookahead){
@@ -502,7 +502,7 @@ public class CounterexampleSearch {
 
             //reduce item
             if(prevDotPos == prevLen){
-                if(!prevLookahead.intersects(lookahead)){
+                if(lookahead != null && !prevLookahead.intersects(lookahead)){
                     continue;
                 }
             }
@@ -514,7 +514,7 @@ public class CounterexampleSearch {
                     //for every symbol on the RHS of the dot in the production item that can take a production step to
                     // the input StateItem
                     for (int pos = prevDotPos; !applicable && nullable && pos < prevLen; pos++) {
-                        int nextSym = spec.pr.getRHSSym(prevProd,pos);
+                        int nextSym = spec.pr.getRHSSym(prevProd,pos+1);
                         //the next expected symbol is a terminal, so it is not nullable by definition
                         if(spec.terminals.get(nextSym)){
                             applicable = terminalIntersects(nextSym,lookahead);
