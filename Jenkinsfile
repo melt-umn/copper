@@ -44,6 +44,9 @@ try {
   if (env.BRANCH_NAME == 'develop') {
     stage("Deploy stable") {
       sh "cp target/Copper*.jar ${melt.ARTIFACTS}/"
+
+      // Install to the local repo, for use in other maven projects built on our Jenkins server.
+      sh "mvn install"
     }
   }
 
