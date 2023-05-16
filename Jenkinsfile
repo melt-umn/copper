@@ -23,6 +23,11 @@ try {
 
     junit allowEmptyResults: true, testResults:"**/target/*-reports/*.xml"
   }
+
+  stage("Install") {
+    // Install to the local repo, for use in other maven projects built on our Jenkins server.
+    sh "mvn install"
+  }
   
   stage("Silver integration") {
     // Test against the current silver 'develop' workspace that last successfully built:
@@ -44,9 +49,6 @@ try {
   if (env.BRANCH_NAME == 'develop') {
     stage("Deploy stable") {
       sh "cp target/Copper*.jar ${melt.ARTIFACTS}/"
-
-      // Install to the local repo, for use in other maven projects built on our Jenkins server.
-      sh "mvn install"
     }
   }
 
