@@ -26,7 +26,9 @@ try {
 
   stage("Install") {
     // Install to the local repo, for use in other maven projects built on our Jenkins server.
-    sh "mvn install"
+    withEnv("JAVA_HOME=/usr/lib64/openjdk-17") {
+      sh "mvn install"
+    }
   }
   
   stage("Silver integration") {
