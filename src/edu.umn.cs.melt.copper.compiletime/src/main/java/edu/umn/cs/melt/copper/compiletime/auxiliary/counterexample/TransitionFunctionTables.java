@@ -11,6 +11,7 @@ import java.util.*;
  * The transition and reverse transition tables used in counterexample generation.
  * Must take the particular item within the state into account, so we can't just reuse the
  * transition function in the dfa as is.
+ * @author Kelton OBrien
  */
 public class TransitionFunctionTables {
     /**

@@ -1,6 +1,7 @@
 package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 
+import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,6 +10,7 @@ import static edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.Colore
 /**
  * A derivation is a parse tree, represented by a symbol (which could a terminal or a non-terminal),
  * and optionally a list of children derivations in the case of a non-terminal
+ * @author Kelton OBrien
  */
 public class Derivation {
     public String symbol;
@@ -35,8 +37,7 @@ public class Derivation {
         this.derivations = derivations;
     }
 
-
-    //return value the new indent
+    //returns value the new indent
     public int prettyPrint(ArrayList<ColoredStringBuilder> sbs, int index, int indent) {
         //TODO have a flag to disable coloured output?
         //print LHS/terminal

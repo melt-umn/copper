@@ -7,6 +7,7 @@ import java.util.BitSet;
  * A triplet of an int representing a state in the parse table
  * an int representing the position of an LR0 item in the itemSet for that state,
  * and the lookahead set.
+ * @author Kelton OBrien
  */
 class LookaheadSensitiveGraphVertex {
     protected StateItem stateItem;

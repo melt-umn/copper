@@ -8,6 +8,11 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+/**
+ * Tables containing the possible production steps from a StateItem,
+ * and possible production steps to get to a StateItem
+ * @author Kelton OBrien
+ */
 public class ProductionStepTables {
     /**
      * The production steps for a given StateItem

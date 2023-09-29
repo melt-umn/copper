@@ -1,5 +1,9 @@
 package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
+/**
+ * Creates colored terminal output; useful for visualizing parser derivations.
+ * @author Kelton OBrien
+ */
 public class ColoredStringBuilder {
     private static final String ANSI_RESET = "\u001B[0m";
     //yellow, green, blue, ...

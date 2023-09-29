@@ -8,6 +8,7 @@ import java.util.BitSet;
  * A representation of the state of an (LA)LR(1) parser mid-parse.
  * Contains the state number and lookahead, as well as the particular production item being considered.
  * The basic abstraction used in generating counterexamples.
+ * @author Kelton OBrien
  */
 public class StateItem {
     private int state;
