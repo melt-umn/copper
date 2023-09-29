@@ -11,18 +11,27 @@ import static edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.Colore
  * and optionally a list of children derivations in the case of a non-terminal
  */
 public class Derivation {
-    String symbol;
+    public String symbol;
     List<Derivation> derivations;
 
     public static final Derivation dot = new Derivation("•", null);
 
 
     public Derivation(String symbol){
-        this.symbol = symbol;
+        //massage the symbol into something more readable when printed
+        if(symbol.contains("'")){
+            this.symbol = symbol.substring(0,symbol.lastIndexOf("'")+1);
+        } else {
+            this.symbol = symbol.substring(symbol.lastIndexOf(':')+1);
+        }
         this.derivations = null;
     }
     public Derivation(String symbol, List<Derivation> derivations) {
-        this.symbol = symbol;
+        if(symbol.contains("'")){
+            this.symbol = symbol.substring(0,symbol.lastIndexOf("'")+1);
+        } else {
+            this.symbol = symbol.substring(symbol.lastIndexOf(':')+1);
+        }
         this.derivations = derivations;
     }
 

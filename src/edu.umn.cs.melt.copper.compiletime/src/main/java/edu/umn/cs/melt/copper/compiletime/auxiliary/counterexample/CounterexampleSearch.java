@@ -80,6 +80,8 @@ public class CounterexampleSearch {
         isShiftReduce = conflict.shift != -1;
         LR0ItemSet conflictStateItems = dfa.getItemSet(conflictState);
         if(isShiftReduce){
+            System.out.println(conflict.getState());
+            System.out.println(conflict.getSymbol());
             conflictItem1Production = conflict.reduce.nextSetBit(0);
             conflictItem1Position = spec.pr.getRHSLength(conflictItem1Production);
 
@@ -101,9 +103,8 @@ public class CounterexampleSearch {
             for(int i = 0; i < conflictStateItems.size(); i++ ){
                 int prod = conflictStateItems.getProduction(i);
                 int pos = conflictStateItems.getPosition(i);
-
                 //If the dot is directly after the conflict terminal, it is the shift conflict item
-                if(spec.pr.getRHSSym(prod,pos) == conflictTerminal){
+                if(spec.pr.getRHSLength(prod) > pos && spec.pr.getRHSSym(prod,pos) == conflictTerminal){
                     conflictItem2Position = pos;
                     conflictItem2Production = prod;
                     conflictItem2Lookahead = lookaheadSets.getLookahead(conflictState,i);
@@ -426,7 +427,6 @@ public class CounterexampleSearch {
             }
         }
         System.err.println("Failed to find unifying counterexample, attempting non-unified");
-        //TODO re-use the derivations generated while attempting to construct the unified counterexample here
         return counterexampleFromShortestPath();
     }
 
@@ -514,7 +514,8 @@ public class CounterexampleSearch {
                     //for every symbol on the RHS of the dot in the production item that can take a production step to
                     // the input StateItem
                     for (int pos = prevDotPos; !applicable && nullable && pos < prevLen; pos++) {
-                        int nextSym = spec.pr.getRHSSym(prevProd,pos+1);
+                        //NOTE: this used to have a +1, but that seemed to cause errors.
+                        int nextSym = spec.pr.getRHSSym(prevProd,pos);
                         //the next expected symbol is a terminal, so it is not nullable by definition
                         if(spec.terminals.get(nextSym)){
                             applicable = terminalIntersects(nextSym,lookahead);
