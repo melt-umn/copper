@@ -25,7 +25,8 @@ public class ProductionStepTables {
      */
     protected BitSet[][] revProdTable;
 
-    public ProductionStepTables(LR0DFA dfa, ParserSpec spec,LRLookaheadSets lookaheadSets){
+    public ProductionStepTables(LR0DFA dfa, ParserSpec spec,LRLookaheadSets lookaheadSets)
+    {
        revProdTable = new BitSet[dfa.size()][];
        prodTable = new Hashtable<>();
        build(dfa, spec,lookaheadSets);
@@ -42,8 +43,8 @@ public class ProductionStepTables {
      *     </a>
      * </p>
      */
-    private void build(LR0DFA dfa, ParserSpec spec, LRLookaheadSets lookaheads){
-        //seems to be working correctly...
+    private void build(LR0DFA dfa, ParserSpec spec, LRLookaheadSets lookaheads)
+    {
         //fill in the closure map
         //for each state
         for (int state = 0; state < dfa.size(); state++) {
@@ -100,7 +101,8 @@ public class ProductionStepTables {
      * @param stateItem
      * @return the set of production steps for the given StateItem
      */
-    public BitSet getProdSteps(StateItem stateItem) {
+    public BitSet getProdSteps(StateItem stateItem)
+    {
         return prodTable.get(stateItem);
     }
 
@@ -110,7 +112,8 @@ public class ProductionStepTables {
      * @param nonTerminal
      * @return get the set of reverse production steps for the given state and nonterminal
      */
-    public BitSet getRevProdSteps(int state, int nonTerminal){
+    public BitSet getRevProdSteps(int state, int nonTerminal)
+    {
         return revProdTable[state][nonTerminal];
     }
 }

@@ -2,6 +2,7 @@ package edu.umn.cs.melt.copper.compiletime.pipeline;
 
 
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 /**
@@ -13,7 +14,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 public class StandardSpecCompiler extends ParserBeanCompiler<StandardSpecCompilerReturnData>
 {
 	@Override
-	public StandardSpecCompilerReturnData compileParser(ParserBean spec, SpecCompilerParameters args) throws CopperException {
+	public StandardSpecCompilerReturnData compileParser(ParserBean spec, ParserCompilerParameters args) throws CopperException {
 		boolean beanCompilationSucceeded = compileParserBean(spec, args);
 
 		if (beanCompilationSucceeded) {

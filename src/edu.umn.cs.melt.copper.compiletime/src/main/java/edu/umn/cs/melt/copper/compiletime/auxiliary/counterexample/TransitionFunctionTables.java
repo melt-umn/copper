@@ -38,7 +38,8 @@ public class TransitionFunctionTables {
      */
     protected int[] prevSymbol;
 
-    public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec, LRLookaheadSets lookaheads) {
+    public TransitionFunctionTables(LR0DFA dfa, ParserSpec spec, LRLookaheadSets lookaheads)
+    {
         prevSymbol = new int[dfa.size()];
         trans = new Hashtable<>();
         revTrans = new Hashtable<>();
@@ -97,11 +98,13 @@ public class TransitionFunctionTables {
         }
     }
 
-    public StateItem getTransition(StateItem stateItem, int symbol) {
+    public StateItem getTransition(StateItem stateItem, int symbol)
+    {
         return trans.get(stateItem)[symbol];
     }
 
-    public Set<StateItem> getReverseTransitions(StateItem stateItem) {
+    public Set<StateItem> getReverseTransitions(StateItem stateItem)
+    {
         return revTrans.get(stateItem);
     }
 }

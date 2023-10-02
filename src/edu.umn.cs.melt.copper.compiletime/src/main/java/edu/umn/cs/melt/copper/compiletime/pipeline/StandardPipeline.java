@@ -174,14 +174,14 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 	}
 
 	@Override
-	public SCOUT compileParser(SCIN spec, SpecCompilerParameters args)
+	public SCOUT compileParser(SCIN spec, ParserCompilerParameters args)
 	throws CopperException
 	{
 		return specCompiler.compileParser(spec,args);
 	}
 
 	@Override
-	public SCIN parseSpec(SpecParserParameters args)
+	public SCIN parseSpec(ParserCompilerParameters args)
 	throws IOException,CopperException
 	{
 		return specParser.parseSpec(args);

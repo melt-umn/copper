@@ -1,5 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.logging.messages;
 
+import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.Counterexample;
 import edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample.CounterexampleSearch;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLevel;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogMessage;
@@ -11,17 +12,20 @@ import edu.umn.cs.melt.copper.compiletime.spec.numeric.ContextSets;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.PSSymbolTable;
 import edu.umn.cs.melt.copper.compiletime.spec.numeric.ParserSpec;
 
-//TODO separate out a builder
-//TODO comment
 public class CounterexampleMessage implements CompilerLogMessage {
 
     private CounterexampleSearch counterexampleSearch;
+    private Counterexample counterexample;
+
+    private boolean colorExample;
 
     public CounterexampleMessage(PSSymbolTable symbolTable, LR0DFA dfa,
                                  LRParseTableConflict conflict,
                                  ContextSets contextSets, ParserSpec spec,
-                                 LRLookaheadSets lookaheadSets) {
+                                 LRLookaheadSets lookaheadSets, boolean colorExample) {
         this.counterexampleSearch = new CounterexampleSearch(conflict,spec,symbolTable,contextSets,lookaheadSets, dfa);
+        this.counterexample = counterexampleSearch.getExample();
+        this.colorExample = colorExample;
     }
 
 
@@ -33,7 +37,6 @@ public class CounterexampleMessage implements CompilerLogMessage {
         return CompilerLogMessageType.COUNTEREXAMPLE;
     }
 
-    //well, kinda?
     public boolean isError(){
         return false;
     }
@@ -43,11 +46,15 @@ public class CounterexampleMessage implements CompilerLogMessage {
         return false;
     }
 
-    //TODO add a flag to disable attemping the unified example and just do the non-unified example
+
     @Override
     public String toString(){
-        // return counterExampleSearch.getNonUnifyingCounterexample().toString();
-        return counterexampleSearch.getExample().toString();
+        return counterexampleSearch.getExample().prettyPrint(colorExample);
+    }
+
+    public String toDot()
+    {
+        return  counterexample.toDot();
     }
 
 

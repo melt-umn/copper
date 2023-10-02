@@ -12,41 +12,48 @@ public class ColoredStringBuilder {
     private int colorEscapeCount;
     private static int currentColor = 0;
 
-    public ColoredStringBuilder() {
+    public ColoredStringBuilder()
+    {
         sb = new StringBuilder();
     }
 
 
-    public static void incrementCurrentColor(){
+    public static void incrementCurrentColor()
+    {
         if(currentColor + 1 == ansiColors.length){
             currentColor = 0;
         } else {
             currentColor++;
         }
     }
-    public static void decrementCurrentColor(){
+    public static void decrementCurrentColor()
+    {
         if(currentColor - 1 < 0){
             currentColor = ansiColors.length - 1;
         } else {
             currentColor--;
         }
     }
-    public void appendColored(String input){
+    public void appendColored(String input)
+    {
         colorEscapeCount++;
         sb.append(ansiColors[currentColor]);
         sb.append(input);
     }
 
-    public void append(String input){
+    public void append(String input)
+    {
         sb.append(input);
     }
 
-    public int length(){
+    public int length()
+    {
         return sb.length() - (colorEscapeCount *5);
     }
 
     @Override
-    public String toString(){
+    public String toString()
+    {
         sb.append(ANSI_RESET);
         return sb.toString();
     }

@@ -23,7 +23,7 @@ public class ParserFragmentsDeserializer implements SpecParser<ParserFragments> 
     }
 
     @Override
-    public ParserFragments parseSpec(SpecParserParameters args) throws IOException, CopperException {
+    public ParserFragments parseSpec(ParserCompilerParameters args) throws IOException, CopperException {
         CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
         ArrayList<Pair<String, Object>> inputs = args.getInputs();
 

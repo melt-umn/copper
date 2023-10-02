@@ -9,20 +9,24 @@ public class ShiftConflictSearchNode {
         this.stateItem = stateItem;
     }
 
-    public int getValidStateIndex() {
+    public int getValidStateIndex()
+    {
         return possibleTransitionState;
     }
 
-    public boolean isProductionItem() {
+    public boolean isProductionItem()
+    {
         return stateItem.getDotPosition() == 0;
     }
 
-    public StateItem getStateItem() {
+    public StateItem getStateItem()
+    {
         return stateItem;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ShiftConflictSearchNode{" +
                 "possibleTransitionState=" + possibleTransitionState +
                 ", stateItem=" + stateItem +

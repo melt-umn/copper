@@ -13,30 +13,36 @@ class LookaheadSensitiveGraphVertex {
     protected StateItem stateItem;
     protected BitSet lookahead;
 
-    public LookaheadSensitiveGraphVertex(int state, int production, int dotPosition, BitSet lookahead) {
+    public LookaheadSensitiveGraphVertex(int state, int production, int dotPosition, BitSet lookahead)
+    {
         this.stateItem = new StateItem(state,production,dotPosition,lookahead);
         this.lookahead = lookahead;
     }
-    public LookaheadSensitiveGraphVertex(StateItem stateItem, BitSet lookahead) {
+    public LookaheadSensitiveGraphVertex(StateItem stateItem, BitSet lookahead)
+    {
         this.stateItem = stateItem;
         this.lookahead = lookahead;
     }
 
-    public int getProduction(){
+    public int getProduction()
+    {
         return stateItem.getProduction();
     }
 
-    public int getDotPosition(){
+    public int getDotPosition()
+    {
         return stateItem.getDotPosition();
     }
 
-    public int getState(){
+    public int getState()
+    {
         return stateItem.getState();
     }
 
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "LookaheadSensitiveGraphVertex{" +
                 "stateItem=" + stateItem +
                 ", lookaheadSet=" + lookahead +
@@ -44,7 +50,8 @@ class LookaheadSensitiveGraphVertex {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (!(o instanceof LookaheadSensitiveGraphVertex))
             return false;
@@ -56,7 +63,8 @@ class LookaheadSensitiveGraphVertex {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int result = stateItem.hashCode();
         result = 31 * result + (lookahead != null ? lookahead.hashCode() : 0);
         return result;

@@ -16,7 +16,8 @@ public class StateItem {
     private int dotPosition;
     private BitSet lookahead;
 
-    public StateItem(int state, int production, int dotPosition, BitSet lookahead) {
+    public StateItem(int state, int production, int dotPosition, BitSet lookahead)
+    {
         this.state = state;
         this.production = production;
         this.dotPosition = dotPosition;
@@ -25,7 +26,8 @@ public class StateItem {
 
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (!(o instanceof StateItem))
             return false;
 
@@ -38,7 +40,8 @@ public class StateItem {
         return dotPosition == stateItem.dotPosition;
     }
 
-    @Override public String toString(){
+    @Override public String toString()
+    {
         StringBuilder sb = new StringBuilder();
         sb.append("(State: ");
         sb.append(state);
@@ -49,7 +52,8 @@ public class StateItem {
         sb.append(')');
         return sb.toString();
     }
-    public String prettyPrint(PSSymbolTable symbolTable, ParserSpec spec){
+    public String prettyPrint(PSSymbolTable symbolTable, ParserSpec spec)
+    {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < dotPosition; i++){
             sb.append(symbolTable.get(spec.pr.getRHSSym(production,i)).getDisplayName());
@@ -64,26 +68,31 @@ public class StateItem {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int result = state;
         result = 31 * result + production;
         result = 31 * result + dotPosition;
         return result;
     }
 
-    public int getState() {
+    public int getState()
+    {
         return state;
     }
 
-    public int getProduction() {
+    public int getProduction()
+    {
         return production;
     }
 
-    public int getDotPosition() {
+    public int getDotPosition()
+    {
         return dotPosition;
     }
 
-    public BitSet getLookahead() {
+    public BitSet getLookahead()
+    {
         return lookahead;
     }
 }

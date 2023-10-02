@@ -11,7 +11,6 @@ import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.logging.messages.InterfaceErrorMessage;
 import edu.umn.cs.melt.copper.compiletime.pipeline.AuxiliaryMethods;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParser;
-import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
 import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
@@ -19,7 +18,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 public class CupParsingProcess implements SpecParser<ParserBean>
 {
 	@Override
-	public ParserBean parseSpec(SpecParserParameters args)
+	public ParserBean parseSpec(ParserCompilerParameters args)
 	throws UnsupportedOperationException
 	{
 		ParserBean spec;

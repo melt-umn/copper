@@ -78,6 +78,8 @@ public class ParserCompiler
 		rv += "\t-mda\tRun Copper's modular determinism analysis on the input.\n\t\t\tIf this switch is used, the input must comprise exactly\n\t\t\ttwo grammars: the host and an extension to test.\n";
 		rv += "\t-avoidRecompile\tRun Copper only if one spec-file has a later\n\t\t\tmodification time than the output file.\n\t\t\tIf this switch is used, an output file must also\n\t\t\tbe specified.\n";
 		rv += "\t-logfile [lout]\tPipe all log output to the file 'lout'\n\t\t\t(default standard error).\n";
+		rv += "\t-dot [dout]\tOutput Graphiz dot code representing any counterexamples to 'dout'\n\t\t\t(no dot output if not provided).\n";
+		rv += "\t-nc\t\tDo not use ascii color escape sequences to color any counterexamples\n";
 		rv += "\t-dump\tProduce a detailed report of the grammar and generated parser.\n";
 		rv += "\t-errordump\tProduce a detailed report, but only if the parser\n\t\t\tcompiler has generated an error.\n";
 		rv += "\t-dumpfile [dout]\tPipe the dumped report to the file 'dout'\n\t\t\t\t(default to log output).\n";
@@ -240,6 +242,7 @@ public class ParserCompiler
 			usageMessageNoError(null);
 		}
 		CompilerLevel quietLevel = getDefaultQuietLevel();
+		boolean colorCounterExample = true;
 		boolean displayHelp = false;
 		boolean displayVersion = false;
 		boolean runMDA = false;
@@ -259,6 +262,7 @@ public class ParserCompiler
 		String packageDecl = null;
 		String parserName = null;
 		String output = null;
+		String dotOutput = null;
 		int i;
 		for(i = 0;i < args.length;i++)
 		{
@@ -275,6 +279,13 @@ public class ParserCompiler
 			{
 				if(++i == args.length) usageMessageError(null);
 				else output = args[i];
+			}
+			else if(args[i].equals("-nc")){
+				colorCounterExample = false;
+			}
+			else if(args[i].equals("-dot")){
+				if(++i == args.length) usageMessageError(null);
+				else dotOutput = args[i];
 			}
 			else if(args[i].equals("-q"))
 			{
@@ -340,12 +351,12 @@ public class ParserCompiler
 			else if(args[i].equals("-package"))
 			{
 				if(++i == args.length) usageMessageError(null);
-				else packageDecl = args[i]; 
+				else packageDecl = args[i];
 			}
 			else if(args[i].equals("-parser"))
 			{
 				if(++i == args.length) usageMessageError(null);
-				else parserName = args[i]; 
+				else parserName = args[i];
 			}
 			else
 			{
@@ -364,6 +375,7 @@ public class ParserCompiler
 		argTable.setDumpFormat(dumpFormat);
 		argTable.setPackageName(packageDecl);
 		argTable.setParserName(parserName);
+		argTable.setColorCounterexample(colorCounterExample);
 		if(output == null)
 		{
 			argTable.setOutputType(null);
@@ -388,6 +400,13 @@ public class ParserCompiler
 		{
 			argTable.setLogType(CopperIOType.FILE);
 			argTable.setLogFile(new File(logFile));			
+		}
+		if(dotOutput == null) {
+			argTable.setGraphizDotOutput(null);
+		}
+		else
+		{
+			argTable.setGraphizDotOutput(new File(dotOutput));
 		}
 
 		if(dumpFile == null || dumpFile.equals(""))

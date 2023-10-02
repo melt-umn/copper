@@ -14,7 +14,7 @@ public class ParserFragmentsPasser implements SpecCompiler<ParserFragments, Pars
     }
 
     @Override
-    public ParserFragments compileParser(ParserFragments spec, SpecCompilerParameters args) throws CopperException {
+    public ParserFragments compileParser(ParserFragments spec, ParserCompilerParameters args) throws CopperException {
         return spec;
     }
 

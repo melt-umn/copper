@@ -1,7 +1,6 @@
 package edu.umn.cs.melt.copper.compiletime.auxiliary.counterexample;
 
 
-import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,10 +15,16 @@ public class Derivation {
     public String symbol;
     List<Derivation> derivations;
 
+    //Not multithreaded, so there should be no contention here
+    private static int graphizIdCount = 0;
+
+    private int graphizId;
+
     public static final Derivation dot = new Derivation("•", null);
 
 
-    public Derivation(String symbol){
+    public Derivation(String symbol)
+    {
         //massage the symbol into something more readable when printed
         if(symbol.contains("'")){
             this.symbol = symbol.substring(0,symbol.lastIndexOf("'")+1);
@@ -28,7 +33,8 @@ public class Derivation {
         }
         this.derivations = null;
     }
-    public Derivation(String symbol, List<Derivation> derivations) {
+    public Derivation(String symbol, List<Derivation> derivations)
+    {
         if(symbol.contains("'")){
             this.symbol = symbol.substring(0,symbol.lastIndexOf("'")+1);
         } else {
@@ -37,16 +43,40 @@ public class Derivation {
         this.derivations = derivations;
     }
 
+    public String toDot()
+    {
+        graphizId = ++graphizIdCount;
+        StringBuilder sb = new StringBuilder();
+        sb.append(graphizId);
+        sb.append("[label=\"");
+        sb.append(symbol);
+        sb.append("\"];\n");
+        if(derivations != null){
+            for (Derivation d : derivations) {
+                sb.append(d.toDot());
+                sb.append(graphizId);
+                sb.append(" -> ");
+                sb.append(d.graphizId);
+                sb.append(";\n");
+            }
+        }
+        return sb.toString();
+    }
+
     //returns value the new indent
-    public int prettyPrint(ArrayList<ColoredStringBuilder> sbs, int index, int indent) {
-        //TODO have a flag to disable coloured output?
+    public int prettyPrint(ArrayList<ColoredStringBuilder> sbs, int index, int indent, boolean color)
+    {
         //print LHS/terminal
         ColoredStringBuilder sb = sbs.get(index);
-        if(derivations != null){
+        if(derivations != null && color){
             incrementCurrentColor();
         }
         sb.append(" ");
-        sb.appendColored(symbol);
+        if(color){
+            sb.appendColored(symbol);
+        } else {
+            sb.append(symbol);
+        }
 
         indent += symbol.length() + 1;
         if(derivations == null){
@@ -64,25 +94,32 @@ public class Derivation {
         for (int i = nextsb.length(); i < indent-1; i++) {
             nextsb.append(" ");
         }
-        nextsb.appendColored("↳");
+        if(color){
+            nextsb.appendColored("↳");
+        } else {
+            nextsb.append("↳");
+        }
 
         //print rhs
         for(Derivation d : derivations){
-           indent = d.prettyPrint(sbs,index+1,indent);
+           indent = d.prettyPrint(sbs,index+1,indent,color);
         }
 
         //account for newly required whitespace
         for (int i = sb.length(); i < indent; i++) {
             sb.append(" ");
         }
-        decrementCurrentColor();
+        if(color){
+            decrementCurrentColor();
+        }
 
         return indent;
     }
 
     //ugly print used in the reference implementation, not used anymore.
     @Override
-    public String toString(){
+    public String toString()
+    {
         ArrayList<StringBuilder> sbs = new ArrayList<>();
         StringBuilder sb = new StringBuilder(symbol);
         if (derivations != null) {
@@ -100,7 +137,8 @@ public class Derivation {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -111,7 +149,8 @@ public class Derivation {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int result = symbol.hashCode();
         result = 31 * result + (derivations != null ? derivations.hashCode() : 0);
         return result;
