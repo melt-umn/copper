@@ -41,7 +41,7 @@ public class Counterexample {
     public String prettyPrint(boolean color)
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("Example:\n");
+        sb.append("Counterexample (2 parse trees that are the same until the conflict point, and may differ after):\n");
         sb.append(isShiftReduce? "shift derivation:\n" : "first reduce derivation:\n");
         derivation1.prettyPrint(sb1,0,0,color);
         for(ColoredStringBuilder s : sb1){
