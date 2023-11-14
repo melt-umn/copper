@@ -135,9 +135,9 @@ public class ParserCompilerParameters implements SpecCompilerParameters,SourceBu
 	private boolean colorCounterexample;
 
 	/**
-	 * The output for the graphiz dot representation of any potential counterexamples, if any.
+	 * The output for the dot representation of any potential counterexamples, if any.
 	 */
-	private File graphizDotOutput;
+	private File dotOutput;
 	
 	/**
 	 * The parsing "engine" on which the output parser class will be based.
@@ -203,7 +203,7 @@ public class ParserCompilerParameters implements SpecCompilerParameters,SourceBu
 		dumpOutputType = null;
 		avoidRecompile = false;
 		colorCounterexample = true;
-		graphizDotOutput = null;
+		dotOutput = null;
 		
 		isWarnUselessNTs = true;
 		
@@ -349,9 +349,9 @@ public class ParserCompilerParameters implements SpecCompilerParameters,SourceBu
 		return colorCounterexample;
 	}
 
-	public File getGraphizDotOutput()
+	public File getDotOutput()
 	{
-		return graphizDotOutput;
+		return dotOutput;
 	}
 
 	public void setColorCounterexample(boolean colorCounterexample)
@@ -359,9 +359,9 @@ public class ParserCompilerParameters implements SpecCompilerParameters,SourceBu
 		this.colorCounterexample = colorCounterexample;
 	}
 
-	public void setGraphizDotOutput(File graphizDotOutput)
+	public void setDotOutput(File dotOutput)
 	{
-		this.graphizDotOutput = graphizDotOutput;
+		this.dotOutput = dotOutput;
 	}
 
 	public void setAvoidRecompile(boolean avoidRecompile)

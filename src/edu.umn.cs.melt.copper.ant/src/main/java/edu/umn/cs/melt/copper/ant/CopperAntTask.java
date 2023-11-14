@@ -156,12 +156,12 @@ public class CopperAntTask extends Task
 	private boolean avoidRecompile;
 
 	/**
-	 * The file to emit the graphiz dot code representing any counterexamples to, if any.
+	 * The file to emit the dot markup code representing any counterexamples to, if any.
 	 */
 	private File dotOut;
 
 	/**
-	 * Controls whether any counterexamples should be colored with ascii color codes.
+	 * Controls whether any counterexamples should be colored with ANSI color codes.
 	 */
 	private boolean colorCounterexample;
 	
@@ -220,7 +220,7 @@ public class CopperAntTask extends Task
 		params.setDumpStream(dumpStream);
 		params.setDumpFile(dumpFile);
 		params.setDumpOutputType(dumpOutputType);
-		params.setGraphizDotOutput(dotOut);
+		params.setDotOutput(dotOut);
 		params.setColorCounterexample(colorCounterexample);
 		
 		params.setAvoidRecompile(avoidRecompile);

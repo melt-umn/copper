@@ -859,8 +859,7 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
 	                }
 	                if(terminalFlags.prefix != null) terminal.setPrefix(terminalFlags.prefix);
 
-	                //TODO was there a reason this didn't have a current grammar attached?
-	                if(ignore) ignoreTerminals.add(CopperElementReference.ref(currentGrammar.getName(),newTerminalName,name.location));
+                    if(ignore) ignoreTerminals.add(CopperElementReference.ref(newTerminalName,name.location));
 	            }
                 
             return RESULT;

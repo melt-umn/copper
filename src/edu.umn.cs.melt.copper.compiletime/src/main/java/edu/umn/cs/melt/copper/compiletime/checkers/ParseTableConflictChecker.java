@@ -106,7 +106,7 @@ public class ParseTableConflictChecker
 					writer.write(counterexample.toDot());
 					writer.close();
 				} catch (IOException e) {
-					logger.log(new GenericMessage(CompilerLevel.QUIET,"Failed to write Graphiz Dot representation of counterexample due to IOException " + e));
+					logger.log(new GenericMessage(CompilerLevel.QUIET,"Failed to write dot mark-up representation of counterexample due to IOException " + e));
 				}
 			}
 		}

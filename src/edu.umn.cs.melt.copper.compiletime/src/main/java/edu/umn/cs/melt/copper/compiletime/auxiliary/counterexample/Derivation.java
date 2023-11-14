@@ -16,9 +16,9 @@ public class Derivation {
     List<Derivation> derivations;
 
     //Not multithreaded, so there should be no contention here
-    private static int graphizIdCount = 0;
+    private static int dotIdCount = 0;
 
-    private int graphizId;
+    private int dotId;
 
     public static final Derivation dot = new Derivation("•", null);
 
@@ -45,18 +45,18 @@ public class Derivation {
 
     public String toDot()
     {
-        graphizId = ++graphizIdCount;
+        dotId = ++dotIdCount;
         StringBuilder sb = new StringBuilder();
-        sb.append(graphizId);
+        sb.append(dotId);
         sb.append("[label=\"");
         sb.append(symbol);
         sb.append("\"];\n");
         if(derivations != null){
             for (Derivation d : derivations) {
                 sb.append(d.toDot());
-                sb.append(graphizId);
+                sb.append(dotId);
                 sb.append(" -> ");
-                sb.append(d.graphizId);
+                sb.append(d.dotId);
                 sb.append(";\n");
             }
         }
