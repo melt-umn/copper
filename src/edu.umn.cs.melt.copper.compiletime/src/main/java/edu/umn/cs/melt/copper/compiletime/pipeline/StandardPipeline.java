@@ -45,6 +45,7 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 			SpecCompiler<SCIN, SCOUT> specCompiler,
 			SourceBuilder<SCOUT> sourceBuilder)
 	{
+		// this calls the Object constructor, which doesn't do anything...
 		super();
 		this.specParser = specParser;
 		this.specCompiler = specCompiler;
@@ -173,14 +174,14 @@ public class StandardPipeline<SCIN,SCOUT> implements Pipeline,SpecParser<SCIN>,S
 	}
 
 	@Override
-	public SCOUT compileParser(SCIN spec, SpecCompilerParameters args)
+	public SCOUT compileParser(SCIN spec, ParserCompilerParameters args)
 	throws CopperException
 	{
 		return specCompiler.compileParser(spec,args);
 	}
 
 	@Override
-	public SCIN parseSpec(SpecParserParameters args)
+	public SCIN parseSpec(ParserCompilerParameters args)
 	throws IOException,CopperException
 	{
 		return specParser.parseSpec(args);

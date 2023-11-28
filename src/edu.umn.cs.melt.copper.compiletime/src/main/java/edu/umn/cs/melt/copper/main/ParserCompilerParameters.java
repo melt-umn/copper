@@ -11,7 +11,6 @@ import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.pipeline.Pipeline;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SourceBuilderParameters;
 import edu.umn.cs.melt.copper.compiletime.pipeline.SpecCompilerParameters;
-import edu.umn.cs.melt.copper.compiletime.pipeline.SpecParserParameters;
 import edu.umn.cs.melt.copper.compiletime.pipeline.UniversalProcessParameters;
 import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
 
@@ -19,7 +18,7 @@ import edu.umn.cs.melt.copper.runtime.auxiliary.Pair;
  * Holds all parameters that may be passed to Copper.
  * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
  */
-public class ParserCompilerParameters implements SpecParserParameters,SpecCompilerParameters,SourceBuilderParameters,UniversalProcessParameters
+public class ParserCompilerParameters implements SpecCompilerParameters,SourceBuilderParameters,UniversalProcessParameters
 {
 	/**
 	 * Holds any custom/pipeline-specific switches to be passed on to the pipeline.
@@ -129,6 +128,16 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 
 	private String singleFileName;
 	private Reader singleFileStream;
+
+	/**
+	 * Controls whether any counterexamples will be colored with ascii character codes.
+	 */
+	private boolean colorCounterexample;
+
+	/**
+	 * The output for the dot representation of any potential counterexamples, if any.
+	 */
+	private File dotOutput;
 	
 	/**
 	 * The parsing "engine" on which the output parser class will be based.
@@ -139,6 +148,7 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	 * The "pipeline" to which this input will be passed.
 	 * Defaults to {@link ParserCompiler#getDefaultPipeline()}.
 	 */
+
 	private CopperPipelineType usePipeline;
 	/**
 	 * The "skin" with which this input will be parsed.
@@ -192,6 +202,8 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		dumpFile = null;
 		dumpOutputType = null;
 		avoidRecompile = false;
+		colorCounterexample = true;
+		dotOutput = null;
 		
 		isWarnUselessNTs = true;
 		
@@ -222,7 +234,6 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 		return dumpOutputType;
 	}
 
-	@Override
 	public ArrayList<Pair<String, Object>> getInputs()
 	{
 		return inputs;
@@ -331,6 +342,26 @@ public class ParserCompilerParameters implements SpecParserParameters,SpecCompil
 	public boolean isWarnUselessNTs()
 	{
 		return isWarnUselessNTs;
+	}
+
+	public boolean isColorCounterexample()
+	{
+		return colorCounterexample;
+	}
+
+	public File getDotOutput()
+	{
+		return dotOutput;
+	}
+
+	public void setColorCounterexample(boolean colorCounterexample)
+	{
+		this.colorCounterexample = colorCounterexample;
+	}
+
+	public void setDotOutput(File dotOutput)
+	{
+		this.dotOutput = dotOutput;
 	}
 
 	public void setAvoidRecompile(boolean avoidRecompile)

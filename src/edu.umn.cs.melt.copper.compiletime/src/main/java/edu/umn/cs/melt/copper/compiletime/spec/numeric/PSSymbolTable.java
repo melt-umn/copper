@@ -82,7 +82,11 @@ public class PSSymbolTable extends SymbolTable<CopperASTBean>
 		rv += /*"\n" + linePrefix +*/ "]";
 		return rv;
 	}
-	
+
+	public String getSymbolString(int sym){
+		return get(sym).getDisplayName();
+	}
+
 	public String toString()
 	{
 		StringBuffer rv = new StringBuffer();

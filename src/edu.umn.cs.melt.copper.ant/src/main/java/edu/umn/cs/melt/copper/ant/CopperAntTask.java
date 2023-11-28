@@ -154,6 +154,16 @@ public class CopperAntTask extends Task
 	 * Defaults to {@code false}, rebuilding the parser every time.
 	 */
 	private boolean avoidRecompile;
+
+	/**
+	 * The file to emit the dot markup code representing any counterexamples to, if any.
+	 */
+	private File dotOut;
+
+	/**
+	 * Controls whether any counterexamples should be colored with ANSI color codes.
+	 */
+	private boolean colorCounterexample;
 	
 	public CopperAntTask()
 	{
@@ -176,7 +186,9 @@ public class CopperAntTask extends Task
 		dumpStream = null;
 		dumpFile = null;
 		dumpOutputType = null;
-		
+		dotOut = null;
+
+		colorCounterexample = true;
 		isWarnUselessNTs = true;
 		avoidRecompile = false;
 		
@@ -208,6 +220,8 @@ public class CopperAntTask extends Task
 		params.setDumpStream(dumpStream);
 		params.setDumpFile(dumpFile);
 		params.setDumpOutputType(dumpOutputType);
+		params.setDotOutput(dotOut);
+		params.setColorCounterexample(colorCounterexample);
 		
 		params.setAvoidRecompile(avoidRecompile);
 
@@ -328,6 +342,26 @@ public class CopperAntTask extends Task
 	public boolean isWarnUselessNTs()
 	{
 		return isWarnUselessNTs;
+	}
+
+	public File getDotOut()
+	{
+		return dotOut;
+	}
+
+	public void setDotOut(File dotOut)
+	{
+		this.dotOut = dotOut;
+	}
+
+	public boolean isColorCounterexample()
+	{
+		return colorCounterexample;
+	}
+
+	public void setColorCounterexample(boolean colorCounterexample)
+	{
+		this.colorCounterexample = colorCounterexample;
 	}
 
 	public void setDumpFile(File dumpFile)

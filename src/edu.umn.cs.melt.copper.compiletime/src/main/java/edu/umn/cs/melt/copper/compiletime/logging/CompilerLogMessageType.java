@@ -3,6 +3,7 @@ package edu.umn.cs.melt.copper.compiletime.logging;
 /**
  * Types of log messages.
  * @author August Schwerdfeger &lt;<a href="mailto:schw0709@umn.edu">schw0709@umn.edu</a>&gt;
+ * @author Kelton O'Brien &lt;<a href="mailto:obri0707@umn.edu">obri0707@umn.edu</a>&gt;
  */
 public abstract class CompilerLogMessageType
 {
@@ -91,4 +92,13 @@ public abstract class CompilerLogMessageType
 	 * @see edu.umn.cs.melt.copper.compiletime.logging.messages.FinalReportMessage
 	 */
 	public static final int FINAL_REPORT = 15;
+
+	/**
+	 * Messages to report a counterexamples for ambiguities found in the input grammar.
+	 * @see edu.umn.cs.melt.copper.compiletime.logging.messages.CounterexampleMessage
+	 */
+	public static final int COUNTEREXAMPLE = 16;
+
+
+
 }

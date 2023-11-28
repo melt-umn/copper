@@ -38,6 +38,8 @@ import java.io.PrintStream;
 import java.util.Set;
 
 /**
+ * Constructs the parser, runs checks, and logs messages. The core of the parser generator.
+ * Extended and used by both {@link StandardSpecCompiler} and  {@link FragmentGenerator}
  * @author Kevin Viratyosin
  *
  * Extracted from StandardSpecCompiler
@@ -60,7 +62,7 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
     protected LR0DFA fullDFA;
     protected MDAResults mdaResults;
 
-    protected boolean compileParserBean(ParserBean spec, SpecCompilerParameters args) throws CopperException {
+    protected boolean compileParserBean(ParserBean spec, ParserCompilerParameters args) throws CopperException {
         boolean doMDA = args.isRunMDA();
         if (spec == null) {
             return false;
@@ -190,7 +192,8 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
 
         timeBefore = System.currentTimeMillis();
 
-        succeeded &= ParseTableConflictChecker.check(logger, symbolTable, fullSpec, parseTable, stats);
+        succeeded &= ParseTableConflictChecker.check(logger, args.getDotOutput(), symbolTable, fullSpec, parseTable,
+                dfa, contextSets,lookaheadSets, stats, args.isColorCounterexample());
 
         if(logger.isLoggable(TimingMessage.TIMING_LEVEL)) logger.log(new TimingMessage("Checking parse table conflicts",System.currentTimeMillis() - timeBefore));
         logger.flush();
@@ -283,7 +286,7 @@ public abstract class ParserBeanCompiler<RETURNDATA> implements SpecCompiler<Par
         return true;
     }
 
-    private void dumpIfNecessary(SpecCompilerParameters args, boolean succeeded, Dumper dumper) {
+    private void dumpIfNecessary(ParserCompilerParameters args, boolean succeeded, Dumper dumper) {
         PrintStream dumpStream = null;
         if(dumper != null) {
             try {

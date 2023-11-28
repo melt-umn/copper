@@ -858,8 +858,8 @@ public class CupSkinParser extends edu.umn.cs.melt.copper.runtime.engines.single
 	                	}
 	                }
 	                if(terminalFlags.prefix != null) terminal.setPrefix(terminalFlags.prefix);
-	                
-	                if(ignore) ignoreTerminals.add(CopperElementReference.ref(newTerminalName,name.location));
+
+                    if(ignore) ignoreTerminals.add(CopperElementReference.ref(newTerminalName,name.location));
 	            }
                 
             return RESULT;

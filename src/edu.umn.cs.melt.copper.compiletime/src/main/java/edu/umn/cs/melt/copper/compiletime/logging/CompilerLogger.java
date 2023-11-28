@@ -31,7 +31,7 @@ public class CompilerLogger
 	
 	public CompilerLogger(CompilerLogHandler handler,CompilerLevel level)
 	{
-		this.level = CompilerLevel.REGULAR;
+		this.level = level;
 		this.handler = handler;
 	}
 

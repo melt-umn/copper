@@ -4,6 +4,7 @@ import edu.umn.cs.melt.copper.compiletime.builders.ExtensionFragmentDataBuilder;
 import edu.umn.cs.melt.copper.compiletime.builders.HostFragmentData;
 import edu.umn.cs.melt.copper.compiletime.logging.CompilerLogger;
 import edu.umn.cs.melt.copper.compiletime.spec.grammarbeans.ParserBean;
+import edu.umn.cs.melt.copper.main.ParserCompilerParameters;
 import edu.umn.cs.melt.copper.runtime.logging.CopperException;
 
 import java.util.BitSet;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 public class FragmentGenerator extends ParserBeanCompiler<FragmentGeneratorReturnData> {
     @Override
-    public FragmentGeneratorReturnData compileParser(ParserBean spec, SpecCompilerParameters args) throws CopperException {
+    public FragmentGeneratorReturnData compileParser(ParserBean spec, ParserCompilerParameters args) throws CopperException {
         CompilerLogger logger = AuxiliaryMethods.getOrMakeLogger(args);
 
         boolean beanCompilationSucceeded = compileParserBean(spec, args);

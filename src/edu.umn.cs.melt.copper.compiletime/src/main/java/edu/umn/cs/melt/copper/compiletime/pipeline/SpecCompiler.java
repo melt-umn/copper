@@ -12,7 +12,7 @@ import edu.umn.cs.melt.copper.runtime.logging.CopperException;
  */
 public interface SpecCompiler<IN, OUT>
 {
-	public OUT compileParser(IN spec,SpecCompilerParameters args)
+	public OUT compileParser(IN spec,ParserCompilerParameters args)
 	throws CopperException;
 	
 	/**

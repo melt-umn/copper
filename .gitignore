@@ -11,3 +11,4 @@ doc/manual/**
 !doc/manual/*.tex
 !doc/manual/*.md
 !doc/javadoc/README.txt
+test/
