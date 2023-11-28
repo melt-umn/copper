@@ -79,8 +79,8 @@ public class ParserCompiler
 		rv += "\t-avoidRecompile\tRun Copper only if one spec-file has a later\n\t\t\tmodification time than the output file.\n\t\t\tIf this switch is used, an output file must also\n\t\t\tbe specified.\n";
 		rv += "\t-logfile [lout]\tPipe all log output to the file 'lout'\n\t\t\t(default standard error).\n";
 		rv += "\t-dot [dout]\tOutput dot markup code representing any counterexamples to 'dout'\n\t\t\t(no dot output if not provided).\n";
-		rv += "\t-nc \t\tDo ot use ANSI color escape sequences to color any counterexamples\n\t\t\t(color is enabled by default for standard out, by default if using a logfile).\n";
-		rv += "\t-cc \t\tUse ANSI color escape sequences to color any counterexamples, used for overriding uncolored behavior when using a logfile\n";
+		rv += "\t-nc\t\tSupress ANSI color escape sequences, even when logging to a terminal\n";
+		rv += "\t-cc\t\tUse NSI color escape sequences in log output, even when logging to a file\n";
 		rv += "\t-dump\tProduce a detailed report of the grammar and generated parser.\n";
 		rv += "\t-errordump\tProduce a detailed report, but only if the parser\n\t\t\tcompiler has generated an error.\n";
 		rv += "\t-dumpfile [dout]\tPipe the dumped report to the file 'dout'\n\t\t\t\t(default to log output).\n";
@@ -383,7 +383,7 @@ public class ParserCompiler
 		argTable.setDumpFormat(dumpFormat);
 		argTable.setPackageName(packageDecl);
 		argTable.setParserName(parserName);
-		if((logFile == null && !colorExample) || noColorExample)
+		if((logFile != null && !colorExample) || noColorExample)
 		{
 			argTable.setColorCounterexample(false);
 		} else

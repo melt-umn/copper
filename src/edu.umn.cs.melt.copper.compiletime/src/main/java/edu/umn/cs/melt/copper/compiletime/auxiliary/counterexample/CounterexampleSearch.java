@@ -69,8 +69,6 @@ public class CounterexampleSearch {
         isShiftReduce = conflict.shift != -1;
         LR0ItemSet conflictStateItems = dfa.getItemSet(conflictState);
         if(isShiftReduce){
-            System.out.println(conflict.getState());
-            System.out.println(conflict.getSymbol());
             conflictItem1Production = conflict.reduce.nextSetBit(0);
             conflictItem1Position = spec.pr.getRHSLength(conflictItem1Production);
 
