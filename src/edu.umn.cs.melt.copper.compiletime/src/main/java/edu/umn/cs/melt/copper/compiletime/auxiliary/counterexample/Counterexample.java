@@ -25,12 +25,12 @@ public class Counterexample {
         sb.append("digraph G {\n");
         sb.append("subgraph cluster_0 {\n");
         sb.append("label=\"");
-        sb.append(isShiftReduce? "shift derivation\";\n" : "first reduce derivation\";\n");
+        sb.append(isShiftReduce? "reduce derivation\";\n" : "first reduce derivation\";\n");
         sb.append(derivation1.toDot());
         sb.append("}\n");
         sb.append("subgraph cluster_1 {\n");
         sb.append("label=\"");
-        sb.append(isShiftReduce? "reduce derivation\";\n" : "second reduce derivation\";\n");
+        sb.append(isShiftReduce? "shift derivation\";\n" : "second reduce derivation\";\n");
         sb.append(derivation2.toDot());
         sb.append("}\n");
         sb.append("}");
@@ -42,15 +42,15 @@ public class Counterexample {
     {
         StringBuilder sb = new StringBuilder();
         sb.append("Counterexample (2 parse trees that are the same until the conflict point, and may differ after):\n");
-        sb.append(isShiftReduce? "shift derivation:\n" : "first reduce derivation:\n");
+        sb.append(isShiftReduce? "reduce derivation:\n" : "first reduce derivation:\n");
         derivation1.prettyPrint(sb1,0,0,color);
         for(ColoredStringBuilder s : sb1){
             sb.append(s);
             sb.append('\n');
         }
-        sb.append(isShiftReduce? "reduce derivation:\n" : "second reduce derivation:\n");
+        sb.append(isShiftReduce? "shift derivation:\n" : "second reduce derivation:\n");
         derivation2.prettyPrint(sb2,0,0,color);
-        for(ColoredStringBuilder s : sb2){
+        for(ColoredStringBuilder s : sb2) {
             sb.append(s);
             sb.append('\n');
         }

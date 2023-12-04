@@ -366,11 +366,11 @@ public class CounterexampleSearch {
      * Finds the shortest path to the shift conflict StateItem, using the path to the reduce conflict StateItem
      * to guide the search.
      * @param shortestPath the shortest lookahead-sensitive path to the reduce conflict item.
-     * @return the shortest lookaheads-sensitive path to the shift conflict item.
+     * @return the shortest lookahead-sensitive path to the shift conflict item.
      */
     private ArrayList<StateItem> findShiftConflictPath(ArrayList<StateItem> shortestPath)
     {
-        //Perform a breadth first search to find a path from the shift conflict stateItem to the start stateItem
+        //Perform a depth first search to find a path from the shift conflict stateItem to the start stateItem
         //We use information from the shortest path to limit the search, only adding states if they are
         //(reverse) production steps, or reverse transitions to a state along the shortest path.
         //The order of the states in the path should be identical, the differences being caused by taking different production steps
@@ -386,8 +386,14 @@ public class CounterexampleSearch {
         }
 
         //We get what states are valid to transition to by
-        Queue<LinkedList<ShiftConflictSearchNode>> queue = new LinkedList<>();
-        LinkedList<ShiftConflictSearchNode> startPath = new LinkedList<>();
+        PriorityQueue<LinkedList<ShiftConflictSearchNode>> queue =
+                new PriorityQueue<>(new Comparator<LinkedList<ShiftConflictSearchNode>>() {
+                    @Override
+                    //sort by longest, not the default of shortest
+                    public int compare(LinkedList<ShiftConflictSearchNode> l, LinkedList<ShiftConflictSearchNode> r) {
+                        return r.size() - l.size();
+                    }});
+        LinkedList < ShiftConflictSearchNode > startPath = new LinkedList<>();
         startPath.addFirst(new ShiftConflictSearchNode(shortestPathStates.size()-2,conflictItem2));
         queue.add(startPath);
 
